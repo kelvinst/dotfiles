@@ -20,7 +20,7 @@
 	clean = git-media-clean %f
 	smudge = git-media-smudge %f
 [core]
-	editor = emacs -nw
+	editor = vim
 [diff]
 	tool = vimdiff
 [merge]

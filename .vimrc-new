@@ -31,7 +31,7 @@ filetype plugin indent on    " required
 
   " configs
   set autoindent
-  set colorcolumn=81
+  set colorcolumn=99
   set cul
   set expandtab
   set hlsearch
