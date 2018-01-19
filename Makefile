@@ -1,15 +1,12 @@
 all: clean install
 
 install:
-	cp -R .oh-my-zsh ~
-	cp -R .tmuxinator ~
-
 	ln .ctags ~
 	ln .gitconfig ~
 	ln .tmux.conf ~
 	ln .vimrc-new ~/.vimrc
 	ln .spacemacs ~
-	# ln .zshrc ~
+	ln .bash_profile ~
 
 clean:
 	rm -rf ~/.ctags
@@ -18,5 +15,5 @@ clean:
 	rm -rf ~/.tmux.lightline
 	rm -rf ~/.vimrc
 	rm -rf ~/.spacemacs
-	# rm -rf ~/.zshrc
+	rm -rf ~/.bash_profile
 
