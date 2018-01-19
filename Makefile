@@ -8,8 +8,8 @@ install:
 	ln .gitconfig ~
 	ln .tmux.conf ~
 	ln .vimrc-new ~/.vimrc
-	ln .zshrc ~
 	ln .spacemacs ~
+	# ln .zshrc ~
 
 clean:
 	rm -rf ~/.ctags
@@ -17,6 +17,6 @@ clean:
 	rm -rf ~/.tmux.conf
 	rm -rf ~/.tmux.lightline
 	rm -rf ~/.vimrc
-	rm -rf ~/.zshrc
 	rm -rf ~/.spacemacs
+	# rm -rf ~/.zshrc
 
