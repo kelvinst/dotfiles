@@ -22,4 +22,6 @@ export GOPATH="~/.go"
 export ANDROID_HOME="/Users/kelvinst/Library/Android/sdk/"
 export PATH="$PATH:$ANDROID_HOME/tools:$ANDROID_HOME/platform-tools"
 
+[ -f /usr/local/etc/bash_completion ] && . /usr/local/etc/bash_completion
+
 # source <(kubectl completion bash)

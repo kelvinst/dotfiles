@@ -5,7 +5,6 @@ install:
 	ln .gitconfig ~
 	ln .tmux.conf ~
 	ln .vimrc-new ~/.vimrc
-	ln .spacemacs ~
 	ln .bash_profile ~
 
 clean:
@@ -14,6 +13,5 @@ clean:
 	rm -rf ~/.tmux.conf
 	rm -rf ~/.tmux.lightline
 	rm -rf ~/.vimrc
-	rm -rf ~/.spacemacs
 	rm -rf ~/.bash_profile
 
