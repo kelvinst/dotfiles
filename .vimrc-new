@@ -46,6 +46,7 @@ filetype plugin indent on    " required
   set showtabline=2
   set smartindent
   set smarttab
+  set smartcase
   set softtabstop=2
   set splitbelow
   set splitright

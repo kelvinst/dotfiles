@@ -8,6 +8,7 @@ export KEYTIMEOUT=1
 export PATH="$PATH:./bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin"
 export PATH="$PATH:/sbin:/bin:/usr/games:/usr/local/games:~/.rvm/bin"
 export PATH="$PATH:/usr/local/opt/elasticsearch@2.4/bin"
+export PATH="$PATH:/Applications/Postgres.app/Contents/Versions/latest/bin"
 
 # vim as the default editor
 export EDITOR="vim"
