@@ -28,3 +28,6 @@ export PATH="$PATH:$ANDROID_HOME/tools:$ANDROID_HOME/platform-tools"
 # source <(kubectl completion bash)
 
 source $HOME/.rvm/scripts/rvm
+
+. $HOME/.asdf/asdf.sh
+. $HOME/.asdf/completions/asdf.bash
