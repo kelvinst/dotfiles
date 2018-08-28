@@ -76,8 +76,15 @@ filetype plugin indent on    " required
     autocmd WinLeave * set nocul
   augroup END
 
-  " some useless key bindings
-  nmap Q <nop>
+  " no movement with arrows!
+  map <left> <nop>
+  map <right> <nop>
+  map <up> <nop>
+  map <down> <nop>
+  imap <up> <nop>
+  imap <down> <nop>
+  imap <left> <nop>
+  imap <right> <nop>
 
   " some useful key bindings
   nmap <silent> <leader>o :<c-u>call append(line("."),  repeat([""], v:count1))<cr>
