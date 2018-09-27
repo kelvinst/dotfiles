@@ -5,10 +5,11 @@ set -o vi
 export KEYTIMEOUT=1
 
 # to get the binstubs on ./bin and a lot of other places
-export PATH="$PATH:./bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin"
-export PATH="$PATH:/sbin:/bin:/usr/games:/usr/local/games"
-export PATH="$PATH:/usr/local/opt/elasticsearch@2.4/bin"
-export PATH="$PATH:/Applications/Postgres.app/Contents/Versions/latest/bin"
+export PATH="./bin:/usr/local/opt/make/libexec/gnubin:$PATH"
+export PATH="/sbin:/bin:/usr/games:/usr/local/games:$PATH"
+export PATH="/usr/local/opt/elasticsearch@2.4/bin:$PATH"
+export PATH="/Applications/Postgres.app/Contents/Versions/latest/bin:$PATH"
+export PATH="$PATH:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin"
 
 # vim as the default editor
 export EDITOR="vim"
