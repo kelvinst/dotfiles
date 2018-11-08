@@ -6,7 +6,6 @@ call vundle#begin()
   " it's needed
   Plugin 'gmarik/Vundle.vim'
 
-  Plugin 'christoomey/vim-tmux-navigator'
   Plugin 'kien/ctrlp.vim'
   Plugin 'mattn/emmet-vim'
   Plugin 'ntpeters/vim-better-whitespace'
@@ -126,7 +125,4 @@ filetype plugin indent on    " required
   " YankRing
     nmap <leader>y :YRShow<cr>
     let g:yankring_history_file = '.yankring-history'
-
-  " tmux-navigator
-    let g:tmux_navigator_disable_when_zoomed = 1
 
