@@ -14,6 +14,7 @@
 	remotes = remote -v
   d = diff
   dt = difftool
+  pro = pull-request -o
 [push]
 	default = simple
 [filter "media"]
