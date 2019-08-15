@@ -6,6 +6,7 @@ call vundle#begin()
   " it's needed
   Plugin 'gmarik/Vundle.vim'
 
+  Plugin 'chriskempson/base16-vim'
   Plugin 'kien/ctrlp.vim'
   Plugin 'mattn/emmet-vim'
   Plugin 'ntpeters/vim-better-whitespace'
@@ -52,6 +53,10 @@ filetype plugin indent on    " required
   set tabstop=2
 
   syntax on
+
+  " colors
+  let base16colorspace=256
+  colorscheme base16-eighties
 
   " abbreviations
   cab W! w!

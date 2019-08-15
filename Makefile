@@ -7,6 +7,7 @@ install:
 	ln .inputrc ~
 	ln .tmux.conf ~
 	ln .vimrc-new ~/.vimrc
+	cp -r .config ~/.config
 
 clean:
 	rm -rf ~/.bash_profile
@@ -15,4 +16,5 @@ clean:
 	rm -rf ~/.inputrc
 	rm -rf ~/.tmux.conf
 	rm -rf ~/.vimrc
+	rm -rf ~/.config
 
