@@ -15,11 +15,13 @@ call vundle#begin()
   Plugin 'rking/ag.vim' " fast search in files
   Plugin 'sjl/gundo.vim' " undo gui
   Plugin 'YankRing.vim' " yank history
+  Plugin 'igemnace/vim-makery' " some easy make running (like dispatch but with custom commands)
 
   " elixir
-  Plugin 'elixir-lang/vim-elixir' " elixir syntax
-  Plugin 'mattreduce/vim-mix' " run mix tasks from vim
-  Plugin 'mhinz/vim-mix-format' " format elixir files
+  " TODO - update to 'elixir-editors/vim-elixir' when
+  " https://github.com/elixir-editors/vim-elixir/pull/451 and
+  " https://github.com/elixir-editors/vim-elixir/pull/503 get merged
+  Plugin 'kelvinst/vim-elixir' " elixir support
 
   " tpope's kit
   Plugin 'tpope/vim-abolish' " for searching and replacing patterns easily
@@ -94,39 +96,13 @@ filetype plugin indent on    " required
     let g:ctrlp_user_command = 'ag %s -l --nocolor --hidden'.
           \  ' --ignore .git'.
           \  ' --ignore _build'.
+          \  ' --ignore deps'.
           \  ' --ignore node_modules'.
           \  ' -g ""'
     let g:ctrlp_use_caching = 0 " ag is fast enough so cache isn't needed
 
   " vim-flagship
     let g:tablabel = "%N %{get(split(flagship#tabcwds('shorten',','), '/'), -1, '')} %{flagship#tabmodified()}"
-
-  " vim-projectionist
-    let g:projectionist_heuristics = {
-          \ "&mix.exs": {
-          \   "lib/*.ex": {
-          \     "type": "lib",
-          \     "alternate": [
-          \       "test/{}_test.exs",
-          \     ],
-          \   },
-          \   "test/*_test.exs": {
-          \     "type": "test",
-          \     "alternate": "lib/{}.ex",
-          \     "dispatch": "mix test test/{}_test.exs`=v:lnum ? ':'.v:lnum : ''`"
-          \   },
-          \   "test/test_helper.exs": { "type": "test" },
-          \   "mix.exs": {
-          \     "type": "lib",
-          \     "alternate": "mix.lock",
-          \     "dispatch": "mix deps.get"
-          \   },
-          \   "mix.lock": { "alternate": "mix.exs" },
-          \   "*": {
-          \     "make": "mix",
-          \     "console": "iex -S mix"
-          \   }
-          \ }}
 
   " YankRing
     let g:yankring_history_file = '.yankring-history'
