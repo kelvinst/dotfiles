@@ -6,20 +6,45 @@ call vundle#begin()
   " it's needed
   Plugin 'gmarik/Vundle.vim'
 
-  Plugin 'chriskempson/base16-vim'
-  Plugin 'kien/ctrlp.vim'
-  Plugin 'mattn/emmet-vim'
-  Plugin 'ntpeters/vim-better-whitespace'
-  Plugin 'rking/ag.vim'
-  Plugin 'scrooloose/nerdtree'
-  Plugin 'sheerun/vim-polyglot'
-  Plugin 'sjl/gundo.vim'
+  " styles
+  Plugin 'chriskempson/base16-vim' " colorschemes
+
+  " utils
+  Plugin 'kien/ctrlp.vim' " quickswitch files
+  Plugin 'mattn/emmet-vim' " generate HTML
+  Plugin 'rking/ag.vim' " fast search in files
+  Plugin 'sjl/gundo.vim' " undo gui
+  Plugin 'YankRing.vim' " yank history
+
+  " elixir
+  Plugin 'elixir-lang/vim-elixir' " elixir syntax
+  Plugin 'mattreduce/vim-mix' " run mix tasks from vim
+  Plugin 'mhinz/vim-mix-format' " format elixir files
+
+  " tpope's kit
   Plugin 'tpope/vim-abolish' " for searching and replacing patterns easily
-  Plugin 'tpope/vim-commentary'
-  Plugin 'tpope/vim-dispatch'
-  Plugin 'tpope/vim-endwise'
+  Plugin 'tpope/vim-apathy' " set 'path' option for misc file types
+  Plugin 'tpope/vim-commentary' " turn lines into comments
+  Plugin 'tpope/vim-dadbod' " db integration
+  Plugin 'tpope/vim-dispatch' " build and test dispatcher
+  Plugin 'tpope/vim-endwise' " adds end wisely
+  Plugin 'tpope/vim-eunuch' " UNIX useful tasks
+  Plugin 'tpope/vim-flagship' " tabline and statusline config
+  Plugin 'tpope/vim-fugitive' " git integration
+  Plugin 'tpope/vim-haml' " haml, sass and scss support
+  Plugin 'tpope/vim-heroku' " heroku commands
+  Plugin 'tpope/vim-jdaddy' " heroku commands
+  Plugin 'tpope/vim-obsession' " autosave sessions
+  Plugin 'tpope/vim-projectionist' " project specific config and commands
+  Plugin 'tpope/vim-ragtag' " html helpers
+  Plugin 'tpope/vim-repeat' " repeat mappings
+  Plugin 'tpope/vim-rhubarb' " github integration
+  Plugin 'tpope/vim-sensible' " good defaults
+  Plugin 'tpope/vim-sleuth' " adjusts tabstops configurations
+  Plugin 'tpope/vim-speeddating' " C-A and C-X on dates
   Plugin 'tpope/vim-surround' " for delimiters changing
-  Plugin 'YankRing.vim'
+  Plugin 'tpope/vim-unimpaired' " good pair of next-prev and toggles
+  Plugin 'tpope/vim-vinegar' " netrw > NerdTree
 
 call vundle#end()            " required
 filetype plugin indent on    " required
@@ -30,95 +55,41 @@ filetype plugin indent on    " required
   let mapleader = ","
 
   " configs
-  set autoindent
   set colorcolumn=99
   set cul
-  set expandtab
   set hlsearch
   set ignorecase
   set laststatus=2
+  set list
   set nobackup
   set noswapfile
-  set nowrap
   set nowritebackup
   set shell=/bin/bash
   set shiftwidth=2
   set showtabline=2
-  set smartindent
-  set smarttab
-  set smartcase
-  set softtabstop=2
   set splitbelow
   set splitright
-  set tabstop=2
-
-  syntax on
+  set smartcase
+  set smartindent
+  set switchbuf=usetab
 
   " colors
   let base16colorspace=256
   colorscheme base16-eighties
 
-  " abbreviations
-  cab W! w!
-  cab W w
-  cab Wq wq
-  cab wQ wq
-  cab WQ wq
-  cab Wq! wq!
-  cab wQ! wq!
-  cab WQ! wq!
-  cab Q! q!
-  cab Q q
-  cab E e
-  cab E! e!
-
-  " automatic executed commands
-  autocmd BufWritePre * :StripWhitespace
+  " switch current line highlight off when leaving
   augroup BgHighlight
     autocmd!
     autocmd WinEnter * set cul
     autocmd WinLeave * set nocul
   augroup END
 
-  " no movement with arrows!
-  map <left> <nop>
-  map <right> <nop>
-  map <up> <nop>
-  map <down> <nop>
-  imap <up> <nop>
-  imap <down> <nop>
-  imap <left> <nop>
-  imap <right> <nop>
-
-  " some useful key bindings
-  nmap <silent> <leader>o :<c-u>call append(line("."),  repeat([""], v:count1))<cr>
-  nmap <silent> <leader>O :<c-u>call append(line(".")-1, repeat([""], v:count1))<cr>
-  nmap <silent> <leader>j i<cr><c-o>:stopinsert<cr>
-  nmap <leader>p :set paste!<cr>
-  nmap <leader>ln :set nu!<cr>
-  nmap <leader>lr :set rnu!<cr>
-  nmap <leader>wt :tabe<cr>
-
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 "" plugins config
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-  " dispatch
-    map <leader>dd :Dispatch<space>
-    map <leader>ds :Start<space>
-
-  " gundo
-    map <leader>u :GundoToggle<cr>
-    let g:gundo_close_on_revert = 1
-
-  " nerdtree
-    nmap <leader>n :NERDTreeToggle<cr>
-    nmap <leader>f :NERDTreeFind<cr>
-    let NERDTreeQuitOnOpen = 1
-    let NERDTreeShowHidden = 1
-    let NERDTreeShowLineNumbers = 0
-
   " ctrlp
-    let g:ctrlp_map = '<leader>t'
+    map <leader>t :CtrlP getcwd()<cr>
+    let g:ctrlp_map = ''
     " Use ag because it's lightning fast and respects .gitignore
     let g:ctrlp_user_command = 'ag %s -l --nocolor --hidden'.
           \  ' --ignore .git'.
@@ -127,7 +98,36 @@ filetype plugin indent on    " required
           \  ' -g ""'
     let g:ctrlp_use_caching = 0 " ag is fast enough so cache isn't needed
 
+  " vim-flagship
+    let g:tablabel = "%N %{get(split(flagship#tabcwds('shorten',','), '/'), -1, '')} %{flagship#tabmodified()}"
+
+  " vim-projectionist
+    let g:projectionist_heuristics = {
+          \ "&mix.exs": {
+          \   "lib/*.ex": {
+          \     "type": "lib",
+          \     "alternate": [
+          \       "test/{}_test.exs",
+          \     ],
+          \   },
+          \   "test/*_test.exs": {
+          \     "type": "test",
+          \     "alternate": "lib/{}.ex",
+          \     "dispatch": "mix test test/{}_test.exs`=v:lnum ? ':'.v:lnum : ''`"
+          \   },
+          \   "test/test_helper.exs": { "type": "test" },
+          \   "mix.exs": {
+          \     "type": "lib",
+          \     "alternate": "mix.lock",
+          \     "dispatch": "mix deps.get"
+          \   },
+          \   "mix.lock": { "alternate": "mix.exs" },
+          \   "*": {
+          \     "make": "mix",
+          \     "console": "iex -S mix"
+          \   }
+          \ }}
+
   " YankRing
-    nmap <leader>y :YRShow<cr>
     let g:yankring_history_file = '.yankring-history'
 
