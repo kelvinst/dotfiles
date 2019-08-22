@@ -3,10 +3,11 @@ set rtp+=~/.vim/bundle/Vundle.vim    " REQUIRED
 call vundle#begin()                  " REQUIRED
   Plugin 'gmarik/Vundle.vim'         " REQUIRED
 
+  Plugin 'airblade/vim-gitgutter'    " show git changes on a gutter
   Plugin 'YankRing.vim'              " yank history
   Plugin 'chriskempson/base16-vim'   " colorschemes
   Plugin 'easymotion/vim-easymotion' " move around like a pr
-  Plugin 'igemnace/vim-makery'       " some easy make running (like dispatch)
+  Plugin 'igemnace/vim-makery'       " personalized make commands
   Plugin 'itchyny/lightline.vim'     " status bar improved
   Plugin 'junegunn/fzf'              " quickswitch files
   Plugin 'junegunn/fzf.vim'          " quickswitch files
