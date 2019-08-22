@@ -1,13 +1,14 @@
 all: clean install
 
 install:
-	ln .bash_profile ~
-	ln .ctags ~
-	ln .gitconfig ~
-	ln .inputrc ~
-	ln .tmux.conf ~
-	ln .vimrc-new ~/.vimrc
+	cp .bash_profile ~
+	cp .ctags ~
+	cp .gitconfig ~
+	cp .inputrc ~
+	cp .tmux.conf ~
+	cp .vimrc-new ~/.vimrc
 	cp -r .config ~/.config
+	cp -r .vim/after ~/.vim/
 
 clean:
 	rm -rf ~/.bash_profile
