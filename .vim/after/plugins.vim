@@ -5,6 +5,7 @@ call vundle#begin()                  " REQUIRED
 
   Plugin 'airblade/vim-gitgutter'    " show git changes on a gutter
   Plugin 'YankRing.vim'              " yank history
+  Plugin 'ciaranm/detectindent'      " inteligently set <tab> config
   Plugin 'chriskempson/base16-vim'   " colorschemes
   Plugin 'easymotion/vim-easymotion' " move around like a pr
   Plugin 'igemnace/vim-makery'       " personalized make commands
