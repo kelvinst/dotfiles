@@ -1,8 +1,17 @@
 # vi mode
 set -o vi
 
-# alias
+# alias for vim sessions
 alias v='vim -S'
+
+# alias for tmux sessions
+function t() {
+  dir_name=${PWD##*/}
+  handled_name=${dir_name/\./}
+  project_name=${1:-$handled_name}
+  
+  tmux attach -d -t $project_name || tmux new -s $project_name
+}
 
 # escape timeout
 export KEYTIMEOUT=1

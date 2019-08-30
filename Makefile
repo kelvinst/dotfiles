@@ -8,6 +8,7 @@ install:
 	cp .tmux.conf ~
 	cp .vimrc-new ~/.vimrc
 	cp -r .config ~/.config
+	cp -r .tmux/plugins ~/.tmux/plugins
 	cp -r .vim/after ~/.vim/
 
 clean:
@@ -18,4 +19,6 @@ clean:
 	rm -rf ~/.tmux.conf
 	rm -rf ~/.vimrc
 	rm -rf ~/.config
+	rm -rf ~/.tmux/plugins
+	rm -rf ~/.vim/after
 
