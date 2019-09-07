@@ -13,6 +13,7 @@ call vundle#begin()                          " REQUIRED
   Plugin 'itchyny/lightline.vim'             " status bar improved
   Plugin 'junegunn/fzf'                      " quickswitch files
   Plugin 'junegunn/fzf.vim'                  " quickswitch files
+  Plugin 'junegunn/vim-easy-align'           " aligning
   Plugin 'kelvinst/vim-elixir'               " elixir support TODO - update to the original
   Plugin 'mattn/emmet-vim'                   " generate HTML
   Plugin 'rking/ag.vim'                      " fast search in files
