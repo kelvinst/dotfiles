@@ -4,6 +4,7 @@ install:
 	cp .bash_profile ~
 	cp .ctags ~
 	cp .gitconfig ~
+	cp .global_gitignore ~
 	cp .inputrc ~
 	cp .tmux.conf ~
 	cp .vimrc-new ~/.vimrc
@@ -14,6 +15,7 @@ clean:
 	rm -rf ~/.bash_profile
 	rm -rf ~/.ctags
 	rm -rf ~/.gitconfig
+	rm -rf ~/.global_gitignore
 	rm -rf ~/.inputrc
 	rm -rf ~/.tmux.conf
 	rm -rf ~/.vimrc
