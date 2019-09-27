@@ -16,8 +16,8 @@ call vundle#begin()                          " REQUIRED
   Plugin 'junegunn/vim-easy-align'           " aligning
   Plugin 'kelvinst/vim-elixir'               " elixir support TODO - update to the original
   Plugin 'mattn/emmet-vim'                   " generate HTML
+  Plugin 'mbbill/undotree'                   " undo gui
   Plugin 'rking/ag.vim'                      " fast search in files
-  Plugin 'sjl/gundo.vim'                     " undo gui
   Plugin 'tpope/vim-abolish'                 " for searching and replacing patterns easily
   Plugin 'tpope/vim-apathy'                  " set 'path' option for misc file types
   Plugin 'tpope/vim-commentary'              " turn lines into comments
