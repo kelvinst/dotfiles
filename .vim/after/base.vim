@@ -1,4 +1,5 @@
 let mapleader = ","
+set clipboard=unnamed
 set colorcolumn=99
 set ignorecase
 set laststatus=2
