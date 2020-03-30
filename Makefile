@@ -2,6 +2,7 @@ all: clean install
 
 install:
 	cp .bash_profile ~
+	cp .zshrc ~
 	cp .ctags ~
 	cp .gitconfig ~
 	cp .global_gitignore ~
@@ -13,6 +14,7 @@ install:
 
 clean:
 	rm -rf ~/.bash_profile
+	rm -rf ~/.zshrc
 	rm -rf ~/.ctags
 	rm -rf ~/.gitconfig
 	rm -rf ~/.global_gitignore
