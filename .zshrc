@@ -3,6 +3,7 @@ set -o vi
 
 # alias for vim sessions
 alias v='vim -S'
+alias nv='nvim -S'
 
 # alias for tmux sessions
 function t() {
@@ -13,11 +14,12 @@ function t() {
   tmux attach -d -t $project_name || tmux new -s $project_name
 }
 
+export LC_ALL=en_US.UTF-8
+
 # escape timeout
 export KEYTIMEOUT=1
 
 # to get the binstubs on ./bin and a lot of other places
-export PATH="./bin:/usr/local/opt/make/libexec/gnubin:$PATH"
 export PATH="/sbin:/bin:/usr/games:/usr/local/games:$PATH"
 export PATH="/usr/local/opt/elasticsearch@2.4/bin:$PATH"
 export PATH="/Applications/Postgres.app/Contents/Versions/latest/bin:$PATH"
@@ -35,6 +37,7 @@ if [ -f '/Users/kelvinst/google-cloud-sdk/path.zsh.inc' ]; then source '/Users/k
 export GOPATH="~/.go"
 export ANDROID_HOME="/Users/kelvinst/Library/Android/sdk/"
 export PATH="$PATH:$ANDROID_HOME/tools:$ANDROID_HOME/platform-tools"
+export PATH="$PATH:${HOME}/.zsh_functions"
 
 # source <(kubectl completion zsh)
 
