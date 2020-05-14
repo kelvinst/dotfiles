@@ -13,6 +13,10 @@ function t() {
   tmux attach -d -t $project_name || tmux new -s $project_name
 }
 
+export LC_ALL=en_US.UTF-8
+
+export TERM=xterm-256color
+
 # escape timeout
 export KEYTIMEOUT=1
 
