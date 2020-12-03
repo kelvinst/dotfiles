@@ -7,7 +7,9 @@ install:
 	cp .ctags ~
 	cp .gitconfig ~
 	cp .global_gitignore ~
+	cp .iex.exs ~
 	cp .inputrc ~
+	cp .teex.exs ~
 	cp .tmux.conf ~
 	cp .vimrc-new ~/.vimrc
 	cp -r .config ~/.config
@@ -22,7 +24,9 @@ clean:
 	rm -rf ~/.ctags
 	rm -rf ~/.gitconfig
 	rm -rf ~/.global_gitignore
+	rm -rf ~/.iex.exs
 	rm -rf ~/.inputrc
+	rm -rf ~/.teex.exs
 	rm -rf ~/.tmux.conf
 	rm -rf ~/.vimrc
 	rm -rf ~/.config

@@ -25,6 +25,7 @@ export PATH="./bin:/usr/local/opt/make/libexec/gnubin:$PATH"
 export PATH="/sbin:/bin:/usr/games:/usr/local/games:$PATH"
 export PATH="/usr/local/opt/elasticsearch@2.4/bin:$PATH"
 export PATH="/Applications/Postgres.app/Contents/Versions/latest/bin:$PATH"
+export PATH="/Users/kelvinst/.asdf/installs/elixir/1.11/.mix/escripts:$PATH"
 export PATH="$PATH:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin"
 
 # vim as the default editor
