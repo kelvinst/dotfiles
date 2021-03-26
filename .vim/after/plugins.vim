@@ -15,7 +15,7 @@ call vundle#begin()                           " REQUIRED
   Plugin 'junegunn/fzf'                       " quickswitch files
   Plugin 'junegunn/fzf.vim'                   " quickswitch files
   Plugin 'junegunn/vim-easy-align'            " aligning
-  Plugin 'kelvinst/vim-elixir'                " elixir support TODO - update to the original
+  Plugin 'elixir-editors/vim-elixir'          " elixir support
   Plugin 'mattn/emmet-vim'                    " generate HTML
   Plugin 'mbbill/undotree'                    " undo gui
   Plugin 'rking/ag.vim'                       " fast search in files
