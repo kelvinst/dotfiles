@@ -17,10 +17,6 @@ let g:projectionist_heuristics = {
                   \       'template': [
                   \         'defmodule {camelcase|capitalize|dot}Test do',
                   \         '  use ExUnit.Case',
-                  \         '',
-                  \         '  alias {camelcase|capitalize|dot}',
-                  \         '',
-                  \         '  doctest {basename|capitalize}',
                   \         'end'
                   \       ],
                   \     },
