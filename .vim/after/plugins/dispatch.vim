@@ -8,4 +8,4 @@ map '<cr> :Start<cr>
 " mix tasks
 map <leader>mc :Dispatch mix compile<cr>
 map <leader>mC :Dispatch mix compile --force<cr>
-map <leader>mf :Dispatch mix force<cr>
+map <leader>mf :Dispatch mix format<cr>
