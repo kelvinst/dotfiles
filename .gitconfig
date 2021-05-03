@@ -1,32 +1,33 @@
 [user]
-	email = kelvin.stinghen@gmail.com
-	name = kelvinst
+  email = kelvin.stinghen@gmail.com
+  name = kelvinst
 [alias]
-	co = checkout
-	lg = log --all --graph --decorate --oneline --abbrev-commit
-	cm = commit
-	ac = !git add -A && git commit
-	aca = !git add -A && git commit --amend
-	ace = !git add -A && git commit --allow-empty
-	st = status -sb
-	tags = tag -l
-	branches = branch -a
-	remotes = remote -v
+  co = checkout
+  lg = log --all --graph --decorate --oneline --abbrev-commit
+  cm = commit
+  ac = !git add -A && git commit
+  aca = !git add -A && git commit --amend
+  ace = !git add -A && git commit --allow-empty
+  r = !git pull --commit && git push
+  st = status -sb
+  tags = tag -l
+  branches = branch -a
+  remotes = remote -v
   d = diff
   dt = difftool
   pro = pull-request -o
 [push]
-	default = simple
+  default = simple
 [filter "media"]
-	clean = git-media-clean %f
-	smudge = git-media-smudge %f
+  clean = git-media-clean %f
+  smudge = git-media-smudge %f
 [core]
-	editor = vim
+  editor = vim
   excludesfile = ~/.global_gitignore
 [diff]
-	tool = vimdiff
+  tool = vimdiff
 [merge]
-	tool = vimdiff
+  tool = vimdiff
 [difftool]
   prompt = false
 [filter "lfs"]
@@ -36,3 +37,5 @@
 [gitsh]
   gitCommand = hub
   defaultCommand = st
+[pull]
+  rebase = false
