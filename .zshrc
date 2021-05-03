@@ -108,10 +108,11 @@ export TYPEWRITTEN_CURSOR="block"
 # Example aliases
 # alias zshconfig="mate ~/.zshrc"
 # alias ohmyzsh="mate ~/.oh-my-zsh"
-#
-# alias for vim sessions
+
 alias v='vim -S'
 alias nv='nvim -S'
+alias gac='git ac'
+alias gre='git pull --commit && git push'
 
 # hub aliased as git
 eval "$(hub alias -s)"
