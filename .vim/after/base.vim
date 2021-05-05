@@ -9,4 +9,5 @@ set showtabline=2
 set splitright
 set splitbelow
 set termguicolors
+set hlsearch
 
