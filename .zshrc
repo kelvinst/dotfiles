@@ -68,7 +68,8 @@ ZSH_THEME="typewritten"
 # Custom plugins may be added to ~/.oh-my-zsh/custom/plugins/
 # Example format: plugins=(rails git textmate ruby lighthouse)
 # Add wisely, as too many plugins slow down shell startup.
-plugins=(git osx asdf mix-fast vi-mode tmux brew)
+plugins=(git osx asdf mix-fast vi-mode tmux brew alias-finder zsh_reload direnv dirpersist 
+  dircycle fasd fzf github)
 
 source $ZSH/oh-my-zsh.sh
 
@@ -98,7 +99,8 @@ export PATH="$PATH:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin"
 export PATH="$PATH:$ANDROID_HOME/tools:$ANDROID_HOME/platform-tools"
 export PATH="$PATH:${HOME}/.zsh_functions"
 
-export TYPEWRITTEN_CURSOR="block"
+export VI_MODE_RESET_PROMPT_ON_MODE_CHANGE=true
+export VI_MODE_SET_CURSOR=true
 
 # Set personal aliases, overriding those provided by oh-my-zsh libs,
 # plugins, and themes. Aliases can be placed here, though oh-my-zsh
@@ -113,9 +115,6 @@ alias v='vim -S'
 alias nv='nvim -S'
 alias gac='git ac'
 alias gre='git pull --commit && git push'
-
-# hub aliased as git
-eval "$(hub alias -s)"
 
 # The next line updates PATH for the Google Cloud SDK.
 if [ -f '/Users/kelvinst/google-cloud-sdk/path.zsh.inc' ]; then source '/Users/kelvinst/google-cloud-sdk/path.zsh.inc'; fi
