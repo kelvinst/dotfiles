@@ -1,5 +1,6 @@
 {
   "codeLens.enable": true,
+  "git.enableGutters": false,
   "languageserver": {
     "elixirLS": {
       "command": "~/.elixir-ls/release/language_server.sh",
