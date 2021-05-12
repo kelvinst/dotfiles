@@ -1,10 +1,5 @@
 {
   "codeLens.enable": true,
-  "git.enableGutters": false,
-  "languageserver": {
-    "elixirLS": {
-      "command": "~/.elixir-ls/release/language_server.sh",
-      "filetypes": ["elixir", "eelixir"]
-    }
-  }
+  "elixir.pathToElixirLS": "~/.elixir-ls/release/language_server.sh",
+  "git.enableGutters": false
 }

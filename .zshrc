@@ -114,6 +114,7 @@ export VI_MODE_SET_CURSOR=true
 alias v='vim -S'
 alias nv='nvim -S'
 alias gac='git ac'
+alias gaca='git aca'
 alias gre='git pull --commit && git push'
 
 # The next line updates PATH for the Google Cloud SDK.

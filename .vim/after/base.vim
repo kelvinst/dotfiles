@@ -19,3 +19,4 @@ set termguicolors
 set updatetime=300
 set hlsearch
 
+nmap gb gT

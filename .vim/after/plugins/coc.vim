@@ -19,6 +19,9 @@ nmap <silent> [g <Plug>(coc-diagnostic-prev)
 nmap <silent> ]g <Plug>(coc-diagnostic-next)
 
 nmap <silent> gd <Plug>(coc-definition)
+nmap <silent> gdd <Plug>(coc-definition)
+nmap <silent> gdt :call CocActionAsync('jumpDefinition', 'tab drop')<cr>
+nmap <silent> gdv :call CocActionAsync('jumpDefinition', 'vsplit')<cr>
 nmap <silent> gy <Plug>(coc-type-definition)
 nmap <silent> gi <Plug>(coc-implementation)
 nmap <silent> gr <Plug>(coc-references)
@@ -55,14 +58,19 @@ omap ic <Plug>(coc-classobj-i)
 xmap ac <Plug>(coc-classobj-a)
 omap ac <Plug>(coc-classobj-a)
 
-if has('nvim-0.4.0') || has('patch-8.2.0750')
-  nnoremap <silent><nowait><expr> <C-f> coc#float#has_scroll() ? coc#float#scroll(1) : "\<C-f>"
-  nnoremap <silent><nowait><expr> <C-b> coc#float#has_scroll() ? coc#float#scroll(0) : "\<C-b>"
-  inoremap <silent><nowait><expr> <C-f> coc#float#has_scroll() ? "\<c-r>=coc#float#scroll(1)\<cr>" : "\<Right>"
-  inoremap <silent><nowait><expr> <C-b> coc#float#has_scroll() ? "\<c-r>=coc#float#scroll(0)\<cr>" : "\<Left>"
-  vnoremap <silent><nowait><expr> <C-f> coc#float#has_scroll() ? coc#float#scroll(1) : "\<C-f>"
-  vnoremap <silent><nowait><expr> <C-b> coc#float#has_scroll() ? coc#float#scroll(0) : "\<C-b>"
-endif
+nnoremap <silent><nowait><expr> <C-f> coc#float#has_scroll() ? coc#float#scroll(1) : "\<C-f>"
+nnoremap <silent><nowait><expr> <C-b> coc#float#has_scroll() ? coc#float#scroll(0) : "\<C-b>"
+inoremap <silent><nowait><expr> <C-f> coc#float#has_scroll() ? "\<c-r>=coc#float#scroll(1)\<cr>" : "\<Right>"
+inoremap <silent><nowait><expr> <C-b> coc#float#has_scroll() ? "\<c-r>=coc#float#scroll(0)\<cr>" : "\<Left>"
+vnoremap <silent><nowait><expr> <C-f> coc#float#has_scroll() ? coc#float#scroll(1) : "\<C-f>"
+vnoremap <silent><nowait><expr> <C-b> coc#float#has_scroll() ? coc#float#scroll(0) : "\<C-b>"
+
+nnoremap <silent><nowait><expr> <C-d> coc#float#has_scroll() ? coc#float#scroll(1, 4) : "\<C-d>"
+nnoremap <silent><nowait><expr> <C-u> coc#float#has_scroll() ? coc#float#scroll(0, 4) : "\<C-u>"
+inoremap <silent><nowait><expr> <C-d> coc#float#has_scroll() ? "\<c-r>=coc#float#scroll(1, 4)\<cr>" : "\<Right>"
+inoremap <silent><nowait><expr> <C-u> coc#float#has_scroll() ? "\<c-r>=coc#float#scroll(0, 4)\<cr>" : "\<Left>"
+vnoremap <silent><nowait><expr> <C-d> coc#float#has_scroll() ? coc#float#scroll(1, 4) : "\<C-d>"
+vnoremap <silent><nowait><expr> <C-u> coc#float#has_scroll() ? coc#float#scroll(0, 4) : "\<C-u>"
 
 nmap <silent> <C-s> <Plug>(coc-range-select)
 xmap <silent> <C-s> <Plug>(coc-range-select)
@@ -71,11 +79,16 @@ command! -nargs=0 Format :call CocAction('format')
 command! -nargs=? Fold :call     CocAction('fold', <f-args>)
 command! -nargs=0 OR   :call     CocAction('runCommand', 'editor.action.organizeImport')
 
-nnoremap <silent><nowait> <leader>ca  :<C-u>CocList diagnostics<cr>
-nnoremap <silent><nowait> <leader>ce  :<C-u>CocList extensions<cr>
-nnoremap <silent><nowait> <leader>cc  :<C-u>CocList commands<cr>
-nnoremap <silent><nowait> <leader>co  :<C-u>CocList outline<cr>
-nnoremap <silent><nowait> <leader>cs  :<C-u>CocList -I symbols<cr>
-nnoremap <silent><nowait> <leader>cj  :<C-u>CocNext<CR>
-nnoremap <silent><nowait> <leader>ck  :<C-u>CocPrev<CR>
-nnoremap <silent><nowait> <leader>cp  :<C-u>CocListResume<CR>
+nnoremap <silent><nowait> <leader>cl  :<C-u>CocList<cr>
+nnoremap <silent><nowait> <leader>cl<cr>  :<C-u>CocList<cr>
+nnoremap <silent><nowait> <leader>cld  :<C-u>CocList diagnostics<cr>
+nnoremap <silent><nowait> <leader>cle  :<C-u>CocList extensions<cr>
+nnoremap <silent><nowait> <leader>clg  :<C-u>CocList gstatus<cr>
+nnoremap <silent><nowait> <leader>clc  :<C-u>CocList commands<cr>
+nnoremap <silent><nowait> <leader>clo  :<C-u>CocList outline<cr>
+nnoremap <silent><nowait> <leader>cls  :<C-u>CocList -I symbols<cr>
+nnoremap <silent><nowait> <leader>clj  :<C-u>CocNext<CR>
+nnoremap <silent><nowait> <leader>clk :<C-u>CocPrev<CR>
+nnoremap <silent><nowait> <leader>clp  :<C-u>CocListResume<CR>
+nnoremap <silent><nowait> <leader>ci  :<C-u>CocInfo<CR>
+nnoremap <silent><nowait> <leader>c,  :<C-u>vs ~/Developer/secret_dotfiles/dotfiles/.vim/coc-settings.json<CR>

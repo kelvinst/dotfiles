@@ -9,7 +9,7 @@ map ,<cr> :0Spawn<cr>
 map ,! :0Spawn!
 
 " mix tasks
-map <leader>mc :Dispatch mix compile<cr>
-map <leader>mC :Dispatch mix compile --force<cr>
-map <leader>mf :Dispatch mix format<cr>
-map <leader>mi :Dispatch iex -S mix<cr>
+nmap <leader>mc :Dispatch mix compile<cr>
+nmap <leader>mC :Dispatch mix compile --force<cr>
+nmap <leader>mf :Dispatch mix format<cr>
+nmap <leader>mi :Dispatch iex -S mix<cr>

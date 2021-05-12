@@ -10,9 +10,12 @@ call vundle#begin()                                        " REQUIRED
   Plugin 'christoomey/vim-tmux-navigator'                  " seamless vim <> tmux navigation
   Plugin 'ciaranm/detectindent'                            " inteligently set <tab> config
   Plugin 'easymotion/vim-easymotion'                       " move around like a pr
+  Plugin 'haya14busa/incsearch.vim'                        " incremental search
+  Plugin 'haya14busa/incsearch-fuzzy.vim'                  " fuzzy incremental search
+  Plugin 'haya14busa/incsearch-easymotion.vim'             " easymotion incremental search
   Plugin 'igemnace/vim-makery'                             " personalized make commands
   Plugin 'itchyny/lightline.vim'                           " status bar improved
-  Plugin 'junegunn/fzf'                                    " quickswitch files
+  Plugin 'junegunn/fzf'                                    " quickswitch files support
   Plugin 'junegunn/fzf.vim'                                " quickswitch files
   Plugin 'junegunn/vim-easy-align'                         " aligning
   Plugin 'elixir-editors/vim-elixir'                       " elixir support
