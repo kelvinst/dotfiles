@@ -116,6 +116,9 @@ alias nv='nvim -S'
 alias gac='git ac'
 alias gaca='git aca'
 alias gre='git pull --commit && git push'
+alias t='tmux'
+alias taa='tmux attach -t $(basename "$PWD")'
+alias tss='tmux new-session -s $(basename "$PWD")'
 
 # The next line updates PATH for the Google Cloud SDK.
 if [ -f '/Users/kelvinst/google-cloud-sdk/path.zsh.inc' ]; then source '/Users/kelvinst/google-cloud-sdk/path.zsh.inc'; fi
