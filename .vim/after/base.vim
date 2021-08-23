@@ -1,7 +1,7 @@
 let mapleader = ","
 set clipboard=unnamed
 set cmdheight=2
-set colorcolumn=99
+set colorcolumn=81,99
 set cursorline
 set encoding=utf-8
 set hidden

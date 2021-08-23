@@ -4,13 +4,10 @@ My new dotfiles
 ## Step by step install
 
 1. Install [brew](http://brew.sh)
-2. Install tmux
-3. Install [oh-my-zsh](https://github.com/robbyrussell/oh-my-zsh)
-4. Install [base16 for shell](https://github.com/chriskempson/base16-shell)
-3. Install [iTerm2](https://github.com/gmarik/Vundle.vim)
-4. Install [base16 for iTerm2](https://github.com/chriskempson/base16-iterm2)
-5. Install [Vundle.vim](https://github.com/gmarik/Vundle.vim)
-6. Install vim plugins
-7. Install fortune
-8. Install cowsay
-7. Install [base16 for vim](https://github.com/chriskempson/base16-vim)
+1. `brew install tmux`
+1. `brew install reattach-to-user-namespace`
+1. `brew install vim`
+1. `brew install the_silver_searcher`
+1. `brew install fzf`
+1. Install [oh-my-zsh](https://github.com/robbyrussell/oh-my-zsh)
+1. Install [Vundle.vim](https://github.com/gmarik/Vundle.vim)
