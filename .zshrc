@@ -68,8 +68,8 @@ ZSH_THEME="typewritten"
 # Custom plugins may be added to ~/.oh-my-zsh/custom/plugins/
 # Example format: plugins=(rails git textmate ruby lighthouse)
 # Add wisely, as too many plugins slow down shell startup.
-plugins=(git osx asdf mix-fast vi-mode tmux brew aliases zsh_reload direnv dirpersist 
-  dircycle fasd fzf github)
+plugins=(git osx asdf mix-fast vi-mode tmux brew aliases direnv 
+  dirpersist dircycle fasd fzf github)
 
 source $ZSH/oh-my-zsh.sh
 
@@ -116,7 +116,6 @@ alias nv='nvim -S'
 alias gac='git ac'
 alias gaca='git aca'
 alias gre='git pull --commit && git push'
-alias sz='source ~/.zshrc'
 alias t='tmux'
 alias taa='tmux attach -t $(basename "$PWD")'
 alias tss='tmux new-session -s $(basename "$PWD")'

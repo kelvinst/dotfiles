@@ -9,7 +9,6 @@ install:
 	cp ./.global_gitignore ~
 	cp ./.iex.exs ~
 	cp ./.inputrc ~
-	cp ./.teex.exs ~
 	cp ./.tmux.conf ~
 	cp ./.vimrc-new ~/.vimrc
 	cp -r ./.config/base16-shell ~/.config/
@@ -26,7 +25,6 @@ clean:
 	rm -rf ~/.global_gitignore
 	rm -rf ~/.iex.exs
 	rm -rf ~/.inputrc
-	rm -rf ~/.teex.exs
 	rm -rf ~/.tmux.conf
 	rm -rf ~/.vimrc
 	rm -rf ~/.config/base16-shell
