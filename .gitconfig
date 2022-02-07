@@ -7,6 +7,7 @@
   cm = commit
   ac = !git add -A && git commit
   aca = !git add -A && git commit --amend
+  acapf = !git add -A && git commit --amend -C HEAD~1 && git push -f
   ace = !git add -A && git commit --allow-empty
   r = !git pull --commit && git push
   s = status -s
