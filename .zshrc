@@ -68,7 +68,7 @@ ZSH_THEME="typewritten"
 # Custom plugins may be added to ~/.oh-my-zsh/custom/plugins/
 # Example format: plugins=(rails git textmate ruby lighthouse)
 # Add wisely, as too many plugins slow down shell startup.
-plugins=(git osx asdf mix-fast vi-mode tmux brew aliases direnv 
+plugins=(git macos mix-fast vi-mode tmux brew aliases direnv 
   dirpersist dircycle fasd fzf github)
 
 source $ZSH/oh-my-zsh.sh
@@ -94,7 +94,6 @@ export ANDROID_HOME="/Users/kelvinst/Library/Android/sdk/"
 export PATH="/sbin:/bin:/usr/games:/usr/local/games:$PATH"
 export PATH="/usr/local/opt/elasticsearch@2.4/bin:$PATH"
 export PATH="/Applications/Postgres.app/Contents/Versions/latest/bin:$PATH"
-export PATH="/Users/kelvinst/.asdf/installs/elixir/1.11/.mix/escripts:$PATH"
 export PATH="$PATH:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin"
 export PATH="$PATH:$ANDROID_HOME/tools:$ANDROID_HOME/platform-tools"
 export PATH="$PATH:${HOME}/.zsh_functions"
@@ -123,7 +122,11 @@ alias tss='tmux new-session -s $(basename "$PWD")'
 # The next line updates PATH for the Google Cloud SDK.
 if [ -f '/Users/kelvinst/google-cloud-sdk/path.zsh.inc' ]; then source '/Users/kelvinst/google-cloud-sdk/path.zsh.inc'; fi
 
-. $(brew --prefix asdf)/asdf.sh
+. $HOME/.asdf/asdf.sh
+# append completions to fpath
+fpath=(${ASDF_DIR}/completions $fpath)
+# initialise completions with ZSH's compinit
+autoload -Uz compinit && compinit
 
 # disable flow control
 stty -ixon
