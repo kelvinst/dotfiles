@@ -1,0 +1,52 @@
+add_newline = false
+command_timeout = 5000
+
+[character] 
+success_symbol = "[➜](bold green)"
+error_symbol = "[✗](bold red)"
+vicmd_symbol = "[V](bold green)"
+
+[cmd_duration]
+style = "bold yellow"
+
+[directory]
+style = "bold green"
+
+[git_branch]
+style = "bold blue"
+
+[hostname]
+style = "bold red"
+
+[username]
+format = "[$user]($style) on "
+style_user = "bold purple"
+
+[line_break]
+disabled = true
+
+[package]
+disabled = true
+
+[python]
+disabled = true
+
+[aws]
+disabled = true
+
+[gcloud]
+disabled = true
+
+[terraform]
+disabled = true
+
+[elixir]
+disabled = true
+
+[custom.elixir]
+symbol = " "
+command = "echo v$(asdf_current elixir)"
+files = ["mix.exs"]
+style = "bold cyan"
+format = "[$symbol](purple)[$output]($style) "
+shell = ["bash", "--noprofile", "--norc"]

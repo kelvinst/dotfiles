@@ -14,6 +14,7 @@ install:
 	cp -r ./.config/base16-shell ~/.config/
 	cp -r ./.config/s ~/.config/
 	cp -r ./.config/kitty ~/.config/
+	cp -r ./.config/starship.toml ~/.config/
 	cp -r ./.vim/after ~/.vim/
 	cp -r ./.vim/coc-settings.json ~/.vim/
 
@@ -31,6 +32,7 @@ clean:
 	rm -rf ~/.config/base16-shell
 	rm -rf ~/.config/kitty
 	rm -rf ~/.config/s
+	rm -rf ~/.config/starship.toml
 	rm -rf ~/.vim/after
 	rm -rf ~/.vim/coc-settings.json
 
