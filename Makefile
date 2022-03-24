@@ -13,6 +13,7 @@ install:
 	cp ./.vimrc-new ~/.vimrc
 	cp -r ./.config/base16-shell ~/.config/
 	cp -r ./.config/s ~/.config/
+	cp -r ./.config/kitty ~/.config/
 	cp -r ./.vim/after ~/.vim/
 	cp -r ./.vim/coc-settings.json ~/.vim/
 
@@ -28,6 +29,7 @@ clean:
 	rm -rf ~/.tmux.conf
 	rm -rf ~/.vimrc
 	rm -rf ~/.config/base16-shell
+	rm -rf ~/.config/kitty
 	rm -rf ~/.config/s
 	rm -rf ~/.vim/after
 	rm -rf ~/.vim/coc-settings.json
