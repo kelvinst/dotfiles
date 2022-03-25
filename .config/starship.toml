@@ -62,10 +62,10 @@ $env_var\
 $crystal\
 $custom\
 $sudo\
-$cmd_duration\
 $line_break\
 $jobs\
 $battery\
+$cmd_duration\
 $status\
 $time\
 $shell\
