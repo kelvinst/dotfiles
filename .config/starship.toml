@@ -1,52 +1,170 @@
-add_newline = false
-command_timeout = 5000
-
-[character] 
-success_symbol = "[➜](bold green)"
-error_symbol = "[✗](bold red)"
-vicmd_symbol = "[V](bold green)"
-
-[cmd_duration]
-style = "bold yellow"
+format = """
+$username\
+$hostname\
+$localip\
+$shlvl\
+$singularity\
+$kubernetes\
+$directory\
+$vcsh\
+$git_branch\
+$git_commit\
+$git_state\
+$git_metrics\
+$git_status\
+$hg_branch\
+$docker_context\
+$package\
+$buf\
+$cmake\
+$cobol\
+$container\
+$dart\
+$deno\
+$dotnet\
+$elixir\
+${custom.elixir}\
+$elm\
+$erlang\
+$golang\
+$haskell\
+$helm\
+$java\
+$julia\
+$kotlin\
+$lua\
+$nim\
+$nodejs\
+$ocaml\
+$perl\
+$php\
+$pulumi\
+$purescript\
+$python\
+$rlang\
+$red\
+$ruby\
+$rust\
+$scala\
+$swift\
+$terraform\
+$vlang\
+$vagrant\
+$zig\
+$nix_shell\
+$conda\
+$memory_usage\
+$aws\
+$gcloud\
+$openstack\
+$azure\
+$env_var\
+$crystal\
+$custom\
+$sudo\
+$cmd_duration\
+$line_break\
+$jobs\
+$battery\
+$status\
+$time\
+$shell\
+$character"""
 
 [directory]
-style = "bold green"
+style = "bold yellow"
+repo_root_style = "bold green"
 
 [git_branch]
+symbol = " "
 style = "bold blue"
+
+[hg_branch]
+symbol = " "
+style = "bold blue"
+
+[git_metrics]
+disabled = false
+
+[git_status]
+style = "bold dimmed yellow"
+ahead = "⇡${count}"
+diverged = "⇕⇡${ahead_count}⇣${behind_count}"
+behind = "⇣${count}"
 
 [hostname]
 style = "bold red"
 
 [username]
-format = "[$user]($style) on "
 style_user = "bold purple"
 
-[line_break]
-disabled = true
-
-[package]
-disabled = true
-
-[python]
-disabled = true
-
 [aws]
-disabled = true
+style = "bold white"
+symbol = "☁️ "
 
-[gcloud]
-disabled = true
+[custom.elixir]
+symbol = "🔮 "
+command = "echo v$(~/.bin/asdf_current elixir)"
+files = ["mix.exs"]
+style = "bold purple"
+format = "via [$symbol($output)]($style) "
+shell = ["bash", "--noprofile", "--norc"]
 
-[terraform]
-disabled = true
+[crystal]
+symbol = "💎 "
+style = "bold cyan"
 
 [elixir]
 disabled = true
 
-[custom.elixir]
-symbol = " "
-command = "echo v$(asdf_current elixir)"
-files = ["mix.exs"]
+[python]
+style = "bold green"
+
+[ruby]
+symbol = "🔻 "
+
+[terraform]
 style = "bold cyan"
-format = "[$symbol](purple)[$output]($style) "
-shell = ["bash", "--noprofile", "--norc"]
+
+[sudo]
+disabled = false
+style = "white"
+
+[cmd_duration]
+min_time = 1
+show_milliseconds = true
+show_notifications = true
+min_time_to_notify = 1_000
+
+[battery]
+full_symbol = "🔋 "
+charging_symbol = "⚡️ "
+discharging_symbol = "💨 "
+unknown_symbol = "🤷 "
+empty_symbol = "💀 "
+
+[[battery.display]]
+threshold = 10
+style = "bold red"
+
+[[battery.display]]
+threshold = 30
+style = "bold yellow"
+
+[[battery.display]]
+threshold = 100
+style = "bold green"
+
+[time]
+disabled = false
+format = 'at 🕙 [$time]($style) '
+
+[status]
+disabled = false
+map_symbol = true
+symbol = "❌ "
+not_executable_symbol = "🚫 "
+not_found_symbol = "🔍 "
+sigint_symbol = "🧱 "
+signal_symbol = "🚦 "
+format = "failed with [$symbol$status]($style) "

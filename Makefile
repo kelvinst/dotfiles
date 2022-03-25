@@ -11,6 +11,7 @@ install:
 	cp ./.inputrc ~
 	cp ./.tmux.conf ~
 	cp ./.vimrc-new ~/.vimrc
+	cp -r ./.bin ~/.bin
 	cp -r ./.config/base16-shell ~/.config/
 	cp -r ./.config/s ~/.config/
 	cp -r ./.config/kitty ~/.config/
@@ -29,6 +30,7 @@ clean:
 	rm -rf ~/.inputrc
 	rm -rf ~/.tmux.conf
 	rm -rf ~/.vimrc
+	rm -rf ~/.bin
 	rm -rf ~/.config/base16-shell
 	rm -rf ~/.config/kitty
 	rm -rf ~/.config/s

@@ -7,7 +7,7 @@ My new dotfiles
 1. Install [brew](http://brew.sh)
 1. Install basic tools I use:
 
-```
+```shell
 brew install tmux
 brew install reattach-to-user-namespace
 brew install vim
@@ -20,21 +20,27 @@ brew install bash
 
 1. Install [oh-my-zsh](https://github.com/robbyrussell/oh-my-zsh):
 
-```
+```shell
 sh -c "$(curl -fsSL \
   https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)"
 ```
 
 1. Install [Vundle.vim](https://github.com/gmarik/Vundle.vim):
 
-```
+```shell
 git clone https://github.com/VundleVim/Vundle.vim.git ~/.vim/bundle/Vundle.vim
 ```
 
 1. Install [tpm](https://github.com/tmux-plugins/tpm):
 
-```
+```shell
 git clone https://github.com/tmux-plugins/tpm ~/.tmux/plugins/tpm
+```
+
+1. Install [zsh-autosuggestions][zsh-autosuggestions]:
+
+```shell
+git clone https://github.com/zsh-users/zsh-autosuggestions ${ZSH_CUSTOM:-~/.oh-my-zsh/custom}/plugins/zsh-autosuggestions
 ```
 
 1. Install the languages and package managers:
@@ -68,3 +74,4 @@ mix deps.get && mix compile && mix elixir_ls.release -o release
 ```
 
 [elixir-ls](https://github.com/elixir-lsp/coc-elixir#server-fails-to-start)
+[zsh-autosuggestions](https://github.com/zsh-users/zsh-autosuggestions/blob/master/INSTALL.md)
