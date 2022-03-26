@@ -81,7 +81,7 @@ source $ZSH/oh-my-zsh.sh
 export LANG=en_US.UTF-8
 
 # Preferred editor for local and remote sessions
-export EDITOR="vim"
+export EDITOR="nvim"
 
 export TERM=xterm-256color
 
@@ -110,8 +110,11 @@ export VI_MODE_SET_CURSOR=true
 # alias zshconfig="mate ~/.zshrc"
 # alias ohmyzsh="mate ~/.oh-my-zsh"
 
-alias v='vim -S'
+alias v='nvim -S'
+alias vim='nvim'
 alias nv='nvim -S'
+alias ov='vim -S'
+alias ovim='vim'
 alias gac='git ac'
 alias gaca='git aca'
 alias gre='git pull --commit && git push'

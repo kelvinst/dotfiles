@@ -11,6 +11,7 @@ My new dotfiles
 brew install tmux
 brew install reattach-to-user-namespace
 brew install vim
+brew install neovim
 brew install the_silver_searcher
 brew install fzf
 brew install fasd

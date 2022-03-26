@@ -16,10 +16,10 @@ inoremap <silent><expr> <S-TAB> pumvisible() ? "\<C-p>" : "\<C-h>"
 nmap <silent> [g <Plug>(coc-diagnostic-prev)
 nmap <silent> ]g <Plug>(coc-diagnostic-next)
 
-nmap <silent> gd <Plug>(coc-definition)
 nmap <silent> gdd <Plug>(coc-definition)
 nmap <silent> gdt :call CocActionAsync('jumpDefinition', 'tab drop')<cr>
 nmap <silent> gdv :call CocActionAsync('jumpDefinition', 'vsplit')<cr>
+nmap <silent> gds :call CocActionAsync('jumpDefinition', 'split')<cr>
 nmap <silent> gy <Plug>(coc-type-definition)
 nmap <silent> gi <Plug>(coc-implementation)
 nmap <silent> gr <Plug>(coc-references)

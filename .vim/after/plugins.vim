@@ -6,7 +6,6 @@ call vundle#begin()                                        " REQUIRED
   Plugin 'YankRing.vim'                                    " yank history
   Plugin 'airblade/vim-gitgutter'                          " show git changes on a gutter
   Plugin 'chriskempson/base16-vim'                         " colorschemes
-  Plugin 'TaDaa/vimade'                                    " fade inactive windows
   Plugin 'christoomey/vim-tmux-navigator'                  " seamless vim <> tmux navigation
   Plugin 'ciaranm/detectindent'                            " inteligently set <tab> config
   Plugin 'easymotion/vim-easymotion'                       " move around like a pr

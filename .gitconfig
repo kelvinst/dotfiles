@@ -24,12 +24,12 @@
   clean = git-media-clean %f
   smudge = git-media-smudge %f
 [core]
-  editor = vim
+  editor = nvim
   excludesfile = ~/.global_gitignore
 [diff]
-  tool = vimdiff
+  tool = nvim -d
 [merge]
-  tool = vimdiff
+  tool = nvim -d
 [difftool]
   prompt = false
 [filter "lfs"]

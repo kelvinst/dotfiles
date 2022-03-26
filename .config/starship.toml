@@ -102,6 +102,10 @@ style_user = "bold purple"
 style = "bold white"
 symbol = "☁️ "
 
+[crystal]
+symbol = "💎 "
+style = "bold cyan"
+
 [custom.elixir]
 symbol = "🔮 "
 command = "echo v$(~/.bin/asdf_current elixir)"
@@ -110,12 +114,11 @@ style = "bold purple"
 format = "via [$symbol($output)]($style) "
 shell = ["bash", "--noprofile", "--norc"]
 
-[crystal]
-symbol = "💎 "
-style = "bold cyan"
-
 [elixir]
 disabled = true
+
+[nodejs]
+style = "bold yellow"
 
 [python]
 style = "bold green"
