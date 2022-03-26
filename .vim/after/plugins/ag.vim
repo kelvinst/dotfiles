@@ -1,4 +1,4 @@
-let $FZF_DEFAULT_COMMAND = 'ag --hidden '.
+let g:ag_prg = 'ag --hidden '.
       \ '--ignore .git '.
       \ '--ignore _build '.
       \ '--ignore deps '.
