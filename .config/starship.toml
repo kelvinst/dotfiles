@@ -137,7 +137,7 @@ style = "white"
 min_time = 1
 show_milliseconds = true
 show_notifications = true
-min_time_to_notify = 1_000
+min_time_to_notify = 5_000
 
 [battery]
 full_symbol = "🔋 "
