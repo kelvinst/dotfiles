@@ -136,8 +136,6 @@ style = "white"
 [cmd_duration]
 min_time = 1
 show_milliseconds = true
-show_notifications = true
-min_time_to_notify = 5_000
 
 [battery]
 full_symbol = "🔋 "
