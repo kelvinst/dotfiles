@@ -23,7 +23,7 @@ call vundle#begin()                                        " REQUIRED
   Plugin 'neoclide/coc.nvim', {'branch': 'release'}        " conquer of completion
   Plugin 'PhilRunninger/nerdtree-visual-selection'         " allow multiple files on NERDTree
   Plugin 'preservim/nerdtree'                              " a better file tree view
-  Plugin 'mileszs/ack.vim'                                 " fast search in files
+  Plugin 'Numkil/ag.nvim'                                  " fast search in files
   Plugin 'tmux-plugins/vim-tmux-focus-events'              " Focus events from tmux
   Plugin 'tpope/vim-abolish'                               " better searching/replacing patterns
   Plugin 'tpope/vim-apathy'                                " set 'path' option for misc file types
