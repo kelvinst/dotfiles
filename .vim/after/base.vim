@@ -20,3 +20,6 @@ set updatetime=300
 set hlsearch
 
 nmap gb gT
+
+nnoremap <leader>cff :let @*=expand("%")<cr>
+nnoremap <leader>cfl :let @*=expand("%").":".line(".")<cr>
