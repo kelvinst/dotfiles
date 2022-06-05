@@ -18,8 +18,6 @@ install:
 	cp -r ./.config/s ~/.config/
 	cp -r ./.config/starship.toml ~/.config/
 	cp -r ./.vim/after ~/.vim/
-	cp -r ./.vim/coc-settings.json ~/.vim/
-	cp -r ./.vim/coc-settings.json ~/.config/nvim/
 
 clean:
 	rm -rf ~/.alacritty.yml
@@ -39,6 +37,4 @@ clean:
 	rm -rf ~/.config/s
 	rm -rf ~/.config/starship.toml
 	rm -rf ~/.vim/after
-	rm -rf ~/.vim/coc-settings.json
-	rm -rf ~/.config/nvim/coc-settings.json
 

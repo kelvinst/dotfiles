@@ -1,5 +1,0 @@
-{
-  "codeLens.enable": true,
-  "elixir.pathToElixirLS": "~/.elixir-ls/release/language_server.sh",
-  "git.enableGutters": false
-}

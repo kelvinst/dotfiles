@@ -20,7 +20,6 @@ call vundle#begin()                                        " REQUIRED
   Plugin 'elixir-editors/vim-elixir'                       " elixir support
   Plugin 'mattn/emmet-vim'                                 " generate HTML
   Plugin 'mbbill/undotree'                                 " undo gui
-  Plugin 'neoclide/coc.nvim', {'branch': 'release'}        " conquer of completion
   Plugin 'PhilRunninger/nerdtree-visual-selection'         " allow multiple files on NERDTree
   Plugin 'preservim/nerdtree'                              " a better file tree view
   Plugin 'Numkil/ag.nvim'                                  " fast search in files

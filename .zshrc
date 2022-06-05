@@ -96,7 +96,7 @@ export PATH="/usr/local/opt/elasticsearch@2.4/bin:$PATH"
 export PATH="/Applications/Postgres.app/Contents/Versions/latest/bin:$PATH"
 export PATH="/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:$PATH"
 export PATH="$PATH:$ANDROID_HOME/tools:$ANDROID_HOME/platform-tools"
-export PATH="$PATH:${HOME}/.zsh_functions"
+export PATH="$PATH:${HOME}/.zsh_functions:${HOME}/.bin"
 
 export VI_MODE_RESET_PROMPT_ON_MODE_CHANGE=true
 export VI_MODE_SET_CURSOR=true
