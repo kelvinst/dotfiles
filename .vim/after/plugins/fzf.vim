@@ -4,7 +4,10 @@ let g:fzf_layout = { 'window': { 'width': 0.9, 'height': 0.7 } }
 let $FZF_DEFAULT_COMMAND = 'ag --hidden '.
       \ '--ignore .git '.
       \ '--ignore _build '.
+      \ '--ignore boundary '.
+      \ '--ignore cover '.
       \ '--ignore deps '.
+      \ '--ignore docs '.
       \ '--ignore node_modules '.
       \ '-l -g ""'
 
