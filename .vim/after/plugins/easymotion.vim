@@ -18,11 +18,10 @@ function! s:config_easyfuzzymotion(...) abort
   \ }), get(a:, 1, {}))
 endfunction
 
-nmap s <Plug>(easymotion-overwin-f)
 map <space> <Plug>(easymotion-prefix)
 map <space>S <Plug>(easymotion-s2)
-noremap <silent><expr> /  incsearch#go(<SID>incsearch_config())
-noremap <silent><expr> ?  incsearch#go(<SID>incsearch_config({'command': '?'}))
+noremap <silent><expr> / incsearch#go(<SID>incsearch_config())
+noremap <silent><expr> ? incsearch#go(<SID>incsearch_config({'command': '?'}))
 noremap <silent><expr> g/ incsearch#go(<SID>incsearch_config({'is_stay': 1}))
 noremap <silent><expr> <space>/ incsearch#go(<SID>config_easyfuzzymotion())
 map <space>G <Plug>(easymotion-bd-jk)
