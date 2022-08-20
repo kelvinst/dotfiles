@@ -74,5 +74,5 @@ cd ~/.elixir-ls
 mix deps.get && mix compile && mix elixir_ls.release -o release
 ```
 
-[elixir-ls](https://github.com/elixir-lsp/coc-elixir#server-fails-to-start)
-[zsh-autosuggestions](https://github.com/zsh-users/zsh-autosuggestions/blob/master/INSTALL.md)
+[elixir-ls]: https://github.com/elixir-lsp/coc-elixir#server-fails-to-start
+[zsh-autosuggestions]: https://github.com/zsh-users/zsh-autosuggestions/blob/master/INSTALL.md
