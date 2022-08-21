@@ -90,7 +90,7 @@ export KEYTIMEOUT=1
 
 # to get the binstubs on ./bin and a lot of other places
 export GOPATH="~/.go"
-export ANDROID_HOME="/Users/kelvinst/Library/Android/sdk/"
+export ANDROID_HOME="${HOME}/Library/Android/sdk/"
 export PATH="/sbin:/bin:/usr/games:/usr/local/games:$PATH"
 export PATH="/usr/local/opt/elasticsearch@2.4/bin:$PATH"
 export PATH="/Applications/Postgres.app/Contents/Versions/latest/bin:$PATH"
@@ -125,7 +125,7 @@ alias tss='tmux new-session -s $(basename "$PWD")'
 # The next line updates PATH for the Google Cloud SDK.
 if [ -f '/Users/kelvinst/google-cloud-sdk/path.zsh.inc' ]; then source '/Users/kelvinst/google-cloud-sdk/path.zsh.inc'; fi
 
-. $HOME/.asdf/asdf.sh
+. $(brew --prefix asdf)/libexec/asdf.sh
 # append completions to fpath
 fpath=(${ASDF_DIR}/completions $fpath)
 # initialise completions with ZSH's compinit
@@ -142,7 +142,7 @@ base16_eighties
 # Starship
 eval "$(starship init zsh)"
 
-#OktaAWSCLI
+# OktaAWSCLI
 if [[ -f "$HOME/.okta/bash_functions" ]]; then
     . "$HOME/.okta/bash_functions"
 fi
