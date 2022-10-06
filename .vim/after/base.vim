@@ -22,3 +22,6 @@ nmap gb gT
 
 nnoremap <leader>cff :let @*=expand("%")<cr>
 nnoremap <leader>cfl :let @*=expand("%").":".line(".")<cr>
+
+" Remove trailing spaces
+autocmd BufWritePre * :%s/\s\+$//e

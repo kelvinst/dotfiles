@@ -1,5 +1,5 @@
-noremap <leader>gb :Gbrowse<cr>
-noremap <leader>gB :Gbrowse!<cr>
+noremap <leader>gb :GBrowse<cr>
+noremap <leader>gB :GBrowse!<cr>
 nnoremap <leader>gs :G<cr>
 nnoremap <leader>gu :Dispatch git pull --commit<cr>
 nnoremap <leader>gp :Dispatch git push -u origin `git rev-parse --abbrev-ref HEAD`<cr>

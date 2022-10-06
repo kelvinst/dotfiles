@@ -15,6 +15,7 @@ brew install neovim
 brew install the_silver_searcher
 brew install fzf
 brew install fasd
+brew install direnv
 brew install starship
 brew install bash
 ```
