@@ -68,7 +68,7 @@ ZSH_THEME=""
 # Custom plugins may be added to ~/.oh-my-zsh/custom/plugins/
 # Example format: plugins=(rails git textmate ruby lighthouse)
 # Add wisely, as too many plugins slow down shell startup.
-plugins=(git macos mix-fast vi-mode tmux brew aliases direnv 
+plugins=(git macos mix-fast vi-mode tmux brew aliases direnv
   dirpersist dircycle fasd fzf github zsh-autosuggestions)
 
 source $ZSH/oh-my-zsh.sh
@@ -111,10 +111,7 @@ export VI_MODE_SET_CURSOR=true
 # alias ohmyzsh="mate ~/.oh-my-zsh"
 
 alias v='nvim -S'
-alias vim='nvim'
 alias nv='nvim -S'
-alias ov='vim -S'
-alias ovim='vim'
 alias gac='git ac'
 alias gaca='git aca'
 alias gre='git pull --commit && git push'
@@ -134,11 +131,6 @@ autoload -Uz compinit && compinit
 # disable flow control
 stty -ixon
 
-# Base16 Shell
-BASE16_SHELL="$HOME/.config/base16-shell/"
-[ -n "$PS1" ] && [ -s "$BASE16_SHELL/profile_helper.sh" ] && eval "$("$BASE16_SHELL/profile_helper.sh")"
-base16_eighties
-
 # Starship
 eval "$(starship init zsh)"
 
@@ -153,3 +145,11 @@ fi
 
 # direnv
 eval "$(direnv hook zsh)"
+
+# Base16 Shell
+BASE16_SHELL="$HOME/.config/base16-shell/"
+[ -n "$PS1" ] && \
+    [ -s "$BASE16_SHELL/profile_helper.sh" ] && \
+        source "$BASE16_SHELL/profile_helper.sh"
+
+base16_eighties

@@ -35,11 +35,6 @@ nnoremap [oq :Copen<cr>
 nnoremap ]oq :cclose<cr>
 nnoremap yoq :call ToggleBuffer("Quickfix List", 'Copen')<cr>
 
-" fugitive
-nnoremap [og :G<cr>
-nnoremap ]og :call CloseBuffer(".git\.\*/index")<cr>
-nnoremap yog :call ToggleBuffer(".git\.\*/index", 'G')<cr>
-
 " gitgutter
 nnoremap [oD :GitGutterEnable<cr>
 nnoremap ]oD :GitGutterDisable<cr>
