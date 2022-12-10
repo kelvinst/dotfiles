@@ -1,6 +1,5 @@
 let mapleader = ","
 set clipboard=unnamed
-set cmdheight=2
 set colorcolumn=81,99
 set cursorline
 set encoding=utf-8
@@ -23,3 +22,6 @@ nmap gb gT
 
 nnoremap <leader>cff :let @*=expand("%")<cr>
 nnoremap <leader>cfl :let @*=expand("%").":".line(".")<cr>
+
+" Remove trailing spaces
+autocmd BufWritePre * :%s/\s\+$//e

@@ -12,7 +12,6 @@ install:
 	cp ./.tmux.conf ~/
 	cp ./.vimrc ~/
 	cp -r ./.bin ~/
-	cp -r ./.config/base16-shell ~/.config/
 	cp -r ./.config/kitty ~/.config/
 	cp -r ./.config/nvim ~/.config/
 	cp -r ./.config/s ~/.config/
@@ -31,7 +30,6 @@ clean:
 	rm -rf ~/.tmux.conf
 	rm -rf ~/.vimrc
 	rm -rf ~/.bin
-	rm -rf ~/.config/base16-shell
 	rm -rf ~/.config/kitty
 	rm -rf ~/.config/nvim
 	rm -rf ~/.config/s
