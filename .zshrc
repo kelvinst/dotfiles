@@ -94,7 +94,7 @@ export ANDROID_HOME="${HOME}/Library/Android/sdk/"
 export PATH="/sbin:/bin:/usr/games:/usr/local/games:$PATH"
 export PATH="/usr/local/opt/elasticsearch@2.4/bin:$PATH"
 export PATH="/Applications/Postgres.app/Contents/Versions/latest/bin:$PATH"
-export PATH="/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:$PATH"
+export PATH="/opt/homebrew/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:$PATH"
 export PATH="$PATH:$ANDROID_HOME/tools:$ANDROID_HOME/platform-tools"
 export PATH="$PATH:${HOME}/.zsh_functions:${HOME}/.bin"
 
@@ -112,9 +112,10 @@ export VI_MODE_SET_CURSOR=true
 
 alias v='nvim -S'
 alias nv='nvim -S'
-alias gac='git ac'
-alias gaca='git aca'
-alias gre='git pull --commit && git push'
+alias gpf-='git push --force-with-lease --force-if-includes --no-verify'
+alias gpf!-='git push --force --no-verify'
+alias grbiu='git rebase --interactive --update-refs'
+alias grbu='git rebase --update-refs'
 alias t='tmux'
 alias taa='tmux attach -t $(basename "$PWD")'
 alias tss='tmux new-session -s $(basename "$PWD")'
