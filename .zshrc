@@ -68,7 +68,7 @@ ZSH_THEME=""
 # Custom plugins may be added to ~/.oh-my-zsh/custom/plugins/
 # Example format: plugins=(rails git textmate ruby lighthouse)
 # Add wisely, as too many plugins slow down shell startup.
-plugins=(git macos mix-fast vi-mode tmux brew aliases direnv
+plugins=(git macos mix-fast vi-mode brew aliases direnv
   dirpersist dircycle fasd fzf github zsh-autosuggestions)
 
 source $ZSH/oh-my-zsh.sh
@@ -116,6 +116,7 @@ alias gpf-='git push --force-with-lease --force-if-includes --no-verify'
 alias gpf!-='git push --force --no-verify'
 alias grbiu='git rebase --interactive --update-refs'
 alias grbu='git rebase --update-refs'
+alias gbda='git checkout master & (git branch | grep -v "master" | xargs git branch -D)'
 alias t='tmux'
 alias taa='tmux attach -t $(basename "$PWD")'
 alias tss='tmux new-session -s $(basename "$PWD")'
@@ -138,17 +139,17 @@ export SHELL=zsh
 # Starship
 eval "$(starship init zsh)"
 
-# OktaAWSCLI
-if [[ -f "$HOME/.okta/bash_functions" ]]; then
-    . "$HOME/.okta/bash_functions"
-fi
+# # OktaAWSCLI
+# if [[ -f "$HOME/.okta/bash_functions" ]]; then
+#     . "$HOME/.okta/bash_functions"
+# fi
 
-if [[ -d "$HOME/.okta/bin" && ":$PATH:" != *":$HOME/.okta/bin:"* ]]; then
-    PATH="$HOME/.okta/bin:$PATH"
-fi
+# if [[ -d "$HOME/.okta/bin" && ":$PATH:" != *":$HOME/.okta/bin:"* ]]; then
+#     PATH="$HOME/.okta/bin:$PATH"
+# fi
 
 # direnv
-eval "$(direnv hook zsh)"
+# eval "$(direnv hook zsh)"
 
 # Base16 Shell
 BASE16_SHELL="$HOME/.config/base16-shell/"
@@ -157,3 +158,5 @@ BASE16_SHELL="$HOME/.config/base16-shell/"
         source "$BASE16_SHELL/profile_helper.sh"
 
 base16_eighties
+
+eval "$(/opt/homebrew/bin/brew shellenv)"
