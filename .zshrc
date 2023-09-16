@@ -1,3 +1,7 @@
+# Fig pre block. Keep at the top of this file.
+[[ -f "$HOME/.fig/shell/zshrc.pre.zsh" ]] && builtin source "$HOME/.fig/shell/zshrc.pre.zsh"
+source ~/.old_zshrc
+
 # If you come from bash you might have to change your $PATH.
 # export PATH=$HOME/bin:/usr/local/bin:$PATH
 
@@ -160,3 +164,8 @@ BASE16_SHELL="$HOME/.config/base16-shell/"
 base16_eighties
 
 eval "$(/opt/homebrew/bin/brew shellenv)"
+
+export AWS_PROFILE=ecomm
+
+# Fig post block. Keep at the bottom of this file.
+[[ -f "$HOME/.fig/shell/zshrc.post.zsh" ]] && builtin source "$HOME/.fig/shell/zshrc.post.zsh"

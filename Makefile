@@ -2,7 +2,6 @@ all: clean install
 
 install:
 	cp ./.alacritty.yml ~/
-	cp ./.bash_profile ~/
 	cp ./.zshrc ~/
 	cp ./.ctags ~/
 	cp ./.gitconfig ~/
@@ -20,7 +19,6 @@ install:
 
 clean:
 	rm -rf ~/.alacritty.yml
-	rm -rf ~/.bash_profile
 	rm -rf ~/.zshrc
 	rm -rf ~/.ctags
 	rm -rf ~/.gitconfig
