@@ -17,7 +17,7 @@ brew install fzf
 brew install fasd
 brew install direnv
 brew install starship
-brew install bash
+brew install fig
 ```
 
 1. Install [oh-my-zsh](https://github.com/robbyrussell/oh-my-zsh):
