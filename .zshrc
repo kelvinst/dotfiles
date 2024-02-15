@@ -113,16 +113,15 @@ export VI_MODE_SET_CURSOR=true
 # alias zshconfig="mate ~/.zshrc"
 # alias ohmyzsh="mate ~/.oh-my-zsh"
 
-alias v='nvim -S'
-alias nv='nvim -S'
+alias v='touch Session.vim & nvim -S'
 alias gpf-='git push --force-with-lease --force-if-includes --no-verify'
 alias gpf!-='git push --force --no-verify'
 alias grbiu='git rebase --interactive --update-refs'
 alias grbu='git rebase --update-refs'
 alias gbda='git checkout master & (git branch | grep -v "master" | xargs git branch -D)'
 alias t='tmux'
-alias taa='tmux attach -t $(basename "$PWD")'
-alias tss='tmux new-session -s $(basename "$PWD")'
+alias ta='tmux attach -t $(basename "$PWD")'
+alias ts='tmux new-session -s $(basename "$PWD")'
 
 # The next line updates PATH for the Google Cloud SDK.
 if [ -f '/Users/kelvinst/google-cloud-sdk/path.zsh.inc' ]; then source '/Users/kelvinst/google-cloud-sdk/path.zsh.inc'; fi
@@ -163,8 +162,6 @@ BASE16_SHELL="$HOME/.config/base16-shell/"
 base16_eighties
 
 eval "$(/opt/homebrew/bin/brew shellenv)"
-
-export AWS_PROFILE=ecomm
 
 # Fig post block. Keep at the bottom of this file.
 [[ -f "$HOME/.fig/shell/zshrc.post.zsh" ]] && builtin source "$HOME/.fig/shell/zshrc.post.zsh"
