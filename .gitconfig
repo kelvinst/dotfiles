@@ -1,0 +1,12 @@
+[user]
+  email = kelvin.stinghen@me.com
+  name = kelvinst
+[core]
+  editor = nvim
+  excludesfile = ~/.global_gitignore
+[diff]
+  tool = nvim -d
+[merge]
+  tool = nvim -d
+[difftool]
+  prompt = false

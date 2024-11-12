@@ -1,0 +1,8 @@
+*.swp
+*.swo
+*.swn
+Session.vim
+.mix_tasks
+.DS_Store
+tmp
+.vscode/
