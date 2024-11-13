@@ -8,11 +8,11 @@ My new, simplified, dotfiles
 1. Install [brew](http://brew.sh)
 1. Install [oh-my-zsh](https://github.com/robbyrussell/oh-my-zsh)
 1. Install [neovim](https://neovim.io). Prefer the 
-[homebrew](https://github.com/neovim/neovim/blob/master/INSTALL.md#homebrew-on-macos-or-linux) way: `brew install neovim`
+[homebrew](https://github.com/neovim/neovim/blob/master/INSTALL.md#homebrew-on-macos-or-linux) way: 
 
-```shell
+```
 brew install neovim
-``
+```
 
 1. Install the languages and package managers:
 
