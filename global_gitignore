@@ -1,6 +1,7 @@
 *.swp
 *.swo
 *.swn
+*.bak
 Session.vim
 .mix_tasks
 .DS_Store

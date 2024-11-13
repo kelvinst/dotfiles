@@ -4,19 +4,40 @@ My new, simplified, dotfiles
 
 ## Installation
 
-1. Install [kitty](https://sw.kovidgoyal.net/kitty)
 1. Install [brew](http://brew.sh)
-1. Install [oh-my-zsh](https://github.com/robbyrussell/oh-my-zsh)
-1. Install [neovim](https://neovim.io). Prefer the 
-[homebrew](https://github.com/neovim/neovim/blob/master/INSTALL.md#homebrew-on-macos-or-linux) way: 
 
+```shell
+/bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
 ```
-brew install neovim
+
+1. Install [kitty](https://sw.kovidgoyal.net/kitty)
+
+```shell
+brew install kitty
+```
+
+1. Install [starship](https://starship.rs/)
+
+```shell
+brew install starship
+```
+
+1. Install [tmux](https://github.com/tmux/tmux) and [tpm](https://github.com/tmux-plugins/tpm)
+
+```shell
+brew install tmux
+git clone https://github.com/tmux-plugins/tpm ~/.tmux/plugins/tpm
+```
+
+1. Install [neovim](https://neovim.io)
+
+```shell
+brew isntall neovim
 ```
 
 1. Install the languages and package managers:
 
-```
+```shell
 brew install asdf
 asdf plugin-add elixir
 asdf install elixir latest
@@ -35,3 +56,22 @@ asdf install yarn latest
 asdf global yarn latest
 ```
 
+1. Clone this repo and run `make` to install:
+
+```shell
+git clone https://github.com/kelvinst/dotfiles
+cd dotfiles
+make install
+```
+
+Feel free to fork and clone it from there. This is under MIT license, do what you want, just
+give me some credit for it. 😁
+
+## FAQ
+
+- How to uninstall?
+    - Just `make clean`, that's it
+- I changed the files in here, how to reinstall?
+    - Just run `make`, it will clean the files in your home and copy them again
+- I changed the files in my home dir, how do I copy them here?
+    - Just run `make update`, and we will copy your config files back in here
