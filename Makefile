@@ -4,8 +4,7 @@ all: clean install
 install:
 	mkdir -p ~/.config/kitty/
 	cp ./.config/kitty/kitty.conf ~/.config/kitty/
-	mkdir -p ~/.config/nvim/
-	cp -r ./.config/nvim/kickstart.nvim ~/.config/nvim/
+	cp -r ./.config/nvim/kickstart.nvim ~/.config/nvim
 	cp ./.gitconfig ~/
 	cp ./.global_gitignore ~/
 	cp ./.zshrc ~/
@@ -20,8 +19,7 @@ clean:
 update: 
 	mkdir -p ./.config/kitty/
 	cp ~/.config/kitty/kitty.conf ./.config/kitty/
-	mkdir -p ./.config/nvim/
-	cp -r ~/.config/nvim/kickstart.nvim ./.config/nvim/
+	cp -r ~/.config/nvim ./.config/nvim/kickstart.nvim
 	cp ~/.gitconfig ./
 	cp ~/.global_gitignore ./
 	cp ~/.zshrc ./
