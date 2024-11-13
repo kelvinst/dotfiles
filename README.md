@@ -4,6 +4,7 @@ My new, simplified, dotfiles
 
 ## Installation
 
+1. Isntall [kitty](https://sw.kovidgoyal.net/kitty)
 1. Install [brew](http://brew.sh)
 1. Install [oh-my-zsh](https://github.com/robbyrussell/oh-my-zsh)
 1. Install [neovim](https://neovim.io). Prefer the 
@@ -12,7 +13,6 @@ My new, simplified, dotfiles
 ```shell
 brew install neovim
 ``
-
 
 1. Install the languages and package managers:
 
