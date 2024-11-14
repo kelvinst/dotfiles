@@ -1,5 +1,46 @@
-# running starship, to make the prompt a bit prettier
-eval "$(starship init zsh)"
+# NOTE: Aliases
+# ------------------------------------------------------------------------------------------------
+
+# git
+alias g='git status -sb'
+alias ga='git add --verbose'
+alias gc='git commit --verbose'
+alias gco='git checkout'
+alias gd='git diff'
+alias gl='git log --oneline --decorate --graph'
+alias gp='git push'
+alias gpf='git push --force-with-lease --force-if-includes'
+alias gr='git reset'
+alias gu='git pull'
+
+# ls
+alias l='ls -Gla'
+
+# make
+alias m='make'
+
+# zsh
+alias z='source ~/.zshrc'
+
+# Remove some useless predefined aliases
+unalias -m run-help
+unalias -m which-command
+
+# Show alias commands when executing them
+_-accept-line () {
+    emulate -L zsh
+    local -a WORDS
+    WORDS=( ${(z)BUFFER} )
+    local -r FIRSTWORD=${WORDS[1]}
+    local GRAY_FG=$'\e[37m' RESET_COLORS=$'\e[0m'
+    [[ "$(whence -w $FIRSTWORD 2>/dev/null)" == "${FIRSTWORD}: alias" ]] &&
+        echo -nE $'\n'"${GRAY_FG}# ↳ aka ${RESET_COLORS}$(whence $FIRSTWORD)"
+    zle .accept-line
+}
+zle -N accept-line _-accept-line
+
+# NOTE: Env variables
+# ------------------------------------------------------------------------------------------------
 
 # Preferred editor for local and remote sessions
 if [[ -n $SSH_CONNECTION ]]; then
@@ -8,6 +49,12 @@ else
   export EDITOR='nvim'
 fi
 
-# running asdf config
+# NOTE: Third-party setups
+# ------------------------------------------------------------------------------------------------
+
+# Setup starship
+eval "$(starship init zsh)"
+
+# Setup asdf
 . /opt/homebrew/opt/asdf/libexec/asdf.sh
 
