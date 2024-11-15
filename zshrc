@@ -1,5 +1,7 @@
 # NOTE: Aliases
-# ------------------------------------------------------------------------------------------------
+
+# clear
+alias c='clear'
 
 # git
 alias g='git status -sb'
@@ -18,6 +20,9 @@ alias l='ls -Gla'
 
 # make
 alias m='make'
+
+# tmux
+alias t='tmux'
 
 # zsh
 alias z='source ~/.zshrc'
@@ -40,7 +45,6 @@ _-accept-line () {
 zle -N accept-line _-accept-line
 
 # NOTE: Env variables
-# ------------------------------------------------------------------------------------------------
 
 # Preferred editor for local and remote sessions
 if [[ -n $SSH_CONNECTION ]]; then
@@ -50,7 +54,6 @@ else
 fi
 
 # NOTE: Third-party setups
-# ------------------------------------------------------------------------------------------------
 
 # Setup starship
 eval "$(starship init zsh)"
