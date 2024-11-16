@@ -56,6 +56,9 @@ else
   export EDITOR='nvim'
 fi
 
+# Default configs dir
+export XDG_CONFIG_HOME="$HOME/.config"
+
 # NOTE: Third-party setups
 
 # Setup starship

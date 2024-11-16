@@ -1,4 +1,4 @@
-.PHONY: clean install
+jk.PHONY: clean install
 all: clean install
 
 install:
@@ -6,6 +6,8 @@ install:
 	cp ./config/kitty/* ~/.config/kitty/
 	mkdir -p ~/.config/nvim/
 	cp -r ./config/kickstart.nvim/* ~/.config/nvim/
+	mkdir -p ~/.config/lazygit/
+	cp -r ./config/lazygit/* ~/.config/lazygit/
 	cp ./gitconfig ~/.gitconfig
 	cp ./global_gitignore ~/.global_gitignore
 	cp ./tmux.conf ~/.tmux.conf
@@ -14,6 +16,7 @@ install:
 clean:
 	rm -rf ~/.config/kitty/*
 	rm -rf ~/.config/nvim/*
+	rm -rf ~/.config/lazygit/*
 	rm -rf ~/.gitconfig
 	rm -rf ~/.global_gitignore
 	rm -rf ~/.tmux.conf
@@ -24,6 +27,8 @@ update:
 	cp -r ~/.config/kitty/* ./config/kitty/
 	mkdir -p ./config/nvim/
 	cp -r ~/.config/nvim/* ./config/kickstart.nvim/
+	mkdir -p ./config/lazygit/
+	cp -r ~/.config/lazygit/* ./config/lazygit/
 	cp ~/.gitconfig ./gitconfig
 	cp ~/.global_gitignore ./global_gitignore
 	cp ~/.tmux.conf ./tmux.conf
