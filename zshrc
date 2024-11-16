@@ -24,6 +24,9 @@ alias m='make'
 # tmux
 alias t='tmux'
 
+# vim/nvim
+alias v='nvim'
+
 # zsh
 alias z='source ~/.zshrc'
 
