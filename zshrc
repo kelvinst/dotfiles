@@ -1,3 +1,11 @@
+# NOTE: Third-party setups
+
+# Setup starship
+eval "$(starship init zsh)"
+
+# Setup asdf
+. /opt/homebrew/opt/asdf/libexec/asdf.sh
+
 # NOTE: Aliases
 
 # clear
@@ -56,14 +64,11 @@ else
   export EDITOR='nvim'
 fi
 
+# Add rust bin to path
+export PATH="$(asdf where rust)/bin:$PATH"
+
+# Setting tmux-sessionizer config path
+export TMS_CONFIG_FILE="$HOME/.config/tms/config.toml"
+
 # Default configs dir
 export XDG_CONFIG_HOME="$HOME/.config"
-
-# NOTE: Third-party setups
-
-# Setup starship
-eval "$(starship init zsh)"
-
-# Setup asdf
-. /opt/homebrew/opt/asdf/libexec/asdf.sh
-

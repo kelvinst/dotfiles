@@ -10,6 +10,30 @@ My new, simplified, dotfiles
 /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
 ```
 
+1. Install the languages and package managers:
+
+```shell
+brew install asdf
+asdf plugin-add elixir
+asdf install elixir latest
+asdf global elixir latest
+asdf plugin-add erlang
+asdf install erlang latest
+asdf global erlang latest
+asdf plugin-add rust
+asdf install rust latest
+asdf global rust latest
+asdf plugin-add python
+asdf install python latest
+asdf global python latest
+asdf plugin-add nodejs
+asdf install nodejs latest
+asdf global nodejs latest
+asdf plugin-add yarn
+asdf install yarn latest
+asdf global yarn latest
+```
+
 1. Install [kitty](https://sw.kovidgoyal.net/kitty)
 
 ```shell
@@ -29,31 +53,15 @@ brew install tmux
 git clone https://github.com/tmux-plugins/tpm ~/.tmux/plugins/tpm
 ```
 
+1. Install [tmux-sessionizer](https://github.com/jrmoulton/tmux-sessionizer):
+
+```shell
+```
+
 1. Install [neovim](https://neovim.io)
 
 ```shell
-brew isntall neovim
-```
-
-1. Install the languages and package managers:
-
-```shell
-brew install asdf
-asdf plugin-add elixir
-asdf install elixir latest
-asdf global elixir latest
-asdf plugin-add erlang
-asdf install erlang latest
-asdf global erlang latest
-asdf plugin-add python
-asdf install python latest
-asdf global python latest
-asdf plugin-add nodejs
-asdf install nodejs latest
-asdf global nodejs latest
-asdf plugin-add yarn
-asdf install yarn latest
-asdf global yarn latest
+brew install neovim
 ```
 
 1. Clone this repo and run `make` to install:
