@@ -6,6 +6,9 @@ eval "$(starship init zsh)"
 # Setup asdf
 . /opt/homebrew/opt/asdf/libexec/asdf.sh
 
+# Setup zsh-autosuggestions
+source $(brew --prefix)/share/zsh-autosuggestions/zsh-autosuggestions.zsh
+
 # NOTE: Aliases
 
 # clear

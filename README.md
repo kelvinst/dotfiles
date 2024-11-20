@@ -46,6 +46,12 @@ brew install kitty
 brew install starship
 ```
 
+1. Install [zsh-autosuggestions](https://github.com/zsh-users/zsh-autosuggestions/blob/master/INSTALL.md#homebrew)
+
+```shell
+brew install zsh-autosuggestions
+```
+
 1. Install [tmux](https://github.com/tmux/tmux) and [tpm](https://github.com/tmux-plugins/tpm)
 
 ```shell
