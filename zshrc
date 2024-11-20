@@ -45,19 +45,6 @@ alias z='source ~/.zshrc'
 unalias -m run-help
 unalias -m which-command
 
-# Show alias commands when executing them
-_-accept-line () {
-    emulate -L zsh
-    local -a WORDS
-    WORDS=( ${(z)BUFFER} )
-    local -r FIRSTWORD=${WORDS[1]}
-    local GRAY_FG=$'\e[37m' RESET_COLORS=$'\e[0m'
-    [[ "$(whence -w $FIRSTWORD 2>/dev/null)" == "${FIRSTWORD}: alias" ]] &&
-        echo -nE $'\n'"${GRAY_FG}# ↳ aka ${RESET_COLORS}$(whence $FIRSTWORD)"
-    zle .accept-line
-}
-zle -N accept-line _-accept-line
-
 # NOTE: Env variables
 
 # Preferred editor for local and remote sessions
@@ -75,3 +62,26 @@ export TMS_CONFIG_FILE="$HOME/.config/tms/config.toml"
 
 # Default configs dir
 export XDG_CONFIG_HOME="$HOME/.config"
+
+# NOTE: Auto-commands
+
+# Ring a bell on command failures
+precmd() {
+    if [[ $? -ne 0 ]]; then
+        printf "\a"
+    fi
+}
+
+# Show alias commands when executing them
+_-accept-line () {
+    emulate -L zsh
+    local -a WORDS
+    WORDS=( ${(z)BUFFER} )
+    local -r FIRSTWORD=${WORDS[1]}
+    local GRAY_FG=$'\e[37m' RESET_COLORS=$'\e[0m'
+    [[ "$(whence -w $FIRSTWORD 2>/dev/null)" == "${FIRSTWORD}: alias" ]] &&
+        echo -nE $'\n'"${GRAY_FG}# ↳ aka ${RESET_COLORS}$(whence $FIRSTWORD)"
+    zle .accept-line
+}
+zle -N accept-line _-accept-line
+
