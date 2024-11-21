@@ -26,6 +26,9 @@ alias gpf='git push --force-with-lease --force-if-includes'
 alias gr='git reset'
 alias gu='git pull'
 
+# lazygit
+alias lg='lazygit'
+
 # ls
 alias l='ls -Gla'
 
