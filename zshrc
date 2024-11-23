@@ -22,6 +22,7 @@ alias gco='git checkout'
 alias gd='git diff'
 alias gl='git log --oneline --decorate --graph'
 alias gp='git push'
+alias gpsup="git push --set-upstream origin \$(git_current_branch)"
 alias gpf='git push --force-with-lease --force-if-includes'
 alias gr='git reset'
 alias gu='git pull'
@@ -67,7 +68,12 @@ export TMS_CONFIG_FILE="$HOME/.config/tms/config.toml"
 # Default configs dir
 export XDG_CONFIG_HOME="$HOME/.config"
 
-# NOTE: Auto-commands
+# NOTE: Functions and Auto-commands
+
+# Returns the current git branch
+git_current_branch() {
+  git rev-parse --abbrev-ref HEAD 2>/dev/null
+}
 
 # Ring a bell on command failures
 precmd() {
