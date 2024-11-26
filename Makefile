@@ -5,7 +5,7 @@ install:
 	mkdir -p ~/.config/kitty/
 	cp ./config/kitty/* ~/.config/kitty/
 	mkdir -p ~/.config/nvim/
-	cp -r ./config/kickstart.nvim/* ~/.config/nvim/
+	cp -r ./config/nvim/* ~/.config/nvim/
 	mkdir -p ~/.config/tms/
 	cp -r ./config/tms/* ~/.config/tms/
 	cp ./gitconfig ~/.gitconfig
@@ -26,7 +26,7 @@ update:
 	mkdir -p ./config/kitty/
 	cp -r ~/.config/kitty/* ./config/kitty/
 	mkdir -p ./config/nvim/
-	cp -r ~/.config/nvim/* ./config/kickstart.nvim/
+	cp -r ~/.config/nvim/* ./config/nvim/
 	mkdir -p ./config/tms/
 	cp -r ~/.config/tms/* ./config/tms/
 	cp ~/.gitconfig ./gitconfig
