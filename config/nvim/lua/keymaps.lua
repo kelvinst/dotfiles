@@ -14,6 +14,26 @@ vim.keymap.set("n", "<C-u>", "<C-u>zz")
 vim.keymap.set("n", "n", "nzzzv")
 vim.keymap.set("n", "N", "Nzzzv")
 
+local function copyFilenameWithLines()
+	local filename = vim.fn.expand("%")
+	local line1 = vim.fn.line("'<")
+	local line2 = vim.fn.line("'>")
+	local lines = line1 == line2 and line1 or line1 .. "," .. line2
+
+	local result = filename .. ":" .. lines
+	vim.fn.setreg("*", result)
+end
+
+local function copyFilename()
+	local filename = vim.fn.expand("%")
+	print(filename)
+	vim.fn.setreg("*", filename)
+end
+
+-- Copy file info to clipboard
+vim.keymap.set("n", "<leader>cf", copyFilename, { desc = "[C]opy [f]ilename" })
+vim.keymap.set("v", "<leader>cf", copyFilenameWithLines, { desc = "[C]opy [f]ilename (with selected lines)" })
+
 -- Paste without cutting the current selection
 vim.keymap.set("x", "π", [["_dP]]) -- Alt+p
 
