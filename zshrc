@@ -7,15 +7,11 @@ eval "$(starship init zsh)"
 . /opt/homebrew/opt/asdf/libexec/asdf.sh
 
 # Setup zsh-autosuggestions
-source $(brew --prefix)/share/zsh-autosuggestions/zsh-autosuggestions.zsh
-
-# NOTE: Aliases are defined in the zhsenv file (so that they work on vim zsh)
-
-source ~/.zshenv
+source $(/opt/homebrew/bin/brew --prefix)/share/zsh-autosuggestions/zsh-autosuggestions.zsh
 
 # NOTE: Env variables
 
-# Preferred editor for local and remote sessions
+# Preferred editor nvim if exists
 if [[ -n $SSH_CONNECTION ]]; then
   export EDITOR='vim'
 else
@@ -31,7 +27,48 @@ export TMS_CONFIG_FILE="$HOME/.config/tms/config.toml"
 # Default configs dir
 export XDG_CONFIG_HOME="$HOME/.config"
 
-# NOTE: Functions and Auto-commands
+# NOTE: Aliases
+
+# clear
+alias c='clear'
+
+# git
+alias g='git status -sb'
+alias ga='git add --verbose'
+alias gc='git commit --verbose'
+alias gco='git checkout'
+alias gd='git diff'
+alias gl='git log --oneline --decorate --graph'
+alias gp='git push'
+alias gpsup="git push --set-upstream origin \$(git_current_branch)"
+alias gpf='git push --force-with-lease --force-if-includes'
+alias gr='git reset'
+alias gu='git pull'
+
+# lazygit
+alias lazygit='tmux setw monitor-activity off && lazygit'
+alias lg='lazygit'
+
+# ls
+alias l='ls -Gla'
+
+# make
+alias m='make'
+
+# tmux
+alias t='tmux'
+
+# vim/nvim
+alias v='nvim'
+
+# zsh
+alias z='source ~/.zshrc'
+
+# Remove some useless predefined aliases
+unalias -m run-help
+unalias -m which-command
+
+# NOTE: Functions
 
 # Retries a command until it fails
 flaky() {
@@ -54,6 +91,8 @@ flaky() {
 git_current_branch() {
   git rev-parse --abbrev-ref HEAD 2>/dev/null
 }
+
+# NOTE: Auto-commands
 
 # Ring a bell on command failures
 precmd() {
