@@ -12,6 +12,7 @@ install:
 	cp ./global_gitignore ~/.global_gitignore
 	cp ./tmux.conf ~/.tmux.conf
 	cp ./zshrc ~/.zshrc
+	cp ./zshenv ~/.zshenv
 
 clean:
 	rm -rf ~/.config/kitty/*
@@ -21,6 +22,7 @@ clean:
 	rm -rf ~/.global_gitignore
 	rm -rf ~/.tmux.conf
 	rm -rf ~/.zshrc
+	rm -rf ~/.zshenv
 
 update: 
 	mkdir -p ./config/kitty/
@@ -33,3 +35,4 @@ update:
 	cp ~/.global_gitignore ./global_gitignore
 	cp ~/.tmux.conf ./tmux.conf
 	cp ~/.zshrc ./zshrc
+	cp ~/.zshenv ./zshenv

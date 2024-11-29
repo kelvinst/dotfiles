@@ -9,46 +9,9 @@ eval "$(starship init zsh)"
 # Setup zsh-autosuggestions
 source $(brew --prefix)/share/zsh-autosuggestions/zsh-autosuggestions.zsh
 
-# NOTE: Aliases
+# NOTE: Aliases are defined in the zhsenv file (so that they work on vim zsh)
 
-# clear
-alias c='clear'
-
-# git
-alias g='git status -sb'
-alias ga='git add --verbose'
-alias gc='git commit --verbose'
-alias gco='git checkout'
-alias gd='git diff'
-alias gl='git log --oneline --decorate --graph'
-alias gp='git push'
-alias gpsup="git push --set-upstream origin \$(git_current_branch)"
-alias gpf='git push --force-with-lease --force-if-includes'
-alias gr='git reset'
-alias gu='git pull'
-
-# lazygit
-alias lazygit='tmux setw monitor-activity off && lazygit'
-alias lg='lazygit'
-
-# ls
-alias l='ls -Gla'
-
-# make
-alias m='make'
-
-# tmux
-alias t='tmux'
-
-# vim/nvim
-alias v='nvim'
-
-# zsh
-alias z='source ~/.zshrc'
-
-# Remove some useless predefined aliases
-unalias -m run-help
-unalias -m which-command
+source ~/.zshenv
 
 # NOTE: Env variables
 
@@ -69,6 +32,23 @@ export TMS_CONFIG_FILE="$HOME/.config/tms/config.toml"
 export XDG_CONFIG_HOME="$HOME/.config"
 
 # NOTE: Functions and Auto-commands
+
+# Retries a command until it fails
+flaky() {
+  local try=1
+  local cmd="$*"
+
+  echo "Running flaky command: '$cmd'"
+  
+  while eval "$cmd"; do
+    echo "Try #$try succeeded."
+    try=$((try + 1))
+  done
+  
+  echo "Try #$try failed."
+  echo "Command output:"
+  eval "$cmd" 2>&1
+}
 
 # Returns the current git branch
 git_current_branch() {
