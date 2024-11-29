@@ -62,6 +62,7 @@ git clone https://github.com/tmux-plugins/tpm ~/.tmux/plugins/tpm
 1. Install [tmux-sessionizer](https://github.com/jrmoulton/tmux-sessionizer):
 
 ```shell
+cargo install tmux-sessionizer
 ```
 
 1. Install [neovim](https://neovim.io)
@@ -69,6 +70,8 @@ git clone https://github.com/tmux-plugins/tpm ~/.tmux/plugins/tpm
 ```shell
 brew install neovim
 ```
+
+1. Follow the steps in [config/nvim/README.md](config/nvim/README.md)
 
 1. Clone this repo and run `make` to install:
 
