@@ -1,27 +1,18 @@
-local function copen()
+local function quickfix()
 	vim.cmd("Copen!")
-end
-
-local function zsh(command)
-	return function()
-		vim.cmd(command .. " zsh")
-	end
 end
 
 return { -- Asynchronous tasks
 	"tpope/vim-dispatch",
 	event = "VimEnter",
 	keys = {
-		{ "mq", copen, desc = "[Q]uickfix" },
-		{ "`q", copen, desc = "[Q]uickfix" },
+		{ "mq", quickfix, desc = "[Q]uickfix (from Make)" },
+		{ "`q", quickfix, desc = "[Q]uickfix (from Dispatch)" },
 
-		-- Open zsh in Dispatch/Start
-		{ "`z<CR>", zsh("Dispatch"), desc = "Dispatch [z]sh" },
-		{ "`z<Space>", ":Dispatch zsh ", desc = "Dispatch [z]sh <type here>" },
-		{ "`z!", ":Dispatch! zsh", desc = "Dispatch [z]sh <type here> (background)" },
-		{ "'z<CR>", zsh("Start"), desc = "Start [z]sh" },
-		{ "'z<Space>", ":Start zsh ", desc = "Start [z]sh <type here>" },
-		{ "'z!", ":Start! zsh", desc = "Start [z]sh <type here> (backgroud)" },
+		-- Open zsh in Dispatch (like Spawn does for Start, hence the "g`" mnemonics)
+		{ "g`<CR>", ":Dispatch zsh<CR>", desc = "Dispatch [z]sh" },
+		{ "g`<Space>", ":Dispatch zsh ", desc = "Dispatch [z]sh <type here>" },
+		{ "g`!", ":Dispatch! zsh", desc = "Dispatch [z]sh <type here> (background)" },
 
 		-- Use selected text on visual mode
 		{ "m<CR>", ":Make<CR>", desc = "[M]ake (selected text)", mode = "v" },
