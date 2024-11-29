@@ -72,19 +72,28 @@ unalias -m which-command
 
 # Retries a command until it fails
 flaky() {
-  local try=1
-  local cmd="$*"
+  local attempt=1
+  local temp_file=$(mktemp)
 
-  echo "Running flaky command: '$cmd'"
-  
-  while eval "$cmd"; do
-    echo "Try #$try succeeded."
-    try=$((try + 1))
+  # Define color codes
+  local green="\033[32m"
+  local reset="\033[0m"
+
+  echo -e "Running flaky command: ${green}$*${reset}"
+
+  while true; do
+    printf "\rAttempt ${green}#$attempt${reset}..."
+
+    # Use 'script' to capture colored output
+    if ! script -q $temp_file $* > /dev/null 2>&1; then
+      echo
+      printf "\nFailed command output:\n"
+      cat "$temp_file"
+      rm -f "$temp_file"
+      break
+    fi
+    attempt=$((attempt + 1))
   done
-  
-  echo "Try #$try failed."
-  echo "Command output:"
-  eval "$cmd" 2>&1
 }
 
 # Returns the current git branch
@@ -104,12 +113,17 @@ precmd() {
 # Show alias commands when executing them
 _-accept-line () {
     emulate -L zsh
-    local -a WORDS
-    WORDS=( ${(z)BUFFER} )
-    local -r FIRSTWORD=${WORDS[1]}
-    local GRAY_FG=$'\e[37m' RESET_COLORS=$'\e[0m'
-    [[ "$(whence -w $FIRSTWORD 2>/dev/null)" == "${FIRSTWORD}: alias" ]] &&
-        echo -nE $'\n'"${GRAY_FG}# ↳ aka ${RESET_COLORS}$(whence $FIRSTWORD)"
+
+    local -a words
+    words=( ${(z)BUFFER} )
+    local -r firstword=${words[1]}
+
+    # Some colors for the output
+    local gray=$'\e[37m' 
+    local reset=$'\e[0m'
+
+    [[ "$(whence -w $firstword 2>/dev/null)" == "${firstword}: alias" ]] &&
+        echo -nE $'\n'"${gray}  ↳ aka ${reset}$(whence $firstword)"
     zle .accept-line
 }
 zle -N accept-line _-accept-line

@@ -17,10 +17,5 @@ vim.keymap.set("n", "N", "Nzzzv")
 -- Paste without cutting the current selection
 vim.keymap.set("x", "π", [["_dP]]) -- Alt+p
 
--- Copy/cut to system cllipboard
-vim.keymap.set({ "n", "v" }, "¥", [["+y]]) -- Alt+y
-vim.keymap.set("n", "Á", [["+Y]]) -- Alt+Shift+y
-vim.keymap.set({ "n", "v" }, "∂", '"_d') -- Alt+d
-
 vim.keymap.set("n", "<leader>rw", [[:%s/\<<C-r><C-w>\>//gI<Left><Left><Left>]], { desc = "[R]eplace [w]ord" })
 vim.keymap.set("n", "<leader>eq", vim.diagnostic.setqflist, { desc = "[E]errors [Q]uickfix" })
