@@ -21,6 +21,9 @@ fi
 # Add rust bin to path
 export PATH="$(asdf where rust)/bin:$PATH"
 
+# Add postgresql bin to path
+export PATH="/opt/homebrew/opt/postgresql@16/bin:$PATH"
+
 # Setting tmux-sessionizer config path
 export TMS_CONFIG_FILE="$HOME/.config/tms/config.toml"
 

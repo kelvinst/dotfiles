@@ -87,8 +87,5 @@ vim.opt.smartcase = true
 
 -- NOTE: Formatting
 
--- Set the text default width
-vim.opt.textwidth = 80
-
 -- Show a colored line on the limit
-vim.opt.colorcolumn = "+1"
+vim.opt.colorcolumn = "80"
