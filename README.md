@@ -76,7 +76,7 @@ brew install neovim
 1. Clone this repo and run `make` to install:
 
 ```shell
-git clone https://github.com/kelvinst/dotfiles
+git clone git@github.com:kelvinst/dotfiles.git
 cd dotfiles
 make install
 ```
