@@ -1,5 +1,5 @@
 session_sort_order = "LastAttached"
 
 [[search_dirs]]
-path = "/Users/kelvinstinghen/Developer"
+path = "~/Developer"
 depth = 10
