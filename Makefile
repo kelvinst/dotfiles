@@ -8,6 +8,7 @@ install:
 	cp -r ./config/nvim/* ~/.config/nvim/
 	mkdir -p ~/.config/tms/
 	cp -r ./config/tms/* ~/.config/tms/
+	cp ./amethyst.yml ~/.amethyst.yml
 	cp ./gitconfig ~/.gitconfig
 	cp ./global_gitignore ~/.global_gitignore
 	cp ./tmux.conf ~/.tmux.conf
@@ -17,6 +18,7 @@ clean:
 	rm -rf ~/.config/kitty/*
 	rm -rf ~/.config/nvim/*
 	rm -rf ~/.config/tms/*
+	rm -rf ~/.amethyst.yml
 	rm -rf ~/.gitconfig
 	rm -rf ~/.global_gitignore
 	rm -rf ~/.tmux.conf
@@ -29,6 +31,7 @@ update:
 	cp -r ~/.config/nvim/* ./config/nvim/
 	mkdir -p ./config/tms/
 	cp -r ~/.config/tms/* ./config/tms/
+	cp ~/.amethyst.yml ./amethyst.yml 
 	cp ~/.gitconfig ./gitconfig
 	cp ~/.global_gitignore ./global_gitignore
 	cp ~/.tmux.conf ./tmux.conf
