@@ -16,21 +16,22 @@
 # layouts - Ordered list of layouts to use by layout key (default tall, wide, fullscreen, and column).
 layouts:
   - tall
-  - tall-right
-  - wide
-  - two-pane
-  - 3column-left
-  - middle-wide # The legacy name of "3column-middle"
-  - 3column-right
-  - 4column-left
-  - 4column-right
   - fullscreen
+  # - tall-right
+  - wide
+  # - two-pane
+  - middle-wide
+  # - 3column-left
+  # - middle-wide # The legacy name of "3column-middle"
+  # - 3column-right
+  # - 4column-left
+  # - 4column-right
   - column
-  - row
-  - floating
-  - widescreen-tall
-  - widescreen-tall-right
-  - bsp
+  # - row
+  # - floating
+  # - widescreen-tall
+  # - widescreen-tall-right
+  # - bsp
 
 # First mod (default option + shift).
 mod1:
