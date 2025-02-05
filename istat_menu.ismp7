@@ -3,7 +3,7 @@
 <plist version="1.0">
 <dict>
 	<key>build</key>
-	<string>2231</string>
+	<string>2247</string>
 	<key>preferences</key>
 	<dict>
 		<key>Battery.Menu.Launcher</key>
@@ -21,6 +21,10 @@
 		<string>0.3843137254901961 0.7294117647058823 0.2745098039215687 1</string>
 		<key>Battery.Menubar.Mode.VerticalGraph.Graph.Charging.Value.Dark.Color</key>
 		<string>0.3843137254901961 0.7294117647058823 0.2745098039215687 1</string>
+		<key>Battery.Menubar.Mode.VerticalGraph.Graph.Draining.Value.Dark.Color</key>
+		<string>1 0 0.4754730463027954 1</string>
+		<key>Battery.Menubar.Mode.VerticalGraph.Graph.Paused.Value.Dark.Color</key>
+		<string>1 0 0.4754999876022339 1</string>
 		<key>CPU.Menu.Graph.Efficiency.Color</key>
 		<string>0.3843137254901961 0.7294117647058823 0.2745098039215687 1</string>
 		<key>CPU.Menu.Graph.GPU.Color</key>
@@ -43,21 +47,29 @@
 		<key>Combined.Menu.Items</key>
 		<array>
 			<string>cpu-cpu</string>
+			<string>cpu-gpu</string>
 			<string>memory-overview</string>
-			<string>disks-physical</string>
+			<string>disks-activity</string>
+			<string>battery-battery</string>
 			<string>network-bandwidth</string>
 			<string>sensors-overview</string>
-			<string>battery-combined</string>
+			<string>weather-conditions</string>
 			<string>processes</string>
 		</array>
 		<key>Combined.Menubar.Items</key>
 		<array/>
 		<key>Device.Auth-Identifier</key>
-		<string>BDB99653-FC69-4E03-A2F7-C11A0E83A9AB</string>
+		<string>8074A97D-F61C-4970-AF6E-622836B3469E</string>
 		<key>Device.Device</key>
-		<string>02ff7bac1f53aae5722b7b1f46ef1ab3bb64a8b4</string>
+		<string>7d9d379d6d9b8845ec46b45d29f0d0e438cd3a18</string>
 		<key>Device.Model</key>
-		<string>MacBookPro18,1</string>
+		<string>Mac16,8</string>
+		<key>Disks.Menu.Graph.Read.Color</key>
+		<string>1 0.5288078171725399 5.960464477539062e-08 1</string>
+		<key>Disks.Menu.Graph.Space.Color</key>
+		<string>1 0.4398196935653687 0 1</string>
+		<key>Disks.Menu.Graph.Write.Color</key>
+		<string>1 0 0.0379561185836792 1</string>
 		<key>Disks.Menu.Launcher</key>
 		<array>
 			<dict/>
@@ -126,6 +138,14 @@
 		<string>MIGHAkIBs/kRB+kYQrowcx5K8y067NQpeSNu2jLgNOtmZBZaqCi54MVcAHR7Gd4pL8F70xPShTAvRr/vzpYECRTNptHSf0ACQW1IcGP0Tegq+pjuNkR17pQS1Ll6+sU5k7OH4ZwqWENoT1R8SAl5cQvYrVs/fPucbUCdsddcBcOUBc2GzaXVitIH</string>
 		<key>License.Validation.time</key>
 		<string>1737764502</string>
+		<key>Memory.Menu.Graph.App.Color</key>
+		<string>0.2399970889091492 0.8168253939549004 1 1</string>
+		<key>Memory.Menu.Graph.Pressure.Color</key>
+		<string>0 0.9809802770614624 1 1</string>
+		<key>Memory.Menu.Graph.Swap.Color</key>
+		<string>1 0 0.01902008056640625 1</string>
+		<key>Memory.Menu.Graph.Wired.Color</key>
+		<string>0 0.7688679099082947 0.07667352535095517 1</string>
 		<key>Memory.Menu.Launcher</key>
 		<array>
 			<dict/>
@@ -147,14 +167,16 @@
 		<false/>
 		<key>Menubar.Global.ReducePadding</key>
 		<integer>1</integer>
-		<key>Menubar.Style</key>
-		<integer>1</integer>
 		<key>Menubar.Theme.Dark</key>
 		<string>custom</string>
 		<key>Migration.CombinedPowerItems</key>
 		<true/>
 		<key>Migration.Profiles</key>
 		<true/>
+		<key>Network.Menu.Graph.Download.Color</key>
+		<string>1 0.7764705882352941 0 1</string>
+		<key>Network.Menu.Graph.Upload.Color</key>
+		<string>0.3843137254901961 0.7294117647058823 0.2745098039215687 1</string>
 		<key>Network.Menu.Launcher</key>
 		<array>
 			<dict/>
@@ -234,6 +256,10 @@
 				<string>network-launcher</string>
 			</dict>
 		</array>
+		<key>Network.Menubar.Mode.Activity.Dots.Graph.Download.Dark.Color</key>
+		<string>1 0.7764705882352941 0 1</string>
+		<key>Network.Menubar.Mode.Activity.Dots.Graph.Upload.Dark.Color</key>
+		<string>0.3843137254901961 0.7294117647058823 0.2745098039215687 1</string>
 		<key>Network.Menubar.Mode.Activity.Threshold</key>
 		<integer>0</integer>
 		<key>Network.Menubar.Mode.Flag.Show.VPN</key>
@@ -292,42 +318,22 @@
 				<key>internal</key>
 				<true/>
 				<key>key</key>
-				<string>F5D138367Z8Q1LWA7</string>
+				<string>F8YHAX00Z650000FWL</string>
 				<key>name</key>
 				<string>Internal Battery</string>
-			</dict>
-			<dict>
-				<key>key</key>
-				<string>dc-80-84-ec-a6-a2</string>
-				<key>name</key>
-				<string>AirPods Pro</string>
 			</dict>
 		</array>
 		<key>Profiles.Settings.default.Battery.Menubar.DetailedState</key>
 		<integer>1</integer>
 		<key>Profiles.Settings.default.Battery.Menubar.Enabled</key>
-		<integer>1</integer>
+		<integer>0</integer>
 		<key>Profiles.Settings.default.Battery.Menubar.Items.AirPods</key>
 		<array>
 			<dict>
 				<key>source</key>
 				<integer>13</integer>
 				<key>type</key>
-				<integer>8</integer>
-			</dict>
-			<dict>
-				<key>source</key>
-				<integer>13</integer>
-				<key>type</key>
 				<integer>3</integer>
-			</dict>
-			<dict>
-				<key>source</key>
-				<integer>13</integer>
-				<key>subtype</key>
-				<integer>7</integer>
-				<key>type</key>
-				<integer>7</integer>
 			</dict>
 		</array>
 		<key>Profiles.Settings.default.Battery.Menubar.Items.Bluetooth</key>
@@ -336,21 +342,7 @@
 				<key>source</key>
 				<integer>12</integer>
 				<key>type</key>
-				<integer>8</integer>
-			</dict>
-			<dict>
-				<key>source</key>
-				<integer>12</integer>
-				<key>type</key>
 				<integer>3</integer>
-			</dict>
-			<dict>
-				<key>source</key>
-				<integer>12</integer>
-				<key>subtype</key>
-				<integer>6</integer>
-				<key>type</key>
-				<integer>7</integer>
 			</dict>
 		</array>
 		<key>Profiles.Settings.default.Battery.Menubar.Items.Charged</key>
@@ -359,15 +351,13 @@
 				<key>source</key>
 				<integer>8</integer>
 				<key>type</key>
-				<integer>4</integer>
+				<integer>1</integer>
 			</dict>
 			<dict>
 				<key>source</key>
 				<integer>8</integer>
-				<key>subtype</key>
-				<integer>3</integer>
 				<key>type</key>
-				<integer>7</integer>
+				<integer>3</integer>
 			</dict>
 		</array>
 		<key>Profiles.Settings.default.Battery.Menubar.Items.Charging</key>
@@ -376,15 +366,13 @@
 				<key>source</key>
 				<integer>8</integer>
 				<key>type</key>
-				<integer>4</integer>
+				<integer>1</integer>
 			</dict>
 			<dict>
 				<key>source</key>
 				<integer>8</integer>
-				<key>subtype</key>
-				<integer>3</integer>
 				<key>type</key>
-				<integer>7</integer>
+				<integer>3</integer>
 			</dict>
 		</array>
 		<key>Profiles.Settings.default.Battery.Menubar.Items.Draining</key>
@@ -393,15 +381,13 @@
 				<key>source</key>
 				<integer>8</integer>
 				<key>type</key>
-				<integer>4</integer>
+				<integer>1</integer>
 			</dict>
 			<dict>
 				<key>source</key>
 				<integer>8</integer>
-				<key>subtype</key>
-				<integer>3</integer>
 				<key>type</key>
-				<integer>7</integer>
+				<integer>3</integer>
 			</dict>
 		</array>
 		<key>Profiles.Settings.default.Battery.Menubar.Items.NotCharging</key>
@@ -410,17 +396,17 @@
 				<key>source</key>
 				<integer>8</integer>
 				<key>type</key>
-				<integer>4</integer>
+				<integer>1</integer>
 			</dict>
 			<dict>
 				<key>source</key>
 				<integer>8</integer>
-				<key>subtype</key>
-				<integer>3</integer>
 				<key>type</key>
-				<integer>7</integer>
+				<integer>3</integer>
 			</dict>
 		</array>
+		<key>Profiles.Settings.default.CPU.Menubar.Enabled</key>
+		<integer>0</integer>
 		<key>Profiles.Settings.default.CPU.Menubar.Items</key>
 		<array>
 			<dict>
@@ -453,21 +439,106 @@
 			</dict>
 		</array>
 		<key>Profiles.Settings.default.Combined.Menubar.Enabled</key>
-		<integer>0</integer>
+		<integer>1</integer>
 		<key>Profiles.Settings.default.Combined.Menubar.Items</key>
 		<array>
 			<dict>
-				<key>options</key>
-				<dict>
-					<key>alternate</key>
-					<true/>
-				</dict>
 				<key>source</key>
-				<integer>20</integer>
+				<integer>17</integer>
+				<key>type</key>
+				<integer>11</integer>
+			</dict>
+			<dict>
+				<key>source</key>
+				<integer>6</integer>
+				<key>type</key>
+				<integer>1</integer>
+			</dict>
+			<dict>
+				<key>source</key>
+				<integer>6</integer>
+				<key>subtype</key>
+				<integer>9</integer>
+				<key>type</key>
+				<integer>10</integer>
+				<key>useroptions</key>
+				<dict/>
+			</dict>
+			<dict>
+				<key>source</key>
+				<integer>1</integer>
+				<key>type</key>
+				<integer>1</integer>
+			</dict>
+			<dict>
+				<key>source</key>
+				<integer>1</integer>
+				<key>type</key>
+				<integer>3</integer>
+			</dict>
+			<dict>
+				<key>source</key>
+				<integer>2</integer>
+				<key>type</key>
+				<integer>1</integer>
+			</dict>
+			<dict>
+				<key>source</key>
+				<integer>2</integer>
+				<key>type</key>
+				<integer>3</integer>
+			</dict>
+			<dict>
+				<key>source</key>
+				<integer>3</integer>
+				<key>type</key>
+				<integer>1</integer>
+			</dict>
+			<dict>
+				<key>source</key>
+				<integer>3</integer>
+				<key>type</key>
+				<integer>3</integer>
+			</dict>
+			<dict>
+				<key>source</key>
+				<integer>4</integer>
+				<key>type</key>
+				<integer>1</integer>
+			</dict>
+			<dict>
+				<key>source</key>
+				<integer>4</integer>
+				<key>type</key>
+				<integer>3</integer>
+			</dict>
+			<dict>
+				<key>source</key>
+				<integer>21</integer>
+			</dict>
+			<dict>
+				<key>source</key>
+				<integer>7</integer>
+				<key>type</key>
+				<integer>1</integer>
+			</dict>
+			<dict>
+				<key>source</key>
+				<integer>7</integer>
+				<key>subtype</key>
+				<integer>7</integer>
+				<key>type</key>
+				<integer>7</integer>
+			</dict>
+			<dict>
+				<key>source</key>
+				<integer>11</integer>
 				<key>type</key>
 				<integer>8</integer>
 			</dict>
 		</array>
+		<key>Profiles.Settings.default.Disks.Menubar.Enabled</key>
+		<integer>0</integer>
 		<key>Profiles.Settings.default.Disks.Menubar.Items</key>
 		<array>
 			<dict>
@@ -485,6 +556,8 @@
 				<integer>7</integer>
 			</dict>
 		</array>
+		<key>Profiles.Settings.default.Memory.Menubar.Enabled</key>
+		<integer>0</integer>
 		<key>Profiles.Settings.default.Memory.Menubar.Items</key>
 		<array>
 			<dict>
@@ -503,15 +576,9 @@
 			</dict>
 		</array>
 		<key>Profiles.Settings.default.Network.Menubar.Enabled</key>
-		<integer>1</integer>
+		<integer>0</integer>
 		<key>Profiles.Settings.default.Network.Menubar.Items</key>
 		<array>
-			<dict>
-				<key>source</key>
-				<integer>16</integer>
-				<key>type</key>
-				<integer>8</integer>
-			</dict>
 			<dict>
 				<key>source</key>
 				<integer>19</integer>
@@ -536,7 +603,7 @@
 			</dict>
 		</array>
 		<key>Profiles.Settings.default.Sensors.Menubar.Enabled</key>
-		<integer>1</integer>
+		<integer>0</integer>
 		<key>Profiles.Settings.default.Sensors.Menubar.Items</key>
 		<array>
 			<dict>
@@ -570,6 +637,18 @@
 				<string>a37f0a9a58ada616aed32e5aff218c4e4affe40e</string>
 				<key>name</key>
 				<string>CPU</string>
+				<key>source</key>
+				<integer>2</integer>
+				<key>type</key>
+				<integer>1</integer>
+			</dict>
+			<dict>
+				<key>ShowUnits</key>
+				<true/>
+				<key>key</key>
+				<string>94ef8937f00c2a52ccbb4452872ac160cdf06a89</string>
+				<key>name</key>
+				<string>Graphics</string>
 				<key>source</key>
 				<integer>2</integer>
 				<key>type</key>
@@ -632,7 +711,7 @@
 		<key>Profiles.Settings.default.Time.Menubar.Enabled</key>
 		<integer>1</integer>
 		<key>Profiles.Settings.default.Weather.Menubar.Enabled</key>
-		<integer>1</integer>
+		<integer>0</integer>
 		<key>Profiles.Settings.default.Weather.Menubar.Items</key>
 		<array>
 			<dict>
@@ -659,33 +738,6 @@
 		</array>
 		<key>Sensors.Global.DetailLevel</key>
 		<integer>1</integer>
-		<key>Sensors.Global.Fans.Curves.all.curve</key>
-		<array>
-			<dict>
-				<key>speed</key>
-				<integer>0</integer>
-				<key>temperature</key>
-				<integer>0</integer>
-			</dict>
-			<dict>
-				<key>speed</key>
-				<integer>0</integer>
-				<key>temperature</key>
-				<real>0.45000000000000001</real>
-			</dict>
-			<dict>
-				<key>speed</key>
-				<real>1</real>
-				<key>temperature</key>
-				<real>0.94999999999999996</real>
-			</dict>
-			<dict>
-				<key>speed</key>
-				<real>1</real>
-				<key>temperature</key>
-				<real>1</real>
-			</dict>
-		</array>
 		<key>Sensors.Menu.Launcher</key>
 		<array>
 			<dict/>
@@ -698,7 +750,7 @@
 			<dict/>
 		</array>
 		<key>Status.Build.Last</key>
-		<real>2231</real>
+		<real>2247</real>
 		<key>Status.Version.Last</key>
 		<real>7.0199999809265137</real>
 		<key>Time.Global.Events</key>
