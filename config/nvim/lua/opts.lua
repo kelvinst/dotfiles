@@ -88,4 +88,4 @@ vim.opt.smartcase = true
 -- NOTE: Formatting
 
 -- Show a colored line on the limit
-vim.opt.colorcolumn = "80"
+vim.opt.colorcolumn = "100"
