@@ -18,11 +18,11 @@ else
   export EDITOR='nvim'
 fi
 
+# Add homebrew bins to the beginning of PATH
+export PATH="/opt/homebrew/bin:$PATH"
+
 # Add rust bin to path
 export PATH="$(asdf where rust)/bin:$PATH"
-
-# Add postgresql bin to path
-export PATH="/opt/homebrew/opt/postgresql@16/bin:$PATH"
 
 # Setting tmux-sessionizer config path
 export TMS_CONFIG_FILE="$HOME/.config/tms/config.toml"
@@ -130,4 +130,3 @@ _-accept-line () {
     zle .accept-line
 }
 zle -N accept-line _-accept-line
-
