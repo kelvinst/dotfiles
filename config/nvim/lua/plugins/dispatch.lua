@@ -8,6 +8,7 @@ return { -- Asynchronous tasks
 	keys = {
 		{ "mq", quickfix, desc = "[Q]uickfix (from Make)" },
 		{ "`q", quickfix, desc = "[Q]uickfix (from Dispatch)" },
+		{ "`<Up>", ":Dispatch<Up><CR>", desc = "Repeat previous dispatch" },
 
 		-- Open zsh in Dispatch (like Spawn does for Start, hence the "g`" mnemonics)
 		{ "g`<CR>", ":Dispatch zsh<CR>", desc = "Dispatch [z]sh" },
