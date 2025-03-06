@@ -53,3 +53,6 @@ throw-space-left:
 throw-space-right:
   mod: mod2
   key: right
+
+# The integer percentage of the screen dimension to increment and decrement main pane ratios by (default 5).
+window-resize-step: 1
