@@ -8,6 +8,7 @@ return { -- Useful plugin to show you pending keybinds.
 
 		-- Existing keybindings
 		spec = {
+			{ "<leader>a", group = "[A]lternate" },
 			{ "<leader>c", group = "[C]opy", mode = "nv" },
 			{ "<leader>e", group = "[E]rror diagnostics" },
 			{ "<leader>r", group = "[R]ename" },

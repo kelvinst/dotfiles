@@ -30,4 +30,9 @@ return {
 			},
 		}
 	end,
+	keys = {
+		{ "<leader>a<CR>", ":A<CR>", desc = "In current window", silent = true },
+		{ "<leader>as", ":AS<CR>", desc = "In a horizontal [s]plit", silent = true },
+		{ "<leader>av", ":AV<CR>", desc = "In a [v]ertical split", silent = true },
+	},
 }
