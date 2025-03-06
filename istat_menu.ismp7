@@ -3,7 +3,7 @@
 <plist version="1.0">
 <dict>
 	<key>build</key>
-	<string>2247</string>
+	<string>2250</string>
 	<key>preferences</key>
 	<dict>
 		<key>Battery.Menu.Launcher</key>
@@ -48,22 +48,23 @@
 		<array>
 			<string>cpu-cpu</string>
 			<string>cpu-gpu</string>
+			<string>sensors-overview</string>
 			<string>memory-overview</string>
 			<string>disks-activity</string>
 			<string>battery-battery</string>
 			<string>network-bandwidth</string>
-			<string>sensors-overview</string>
 			<string>weather-conditions</string>
+			<string>time-cities</string>
 			<string>processes</string>
 		</array>
 		<key>Combined.Menubar.Items</key>
 		<array/>
 		<key>Device.Auth-Identifier</key>
-		<string>8074A97D-F61C-4970-AF6E-622836B3469E</string>
+		<string>BDB99653-FC69-4E03-A2F7-C11A0E83A9AB</string>
 		<key>Device.Device</key>
-		<string>7d9d379d6d9b8845ec46b45d29f0d0e438cd3a18</string>
+		<string>02ff7bac1f53aae5722b7b1f46ef1ab3bb64a8b4</string>
 		<key>Device.Model</key>
-		<string>Mac16,8</string>
+		<string>MacBookPro18,1</string>
 		<key>Disks.Menu.Graph.Read.Color</key>
 		<string>1 0.5288078171725399 5.960464477539062e-08 1</string>
 		<key>Disks.Menu.Graph.Space.Color</key>
@@ -135,9 +136,9 @@
 		<key>License.Validation.license</key>
 		<string>bail-nada-ship-noel-6624-7</string>
 		<key>License.Validation.signature</key>
-		<string>MIGHAkIBs/kRB+kYQrowcx5K8y067NQpeSNu2jLgNOtmZBZaqCi54MVcAHR7Gd4pL8F70xPShTAvRr/vzpYECRTNptHSf0ACQW1IcGP0Tegq+pjuNkR17pQS1Ll6+sU5k7OH4ZwqWENoT1R8SAl5cQvYrVs/fPucbUCdsddcBcOUBc2GzaXVitIH</string>
+		<string>MIGHAkIB949H/Qn0Xb9B1qWXLElIl0TyiXN4nU9jVghrMsAGgbxPv1Clr0hhn4RWSuCsd6kJ+mo0HSHNvpKFgPZ50S8Qnb0CQWD14kKzQM97tEFQ3ef6z1WcFCFwF99ny+VmrxL85EiTh2dYqLk6hCKEIiOv5a03eBq5dVfsAm6E4L6CoVU6DAMf</string>
 		<key>License.Validation.time</key>
-		<string>1737764502</string>
+		<string>1740184365</string>
 		<key>Memory.Menu.Graph.App.Color</key>
 		<string>0.2399970889091492 0.8168253939549004 1 1</string>
 		<key>Memory.Menu.Graph.Pressure.Color</key>
@@ -166,6 +167,8 @@
 		<key>Menubar.Disks.Global.ShowNames</key>
 		<false/>
 		<key>Menubar.Global.ReducePadding</key>
+		<integer>1</integer>
+		<key>Menubar.Style</key>
 		<integer>1</integer>
 		<key>Menubar.Theme.Dark</key>
 		<string>custom</string>
@@ -516,26 +519,6 @@
 				<key>source</key>
 				<integer>21</integer>
 			</dict>
-			<dict>
-				<key>source</key>
-				<integer>7</integer>
-				<key>type</key>
-				<integer>1</integer>
-			</dict>
-			<dict>
-				<key>source</key>
-				<integer>7</integer>
-				<key>subtype</key>
-				<integer>7</integer>
-				<key>type</key>
-				<integer>7</integer>
-			</dict>
-			<dict>
-				<key>source</key>
-				<integer>11</integer>
-				<key>type</key>
-				<integer>8</integer>
-			</dict>
 		</array>
 		<key>Profiles.Settings.default.Disks.Menubar.Enabled</key>
 		<integer>0</integer>
@@ -750,9 +733,9 @@
 			<dict/>
 		</array>
 		<key>Status.Build.Last</key>
-		<real>2247</real>
+		<real>2250</real>
 		<key>Status.Version.Last</key>
-		<real>7.0199999809265137</real>
+		<real>7.0999999046325684</real>
 		<key>Time.Global.Events</key>
 		<integer>0</integer>
 		<key>Time.Global.FirstWeekday</key>
@@ -913,6 +896,8 @@
 		</array>
 		<key>Time.Menubar.Mode.DualValue.Font.Name</key>
 		<string>default</string>
+		<key>Updates.Attempts.2250</key>
+		<integer>1</integer>
 		<key>Weather.Global.AvailableProviders</key>
 		<array>
 			<dict>
