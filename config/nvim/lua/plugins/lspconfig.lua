@@ -204,12 +204,15 @@ return {
 		-- You can add other tools here that you want Mason to install
 		-- for you, so that they are available from within Neovim.
 		local ensure_installed = vim.tbl_keys(servers or {})
-		vim.list_extend(ensure_installed, {
-			"stylua", -- Used to format Lua code
-		})
 		require("mason-tool-installer").setup({ ensure_installed = ensure_installed })
 
 		require("mason-lspconfig").setup({
+			ensure_installed = {
+				-- We have to force this version for now, since the latest version of elixir-ls
+				-- is not working in my local env
+				"elixirls@v0.26.4",
+			},
+			automatic_installation = false,
 			handlers = {
 				function(server_name)
 					local server = servers[server_name] or {}

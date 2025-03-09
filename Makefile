@@ -1,4 +1,4 @@
-jk.PHONY: clean install
+.PHONY: clean install
 all: clean install
 
 install:

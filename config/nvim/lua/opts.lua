@@ -65,6 +65,9 @@ vim.opt.shiftwidth = 2
 vim.opt.expandtab = true
 vim.opt.smartindent = true
 
+-- Automatically read the file if it changes
+vim.opt.autoread = true
+
 -- Configure how new splits should be opened
 vim.opt.splitright = true
 vim.opt.splitbelow = true
@@ -76,7 +79,6 @@ vim.opt.inccommand = "split"
 vim.opt.updatetime = 250
 
 -- Decrease mapped sequence wait time
--- Displays which-key popup sooner
 vim.opt.timeoutlen = 300
 
 -- NOTE: Searching
