@@ -26,6 +26,7 @@ return { -- Asynchronous tasks
 	config = function()
 		-- Set tmux and quickfix windows height
 		vim.g.dispatch_quickfix_height = 20
+		vim.g.dispatch_compilers = { elixir = "exunit" }
 
 		-- Configure which-key with the dispatch mappings
 		require("which-key").add({
