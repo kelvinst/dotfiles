@@ -7,6 +7,25 @@ vim.api.nvim_create_autocmd("TextYankPost", {
 	end,
 })
 
+-- Close old buffers
+vim.api.nvim_create_autocmd("BufEnter", {
+	callback = function()
+		vim.schedule(function()
+			local buffers = vim.api.nvim_list_bufs()
+
+			-- Sort buffers by last used (most recent first)
+			table.sort(buffers, function(a, b)
+				return vim.fn.getbufinfo(a)[1].lastused > vim.fn.getbufinfo(b)[1].lastused
+			end)
+
+			-- Keep only the 20 most recent buffers
+			for i = 21, #buffers do
+				vim.api.nvim_buf_delete(buffers[i], { force = true })
+			end
+		end)
+	end,
+})
+
 -- Automatically format Elixir files on save (sometimes the LS doesn't format)
 -- vim.api.nvim_create_autocmd("BufWritePost", {
 -- 	pattern = "*.ex,*.exs,*.eex,*.leex,*.sface,*.sface.ex,*.sface.exs",

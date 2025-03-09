@@ -19,6 +19,7 @@ local function copyFilenameWithLines()
 	local line = vim.fn.line(".")
 	local result = filename .. ":" .. line
 	vim.fn.setreg("*", result)
+	vim.api.nvim_input("<Esc>")
 end
 
 local function copyFilename()
