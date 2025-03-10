@@ -9,10 +9,10 @@ endif
 
 CompilerSet makeprg=mix\ compile
 CompilerSet errorformat=
-            \%W%\\s%#warning:\ %m,
-            \%C\ %.%#\ %f:%l:%c:\ %m,
-            \%+G\ %.%#,%Z,
-            \%E==\ Compilation\ error\ in\ file\ %.%#\ ==,
-            \%C%m\ %f:%l:%c%.%#,
-            \%+G\ %.%#,%Z
+            \%+W%\\s%#warning:\ %m,
+            \%G\ %.%#\ %f:%l:%c:\ %m,
+            \%G\ %.%#\ %f:%l:\ %m,%Z,
+            \%+E==\ Compilation\ error\ in\ file\ %.%#\ ==,
+            \%G%m\ %f:%l:%c%.%#,
+            \%G%m\ %f:%l%.%#
 
