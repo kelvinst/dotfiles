@@ -36,5 +36,8 @@ vim.keymap.set("n", "<leader>yl", copyFilenameWithLines, { desc = "[Y]ank filena
 -- Paste without cutting the current selection
 vim.keymap.set("x", "π", [["_dP]]) -- Alt+p
 
+-- Replace word under cursor
 vim.keymap.set("n", "<leader>rw", [[:%s/\<<C-r><C-w>\>//gI<Left><Left><Left>]], { desc = "[R]eplace [w]ord" })
+
+-- Load the LSP errors to the quickfix list
 vim.keymap.set("n", "<leader>eq", vim.diagnostic.setqflist, { desc = "[E]errors [Q]uickfix" })
