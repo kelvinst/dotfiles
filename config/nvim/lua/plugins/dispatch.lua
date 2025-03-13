@@ -200,7 +200,7 @@ return { -- Asynchronous tasks
 							return nil
 						end
 
-						return "MIX_ENV=test" .. groupTask
+						return "MIX_ENV=test " .. groupTask
 					end,
 				},
 			},
