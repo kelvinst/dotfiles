@@ -32,6 +32,9 @@ export XDG_CONFIG_HOME="$HOME/.config"
 
 # NOTE: Aliases
 
+# alias
+alias a='alias_grep'
+
 # clear
 alias c='clear'
 
@@ -72,6 +75,15 @@ unalias -m run-help
 unalias -m which-command
 
 # NOTE: Functions
+
+# Searches for aliases
+alias_grep() {
+  if [[ -z $1 ]]; then
+    alias
+  else
+    alias | grep $1
+  fi
+}
 
 # Retries a command until it fails
 flaky() {
