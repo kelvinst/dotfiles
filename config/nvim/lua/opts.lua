@@ -9,9 +9,9 @@ vim.opt.shell = "zsh -i"
 
 -- NOTE: UI Settings
 
--- Make line numbers default
-vim.opt.number = true
-vim.opt.relativenumber = true
+-- Hide line numbers
+vim.opt.number = false
+vim.opt.relativenumber = false
 
 -- Do not wrap lines
 vim.opt.wrap = false
