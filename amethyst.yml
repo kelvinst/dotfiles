@@ -1,10 +1,23 @@
 # layouts - Ordered list of layouts to use by layout key (default tall, wide, fullscreen, and column).
 layouts:
-  - tall
-  - wide
-  - fullscreen
-  - middle-wide
-  - column
+  - widescreen-tall # mod1 + a
+  - wide # mod1 + s
+  - fullscreen # mod1 + d
+  - middle-wide # mod1 + f
+  # no keybinding
+  - two-pane
+  - floating
+  - bsp
+  # - tall
+  # - tall-right
+  # - middle-wide
+  # - 3column-left
+  # - 3column-right
+  # - 4column-left
+  # - 4column-right
+  # - column
+  # - row
+  # - widescreen-tall-right
 
 # First mod (default option + shift).
 mod1:
@@ -19,12 +32,10 @@ mod2:
   - control
   - command
 
-# Select column layout
-select-column-layout:
+select-widescreen-tall-layout: 
   mod: mod1
-  key: g
+  key: a
 
-# Select 3 column middle layout
 select-middle-wide-layout: 
   mod: mod1
   key: f
