@@ -1,22 +1,7 @@
-# NOTE: Third-party setups
-
-# Setup starship
-eval "$(starship init zsh)"
-
-# Setup asdf
-. /opt/homebrew/opt/asdf/libexec/asdf.sh
-
-# Setup zsh-autosuggestions
-source $(/opt/homebrew/bin/brew --prefix)/share/zsh-autosuggestions/zsh-autosuggestions.zsh
-
 # NOTE: Env variables
 
-# Preferred editor nvim if exists
-if [[ -n $SSH_CONNECTION ]]; then
-  export EDITOR='vim'
-else
-  export EDITOR='nvim'
-fi
+# My preferred editor
+export EDITOR='nvim'
 
 # Add homebrew bins to the beginning of PATH
 export PATH="/opt/homebrew/bin:$PATH"
@@ -30,13 +15,78 @@ export TMS_CONFIG_FILE="$HOME/.config/tms/config.toml"
 # Default configs dir
 export XDG_CONFIG_HOME="$HOME/.config"
 
+# Coloring files
+export LS_COLORS="$(vivid generate tokyonight-moon)"
+
+# NOTE: Completions
+
+# Configure additional completion definitions
+export FPATH=$(brew --prefix)/share/zsh-completions:$FPATH
+
+# Load the completion system
+autoload -Uz compinit
+compinit
+
+# Load the amazing tab completion fuzzy finder
+source ~/.fzf-tab/fzf-tab.plugin.zsh
+
+source ~/.fzf-tab-source/*.plugin.zsh
+
+# All these are configurations for the fuzzy finder completion tool
+# Disable sort when completing `git checkout`
+zstyle ':completion:*:git-checkout:*' sort false
+# Set descriptions format to enable group support
+zstyle ':completion:*:descriptions' format '[%d]'
+# Set list-colors to enable filename colorizing
+zstyle ':completion:*' list-colors ${(s.:.)LS_COLORS}
+# Force zsh not to show completion menu, which allows fzf-tab to capture the unambiguous prefix
+zstyle ':completion:*' menu no
+# Preview directory's content with eza when completing cd
+zstyle ':fzf-tab:complete:cd:*' fzf-preview 'eza -1 --color=always $realpath'
+zstyle ':fzf-tab:complete:cd:*' popup-pad 30 0
+# Preview for many git subcommands
+zstyle ':fzf-tab:complete:git-(add|diff|restore):*' fzf-preview 'git diff $word | delta'
+zstyle ':fzf-tab:complete:git-log:*' fzf-preview 'git log --color=always $word'
+zstyle ':fzf-tab:complete:git-show:*' fzf-preview 'case "$group" in "commit tag") git show --color=always $word ;; *) git show --color=always $word | delta ;; esac'
+zstyle ':fzf-tab:complete:git-checkout:*' fzf-preview 'case "$group" in "modified file") git diff $word | delta ;; "recent commit object name") git show --color=always $word | delta ;; *) git log --color=always $word ;; esac'
+# Space to accept the selection
+zstyle ':fzf-tab:*' fzf-flags --bind=space:accept
+# Switch group using `<` and `>`
+zstyle ':fzf-tab:*' switch-group '<' '>'
+
+# Suggest commands as you type
+source $(brew --prefix)/share/zsh-autosuggestions/zsh-autosuggestions.zsh
+
+# NOTE: General shell improvements
+
+# Syntax highlightning for the shell commands
+source ~/.fsyh/fast-syntax-highlighting.plugin.zsh
+
+# The command line prompt
+eval "$(starship init zsh)"
+
+# The better `cd` command
+eval "$(zoxide init zsh)"
+
+# NOTE: Dev stuff
+
+# The runtime version manager
+. /opt/homebrew/opt/asdf/libexec/asdf.sh
+
 # NOTE: Aliases
 
 # alias
-alias a='alias_grep'
+alias a='aliases'
+
+# bat
+alias b='bat'
 
 # clear
 alias c='clear'
+
+# eza
+alias ez='eza'
+alias e='eza -Gla'
 
 # git
 alias g='git status -sb'
@@ -56,19 +106,21 @@ alias lazygit='tmux setw monitor-activity off && lazygit'
 alias lg='lazygit'
 
 # ls
+alias ls="gls --color"
 alias l='ls -Gla'
 
 # make
 alias m='make'
+
+# source
+alias s='source'
+alias sz='source ~/.zshrc'
 
 # tmux
 alias t='tmux'
 
 # vim/nvim
 alias v='nvim'
-
-# zsh
-alias z='source ~/.zshrc'
 
 # Remove some useless predefined aliases
 unalias -m run-help
@@ -77,11 +129,11 @@ unalias -m which-command
 # NOTE: Functions
 
 # Searches for aliases
-alias_grep() {
+aliases() {
   if [[ -z $1 ]]; then
     alias
   else
-    alias | grep $1
+    alias | rg $1
   fi
 }
 
@@ -142,3 +194,4 @@ _-accept-line () {
     zle .accept-line
 }
 zle -N accept-line _-accept-line
+

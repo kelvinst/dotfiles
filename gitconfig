@@ -4,6 +4,7 @@
 [core]
   editor = nvim
   excludesfile = ~/.global_gitignore
+  pager = delta
 [diff]
   tool = nvim -d
 [merge]
