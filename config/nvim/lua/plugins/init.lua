@@ -50,6 +50,7 @@ require("lazy").setup({
 	require("plugins.unimpaired"), -- Pairs of mappings for various tasks
 	require("plugins.vim-tmux-navigator"), -- Navigate between Vim and Tmux panes
 	require("plugins.which-key"), -- Useful plugin to show you pending keybinds.
+	require("plugins.yanky"), -- Yank history
 
 	-- require 'plugins.debug', -- Debugging
 	-- require 'plugins.lint', -- Linting
