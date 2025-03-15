@@ -1,11 +1,9 @@
 return {
 	"NeogitOrg/neogit",
 	dependencies = {
-		"nvim-lua/plenary.nvim", -- required
-		"sindrets/diffview.nvim", -- optional - Diff integration
-
-		-- Only one of these is needed.
-		"nvim-telescope/telescope.nvim", -- optional
+		"nvim-lua/plenary.nvim",
+		"sindrets/diffview.nvim",
+		"nvim-telescope/telescope.nvim",
 	},
 	keys = {
 		{ "<leader>gg", vim.cmd.Neogit, desc = "[G]it Status" },
@@ -19,10 +17,17 @@ return {
 		})
 
 		require("neogit").setup({
+			console_timeout = 1000,
+			disable_insert_on_commit = true,
 			kind = "floating",
+			remember_settings = false,
 			commit_editor = {
 				kind = "tab",
 				staged_diff_split_kind = "auto",
+			},
+			integrations = {
+				telescope = true,
+				diffview = true,
 			},
 		})
 	end,
