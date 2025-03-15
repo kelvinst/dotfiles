@@ -4,12 +4,12 @@ return { -- Autoformat
 	cmd = { "ConformInfo" },
 	keys = {
 		{
-			"<leader>ff",
+			"<leader>fm",
 			function()
 				require("conform").format({ async = true, lsp_format = "fallback" })
 			end,
 			mode = "",
-			desc = "[F]ormat",
+			desc = "For[m]at",
 		},
 	},
 	opts = {

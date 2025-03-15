@@ -43,12 +43,13 @@ return {
 			},
 		},
 		keys = {
-			{ "<leader>ft", ":Neotree toggle<CR>", desc = "[T]ree" },
-			{ "<leader>fr", ":Neotree reveal<CR>", desc = "[R]eveal file in tree" },
+			{ "<leader>ff", ":Neotree toggle reveal<CR>", desc = "[F]iletree" },
+			{ "<leader>fb", ":Neotree toggle buffers<CR>", desc = "[B]uffers" },
+			{ "<leader>fg", ":Neotree toggle git_status<CR>", desc = "[G]it status" },
 		},
 		config = function()
 			require("which-key").add({
-				{ "<leader>f", group = "[F]ile" },
+				{ "<leader>f", group = "[F]iles" },
 			})
 			-- If you want icons for diagnostic errors, you'll need to define them somewhere:
 			vim.fn.sign_define("DiagnosticSignError", { text = " ", texthl = "DiagnosticSignError" })
@@ -61,13 +62,9 @@ return {
 				popup_border_style = "rounded",
 				event_handlers = {
 					{
-						-- whenever a file is opened
 						event = "file_opened",
 						handler = function()
-							-- auto close
 							require("neo-tree.command").execute({ action = "close" })
-							-- clear search
-							require("neo-tree.sources.filesystem").reset_search()
 						end,
 					},
 					{
@@ -88,7 +85,6 @@ return {
 					mappings = {
 						["S"] = "split_with_window_picker",
 						["s"] = "vsplit_with_window_picker",
-						["Z"] = "expand_all_nodes",
 					},
 				},
 				nesting_rules = {},
