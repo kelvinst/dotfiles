@@ -8,6 +8,7 @@ return {
 	keys = {
 		{ "<leader>gg", vim.cmd.Neogit, desc = "[G]it Status" },
 		{ "<leader>ghc", ":Dispatch .git/hooks/pre-commit<CR>", desc = "pre-[c]ommit" },
+		{ "<leader>ghp", ":Dispatch .git/hooks/pre-push<CR>", desc = "pre-[p]ush" },
 	},
 	config = function()
 		-- Configure which-key with the dispatch mappings
@@ -28,6 +29,11 @@ return {
 			integrations = {
 				telescope = true,
 				diffview = true,
+			},
+			mappings = {
+				status = {
+					["<esc>"] = "Close",
+				},
 			},
 		})
 	end,

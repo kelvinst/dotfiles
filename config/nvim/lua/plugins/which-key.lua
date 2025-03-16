@@ -2,6 +2,15 @@ return { -- Useful plugin to show you pending keybinds.
 	"folke/which-key.nvim",
 	event = "VimEnter", -- Sets the loading event to 'VimEnter'
 	opts = {
+		preset = "helix",
+
+		win = {
+			no_overlap = false,
+			width = 60,
+			col = vim.fn.winwidth(0) / 2 - 30,
+			row = 4,
+		},
+
 		icons = {
 			mappings = true, -- I have nerfont installed, so I want to use those icons
 		},
