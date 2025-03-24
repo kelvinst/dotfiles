@@ -8,7 +8,7 @@ return { -- Useful plugin to show you pending keybinds.
 			no_overlap = false,
 			width = 60,
 			col = vim.fn.winwidth(0) / 2 - 30,
-			row = 4,
+			row = 12,
 		},
 
 		icons = {
