@@ -28,6 +28,7 @@ return { -- Fuzzy Finder (files, lsp, etc)
 		-- Enable Telescope extensions if they are installed
 		pcall(telescope.load_extension, "fzf")
 		pcall(telescope.load_extension, "ui-select")
+		pcall(telescope.load_extension, "notify")
 
 		-- Configure which-key with the telescope mappings
 		require("which-key").add({
@@ -39,6 +40,7 @@ return { -- Fuzzy Finder (files, lsp, etc)
 		vim.keymap.set("n", "<leader>pp", builtin.builtin, { desc = "[P]ickers" })
 		vim.keymap.set("n", "<leader>ph", builtin.help_tags, { desc = "[H]elp" })
 		vim.keymap.set("n", "<leader>pk", builtin.keymaps, { desc = "[K]eymaps" })
+		vim.keymap.set("n", "<leader>pn", telescope.extensions.notify.notify, { desc = "[N]otifications" })
 		vim.keymap.set("n", "<leader>pg", builtin.live_grep, { desc = "[G]rep" })
 		vim.keymap.set("n", "<leader>pr", builtin.resume, { desc = "[R]esume" })
 		vim.keymap.set("n", "<leader>pb", builtin.buffers, { desc = "[B]uffers" })

@@ -36,10 +36,12 @@ require("lazy").setup({
 	require("plugins.copilot"), -- Github Copilot suggestions AI
 	require("plugins.dispatch"), -- Asynchronous tasks
 	require("plugins.gitsigns"), -- Adds gitsigns recommend keymaps
+	require("plugins.hop"), -- Hop easily around the file
 	require("plugins.indent_line"), -- The vertical lines for indentation levels
 	require("plugins.mini"), -- Collection of various small plugins/modules
 	require("plugins.neo-tree"), -- Better file tree
 	require("plugins.neogit"), -- Git UI in Neovim
+	require("plugins.notify"), -- Better looking notifications
 	require("plugins.projectionist"), -- Project specific settings
 	require("plugins.sleuth"), -- Detect tabstop and shiftwidth automatically
 	require("plugins.telescope"), -- Fuzzy Finder (files, lsp, etc)
