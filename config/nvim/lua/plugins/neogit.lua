@@ -11,12 +11,6 @@ return {
 		{ "<leader>ghp", ":Dispatch .git/hooks/pre-push<CR>", desc = "pre-[p]ush" },
 	},
 	config = function()
-		-- Configure which-key with the dispatch mappings
-		require("which-key").add({
-			{ "<leader>g", group = "[G]it", mode = { "n", "v" } },
-			{ "<leader>gh", group = "[H]ooks" },
-		})
-
 		require("neogit").setup({
 			console_timeout = 1000,
 			disable_insert_on_commit = true,

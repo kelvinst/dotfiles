@@ -20,7 +20,11 @@ return { -- Useful plugin to show you pending keybinds.
 			{ "<leader>a", group = "[A]lternate" },
 			{ "<leader>c", group = "[C]opy", mode = "nv" },
 			{ "<leader>e", group = "[E]rror diagnostics" },
+			{ "<leader>g", group = "[G]it" },
+			{ "<leader>gh", group = "[H]ooks" },
+			{ "<leader>h", group = "[H]op" },
 			{ "<leader>r", group = "[R]ename" },
+			{ "<leader>y", group = "[Y]ank" },
 		},
 
 		triggers = {
