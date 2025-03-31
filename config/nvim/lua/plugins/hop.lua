@@ -4,10 +4,10 @@ return { -- Easily jump around in your file
 	version = "v2.7.2",
 	keys = {
 		{ "<leader>h/", vim.cmd.HopPattern, desc = "Search like [/]" },
-		{ "<leader>hC", vim.cmd.HopChar2, desc = "[C]har (type 2)" },
+		{ "<leader>hC", vim.cmd.HopChar2, desc = "2 [C]har" },
 		{ "<leader>ha", vim.cmd.HopAnywhere, desc = "[A]nywhere" },
-		{ "<leader>hc", vim.cmd.HopChar1, desc = "[C]har (type 1)" },
-		{ "<leader>hh", vim.cmd.HopPattern, desc = "Default (search)" },
+		{ "<leader>hc", vim.cmd.HopChar1, desc = "1 [C]har)" },
+		{ "<leader>hh", vim.cmd.HopChar1, desc = "Default (1 char)" },
 		{ "<leader>hl", vim.cmd.HopLine, desc = "[L]ine" },
 		{
 			"<leader>hn",
@@ -28,7 +28,7 @@ return { -- Easily jump around in your file
 			quit_key = "<leader>",
 		})
 
-		local modes = { "n", "v", "o" }
+		local modes = { "n", "v" }
 
 		vim.keymap.set(modes, "f", function()
 			hop.hint_char1({
