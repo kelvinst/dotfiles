@@ -40,6 +40,16 @@ select-middle-wide-layout:
   mod: mod1
   key: f
 
+# Focus the next window in the list going counter-clockwise.
+focus-ccw:
+  mod: mod1
+  key: k
+
+# Focus the next window in the list going clockwise.
+focus-cw:
+  mod: mod1
+  key: j
+
 # Move the currently focused window to the space to the left.
 throw-space-left:
   mod: mod2
