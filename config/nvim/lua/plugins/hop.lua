@@ -25,7 +25,6 @@ return { -- Easily jump around in your file
 
 		hop.setup({
 			multi_windows = true,
-			uppercase_labels = true,
 			quit_key = "<leader>",
 		})
 
