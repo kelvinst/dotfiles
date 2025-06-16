@@ -3,6 +3,9 @@
 # My preferred editor
 export EDITOR='nvim'
 
+# Add local bin to the beginning of PATH
+export PATH="$HOME/.local/bin:$PATH"
+
 # Add homebrew bins to the beginning of PATH
 export PATH="/opt/homebrew/bin:$PATH"
 
