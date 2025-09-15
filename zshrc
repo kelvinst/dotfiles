@@ -92,7 +92,8 @@ alias ez='eza'
 alias e='eza -Gla'
 
 # git
-alias g='git status -sb'
+alias g='git'
+alias gg='git status -sb'
 alias ga='git add --verbose'
 alias gc='git commit --verbose'
 alias gco='git checkout'

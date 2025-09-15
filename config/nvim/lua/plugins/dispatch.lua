@@ -152,6 +152,24 @@ return { -- Asynchronous tasks
 			key = "<leader>m",
 			desc = "[M]ix tasks",
 			filterByRootFiles = "mix.exs",
+			p = {
+				desc = "[P]hoenix",
+				default = "s",
+				tasks = {
+					s = { "mix phx.server", desc = "[S]erver" },
+					t = { "mix phx.routes", desc = "[T]est routes" },
+				},
+				g = {
+					desc = "[G]en",
+					default = "c",
+					tasks = {
+						c = { "mix phx.gen.context", desc = "[C]ontext", wait = true },
+						h = { "mix phx.gen.html", desc = "[H]TML", wait = true },
+						j = { "mix phx.gen.json", desc = "[J]SON", wait = true },
+						l = { "mix phx.gen.live", desc = "[L]iveView", wait = true },
+					},
+				},
+			},
 			c = {
 				desc = "[C]ompile",
 				default = "d",
