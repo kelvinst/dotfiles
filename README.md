@@ -180,6 +180,12 @@ asdf global yarn latest
 brew install neovim
 ```
 
+1. Install [yabai](https://github.com/koekeishiya/yabai/wiki#yabai)
+
+```shell
+brew install koekeishiya/formulae/yabai
+```
+
 1. Clone this repo and run `make` to install:
 
 ```shell
