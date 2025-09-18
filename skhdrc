@@ -121,18 +121,32 @@ cmd + shift + ctrl + alt - c : yabai -m space --create && \
 cmd + shift + ctrl - x : yabai -m space --destroy
 
 # focus spaces
-cmd + shift + ctrl - n : index="$(yabai -m query --spaces --display | jq 'map(select(."has-focus" == true))[0].index + 1')" && \
-                         yabai -m space --focus "${index}"
-cmd + shift + ctrl - p : index="$(yabai -m query --spaces --display | jq 'map(select(."has-focus" == true))[0].index - 1')" && \
-                         yabai -m space --focus "${index}"
+cmd + shift + ctrl - n : index="$(yabai -m query --spaces --space | jq '.index + 1')" && \
+                         max_index="$(yabai -m query --spaces --display | jq 'map(.index) | max')" && \
+                         if [ "$index" -le "$max_index" ]; then \
+                           yabai -m space --focus "$index"; \
+                         fi
+cmd + shift + ctrl - p : index="$(yabai -m query --spaces --space | jq '.index - 1')" && \
+                         min_index="$(yabai -m query --spaces --display | jq 'map(.index) | min')" && \
+                         if [ "$index" -ge "$min_index" ]; then \
+                           yabai -m space --focus "$index"; \
+                         fi
 
 # move window to spaces
-cmd + shift + ctrl + alt - n : index="$(yabai -m query --spaces --display | jq 'map(select(."has-focus" == true))[0].index + 1')" && \
-                         yabai -m window --space "${index}" && \
-                         yabai -m space --focus "${index}"
-cmd + shift + ctrl + alt - p : index="$(yabai -m query --spaces --display | jq 'map(select(."has-focus" == true))[0].index - 1')" && \
-                         yabai -m window --space "${index}" && \
-                         yabai -m space --focus "${index}"
+cmd + shift + ctrl + alt - n : index="$(yabai -m query --spaces --space | jq '.index + 1')" && \
+                               max_index="$(yabai -m query --spaces --display | jq 'map(.index) | max')" && \
+                               id="$(yabai -m query --windows --window | jq '.id')" && \
+                               if [ "$index" -le "$max_index" ]; then \
+                                     yabai -m window --space "${index}" && \
+                                     yabai -m window --focus "${id}" ; \
+                               fi
+cmd + shift + ctrl + alt - p : index="$(yabai -m query --spaces --space | jq '.index - 1')" && \
+                               min_index="$(yabai -m query --spaces --display | jq 'map(.index) | min')" && \
+                               id="$(yabai -m query --windows --window | jq '.id')" && \
+                               if [ "$index" -ge "$min_index" ]; then \
+                                     yabai -m window --space "${index}" && \
+                                     yabai -m window --focus "${id}" ; \
+                               fi
 
 # focus display
 cmd + shift + ctrl - a : yabai -m display --focus west
