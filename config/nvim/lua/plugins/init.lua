@@ -51,6 +51,7 @@ require("lazy").setup({
 	require("plugins.undotree"), -- Better undo history
 	require("plugins.unimpaired"), -- Pairs of mappings for various tasks
 	require("plugins.vim-tmux-navigator"), -- Navigate between Vim and Tmux panes
+	require("plugins.vimade"), -- Fade unused windows/panes
 	require("plugins.which-key"), -- Useful plugin to show you pending keybinds.
 	require("plugins.yanky"), -- Yank history
 
