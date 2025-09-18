@@ -3,7 +3,7 @@ all: clean install
 
 install:
 	mkdir -p ~/.config/kitty/
-	cp ./config/kitty/* ~/.config/kitty/
+	cp -r ./config/kitty/* ~/.config/kitty/
 	mkdir -p ~/.config/nvim/
 	cp -r ./config/nvim/* ~/.config/nvim/
 	mkdir -p ~/.config/tms/
