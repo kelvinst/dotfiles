@@ -20,6 +20,5 @@ yabai -m config                                  \
   display_arrangement_order horizontal           \
   window_origin_display     focused              \
   window_placement          second_child         \
-  window_insertion_point    last                 \
   window_zoom_persist       off                  \
 
