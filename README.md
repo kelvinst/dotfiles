@@ -16,10 +16,10 @@ brew install kitty
 /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
 ```
 
-1. You need to `make` `less` `git`! `unzip` your `gcc`:
+1. You need to `make` `less` `git`! `unzip` your `gcc`, `jq`:
 
 ```shell
-brew install make less git unzip gcc
+brew install make less git unzip gcc jq
 ```
 
 1. Install GNU scripts, for better general tools: [`coreutils`](https://www.gnu.org/software/coreutils/)
@@ -184,6 +184,12 @@ brew install neovim
 
 ```shell
 brew install koekeishiya/formulae/yabai
+```
+
+1. Install [skhd](https://github.com/koekeishiya/skhd)
+
+```shell
+brew install koekeishiya/formulae/skhd
 ```
 
 1. Clone this repo and run `make` to install:

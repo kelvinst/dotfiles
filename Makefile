@@ -12,6 +12,7 @@ install:
 	cp -r ./hammerspoon/* ~/.hammerspoon/
 	cp ./gitconfig ~/.gitconfig
 	cp ./global_gitignore ~/.global_gitignore
+	cp ./skhdrc ~/.skhdrc
 	cp ./tmux.conf ~/.tmux.conf
 	cp ./yabairc ~/.yabairc
 	cp ./zshrc ~/.zshrc
@@ -23,6 +24,7 @@ clean:
 	rm -rf ~/.hammerspoon/*
 	rm -rf ~/.gitconfig
 	rm -rf ~/.global_gitignore
+	rm -rf ~/.skhdrc
 	rm -rf ~/.tmux.conf
 	rm -rf ~/.yabairc
 	rm -rf ~/.zshrc
@@ -38,6 +40,7 @@ update:
 	cp -r ~/.hammerspoon/* ./hammerspoon/
 	cp ~/.gitconfig ./gitconfig
 	cp ~/.global_gitignore ./global_gitignore
+	cp ~/.skhdrc ./skhdrc
 	cp ~/.tmux.conf ./tmux.conf
 	cp ~/.yabairc ./yabairc
 	cp ~/.zshrc ./zshrc

@@ -92,7 +92,7 @@ alias ez='eza'
 alias e='eza -Gla'
 
 # git
-alias g='git'
+alias g='git_status_or_git'
 alias gg='git status -sb'
 alias ga='git add --verbose'
 alias gc='git commit --verbose'
@@ -138,6 +138,15 @@ aliases() {
     alias
   else
     alias | rg $1
+  fi
+}
+
+# Shows `git status -sb` if no arguments are given, otherwise runs `git` with the provided arguments
+git_status_or_git() {
+  if [[ $# -eq 0 ]]; then
+    git status -sb
+  else
+    git "$@"
   fi
 }
 
