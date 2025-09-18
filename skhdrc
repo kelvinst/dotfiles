@@ -173,3 +173,9 @@ cmd + shift + ctrl - t : yabai -m window --toggle float --grid 4:4:1:1:2:2
 
 # toggle sticky(+float), picture-in-picture
 cmd + shift + ctrl + alt - t : yabai -m window --toggle sticky --toggle pip
+
+# 3 column layout (when 3 screens are open)
+cmd + shift + ctrl - 3 : yabai -m config layout bsp && \
+                         yabai -m window --toggle split && \
+                         yabai -m window --swap east && \
+                         yabai -m space --balance
