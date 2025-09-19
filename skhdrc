@@ -77,7 +77,10 @@
 # ############################################################### #
 
 # restart the service (reload everything)
-cmd + shift + ctrl - r : yabai --stop-service && yabai --start-service
+cmd + shift + ctrl - 0x2B : yabai --stop-service && yabai --start-service
+
+# reload the layout
+cmd + shift + ctrl - r : yabai -m config layout bsp window_placement first_child
 
 # focus window
 cmd + shift + ctrl - h : yabai -m window --focus west

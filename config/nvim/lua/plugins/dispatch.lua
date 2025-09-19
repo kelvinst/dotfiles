@@ -92,7 +92,11 @@ local function dispatchGroup(config)
 end
 
 return { -- Asynchronous tasks
-	"tpope/vim-dispatch",
+	"trekdemo/vim-dispatch",
+	branch = "kitty-support",
+	-- 'tpope/vim-dispatch',
+	-- dev = true,
+	-- path = '~/projects/vim-dispatch',
 	event = "VimEnter",
 	keys = {
 		{ "mq", quickfix, desc = "[Q]uickfix (from Make)" },
@@ -115,6 +119,7 @@ return { -- Asynchronous tasks
 	config = function()
 		-- Set tmux and quickfix windows height
 		vim.g.dispatch_quickfix_height = 20
+		vim.g.dispatch_kitty_bias = 20
 		vim.g.dispatch_compilers = { elixir = "exunit" }
 
 		-- Configure which-key with the dispatch mappings
