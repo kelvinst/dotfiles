@@ -18,11 +18,11 @@ return {
 			desc = "[L]ist sessions",
 		},
 		{
-			"<leader>sn",
+			"<leader>ss",
 			function()
 				require("nvim-possession").new()
 			end,
-			desc = "Create [n]ew session",
+			desc = "Create new [s]ession",
 		},
 		{
 			"<leader>su",
@@ -41,6 +41,7 @@ return {
 	},
 	config = function()
 		require("nvim-possession").setup({
+			autosave = true,
 			autoload = true,
 			autoprompt = true,
 			autoswitch = {

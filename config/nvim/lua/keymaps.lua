@@ -42,9 +42,23 @@ vim.keymap.set("n", "<leader>rw", [[:%s/\<<C-r><C-w>\>//gI<Left><Left><Left>]], 
 -- Load the LSP errors to the quickfix list
 vim.keymap.set("n", "<leader>eq", vim.diagnostic.setqflist, { desc = "[E]errors [Q]uickfix" })
 
+local function any_unsaved_real_files()
+	for _, buf in ipairs(vim.api.nvim_list_bufs()) do
+		if vim.api.nvim_buf_is_loaded(buf) then
+			local o = vim.bo[buf]
+			-- Only consider normal file buffers that are modifiable
+			if o.buftype == "" and o.modifiable and o.modified then
+				return true
+			end
+		end
+	end
+	return false
+end
+
 function restartVim()
 	-- Check for unsaved buffers
-	if vim.fn.getbufinfo({ bufmodified = 1 })[1] ~= nil then
+
+	if any_unsaved_real_files() then
 		local choice = vim.fn.confirm(
 			"⚠️  WARNING: There are unsaved changes!\n Do you really want to continue?",
 			"&Yes\n&No",
@@ -60,9 +74,14 @@ function restartVim()
 	local line = vim.fn.line(".")
 
 	local esc = vim.fn.fnameescape
-	local cmd = string.format("Dispatch -dir=%s nvim", esc(cwd))
+	local start_cmd
+	if file == "" then
+		start_cmd = string.format("Start -dir=%s nvim", esc(cwd))
+	else
+		start_cmd = string.format("Start -dir=%s nvim +%d %s", esc(cwd), line, esc(file))
+	end
 
-	vim.cmd(cmd)
+	vim.cmd(start_cmd)
 	vim.fn.system("kitty @ close-window --self")
 end
 
