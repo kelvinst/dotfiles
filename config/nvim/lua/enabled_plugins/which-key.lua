@@ -24,6 +24,8 @@ return { -- Useful plugin to show you pending keybinds.
 			{ "<leader>gh", group = "[H]ooks" },
 			{ "<leader>h", group = "[H]op" },
 			{ "<leader>r", group = "[R]ename" },
+			{ "<leader>s", group = "[S]essions" },
+			{ "<leader>v", group = "[V]im" },
 			{ "<leader>y", group = "[Y]ank" },
 		},
 

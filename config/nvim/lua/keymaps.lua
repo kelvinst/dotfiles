@@ -41,3 +41,30 @@ vim.keymap.set("n", "<leader>rw", [[:%s/\<<C-r><C-w>\>//gI<Left><Left><Left>]], 
 
 -- Load the LSP errors to the quickfix list
 vim.keymap.set("n", "<leader>eq", vim.diagnostic.setqflist, { desc = "[E]errors [Q]uickfix" })
+
+function restartVim()
+	-- Check for unsaved buffers
+	if vim.fn.getbufinfo({ bufmodified = 1 })[1] ~= nil then
+		local choice = vim.fn.confirm(
+			"⚠️  WARNING: There are unsaved changes!\n Do you really want to continue?",
+			"&Yes\n&No",
+			2
+		)
+		if choice ~= 1 then
+			return
+		end
+	end
+
+	local cwd = vim.fn.getcwd()
+	local file = vim.fn.expand("%:p")
+	local line = vim.fn.line(".")
+
+	local esc = vim.fn.fnameescape
+	local cmd = string.format("Dispatch -dir=%s nvim", esc(cwd))
+
+	vim.cmd(cmd)
+	vim.fn.system("kitty @ close-window --self")
+end
+
+-- Restart vim
+vim.keymap.set("n", "<leader>vr", restartVim, { desc = "[R]estart Vim" })

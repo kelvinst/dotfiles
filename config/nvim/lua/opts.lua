@@ -28,6 +28,9 @@ vim.opt.clipboard = "unnamedplus"
 -- Don't show the mode, since it's already in the status line
 vim.opt.showmode = false
 
+-- Always show tabs
+vim.opt.showtabline = 2
+
 -- Enable break indent
 vim.opt.breakindent = true
 

@@ -43,7 +43,7 @@ return { -- Fuzzy Finder (files, lsp, etc)
 		vim.keymap.set("n", "<leader>pn", telescope.extensions.notify.notify, { desc = "[N]otifications" })
 		vim.keymap.set("n", "<leader>pg", builtin.live_grep, { desc = "[G]rep" })
 		vim.keymap.set("n", "<leader>pr", builtin.resume, { desc = "[R]esume" })
-		vim.keymap.set("n", "<leader>pb", builtin.buffers, { desc = "[B]uffers" })
+		vim.keymap.set("n", "<leader>pb", telescope.extensions.scope.buffers, { desc = "[B]uffers" })
 		vim.keymap.set("n", "<leader>pf", function()
 			builtin.git_files({
 				git_command = {
