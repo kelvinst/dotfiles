@@ -118,7 +118,7 @@ alias m='make'
 
 # source
 alias s='source'
-alias sz='source ~/.zshrc'
+alias sz='source ~/.zshrc && source ~/.zshenv'
 
 # tmux
 alias t='tmux'
@@ -150,6 +150,11 @@ git_status_or_git() {
   fi
 }
 
+# Returns the current git branch
+git_current_branch() {
+  git rev-parse --abbrev-ref HEAD 2>/dev/null
+}
+
 # Retries a command until it fails
 flaky() {
   local attempt=1
@@ -174,11 +179,6 @@ flaky() {
     fi
     attempt=$((attempt + 1))
   done
-}
-
-# Returns the current git branch
-git_current_branch() {
-  git rev-parse --abbrev-ref HEAD 2>/dev/null
 }
 
 # NOTE: Auto-commands

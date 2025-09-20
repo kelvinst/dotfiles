@@ -1,3 +1,7 @@
+# vim:fileencoding=utf-8:foldmethod=marker
+
+# Documentation {{{
+
 # ################################################################ #
 # THE FOLLOWING IS AN EXPLANATION OF THE GRAMMAR THAT SKHD PARSES. #
 # FOR SIMPLE EXAMPLE MAPPINGS LOOK FURTHER DOWN THIS FILE..        #
@@ -69,100 +73,71 @@
 #               prepend '\' at the end of the previous line.
 #
 #               an EOL character signifies the end of the bind.
+# }}}
 
-# ############################################################### #
-# THE FOLLOWING SECTION CONTAIN SIMPLE MAPPINGS DEMONSTRATING HOW #
-# TO INTERACT WITH THE YABAI WM. THESE ARE SUPPOSED TO BE USED AS #
-# A REFERENCE ONLY, WHEN MAKING YOUR OWN CONFIGURATION..          #
-# ############################################################### #
+# yabai {{{
 
-# restart the service (reload everything)
+# restart the yabai service (reload everything from scratch, key: `,`)
 cmd + shift + ctrl - 0x2B : yabai --stop-service && yabai --start-service
 
 # reload the layout
-cmd + shift + ctrl - r : yabai -m config layout bsp window_placement first_child
+cmd + shift + ctrl - r : yabai -m config --space $(current_space) layout bsp && \
+                         yabai -m window --swap last
+
+# swap to main
+cmd + shift + ctrl - return : yabai -m window --swap last
+cmd + shift + ctrl + alt - return : yabai -m window --swap first
+
+# mirror layout (key: `/`)
+cmd + shift + ctrl - 0x2A : yabai -m space --mirror y-axis
+cmd + shift + ctrl + alt - 0x2A : yabai -m space --mirror x-axis
 
 # focus window
-cmd + shift + ctrl - h : yabai -m window --focus west
-cmd + shift + ctrl - j : yabai -m window --focus south
-cmd + shift + ctrl - k : yabai -m window --focus north
-cmd + shift + ctrl - l : yabai -m window --focus east
-
-# set insertion point in focused container
-cmd + shift + ctrl + alt - h : yabai -m window --insert west
-cmd + shift + ctrl + alt - j : yabai -m window --insert south
-cmd + shift + ctrl + alt - k : yabai -m window --insert north
-cmd + shift + ctrl + alt - l : yabai -m window --insert east
+cmd + shift + ctrl - h : yabai -m window --focus west || yabai -m display --focus west
+cmd + shift + ctrl - j : yabai -m window --focus south || yabai -m display --focus south
+cmd + shift + ctrl - k : yabai -m window --focus north || yabai -m display --focus north
+cmd + shift + ctrl - l : yabai -m window --focus east || yabai -m display --focus east
 
 # swap managed window
-cmd + shift + ctrl - y : yabai -m window --swap west
-cmd + shift + ctrl - u : yabai -m window --swap south
-cmd + shift + ctrl - i : yabai -m window --swap north
-cmd + shift + ctrl - o : yabai -m window --swap east
+cmd + shift + ctrl + alt - h : yabai -m window --swap west || move_window_to_display west
+cmd + shift + ctrl + alt - j : yabai -m window --swap south || move_window_to_display south
+cmd + shift + ctrl + alt - k : yabai -m window --swap north || move_window_to_display north
+cmd + shift + ctrl + alt - l : yabai -m window --swap east || move_window_to_display east
 
 # move managed window
-cmd + shift + ctrl + alt - y : yabai -m window --warp west
-cmd + shift + ctrl + alt - u : yabai -m window --warp south
-cmd + shift + ctrl + alt - i : yabai -m window --warp north
-cmd + shift + ctrl + alt - o : yabai -m window --warp east
+cmd + shift + ctrl - y : yabai -m window --warp west
+cmd + shift + ctrl - u : yabai -m window --warp south
+cmd + shift + ctrl - i : yabai -m window --warp north
+cmd + shift + ctrl - o : yabai -m window --warp east
+
+# set insertion point in focused container
+cmd + shift + ctrl + alt - y : yabai -m window --insert west
+cmd + shift + ctrl + alt - u : yabai -m window --insert south
+cmd + shift + ctrl + alt - i : yabai -m window --insert north
+cmd + shift + ctrl + alt - o : yabai -m window --insert east
+
+# equalize size of windows
+cmd + shift + ctrl - e : yabai -m space --equalize
 
 # balance size of windows
 cmd + shift + ctrl - 0 : yabai -m space --balance
 
 # create space and follow focus
-cmd + shift + ctrl - c : yabai -m space --create && \
-                         index="$(yabai -m query --spaces --display | jq 'map(select(."is-native-fullscreen" == false))[-1].index')" && \
-                         yabai -m space --focus "${index}"
+cmd + shift + ctrl - c : create_space
 
 # create desktop, move window and follow focus
-cmd + shift + ctrl + alt - c : yabai -m space --create && \
-                               index="$(yabai -m query --spaces --display | jq 'map(select(."is-native-fullscreen" == false))[-1].index')" && \
-                               yabai -m window --space "${index}" && \
-                               yabai -m space --focus "${index}"
+cmd + shift + ctrl + alt - c : create_space_and_move_window
 
 # delete space
-cmd + shift + ctrl - x : yabai -m space --destroy
+cmd + shift + ctrl - d : yabai -m space --destroy
 
 # focus spaces
-cmd + shift + ctrl - n : index="$(yabai -m query --spaces --space | jq '.index + 1')" && \
-                         max_index="$(yabai -m query --spaces --display | jq 'map(.index) | max')" && \
-                         if [ "$index" -le "$max_index" ]; then \
-                           yabai -m space --focus "$index"; \
-                         fi
-cmd + shift + ctrl - p : index="$(yabai -m query --spaces --space | jq '.index - 1')" && \
-                         min_index="$(yabai -m query --spaces --display | jq 'map(.index) | min')" && \
-                         if [ "$index" -ge "$min_index" ]; then \
-                           yabai -m space --focus "$index"; \
-                         fi
+cmd + shift + ctrl - n : focus_next_space
+cmd + shift + ctrl - p : focus_previous_space
 
 # move window to spaces
-cmd + shift + ctrl + alt - n : index="$(yabai -m query --spaces --space | jq '.index + 1')" && \
-                               max_index="$(yabai -m query --spaces --display | jq 'map(.index) | max')" && \
-                               id="$(yabai -m query --windows --window | jq '.id')" && \
-                               if [ "$index" -le "$max_index" ]; then \
-                                     yabai -m window --space "${index}" && \
-                                     yabai -m window --focus "${id}" ; \
-                               fi
-cmd + shift + ctrl + alt - p : index="$(yabai -m query --spaces --space | jq '.index - 1')" && \
-                               min_index="$(yabai -m query --spaces --display | jq 'map(.index) | min')" && \
-                               id="$(yabai -m query --windows --window | jq '.id')" && \
-                               if [ "$index" -ge "$min_index" ]; then \
-                                     yabai -m window --space "${index}" && \
-                                     yabai -m window --focus "${id}" ; \
-                               fi
-
-# focus display
-cmd + shift + ctrl - a : yabai -m display --focus west
-cmd + shift + ctrl - d : yabai -m display --focus east
-
-# move window to displays
-cmd + shift + ctrl + alt - a : yabai -m window --display west && \
-                               yabai -m display --focus west
-cmd + shift + ctrl + alt - d : yabai -m window --display east && \
-                               yabai -m display --focus east
-
-# reenable focus follows mouse
-cmd + shift + ctrl - m : yabai -m config focus_follows_mouse autofocus
+cmd + shift + ctrl + alt - n : move_window_to_next_space 
+cmd + shift + ctrl + alt - p : move_window_to_previous_space
 
 # toggle window zoom
 cmd + shift + ctrl - z : yabai -m window --toggle zoom-fullscreen
@@ -178,7 +153,6 @@ cmd + shift + ctrl - t : yabai -m window --toggle float --grid 4:4:1:1:2:2
 cmd + shift + ctrl + alt - t : yabai -m window --toggle sticky --toggle pip
 
 # 3 column layout (when 3 screens are open)
-cmd + shift + ctrl - 3 : yabai -m config layout bsp && \
-                         yabai -m window --toggle split && \
-                         yabai -m window --swap east && \
-                         yabai -m space --balance
+cmd + shift + ctrl - 3 : three_column_layout
+
+# }}}

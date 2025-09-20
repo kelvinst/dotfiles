@@ -44,9 +44,6 @@ return {
 			autosave = true,
 			autoload = true,
 			autoprompt = true,
-			autoswitch = {
-				enable = true,
-			},
 			save_hook = function()
 				vim.cmd([[ScopeSaveState]]) -- Scope.nvim saving
 			end,

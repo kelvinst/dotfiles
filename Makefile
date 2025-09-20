@@ -16,6 +16,7 @@ install:
 	cp ./tmux.conf ~/.tmux.conf
 	cp ./yabairc ~/.yabairc
 	cp ./zshrc ~/.zshrc
+	cp ./zshenv ~/.zshenv
 
 clean:
 	rm -rf ~/.config/kitty/*
@@ -28,6 +29,7 @@ clean:
 	rm -rf ~/.tmux.conf
 	rm -rf ~/.yabairc
 	rm -rf ~/.zshrc
+	rm -rf ~/.zshenv
 
 update: 
 	mkdir -p ./config/kitty/
@@ -44,3 +46,4 @@ update:
 	cp ~/.tmux.conf ./tmux.conf
 	cp ~/.yabairc ./yabairc
 	cp ~/.zshrc ./zshrc
+	cp ~/.zshenv ./zshenv

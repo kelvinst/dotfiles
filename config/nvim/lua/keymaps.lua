@@ -69,6 +69,8 @@ function restartVim()
 		end
 	end
 
+	require("nvim-possession").update()
+
 	local cwd = vim.fn.getcwd()
 	local file = vim.fn.expand("%:p")
 	local line = vim.fn.line(".")
@@ -76,9 +78,9 @@ function restartVim()
 	local esc = vim.fn.fnameescape
 	local start_cmd
 	if file == "" then
-		start_cmd = string.format("Start -dir=%s nvim", esc(cwd))
+		start_cmd = string.format("Dispatch -dir=%s nvim", esc(cwd))
 	else
-		start_cmd = string.format("Start -dir=%s nvim +%d %s", esc(cwd), line, esc(file))
+		start_cmd = string.format("Dispatch -dir=%s nvim +%d %s", esc(cwd), line, esc(file))
 	end
 
 	vim.cmd(start_cmd)

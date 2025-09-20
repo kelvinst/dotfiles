@@ -1,4 +1,6 @@
--- NOTE: General Settings
+-- vim:fileencoding=utf-8:foldmethod=marker
+
+-- General Settings {{{
 
 -- Set <space> as the leader key
 vim.g.mapleader = " "
@@ -7,7 +9,9 @@ vim.g.maplocalleader = " "
 -- Set up shell so it does load the functions from .zshenv too
 vim.opt.shell = "zsh -i"
 
--- NOTE: UI Settings
+-- }}}
+
+-- UI Settings {{{
 
 -- Hide line numbers
 vim.opt.number = false
@@ -49,7 +53,9 @@ vim.opt.scrolloff = 10
 vim.opt.list = true
 vim.opt.listchars = { tab = "» ", trail = "·", nbsp = "␣" }
 
--- NOTE: File and Backup Settings
+-- }}}
+
+-- File and Backup Settings {{{
 
 -- Do not save backup/swap files
 vim.opt.backup = false
@@ -59,7 +65,9 @@ vim.opt.swapfile = false
 vim.opt.undodir = os.getenv("HOME") .. "/.vim/undodir"
 vim.opt.undofile = true
 
--- NOTE: Editing Behavior
+-- }}}
+
+-- Editing Behavior {{{
 
 -- Tab/indent settings
 vim.opt.tabstop = 2
@@ -94,3 +102,5 @@ vim.opt.smartcase = true
 
 -- Show a colored line on the limit
 vim.opt.colorcolumn = "100"
+
+-- }}}
