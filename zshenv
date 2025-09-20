@@ -83,11 +83,6 @@ move_window_to_display() {
   yabai -m window --focus "${window_id}"
 }
 
-# Integer division rounding up instead of down
-ceil_div() {
-  echo $(( ($1 + $2 - 1) / $2 ))
-}
-
 # Force a determined split type for the current window
 force_split_type() {
     split_type=$(yabai -m query --windows --window | jq -r '."split-type"')
@@ -99,48 +94,64 @@ force_split_type() {
 
 # Build 3 column layout for current space
 three_column_layout() {
+  # Reset the layout, we need to start from a clean state
   yabai -m config --space $(current_space) layout bsp
 
   windows_count=$(yabai -m query --windows --space | jq -r 'map(select(."is-visible")) | length')
   window_id=$(current_window_id)
 
+  # If there are less than 3 windows, just put the main window on the last position
+  # which is the right in my case. And then we can stop
   if [ "$windows_count" -lt 3 ]; then
     yabai -m window --swap last
     return
   fi
 
+  # Move all windows to the right column except for 3 (2 from the left + 
+  # 1 that's already there)
   i=$windows_count
   while [ "$i" -gt 3 ]; do
+    # Always skip the first window, it's going to become the main one
     yabai -m window --focus next
+
+    # Send it to the end (right column)
     yabai -m window --warp last
 
+    # Guarantee all windows in the right are split horizontally
     force_split_type horizontal
 
+    # Go back to the first (main) window
     yabai -m window --focus first
     i=$((i - 1))
   done
 
-  yabai -m window --toggle split
+  # Now this is the magic part, down here we should already have 2 windows in the left +
+  # all the others in the right column. So we just ensure the 2 windows in the left are split
+  # vertically...
+  force_split_type vertical
+
+  # and then we put the first window (main) in the middle column
   yabai -m window --swap next
 
+  # Then we calculate how many windows we need to move from the right column to the
+  # left one. Which would always be half of them (discarding the 2 that are not in that column)
   windows_to_move_left=0
-
   if [ "$windows_count" -gt 3 ]; then
-    windows_to_move_left=$(ceil_div $((windows_count - 3)) 2)
+    windows_to_move_left=$(((windows_count - 2) / 2))
   fi
 
-  echo "Total windows: $windows_count"
-  echo "Moving $windows_to_move_left windows to the left column"
-
+  # We move them all...
   while [ "$windows_to_move_left" -gt 0 ]; do
     yabai -m window --focus last
     yabai -m window --warp first
 
+    # Garanteeing they are split horizontally
     force_split_type horizontal
 
     windows_to_move_left=$((windows_to_move_left - 1))
   done
 
+  # And finally we balance everything and focus back the main window
   yabai -m space --balance
   yabai -m window --focus "${window_id}"
 }

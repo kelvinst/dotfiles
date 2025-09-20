@@ -139,6 +139,9 @@ cmd + shift + ctrl - p : focus_previous_space
 cmd + shift + ctrl + alt - n : move_window_to_next_space 
 cmd + shift + ctrl + alt - p : move_window_to_previous_space
 
+# reenable focus follows mouse
+cmd + shift + ctrl - m : yabai -m config focus_follows_mouse autoraise
+
 # toggle window zoom
 cmd + shift + ctrl - z : yabai -m window --toggle zoom-fullscreen
 cmd + shift + ctrl + alt - z : yabai -m window --toggle zoom-parent
