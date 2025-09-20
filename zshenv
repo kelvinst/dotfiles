@@ -94,6 +94,9 @@ force_split_type() {
 
 # Build 3 column layout for current space
 three_column_layout() {
+  # Disable focus-follows-mouse for the duration of this function
+  yabai -m config focus_follows_mouse off
+
   # Reset the layout, we need to start from a clean state
   yabai -m config --space $(current_space) layout bsp
 
@@ -154,4 +157,7 @@ three_column_layout() {
   # And finally we balance everything and focus back the main window
   yabai -m space --balance
   yabai -m window --focus "${window_id}"
+
+  # And after all that, we can turn focus-follows-mouse back on
+  yabai -m config focus_follows_mouse autofocus
 }

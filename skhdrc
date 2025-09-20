@@ -81,8 +81,10 @@
 cmd + shift + ctrl - 0x2B : yabai --stop-service && yabai --start-service
 
 # reload the layout
-cmd + shift + ctrl - r : yabai -m config --space $(current_space) layout bsp && \
-                         yabai -m window --swap last
+cmd + shift + ctrl - r : yabai -m config focus_follows_mouse off && \
+                         yabai -m config --space $(current_space) layout bsp && \
+                         yabai -m window --swap last && \
+                         yabai -m config focus_follows_mouse autofocus
 
 # swap to main
 cmd + shift + ctrl - return : yabai -m window --swap last
@@ -140,7 +142,7 @@ cmd + shift + ctrl + alt - n : move_window_to_next_space
 cmd + shift + ctrl + alt - p : move_window_to_previous_space
 
 # reenable focus follows mouse
-cmd + shift + ctrl - m : yabai -m config focus_follows_mouse autoraise
+cmd + shift + ctrl - m : yabai -m config focus_follows_mouse autofocus
 
 # toggle window zoom
 cmd + shift + ctrl - z : yabai -m window --toggle zoom-fullscreen
