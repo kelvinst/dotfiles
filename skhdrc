@@ -75,6 +75,13 @@
 #               an EOL character signifies the end of the bind.
 # }}}
 
+# Kitty terminal app {{{
+
+# open a quick access kitty
+cmd + ctrl + alt - return : kitten quick-access-terminal
+
+# }}}
+
 # yabai {{{
 
 # restart the yabai service (reload everything from scratch, key: `,`)

@@ -40,16 +40,18 @@ return {
 		},
 	},
 	config = function()
-		require("nvim-possession").setup({
-			autosave = true,
-			autoload = true,
-			autoprompt = true,
-			save_hook = function()
-				vim.cmd([[ScopeSaveState]]) -- Scope.nvim saving
-			end,
-			post_hook = function()
-				vim.cmd([[ScopeLoadState]]) -- Scope.nvim loading
-			end,
-		})
+		if vim.env.KITTY_SCROLLBACK_NVIM ~= "true" then
+			require("nvim-possession").setup({
+				autosave = true,
+				autoload = true,
+				autoprompt = true,
+				save_hook = function()
+					vim.cmd([[ScopeSaveState]]) -- Scope.nvim saving
+				end,
+				post_hook = function()
+					vim.cmd([[ScopeLoadState]]) -- Scope.nvim loading
+				end,
+			})
+		end
 	end,
 }
