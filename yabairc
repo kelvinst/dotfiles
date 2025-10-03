@@ -14,7 +14,7 @@ yabai -m config                                  \
   bottom_padding            04                   \
   window_opacity            on                   \
   active_window_opacity     1.0                  \
-  normal_window_opacity     0.75                 \
+  normal_window_opacity     0.80                 \
   focus_follows_mouse       autofocus            \
   display_arrangement_order horizontal           \
   window_origin_display     focused              \
