@@ -75,96 +75,96 @@
 #               an EOL character signifies the end of the bind.
 # }}}
 
-# Kitty terminal app {{{
+# kitty {{{
 
 # open a quick access kitty
-cmd + ctrl + alt - return : kitten quick-access-terminal
+cmd + ctrl + shift - return : kitten quick-access-terminal
 
 # }}}
 
 # yabai {{{
 
 # restart the yabai service (reload everything from scratch, key: `,`)
-cmd + shift + ctrl - 0x2B : yabai --stop-service && yabai --start-service
+alt + ctrl - 0x2B : yabai --stop-service && yabai --start-service
 
 # reload the layout
-cmd + shift + ctrl - r : yabai -m config focus_follows_mouse off && \
+alt + ctrl - r : yabai -m config focus_follows_mouse off && \
                          yabai -m config --space $(current_space) layout bsp && \
                          yabai -m window --swap last && \
                          yabai -m config focus_follows_mouse autofocus
 
 # swap to main
-cmd + shift + ctrl - return : yabai -m window --swap last
-cmd + shift + ctrl + alt - return : yabai -m window --swap first
+alt + ctrl - return : yabai -m window --swap last
+alt + ctrl + shift - return : yabai -m window --swap first
 
 # mirror layout (key: `/`)
-cmd + shift + ctrl - 0x2A : yabai -m space --mirror y-axis
-cmd + shift + ctrl + alt - 0x2A : yabai -m space --mirror x-axis
+alt + ctrl - 0x2A : yabai -m space --mirror y-axis
+alt + ctrl + shift - 0x2A : yabai -m space --mirror x-axis
 
 # focus window
-cmd + shift + ctrl - h : yabai -m window --focus west || yabai -m display --focus west
-cmd + shift + ctrl - j : yabai -m window --focus south || yabai -m display --focus south
-cmd + shift + ctrl - k : yabai -m window --focus north || yabai -m display --focus north
-cmd + shift + ctrl - l : yabai -m window --focus east || yabai -m display --focus east
+alt + ctrl - h : yabai -m window --focus west || yabai -m display --focus west
+alt + ctrl - j : yabai -m window --focus south || yabai -m display --focus south
+alt + ctrl - k : yabai -m window --focus north || yabai -m display --focus north
+alt + ctrl - l : yabai -m window --focus east || yabai -m display --focus east
 
 # swap managed window
-cmd + shift + ctrl + alt - h : yabai -m window --swap west || move_window_to_display west
-cmd + shift + ctrl + alt - j : yabai -m window --swap south || move_window_to_display south
-cmd + shift + ctrl + alt - k : yabai -m window --swap north || move_window_to_display north
-cmd + shift + ctrl + alt - l : yabai -m window --swap east || move_window_to_display east
+alt + ctrl + shift - h : yabai -m window --swap west || move_window_to_display west
+alt + ctrl + shift - j : yabai -m window --swap south || move_window_to_display south
+alt + ctrl + shift - k : yabai -m window --swap north || move_window_to_display north
+alt + ctrl + shift - l : yabai -m window --swap east || move_window_to_display east
 
 # move managed window
-cmd + shift + ctrl - y : yabai -m window --warp west
-cmd + shift + ctrl - u : yabai -m window --warp south
-cmd + shift + ctrl - i : yabai -m window --warp north
-cmd + shift + ctrl - o : yabai -m window --warp east
+alt + ctrl - y : yabai -m window --warp west
+alt + ctrl - u : yabai -m window --warp south
+alt + ctrl - i : yabai -m window --warp north
+alt + ctrl - o : yabai -m window --warp east
 
 # set insertion point in focused container
-cmd + shift + ctrl + alt - y : yabai -m window --insert west
-cmd + shift + ctrl + alt - u : yabai -m window --insert south
-cmd + shift + ctrl + alt - i : yabai -m window --insert north
-cmd + shift + ctrl + alt - o : yabai -m window --insert east
+alt + ctrl + shift - y : yabai -m window --insert west
+alt + ctrl + shift - u : yabai -m window --insert south
+alt + ctrl + shift - i : yabai -m window --insert north
+alt + ctrl + shift - o : yabai -m window --insert east
 
 # equalize size of windows
-cmd + shift + ctrl - e : yabai -m space --equalize
+alt + ctrl - e : yabai -m space --equalize
 
 # balance size of windows
-cmd + shift + ctrl - 0 : yabai -m space --balance
+alt + ctrl - 0 : yabai -m space --balance
 
 # create space and follow focus
-cmd + shift + ctrl - c : create_space
+alt + ctrl - c : create_space
 
 # create desktop, move window and follow focus
-cmd + shift + ctrl + alt - c : create_space_and_move_window
+alt + ctrl + shift - c : create_space_and_move_window
 
 # delete space
-cmd + shift + ctrl - d : yabai -m space --destroy
+alt + ctrl - d : yabai -m space --destroy
 
 # focus spaces
-cmd + shift + ctrl - n : focus_next_space
-cmd + shift + ctrl - p : focus_previous_space
+alt + ctrl - n : focus_next_space
+alt + ctrl - p : focus_previous_space
 
 # move window to spaces
-cmd + shift + ctrl + alt - n : move_window_to_next_space 
-cmd + shift + ctrl + alt - p : move_window_to_previous_space
+alt + ctrl + shift - n : move_window_to_next_space 
+alt + ctrl + shift - p : move_window_to_previous_space
 
 # reenable focus follows mouse
-cmd + shift + ctrl - m : yabai -m config focus_follows_mouse autofocus
+alt + ctrl - m : yabai -m config focus_follows_mouse autofocus
 
 # toggle window zoom
-cmd + shift + ctrl - z : yabai -m window --toggle zoom-fullscreen
-cmd + shift + ctrl + alt - z : yabai -m window --toggle zoom-parent
+alt + ctrl - z : yabai -m window --toggle zoom-fullscreen
+alt + ctrl + shift - z : yabai -m window --toggle zoom-parent
 
 # toggle window split type
-cmd + shift + ctrl - s : yabai -m window --toggle split
+alt + ctrl - s : yabai -m window --toggle split
 
 # float / unfloat window and center on screen
-cmd + shift + ctrl - t : yabai -m window --toggle float --grid 4:4:1:1:2:2
+alt + ctrl - t : yabai -m window --toggle float --grid 4:4:1:1:2:2
 
 # toggle sticky(+float), picture-in-picture
-cmd + shift + ctrl + alt - t : yabai -m window --toggle sticky --toggle pip
+alt + ctrl + shift - t : yabai -m window --toggle sticky --toggle pip
 
 # 3 column layout (when 3 screens are open)
-cmd + shift + ctrl - 3 : three_column_layout
+alt + ctrl - 3 : three_column_layout
 
 # }}}
