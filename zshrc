@@ -106,7 +106,7 @@ alias gr='git reset'
 alias gu='git pull'
 
 # lazygit
-alias lazygit='tmux setw monitor-activity off && lazygit'
+alias lazygit='[ -n "$TMUX" ] && tmux setw monitor-activity off \; lazygit'
 alias lg='lazygit'
 
 # ls
