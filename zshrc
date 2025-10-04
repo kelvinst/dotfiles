@@ -27,7 +27,7 @@ export LS_COLORS="$(vivid generate tokyonight-moon)"
 export FPATH=(/Users/kelvinstinghen/.docker/completions $fpath)
 
 # Configure additional completion definitions
-export FPATH=$(brew --prefix)/share/zsh-completions:$FPATH
+fpath=$(brew --prefix)/share/zsh-completions:$FPATH
 
 # Load the completion system
 autoload -Uz compinit
