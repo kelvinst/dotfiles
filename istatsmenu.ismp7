@@ -46,13 +46,14 @@
 		<string>0.3843137254901961 0.7294117647058823 0.2745098039215687 1</string>
 		<key>Combined.Menu.Items</key>
 		<array>
+			<string>network-bandwidth</string>
 			<string>cpu-cpu</string>
 			<string>cpu-gpu</string>
 			<string>sensors-overview</string>
 			<string>memory-overview</string>
+			<string>disks-physical</string>
 			<string>disks-activity</string>
 			<string>battery-battery</string>
-			<string>network-bandwidth</string>
 			<string>weather-conditions</string>
 			<string>time-cities</string>
 			<string>processes</string>
@@ -136,9 +137,9 @@
 		<key>License.Validation.license</key>
 		<string>bail-nada-ship-noel-6624-7</string>
 		<key>License.Validation.signature</key>
-		<string>MIGHAkIB949H/Qn0Xb9B1qWXLElIl0TyiXN4nU9jVghrMsAGgbxPv1Clr0hhn4RWSuCsd6kJ+mo0HSHNvpKFgPZ50S8Qnb0CQWD14kKzQM97tEFQ3ef6z1WcFCFwF99ny+VmrxL85EiTh2dYqLk6hCKEIiOv5a03eBq5dVfsAm6E4L6CoVU6DAMf</string>
+		<string>MIGIAkIBXiwuLgFXNu2+6hLu67usLTbGfeVNgxyn6UkkVzQSXrLkTcujkj6Mu/7WwqYBU4DdbgRg0xFD/tY7WgV4l6keESICQgEWZWa+E5aLy4M2eX7Pem7emwWABiiZCBN8LMZZtYK/IzN9w1GcxjHHi00dF65wfkwOtMgmaRbxJLkDS0iv8wQujw==</string>
 		<key>License.Validation.time</key>
-		<string>1740184365</string>
+		<string>1758644402</string>
 		<key>Memory.Menu.Graph.App.Color</key>
 		<string>0.2399970889091492 0.8168253939549004 1 1</string>
 		<key>Memory.Menu.Graph.Pressure.Color</key>
@@ -167,7 +168,7 @@
 		<key>Menubar.Disks.Global.ShowNames</key>
 		<false/>
 		<key>Menubar.Global.ReducePadding</key>
-		<integer>1</integer>
+		<integer>0</integer>
 		<key>Menubar.Style</key>
 		<integer>1</integer>
 		<key>Menubar.Theme.Dark</key>
@@ -445,12 +446,6 @@
 		<integer>1</integer>
 		<key>Profiles.Settings.default.Combined.Menubar.Items</key>
 		<array>
-			<dict>
-				<key>source</key>
-				<integer>17</integer>
-				<key>type</key>
-				<integer>11</integer>
-			</dict>
 			<dict>
 				<key>source</key>
 				<integer>6</integer>
@@ -896,6 +891,8 @@
 		</array>
 		<key>Time.Menubar.Mode.DualValue.Font.Name</key>
 		<string>default</string>
+		<key>UpdateFrequency</key>
+		<integer>2</integer>
 		<key>Updates.Attempts.2250</key>
 		<integer>1</integer>
 		<key>Weather.Global.AvailableProviders</key>
@@ -935,6 +932,18 @@
 				<string>willyweather</string>
 				<key>name</key>
 				<string>🇦🇺 WillyWeather (BoM)</string>
+			</dict>
+			<dict>
+				<key>key</key>
+				<string>dwd</string>
+				<key>name</key>
+				<string>🇩🇪 DWD</string>
+			</dict>
+			<dict>
+				<key>key</key>
+				<string>meteofrance</string>
+				<key>name</key>
+				<string>🇫🇷 Meteo France</string>
 			</dict>
 		</array>
 		<key>Weather.Global.Location.city</key>
