@@ -23,6 +23,9 @@ export LS_COLORS="$(vivid generate tokyonight-moon)"
 
 # NOTE: Completions
 
+# The following lines have been added by Docker Desktop to enable Docker CLI completions.
+export FPATH=(/Users/kelvinstinghen/.docker/completions $fpath)
+
 # Configure additional completion definitions
 export FPATH=$(brew --prefix)/share/zsh-completions:$FPATH
 
