@@ -129,7 +129,7 @@ alt + ctrl + shift - o : yabai -m window --insert east
 alt + ctrl - e : yabai -m space --equalize
 
 # balance size of windows
-alt + ctrl - 0 : yabai -m space --balance
+alt + ctrl - b : yabai -m space --balance
 
 # create space and follow focus
 alt + ctrl - c : create_space
@@ -143,10 +143,30 @@ alt + ctrl - d : yabai -m space --destroy
 # focus spaces
 alt + ctrl - n : focus_next_space
 alt + ctrl - p : focus_previous_space
+alt + ctrl - 1 : yabai -m space --focus 1
+alt + ctrl - 2 : yabai -m space --focus 2
+alt + ctrl - 3 : yabai -m space --focus 3
+alt + ctrl - 4 : yabai -m space --focus 4
+alt + ctrl - 5 : yabai -m space --focus 5
+alt + ctrl - 6 : yabai -m space --focus 6
+alt + ctrl - 7 : yabai -m space --focus 7
+alt + ctrl - 8 : yabai -m space --focus 8
+alt + ctrl - 9 : yabai -m space --focus 9
+alt + ctrl - 0 : yabai -m space --focus 10
 
 # move window to spaces
 alt + ctrl + shift - n : move_window_to_next_space 
 alt + ctrl + shift - p : move_window_to_previous_space
+alt + ctrl + shift - 1 : move_window_to_space 1
+alt + ctrl + shift - 2 : move_window_to_space 2
+alt + ctrl + shift - 3 : move_window_to_space 3
+alt + ctrl + shift - 4 : move_window_to_space 4
+alt + ctrl + shift - 5 : move_window_to_space 5
+alt + ctrl + shift - 6 : move_window_to_space 6
+alt + ctrl + shift - 7 : move_window_to_space 7
+alt + ctrl + shift - 8 : move_window_to_space 8
+alt + ctrl + shift - 9 : move_window_to_space 9
+alt + ctrl + shift - 0 : move_window_to_space 10
 
 # reenable focus follows mouse
 alt + ctrl - m : yabai -m config focus_follows_mouse autofocus
@@ -165,6 +185,6 @@ alt + ctrl - t : yabai -m window --toggle float --grid 4:4:1:1:2:2
 alt + ctrl + shift - t : yabai -m window --toggle sticky --toggle pip
 
 # 3 column layout (when 3 screens are open)
-alt + ctrl - 3 : three_column_layout
+alt + ctrl - f : three_column_layout
 
 # }}}

@@ -61,6 +61,13 @@ move_window_to_previous_space() {
   fi
 }
 
+# Move current window to a specific space
+move_window_to_space() {
+  window_id=$(current_window_id)
+  yabai -m window --space "$1"
+  yabai -m window --focus "${window_id}"
+}
+
 # Create a new space and focus it
 create_space() {
   yabai -m space --create
