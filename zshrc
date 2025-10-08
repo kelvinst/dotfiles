@@ -12,6 +12,9 @@ export PATH="/opt/homebrew/bin:$PATH"
 # Add rust bin to path
 export PATH="$(asdf where rust)/bin:$PATH"
 
+# Add opencode bin to path
+export PATH="$HOME/.opencode/bin:$PATH"
+
 # Setting tmux-sessionizer config path
 export TMS_CONFIG_FILE="$HOME/.config/tms/config.toml"
 
