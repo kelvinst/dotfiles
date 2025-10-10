@@ -161,7 +161,7 @@ return { -- Asynchronous tasks
 				desc = "[P]hoenix",
 				default = "s",
 				tasks = {
-					s = { "mix phx.server", desc = "[S]erver" },
+					s = { "iex -S mix phx.server", desc = "[S]erver" },
 					t = { "mix phx.routes", desc = "[T]est routes" },
 				},
 				g = {
@@ -259,6 +259,7 @@ return { -- Asynchronous tasks
 					a = { "mix test", desc = "[A]ll" },
 					c = { "mix coveralls", desc = "[C]overage" },
 					h = { "mix coveralls.html", desc = "[H]TML coverage" },
+					i = { "mix test.interactive", desc = "[I]nteractive" },
 				},
 				w = {
 					desc = "[W]arnings as errors",
