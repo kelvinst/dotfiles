@@ -50,6 +50,19 @@ local function dispatchTasks(prefix, key, desc, default, tasks, parentTasks)
 end
 
 local function dispatchSubgroup(prefix, key, subgroup, parentTasks)
+	local function fileExists(pattern)
+		local root_dir = vim.fn.getcwd()
+		local files = vim.fn.glob(root_dir .. "/" .. pattern, true, true)
+		return #files > 0
+	end
+
+	local filterByRootFiles = subgroup.filterByRootFiles
+	subgroup.filterByRootFiles = nil
+
+	if filterByRootFiles and not fileExists(filterByRootFiles) then
+		return
+	end
+
 	if type(subgroup) == "table" then
 		local tasks = subgroup.tasks
 		dispatchTasks(prefix, key, subgroup.desc, subgroup.default, tasks, parentTasks)
@@ -65,23 +78,10 @@ end
 
 -- Defines a group of dispatch commands
 local function dispatchGroup(config)
-	local function fileExists(pattern)
-		local root_dir = vim.fn.getcwd()
-		local files = vim.fn.glob(root_dir .. "/" .. pattern, true, true)
-		return #files > 0
-	end
-
-	-- Get the root config and remove it from the table
-	local filterByRootFiles = config.filterByRootFiles
-	config.filterByRootFiles = nil
 	local prefix = config.key
 	config.key = nil
 	local desc = config.desc
 	config.desc = nil
-
-	if filterByRootFiles and not fileExists(filterByRootFiles) then
-		return
-	end
 
 	local whichkey = require("which-key")
 	whichkey.add({ { prefix, group = desc } })
@@ -152,13 +152,12 @@ return { -- Asynchronous tasks
 			{ "g'?", desc = "Show 'shell'" },
 		})
 
-		-- Define a dispatch group for Elixir projects
 		dispatchGroup({
-			key = "<leader>m",
-			desc = "[M]ix tasks",
-			filterByRootFiles = "mix.exs",
+			key = "<leader>d",
+			desc = "[D]ispatch",
 			p = {
-				desc = "[P]hoenix",
+				filterByRootFiles = "mix.exs",
+				desc = "[P]hoenix (Elixir)",
 				default = "s",
 				tasks = {
 					s = { "iex -S mix phx.server", desc = "[S]erver" },
@@ -176,7 +175,8 @@ return { -- Asynchronous tasks
 				},
 			},
 			c = {
-				desc = "[C]ompile",
+				filterByRootFiles = "mix.exs",
+				desc = "[C]ompile (Elixir)",
 				default = "d",
 				tasks = {
 					d = { "mix compile", desc = "[D]ev" },
@@ -191,7 +191,8 @@ return { -- Asynchronous tasks
 				},
 			},
 			d = {
-				desc = "[D]eps",
+				filterByRootFiles = "mix.exs",
+				desc = "[D]eps (Elixir)",
 				default = "g",
 				tasks = {
 					g = { "mix deps.get", desc = "[G]et" },
@@ -202,7 +203,8 @@ return { -- Asynchronous tasks
 				},
 			},
 			e = {
-				desc = "[E]cto",
+				filterByRootFiles = "mix.exs",
+				desc = "[E]cto (Elixir)",
 				default = "<Up>",
 				tasks = {
 					["<Up>"] = { "mix ecto.migrate", desc = "[Up]" },
@@ -228,7 +230,8 @@ return { -- Asynchronous tasks
 				},
 			},
 			f = {
-				desc = "[F]ormat",
+				filterByRootFiles = "mix.exs",
+				desc = "[F]ormat (Elixir)",
 				default = "a",
 				tasks = {
 					a = { "mix format", desc = "[A]ll files" },
@@ -236,7 +239,8 @@ return { -- Asynchronous tasks
 				},
 			},
 			h = {
-				desc = "[H]elp (docs)",
+				filterByRootFiles = "mix.exs",
+				desc = "[H]elp (Elixir)",
 				default = "r",
 				tasks = {
 					r = { "mix doctor", desc = "Docto[r]" },
@@ -244,7 +248,8 @@ return { -- Asynchronous tasks
 				},
 			},
 			l = {
-				desc = "[L]inters",
+				filterByRootFiles = "mix.exs",
+				desc = "[L]inters (Elixir)",
 				default = "c",
 				tasks = {
 					c = { "mix credo", desc = "[C]ode" },
@@ -253,7 +258,8 @@ return { -- Asynchronous tasks
 				},
 			},
 			t = {
-				desc = "[T]est",
+				filterByRootFiles = "mix.exs",
+				desc = "[T]est (Elixir)",
 				default = "h",
 				tasks = {
 					a = { "mix test", desc = "[A]ll" },
