@@ -18,7 +18,13 @@ vim.opt.number = false
 vim.opt.relativenumber = false
 
 -- Do not wrap lines
-vim.opt.wrap = false
+vim.opt.wrap = true
+
+-- Lines should be broken at word boundaries
+vim.opt.linebreak = true
+
+-- String to show at the start of wrapped lines
+vim.opt.showbreak = "↳ "
 
 -- Good colors
 vim.opt.termguicolors = true
