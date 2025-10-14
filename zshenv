@@ -165,6 +165,10 @@ three_column_layout() {
   yabai -m space --balance
   yabai -m window --focus "${window_id}"
 
+  # Resize the main screen to fill 3 80-char wide columns in a kitty
+  yabai -m window --resize left:-320:0
+  yabai -m window --resize right:240:0
+
   # And after all that, we can turn focus-follows-mouse back on
   yabai -m config focus_follows_mouse autofocus
 }

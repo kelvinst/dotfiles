@@ -87,12 +87,6 @@ cmd + ctrl + shift - return : kitten quick-access-terminal
 # restart the yabai service (reload everything from scratch, key: `,`)
 alt + ctrl - 0x2B : yabai --stop-service && yabai --start-service
 
-# reload the layout
-alt + ctrl - r : yabai -m config focus_follows_mouse off && \
-                         yabai -m config --space $(current_space) layout bsp && \
-                         yabai -m window --swap last && \
-                         yabai -m config focus_follows_mouse autofocus
-
 # swap to main
 alt + ctrl - return : yabai -m window --swap last
 alt + ctrl + shift - return : yabai -m window --swap first
@@ -102,16 +96,32 @@ alt + ctrl - 0x2A : yabai -m space --mirror y-axis
 alt + ctrl + shift - 0x2A : yabai -m space --mirror x-axis
 
 # focus window
-alt + ctrl - h : yabai -m window --focus west || yabai -m display --focus west
-alt + ctrl - j : yabai -m window --focus south || yabai -m display --focus south
-alt + ctrl - k : yabai -m window --focus north || yabai -m display --focus north
-alt + ctrl - l : yabai -m window --focus east || yabai -m display --focus east
+alt + ctrl - h : \
+  yabai -m window --focus west || \
+  yabai -m display --focus west
+alt + ctrl - j : \
+  yabai -m window --focus south || \
+  yabai -m display --focus south
+alt + ctrl - k : \
+  yabai -m window --focus north || \
+  yabai -m display --focus north
+alt + ctrl - l : \
+  yabai -m window --focus east || \
+  yabai -m display --focus east
 
 # swap managed window
-alt + ctrl + shift - h : yabai -m window --swap west || move_window_to_display west
-alt + ctrl + shift - j : yabai -m window --swap south || move_window_to_display south
-alt + ctrl + shift - k : yabai -m window --swap north || move_window_to_display north
-alt + ctrl + shift - l : yabai -m window --swap east || move_window_to_display east
+alt + ctrl + shift - h : \
+  yabai -m window --swap west || \
+  move_window_to_display west
+alt + ctrl + shift - j : \
+  yabai -m window --swap south || \
+  move_window_to_display south
+alt + ctrl + shift - k : \
+  yabai -m window --swap north || \
+  move_window_to_display north
+alt + ctrl + shift - l : \
+  yabai -m window --swap east || \
+  move_window_to_display east
 
 # move managed window
 alt + ctrl - y : yabai -m window --warp west
@@ -183,6 +193,13 @@ alt + ctrl - t : yabai -m window --toggle float --grid 4:4:1:1:2:2
 
 # toggle sticky(+float), picture-in-picture
 alt + ctrl + shift - t : yabai -m window --toggle sticky --toggle pip
+
+# default bsp layout
+alt + ctrl - b : \
+  yabai -m config focus_follows_mouse off && \
+  yabai -m config --space $(current_space) layout bsp && \
+  yabai -m window --swap last && \
+  yabai -m config focus_follows_mouse autofocus
 
 # 3 column layout (when 3 screens are open)
 alt + ctrl - f : three_column_layout
