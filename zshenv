@@ -99,6 +99,15 @@ force_split_type() {
     fi
 }
 
+# Default bsp layout
+bsp_layout() {
+  yabai -m config focus_follows_mouse off && \
+  yabai -m config --space $(current_space) layout bsp && \
+  yabai -m window --swap last && \
+  yabai -m window --resize left:-140:0
+  yabai -m config focus_follows_mouse autofocus
+}
+
 # Build 3 column layout for current space
 three_column_layout() {
   # Disable focus-follows-mouse for the duration of this function

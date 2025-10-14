@@ -195,11 +195,7 @@ alt + ctrl - t : yabai -m window --toggle float
 alt + ctrl + shift - t : yabai -m window --toggle sticky --toggle pip
 
 # default bsp layout
-alt + ctrl - b : \
-  yabai -m config focus_follows_mouse off && \
-  yabai -m config --space $(current_space) layout bsp && \
-  yabai -m window --swap last && \
-  yabai -m config focus_follows_mouse autofocus
+alt + ctrl - r : bsp_layout
 
 # 3 column layout (when 3 screens are open)
 alt + ctrl - f : three_column_layout
