@@ -55,7 +55,7 @@ local function any_unsaved_real_files()
 	return false
 end
 
-function restartVim()
+local function restart_vim()
 	-- Check for unsaved buffers
 
 	if any_unsaved_real_files() then
@@ -88,4 +88,4 @@ function restartVim()
 end
 
 -- Restart vim
-vim.keymap.set("n", "<leader>vr", restartVim, { desc = "[R]estart Vim" })
+vim.keymap.set("n", "<leader>vr", restart_vim, { desc = "[R]estart Vim" })
