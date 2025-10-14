@@ -215,3 +215,7 @@ _-accept-line () {
 }
 zle -N accept-line _-accept-line
 
+# NOTE: Load private zshrc if it exists
+if [ -f ~/.zshrc_private ]; then
+  source ~/.zshrc_private
+fi

@@ -7,11 +7,30 @@ return {
 	},
 	keys = {
 		{
+			"<leader>aa",
+			vim.cmd.CodeCompanionActions,
+			desc = "[A]ctions",
+			mode = { "n", "v" },
+		},
+		{
+			"<leader>a<space>",
+			vim.cmd.CodeCompanion,
+			desc = "Inline prompt",
+			mode = { "n", "v" },
+		},
+		{
+			"<leader>ac",
+			vim.cmd.CodeCompanionChat,
+			desc = "[C]hat",
+			mode = "v",
+		},
+		{
 			"<leader>ac",
 			function()
 				vim.cmd.CodeCompanionChat("Toggle")
 			end,
 			desc = "[C]hat",
+			mode = "n",
 		},
 		{
 			"<leader>ag",
@@ -20,6 +39,33 @@ return {
 			end,
 			desc = "[G]it commit message",
 		},
+		{
+			"<leader>af",
+			function()
+				vim.cmd.CodeCompanion("/fix")
+			end,
+			desc = "[F]ix code",
+			mode = { "n", "v" },
+		},
 	},
-	opts = {},
+	opts = {
+		strategies = {
+			chat = { adapter = "claude_code" },
+			inline = { adapter = "claude_code" },
+		},
+		adapters = {
+			acp = {
+				claude_code = function()
+					return require("codecompanion.adapters").extend("claude_code", {})
+				end,
+			},
+		},
+		display = {
+			chat = {
+				window = {
+					layout = "float",
+				},
+			},
+		},
+	},
 }

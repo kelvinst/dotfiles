@@ -96,6 +96,7 @@ return {
 				autoswitch = { enable = true, notify = true },
 				save_hook = function()
 					ClearInvisibleBuffers()
+
 					vim.cmd([[ScopeSaveState]]) -- Scope.nvim saving
 					save_tab_names()
 				end,
