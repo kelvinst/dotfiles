@@ -32,6 +32,9 @@ vim.opt.termguicolors = true
 -- Enable mouse mode, can be useful for resizing splits for example!
 vim.opt.mouse = "a"
 
+-- Enable mouse movement events in all modes
+vim.opt.mousemoveevent = true
+
 -- Use OS clipboard
 vim.opt.clipboard = "unnamedplus"
 
