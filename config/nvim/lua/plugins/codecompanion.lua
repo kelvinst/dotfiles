@@ -14,8 +14,8 @@ return {
 		},
 		{
 			"<leader>a<space>",
-			vim.cmd.CodeCompanion,
-			desc = "Inline prompt",
+			":CodeCompanionChat ",
+			desc = "Chat prompt",
 			mode = { "n", "v" },
 		},
 		{
@@ -51,7 +51,6 @@ return {
 	opts = {
 		strategies = {
 			chat = { adapter = "claude_code" },
-			inline = { adapter = "claude_code" },
 		},
 		adapters = {
 			acp = {
