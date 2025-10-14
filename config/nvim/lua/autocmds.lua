@@ -12,7 +12,8 @@ local vimade_group = vim.api.nvim_create_augroup("VimadeAutoToggle", { clear = t
 vim.api.nvim_create_autocmd("FocusLost", {
 	group = vimade_group,
 	callback = function()
-		vim.cmd("VimadeDisable")
+		vim.cmd("VimadeFadeLevel 1")
+		vim.cmd("VimadeRedraw")
 	end,
 })
 
@@ -20,6 +21,6 @@ vim.api.nvim_create_autocmd("FocusLost", {
 vim.api.nvim_create_autocmd("FocusGained", {
 	group = vimade_group,
 	callback = function()
-		vim.cmd("VimadeEnable")
+		vim.cmd("VimadeFadeLevel 0.4")
 	end,
 })
