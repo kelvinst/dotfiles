@@ -13,6 +13,13 @@ return {
 			end,
 			desc = "[C]hat",
 		},
+		{
+			"<leader>ag",
+			function()
+				vim.cmd.CodeCompanion("/commit")
+			end,
+			desc = "[G]it commit message",
+		},
 	},
 	opts = {},
 }
