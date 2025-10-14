@@ -1,9 +1,18 @@
 return {
 	-- Using AI to assist with coding
 	"olimorris/codecompanion.nvim",
-	opts = {},
 	dependencies = {
 		"nvim-lua/plenary.nvim",
 		"ravitemer/mcphub.nvim",
 	},
+	keys = {
+		{
+			"<leader>ac",
+			function()
+				vim.cmd.CodeCompanionChat("Toggle")
+			end,
+			desc = "[C]hat",
+		},
+	},
+	opts = {},
 }
