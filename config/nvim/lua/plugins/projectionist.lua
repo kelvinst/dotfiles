@@ -29,10 +29,14 @@ return {
 				},
 			},
 		}
+
+		require("which-key").add({
+			{ "<leader>fa", group = "[A]lternate" },
+		})
 	end,
 	keys = {
-		{ "<leader>aa", ":A<CR>", desc = "In current window", silent = true },
-		{ "<leader>as", ":AS<CR>", desc = "In a horizontal [s]plit", silent = true },
-		{ "<leader>av", ":AV<CR>", desc = "In a [v]ertical split", silent = true },
+		{ "<leader>faa", ":A<CR>", desc = "In current window", silent = true },
+		{ "<leader>fas", ":AS<CR>", desc = "In a horizontal [s]plit", silent = true },
+		{ "<leader>fav", ":AV<CR>", desc = "In a [v]ertical split", silent = true },
 	},
 }

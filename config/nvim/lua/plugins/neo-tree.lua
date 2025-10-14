@@ -48,9 +48,6 @@ return {
 			{ "<leader>fg", ":Neotree toggle git_status<CR>", desc = "[G]it status" },
 		},
 		config = function()
-			require("which-key").add({
-				{ "<leader>f", group = "[F]iles" },
-			})
 			-- If you want icons for diagnostic errors, you'll need to define them somewhere:
 			vim.fn.sign_define("DiagnosticSignError", { text = " ", texthl = "DiagnosticSignError" })
 			vim.fn.sign_define("DiagnosticSignWarn", { text = " ", texthl = "DiagnosticSignWarn" })

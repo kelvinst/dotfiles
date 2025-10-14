@@ -30,5 +30,9 @@ return {
 				},
 			},
 		})
+
+		require("which-key").add({
+			{ "<leader>gh", group = "[H]ooks" },
+		})
 	end,
 }
