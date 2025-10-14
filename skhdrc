@@ -189,7 +189,7 @@ alt + ctrl + shift - z : yabai -m window --toggle zoom-parent
 alt + ctrl - s : yabai -m window --toggle split
 
 # float / unfloat window and center on screen
-alt + ctrl - t : yabai -m window --toggle float --grid 4:4:1:1:2:2
+alt + ctrl - t : yabai -m window --toggle float
 
 # toggle sticky(+float), picture-in-picture
 alt + ctrl + shift - t : yabai -m window --toggle sticky --toggle pip
