@@ -4,13 +4,14 @@ return {
 	version = "*",
 	dependencies = "nvim-tree/nvim-web-devicons",
 	keys = {
-		{ "gb", vim.cmd.BufferLineCycleNext, desc = "Go to next buffer" },
-		{ "gB", vim.cmd.BufferLineCyclePrev, desc = "Go to previous buffer" },
-		{ "ZB", ":bd<cr>", desc = "Delete current [b]uffer" },
+		{ "]b", vim.cmd.BufferLineCycleNext, desc = "Next [B]uffer" },
+		{ "[b", vim.cmd.BufferLineCyclePrev, desc = "Previous [B]uffer" },
+		{ "]t", "gt", desc = "Next [T]ab" },
+		{ "[t", "gT", desc = "Previous [T]ab" },
 		{ "<leader>bp", vim.cmd.BufferLinePick, desc = "[P]ick" },
 		{ "<leader>bm", vim.cmd.BufferLineCycleNext, desc = "[M]ove" },
-		{ "<leader>bd", vim.cmd.bd, desc = "[D]elete" },
-		{ "<leader>bo", vim.cmd.BufferLineCloseOthers, desc = "[D]elete All" },
+		{ "<leader>bc", ClearInvisibleBuffers, desc = "[C]lear invisible buffers" },
+		{ "<leader>bd", vim.cmd.bd, desc = "[D]elete current buffer" },
 		{ "<leader>br", ":BufferLineTabRename ", desc = "[R]ename tab" },
 	},
 	config = function()
@@ -20,6 +21,16 @@ return {
 		})
 
 		local bufferline = require("bufferline")
-		bufferline.setup({})
+		bufferline.setup({
+			options = {
+				diagnostics = "nvim_lsp",
+				hover = {
+					enabled = true,
+					delay = 10,
+					reveal = { "close" },
+				},
+				sort_by = "id",
+			},
+		})
 	end,
 }
