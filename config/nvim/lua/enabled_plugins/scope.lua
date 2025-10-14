@@ -2,6 +2,9 @@ return {
 	"tiagovla/scope.nvim",
 	config = function()
 		require("scope").setup({})
-		require("telescope").load_extension("scope")
+
+		local telescope = require("telescope")
+		telescope.load_extension("scope")
+		vim.keymap.set("n", "<leader>pb", telescope.extensions.scope.buffers, { desc = "[B]uffers" })
 	end,
 }
