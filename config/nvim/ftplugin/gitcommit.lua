@@ -1,3 +1,5 @@
 -- Enable word wrap for git commit messages
-vim.wo.wrap = true
-vim.wo.linebreak = true
+vim.opt_local.wrap = true
+vim.opt_local.linebreak = true
+
+print("YOOO")
