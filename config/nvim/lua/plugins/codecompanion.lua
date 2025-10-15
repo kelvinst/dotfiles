@@ -77,6 +77,18 @@ return {
           stop = {
             modes = { n = "<C-c>" },
           },
+          _acp_allow_always = {
+            modes = { n = "<leader>A" },
+          },
+          _acp_allow_once = {
+            modes = { n = "<leader>a" },
+          },
+          _acp_reject_once = {
+            modes = { n = "<leader>r" },
+          },
+          _acp_reject_always = {
+            modes = { n = "<leader>R" },
+          },
         },
       },
       inline = {
@@ -84,7 +96,7 @@ return {
         keymaps = {
           accept_change = { modes = { n = "<leader>a" } },
           reject_change = { modes = { n = "<leader>r" } },
-          always_accept = { modes = { n = "<leader>y" } },
+          always_accept = { modes = { n = "<leader>A" } },
         },
       },
     },
