@@ -38,14 +38,5 @@ return {
     require("which-key").add({
       { "<leader>gh", group = "[H]ooks" },
     })
-
-    -- Enable word wrap for git commit messages
-    vim.api.nvim_create_autocmd("FileType", {
-      pattern = "gitcommit",
-      callback = function()
-        vim.wo.wrap = true
-        vim.wo.linebreak = true
-      end,
-    })
   end,
 }
