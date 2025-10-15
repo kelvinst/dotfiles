@@ -8,12 +8,9 @@ return {
 		"WhoIsSethDaniel/mason-tool-installer.nvim",
 
 		-- Useful status updates for LSP.
-		-- NOTE: `opts = {}` is the same as calling `require('fidget').setup({})`
 		{
 			"mrded/nvim-lsp-notify",
-			dependencies = {
-				{ "rcarriga/nvim-notify" },
-			},
+			dependencies = { "rcarriga/nvim-notify" },
 			config = function()
 				require("lsp-notify").setup({
 					notifier = require("notify"),
