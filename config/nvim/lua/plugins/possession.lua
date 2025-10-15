@@ -95,6 +95,16 @@ return {
 				autoprompt = true,
 				autoswitch = { enable = true, notify = true },
 				save_hook = function()
+					-- Delete all CodeCompanion buffers
+					for _, buf in ipairs(vim.api.nvim_list_bufs()) do
+						if vim.api.nvim_buf_is_valid(buf) then
+							local buftype = vim.bo[buf].filetype
+							if buftype == "codecompanion" then
+								vim.api.nvim_buf_delete(buf, { force = true })
+							end
+						end
+					end
+
 					ClearInvisibleBuffers()
 
 					vim.cmd([[ScopeSaveState]]) -- Scope.nvim saving
