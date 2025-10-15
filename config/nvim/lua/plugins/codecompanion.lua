@@ -56,6 +56,14 @@ return {
       desc = "[V]ertical Split Chat",
       mode = "n",
     },
+    {
+      "<leader>ag",
+      function()
+        vim.cmd.CodeCompanion("/commit")
+      end,
+      desc = "[G]it commit message",
+      mode = "n",
+    },
   },
   opts = {
     strategies = {
