@@ -81,6 +81,7 @@ return {
       },
       inline = {
         adapter = "copilot",
+        model = "gpt-4o",
       },
     },
     adapters = {
@@ -137,7 +138,7 @@ return {
     },
     prompt_library = {
       ["Generate a Commit Message"] = {
-        strategy = "chat",
+        strategy = "inline",
         description = "Generate a commit message",
         opts = {
           index = 10,
