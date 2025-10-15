@@ -1,6 +1,7 @@
 return {
 	-- Using AI to assist with coding
 	"olimorris/codecompanion.nvim",
+	event = "VimEnter",
 	dependencies = {
 		"nvim-lua/plenary.nvim",
 		"ravitemer/mcphub.nvim",
@@ -38,11 +39,21 @@ return {
 			"<leader>as",
 			function()
 				require("codecompanion").toggle({
-					window_opts = { layout = "horizontal", height = 25 },
+					window_opts = { layout = "horizontal" },
 				})
 			end,
-			desc = "Horizontal [S]plit chat",
-			mode = { "n", "v" },
+			desc = "Horizontal [S]plit Chat",
+			mode = "n",
+		},
+		{
+			"<leader>av",
+			function()
+				require("codecompanion").toggle({
+					window_opts = { layout = "vertical" },
+				})
+			end,
+			desc = "[V]ertical Split Chat",
+			mode = "n",
 		},
 		{
 			"<leader>ag",
