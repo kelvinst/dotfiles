@@ -72,7 +72,7 @@ return {
         adapter = "claude_code",
         keymaps = {
           close = {
-            modes = { n = { "<Esc>", "q" }, i = "<C-c>" },
+            modes = { n = { "q" }, i = "<C-c>" },
           },
           stop = {
             modes = { n = "<C-c>" },
