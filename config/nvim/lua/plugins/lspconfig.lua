@@ -219,7 +219,7 @@ return {
 				-- is not working in my local env
 				"elixirls@v0.26.4",
 			},
-			automatic_installation = true,
+			automatic_installation = false,
 			automatic_enable = true,
 			handlers = {
 				function(server_name)
