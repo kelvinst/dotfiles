@@ -27,10 +27,22 @@ return {
 		{
 			"<leader>ac",
 			function()
-				vim.cmd.CodeCompanionChat("Toggle")
+				require("codecompanion").toggle({
+					window_opts = { layout = "float", width = 80 },
+				})
 			end,
 			desc = "[C]hat",
 			mode = "n",
+		},
+		{
+			"<leader>as",
+			function()
+				require("codecompanion").toggle({
+					window_opts = { layout = "horizontal", height = 25 },
+				})
+			end,
+			desc = "Horizontal [S]plit chat",
+			mode = { "n", "v" },
 		},
 		{
 			"<leader>ag",
@@ -63,12 +75,9 @@ return {
 			chat = {
 				window = {
 					layout = "float",
+					height = 25,
 					width = 80,
 				},
-			},
-
-			diff = {
-				provider = "mini_diff",
 			},
 		},
 	},
