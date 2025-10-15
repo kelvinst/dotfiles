@@ -30,9 +30,7 @@ return {
     {
       "<leader>ac",
       function()
-        require("codecompanion").toggle({
-          window_opts = { layout = "float", width = 80, height = 0.8 },
-        })
+        require("codecompanion").toggle()
       end,
       desc = "[C]hat",
       mode = "n",
@@ -110,9 +108,7 @@ return {
     display = {
       chat = {
         window = {
-          layout = "float",
           width = 80,
-          height = 0.8,
         },
       },
     },
