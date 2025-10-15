@@ -1,6 +1,11 @@
 # NOTE: This file is loaded for all zsh invocations, including non-interactive ones.
 # So whatever you need for headless zsh, put it here. e.g. skhd keyboard shortcuts
 
+# vim: foldmethod=marker foldlevel=0
+
+# Query Functions - Get information about current state {{{
+# These functions query yabai for information about spaces, displays, and windows
+
 # Returns the index of the current space
 current_space() {
   yabai -m query --spaces --space | jq -r '.index'
@@ -20,6 +25,10 @@ last_space_from_display() {
 current_window_id() {
   yabai -m query --windows --window | jq -r '.id'
 }
+# }}}
+
+# Space Navigation - Focus and switch between spaces {{{
+# Functions for moving focus between spaces within the current display
 
 # Focus next space (limiting per display)
 focus_next_space() {
@@ -38,6 +47,29 @@ focus_previous_space() {
     yabai -m space --focus "${previous}"
   fi
 }
+# }}}
+
+# Space Management - Create and manage spaces {{{
+# Functions for creating new spaces
+
+# Create a new space and focus it
+create_space() {
+  yabai -m space --create
+  index="$(yabai -m query --spaces --display | jq -r 'map(select(."is-native-fullscreen" == false))[-1].index')"
+  yabai -m space --focus "${index}"
+}
+
+# Create a new space and move the current window to it
+create_space_and_move_window() {
+  yabai -m space --create
+  index="$(yabai -m query --spaces --display | jq -r 'map(select(."is-native-fullscreen" == false))[-1].index')"
+  yabai -m window --space "${index}"
+  yabai -m space --focus "${index}"
+}
+# }}}
+
+# Window Movement - Move windows between spaces and displays {{{
+# Functions for moving windows to different spaces and displays
 
 # Move current window to next space (limiting per display)
 move_window_to_next_space() {
@@ -68,27 +100,16 @@ move_window_to_space() {
   yabai -m window --focus "${window_id}"
 }
 
-# Create a new space and focus it
-create_space() {
-  yabai -m space --create
-  index="$(yabai -m query --spaces --display | jq -r 'map(select(."is-native-fullscreen" == false))[-1].index')"
-  yabai -m space --focus "${index}"
-}
-
-# Create a new space and move the current window to it
-create_space_and_move_window() {
-  yabai -m space --create
-  index="$(yabai -m query --spaces --display | jq -r 'map(select(."is-native-fullscreen" == false))[-1].index')"
-  yabai -m window --space "${index}"
-  yabai -m space --focus "${index}"
-}
-
 # Move current window to a display
 move_window_to_display() {
   window_id=$(current_window_id)
   yabai -m window --display "$1"
   yabai -m window --focus "${window_id}"
 }
+# }}}
+
+# Layout Functions - Configure window layouts {{{
+# Functions for managing window layouts and split types
 
 # Force a determined split type for the current window
 force_split_type() {
@@ -181,3 +202,4 @@ three_column_layout() {
   # And after all that, we can turn focus-follows-mouse back on
   yabai -m config focus_follows_mouse autofocus
 }
+# }}}
