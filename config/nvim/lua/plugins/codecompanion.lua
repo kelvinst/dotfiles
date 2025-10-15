@@ -164,11 +164,20 @@ return {
             role = "user",
             content = function()
               return string.format(
-                [[You are an expert at following the Conventional Commit specification. Given the git diff listed below, please generate a commit message for me and insert it in #{buffer} using the @{insert_edit_into_file} tool:
+                [[
+You are an expert at following the Conventional Commit specification. 
+
+Given the git diff listed below, please generate a commit message for me and 
+insert it in #{buffer} using the @{insert_edit_into_file} tool.
 
 ```diff
 %s
 ```
+
+Keep the commit title under 50 characters and the body under 72 characters
+(line breaks on word endings and new paragraphs are represented by double 
+`\n` like in Markdown). If there are multiple changes, use bullet points in 
+the body. 
 ]],
                 vim.fn.system("git diff --no-ext-diff --staged")
               )
