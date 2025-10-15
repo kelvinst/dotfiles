@@ -5,6 +5,7 @@ return {
 	dependencies = {
 		"nvim-lua/plenary.nvim",
 		"ravitemer/mcphub.nvim",
+		"lalitmee/codecompanion-spinners.nvim",
 	},
 	keys = {
 		{
@@ -55,21 +56,6 @@ return {
 			desc = "[V]ertical Split Chat",
 			mode = "n",
 		},
-		{
-			"<leader>ag",
-			function()
-				vim.cmd.CodeCompanionChat("commit")
-			end,
-			desc = "[G]it commit",
-		},
-		{
-			"<leader>af",
-			function()
-				vim.cmd.CodeCompanion("/fix")
-			end,
-			desc = "[F]ix code",
-			mode = { "n", "v" },
-		},
 	},
 	opts = {
 		strategies = {
@@ -89,6 +75,19 @@ return {
 					height = 25,
 					width = 80,
 				},
+			},
+		},
+		extensions = {
+			mcphub = {
+				callback = "mcphub.extensions.codecompanion",
+				opts = {
+					make_vars = true,
+					make_slash_commands = true,
+					show_result_in_chat = true,
+				},
+			},
+			spinner = {
+				enabled = true,
 			},
 		},
 	},
