@@ -79,6 +79,9 @@ return {
           },
         },
       },
+      inline = {
+        adapter = "copilot",
+      },
     },
     adapters = {
       acp = {
