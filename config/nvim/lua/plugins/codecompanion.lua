@@ -59,7 +59,14 @@ return {
 	},
 	opts = {
 		strategies = {
-			chat = { adapter = "claude_code" },
+			chat = {
+				adapter = "claude_code",
+				keymaps = {
+					close = {
+						modes = { n = { "<Esc>", "<C-c>" }, i = "<C-c>" },
+					},
+				},
+			},
 		},
 		adapters = {
 			acp = {
