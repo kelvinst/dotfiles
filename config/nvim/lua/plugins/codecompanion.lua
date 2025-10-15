@@ -81,7 +81,11 @@ return {
       },
       inline = {
         adapter = "copilot",
-        model = "gpt-4o",
+        keymaps = {
+          accept_change = { modes = { n = "<leader>a" } },
+          reject_change = { modes = { n = "<leader>r" } },
+          always_accept = { modes = { n = "<leader>y" } },
+        },
       },
     },
     adapters = {
