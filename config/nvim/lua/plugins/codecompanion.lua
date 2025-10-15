@@ -6,6 +6,7 @@ return {
     "nvim-lua/plenary.nvim",
     "ravitemer/mcphub.nvim",
     "lalitmee/codecompanion-spinners.nvim",
+    "ravitemer/codecompanion-history.nvim",
   },
   keys = {
     {
@@ -105,6 +106,9 @@ return {
         },
       },
       spinner = {
+        enabled = true,
+      },
+      history = {
         enabled = true,
       },
     },
