@@ -31,7 +31,7 @@ return {
       "<leader>ac",
       function()
         require("codecompanion").toggle({
-          window_opts = { layout = "float", width = 80 },
+          window_opts = { layout = "float", width = 80, height = 0.8 },
         })
       end,
       desc = "[C]hat",
@@ -41,7 +41,7 @@ return {
       "<leader>as",
       function()
         require("codecompanion").toggle({
-          window_opts = { layout = "horizontal" },
+          window_opts = { layout = "horizontal", height = 25 },
         })
       end,
       desc = "Horizontal [S]plit Chat",
@@ -51,7 +51,7 @@ return {
       "<leader>av",
       function()
         require("codecompanion").toggle({
-          window_opts = { layout = "vertical" },
+          window_opts = { layout = "vertical", width = 80 },
         })
       end,
       desc = "[V]ertical Split Chat",
@@ -99,8 +99,8 @@ return {
       chat = {
         window = {
           layout = "float",
-          height = 25,
           width = 80,
+          height = 0.8,
         },
       },
     },
