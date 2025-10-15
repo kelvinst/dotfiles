@@ -107,6 +107,19 @@ return {
       },
       spinner = {
         enabled = true,
+        opts = {
+          ["cursor-relative"] = {
+            text = "",
+            hl_positions = {
+              { 0, 3 }, -- First circle
+              { 3, 6 }, -- Second circle
+              { 6, 9 }, -- Third circle
+            },
+            interval = 100,
+            hl_group = "Title",
+            hl_dim_group = "NonText",
+          },
+        },
       },
       history = {
         enabled = true,
