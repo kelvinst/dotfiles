@@ -35,9 +35,9 @@ return {
 		{
 			"<leader>ag",
 			function()
-				vim.cmd.CodeCompanion("/commit")
+				vim.cmd.CodeCompanionChat("commit")
 			end,
-			desc = "[G]it commit message",
+			desc = "[G]it commit",
 		},
 		{
 			"<leader>af",
@@ -63,7 +63,12 @@ return {
 			chat = {
 				window = {
 					layout = "float",
+					width = 80,
 				},
+			},
+
+			diff = {
+				provider = "mini_diff",
 			},
 		},
 	},
