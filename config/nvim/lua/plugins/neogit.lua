@@ -16,7 +16,7 @@ return {
   },
   config = function()
     require("neogit").setup({
-      console_timeout = 1000,
+      console_timeout = 10,
       disable_insert_on_commit = true,
       kind = "floating",
       remember_settings = false,
