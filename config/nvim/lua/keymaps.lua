@@ -15,76 +15,92 @@ vim.keymap.set("n", "n", "nzzzv")
 vim.keymap.set("n", "N", "Nzzzv")
 
 local function copyFilenameWithLines()
-	local filename = vim.fn.expand("%")
-	local line = vim.fn.line(".")
-	local currentLine = filename .. ":" .. line
-	vim.fn.setreg("*", currentLine)
-	vim.api.nvim_input("<Esc>")
-	print("Copied to clipboard: " .. currentLine)
+  local filename = vim.fn.expand("%")
+  local line = vim.fn.line(".")
+  local currentLine = filename .. ":" .. line
+  vim.fn.setreg("*", currentLine)
+  vim.api.nvim_input("<Esc>")
+  print("Copied to clipboard: " .. currentLine)
 end
 
 local function copyFilename()
-	local filename = vim.fn.expand("%")
-	vim.fn.setreg("*", filename)
-	print("Copied to clipboard: " .. filename)
+  local filename = vim.fn.expand("%")
+  vim.fn.setreg("*", filename)
+  print("Copied to clipboard: " .. filename)
 end
 
 -- Copy file info to clipboard
 vim.keymap.set("n", "<leader>yf", copyFilename, { desc = "[Y]ank [f]ilename" })
-vim.keymap.set("n", "<leader>yl", copyFilenameWithLines, { desc = "[Y]ank filename and [l]ine" })
+vim.keymap.set(
+  "n",
+  "<leader>yl",
+  copyFilenameWithLines,
+  { desc = "[Y]ank filename and [l]ine" }
+)
 
 -- Paste without cutting the current selection
 vim.keymap.set("x", "π", [["_dP]]) -- Alt+p
 
 -- Replace word under cursor
-vim.keymap.set("n", "<leader>rw", [[:%s/\<<C-r><C-w>\>//gI<Left><Left><Left>]], { desc = "[R]eplace [w]ord" })
+vim.keymap.set(
+  "n",
+  "<leader>rw",
+  [[:%s/\<<C-r><C-w>\>//gI<Left><Left><Left>]],
+  { desc = "[R]eplace [w]ord" }
+)
 
 -- Load the LSP errors to the quickfix list
-vim.keymap.set("n", "<leader>eq", vim.diagnostic.setqflist, { desc = "[E]errors [Q]uickfix" })
+vim.keymap.set(
+  "n",
+  "<leader>eq",
+  vim.diagnostic.setqflist,
+  { desc = "[E]errors [Q]uickfix" }
+)
 
 local function any_unsaved_real_files()
-	for _, buf in ipairs(vim.api.nvim_list_bufs()) do
-		if vim.api.nvim_buf_is_loaded(buf) then
-			local o = vim.bo[buf]
-			-- Only consider normal file buffers that are modifiable
-			if o.buftype == "" and o.modifiable and o.modified then
-				return true
-			end
-		end
-	end
-	return false
+  for _, buf in ipairs(vim.api.nvim_list_bufs()) do
+    if vim.api.nvim_buf_is_loaded(buf) then
+      local o = vim.bo[buf]
+      -- Only consider normal file buffers that are modifiable
+      if o.buftype == "" and o.modifiable and o.modified then
+        return true
+      end
+    end
+  end
+  return false
 end
 
 local function restart_vim()
-	-- Check for unsaved buffers
+  -- Check for unsaved buffers
 
-	if any_unsaved_real_files() then
-		local choice = vim.fn.confirm(
-			"⚠️  WARNING: There are unsaved changes!\n Do you really want to continue?",
-			"&Yes\n&No",
-			2
-		)
-		if choice ~= 1 then
-			return
-		end
-	end
+  if any_unsaved_real_files() then
+    local choice = vim.fn.confirm(
+      "⚠️  WARNING: There are unsaved changes!\n Do you really want to continue?",
+      "&Yes\n&No",
+      2
+    )
+    if choice ~= 1 then
+      return
+    end
+  end
 
-	require("nvim-possession").update()
+  require("nvim-possession").update()
 
-	local cwd = vim.fn.getcwd()
-	local file = vim.fn.expand("%:p")
-	local line = vim.fn.line(".")
+  local cwd = vim.fn.getcwd()
+  local file = vim.fn.expand("%:p")
+  local line = vim.fn.line(".")
 
-	local esc = vim.fn.fnameescape
-	local start_cmd
-	if file == "" then
-		start_cmd = string.format("Dispatch -dir=%s nvim", esc(cwd))
-	else
-		start_cmd = string.format("Dispatch -dir=%s nvim +%d %s", esc(cwd), line, esc(file))
-	end
+  local esc = vim.fn.fnameescape
+  local start_cmd
+  if file == "" then
+    start_cmd = string.format("Dispatch -dir=%s nvim", esc(cwd))
+  else
+    start_cmd =
+      string.format("Dispatch -dir=%s nvim +%d %s", esc(cwd), line, esc(file))
+  end
 
-	vim.cmd(start_cmd)
-	vim.fn.system("kitty @ close-window --self")
+  vim.cmd(start_cmd)
+  vim.fn.system("kitty @ close-window --self")
 end
 
 -- Restart vim
