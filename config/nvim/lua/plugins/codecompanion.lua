@@ -17,8 +17,8 @@ return {
     },
     {
       "<leader>a<space>",
-      ":CodeCompanionChat ",
-      desc = "Chat prompt",
+      vim.cmd.CodeCompanion,
+      desc = "Inline Prompt",
       mode = { "n", "v" },
     },
     {
