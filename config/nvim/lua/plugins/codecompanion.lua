@@ -91,11 +91,6 @@ return {
       },
       inline = {
         adapter = "copilot",
-        keymaps = {
-          accept_change = { modes = { n = "<leader>a" } },
-          reject_change = { modes = { n = "<leader>r" } },
-          always_accept = { modes = { n = "<leader>A" } },
-        },
       },
     },
     adapters = {
