@@ -120,8 +120,8 @@ alias lazygit='[ -n "$TMUX" ] && tmux setw monitor-activity off \; lazygit'
 alias lg='lazygit'
 
 # ls
-alias ls="gls --color"
-alias l='ls -Gla'
+alias lc='gls --color'
+alias l='lc --color -Gla'
 
 # make
 alias m='make'
