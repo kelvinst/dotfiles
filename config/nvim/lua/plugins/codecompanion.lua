@@ -169,10 +169,12 @@ insert it in #{buffer} using the @{insert_edit_into_file} tool.
 %s
 ```
 
-Keep the commit title under 50 characters and the body under 72 characters
-(line breaks on word endings and new paragraphs are represented by double 
-`\n` like in Markdown). If there are multiple changes, use bullet points in 
-the body. 
+The commit subject should be a short but descriptive summary of the changes,
+try to keep it under 50 characters, but it's ok to go up to 80. 
+
+The body should provide additional context about the changes, starting with
+bullet points of the multiple changes made in the commit, and finishing it
+with an explanation of why the changes were made.
 ]],
                 vim.fn.system("git diff --no-ext-diff --staged")
               )
