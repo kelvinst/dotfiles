@@ -24,6 +24,13 @@ return {
         kind = "tab",
         staged_diff_split_kind = "auto",
       },
+      commit_view = {
+        kind = "tab",
+        verify_commit = vim.fn.executable("gpg") == 1,
+      },
+      preview_buffer = {
+        kind = "split",
+      },
       integrations = {
         telescope = true,
         diffview = true,
