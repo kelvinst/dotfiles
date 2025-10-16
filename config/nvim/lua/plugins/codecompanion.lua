@@ -76,16 +76,16 @@ return {
             modes = { n = "<C-c>" },
           },
           _acp_allow_always = {
-            modes = { n = "<leader>A" },
+            modes = { n = "gdy" },
           },
           _acp_allow_once = {
-            modes = { n = "<leader>a" },
+            modes = { n = "gda" },
           },
           _acp_reject_once = {
-            modes = { n = "<leader>r" },
+            modes = { n = "gdr" },
           },
           _acp_reject_always = {
-            modes = { n = "<leader>R" },
+            modes = { n = "gdn" },
           },
         },
       },
