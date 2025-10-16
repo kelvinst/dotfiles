@@ -10,6 +10,7 @@ install:
 	cp -r ./config/tms/* ~/.config/tms/
 	mkdir -p ~/.hammerspoon/
 	cp -r ./hammerspoon/* ~/.hammerspoon/
+	cp -r ./apps/Neovim\ URL\ Handler.app ~/Applications/
 	cp ./gitconfig ~/.gitconfig
 	cp ./global_gitignore ~/.global_gitignore
 	cp ./skhdrc ~/.skhdrc
@@ -30,6 +31,7 @@ clean:
 	rm -rf ~/.yabairc
 	rm -rf ~/.zshrc
 	rm -rf ~/.zshenv
+	rm -rf ~/Applications/Neovim\ URL\ Handler.app
 
 update: 
 	mkdir -p ./config/kitty/
@@ -40,6 +42,7 @@ update:
 	cp -r ~/.config/tms/* ./config/tms/
 	mkdir -p ./hammerspoon
 	cp -r ~/.hammerspoon/* ./hammerspoon/
+	cp -r ~/Applications/Neovim\ URL\ Handler.app ./apps/
 	cp ~/.gitconfig ./gitconfig
 	cp ~/.global_gitignore ./global_gitignore
 	cp ~/.skhdrc ./skhdrc

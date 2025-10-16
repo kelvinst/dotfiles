@@ -3,6 +3,9 @@
 # My preferred editor
 export EDITOR='nvim'
 
+# URL scheme for opening files in nvim from other applications
+export PLUG_EDITOR="nvim://file/__FILE__:__LINE__"
+
 # Add local bin to the beginning of PATH
 export PATH="$HOME/.local/bin:$PATH"
 
