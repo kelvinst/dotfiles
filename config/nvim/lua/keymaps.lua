@@ -41,12 +41,12 @@ vim.keymap.set(
 -- Paste without cutting the current selection
 vim.keymap.set("x", "π", [["_dP]]) -- Alt+p
 
--- Replace word under cursor
+-- Rename a word under cursor
 vim.keymap.set(
   "n",
-  "<leader>rw",
+  "<leader>cr",
   [[:%s/\<<C-r><C-w>\>//gI<Left><Left><Left>]],
-  { desc = "[R]eplace [w]ord" }
+  { desc = "[R]ename word" }
 )
 
 -- Load the LSP errors to the quickfix list
