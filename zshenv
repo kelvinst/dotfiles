@@ -122,18 +122,13 @@ force_split_type() {
 
 # Default bsp layout
 bsp_layout() {
-  yabai -m config focus_follows_mouse off && \
   yabai -m config --space $(current_space) layout bsp && \
   yabai -m window --swap last && \
   yabai -m window --resize left:-140:0
-  yabai -m config focus_follows_mouse autofocus
 }
 
 # Build 3 column layout for current space
 three_column_layout() {
-  # Disable focus-follows-mouse for the duration of this function
-  yabai -m config focus_follows_mouse off
-
   # Reset the layout, we need to start from a clean state
   yabai -m config --space $(current_space) layout bsp
 
@@ -198,8 +193,5 @@ three_column_layout() {
   # Resize the main screen to fill 3 80-char wide columns in a kitty
   yabai -m window --resize left:-320:0
   yabai -m window --resize right:240:0
-
-  # And after all that, we can turn focus-follows-mouse back on
-  yabai -m config focus_follows_mouse autofocus
 }
 # }}}

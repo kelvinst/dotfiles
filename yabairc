@@ -15,7 +15,7 @@ yabai -m config                                  \
   window_opacity            on                   \
   active_window_opacity     1.0                  \
   normal_window_opacity     0.90                 \
-  focus_follows_mouse       autofocus            \
+  focus_follows_mouse       off                  \
   display_arrangement_order horizontal           \
   window_origin_display     focused              \
   window_placement          second_child         \
