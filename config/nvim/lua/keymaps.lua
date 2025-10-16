@@ -105,3 +105,20 @@ end
 
 -- Restart vim
 vim.keymap.set("n", "<leader>vr", restart_vim, { desc = "[R]estart Vim" })
+
+-- Break long line into multiple lines
+vim.keymap.set("n", "<leader>cb", function()
+  vim.ui.input({
+    prompt = "Max line length: ",
+    default = "79",
+  }, function(input)
+    if input then
+      local max_length = tonumber(input)
+      if max_length and max_length > 0 then
+        BreakLine(max_length)
+      else
+        print("Invalid length: must be a positive number")
+      end
+    end
+  end)
+end, { desc = "[B]reak line" })
