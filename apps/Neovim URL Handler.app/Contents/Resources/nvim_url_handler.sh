@@ -8,15 +8,15 @@ list_kitty_sockets() {
   quick_access_pid=$(pgrep -x kitty-quick-access)
 
   for s in /tmp/kitty-*; do
-    if [[ -n "$quick_access_pid" && "$s" == *"$quick_access_pid"* ]]; then
-      continue
-    fi
+    [[ -n "$quick_access_pid" && "$s" == *"$quick_access_pid"* ]] && continue
 
-    out=$(kitten @ --to "unix:$s" ls 2>/dev/null)
-    if [[ -n "$out" && "$out" != "[]" ]]; then
-      echo $s
-    fi
+    [[ $(list_kitty_windows $s) != "[]" ]] && echo $s
   done
+}
+
+# List all windows in a kitty instance
+list_kitty_windows() {
+  kitten @ ls --to "unix:$1" 2>/dev/null | jq -r 'map(.tabs) | flatten | map(.windows) | flatten | map({id: .id, cwd: .cwd, fg_cmdlines: .foreground_processes | map(.cmdline | join(" "))})'
 }
 
 # This script is intended to be used as a URL handler for nvim:// URLs.
