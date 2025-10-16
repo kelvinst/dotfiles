@@ -78,6 +78,9 @@
 # kitty {{{
 
 # open a quick access kitty
+cmd + ctrl - return : kitty --single-instance --directory ~
+
+# open a quick access kitty
 cmd + ctrl + shift - return : kitten quick-access-terminal
 
 # }}}
