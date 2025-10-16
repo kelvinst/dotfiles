@@ -28,9 +28,6 @@ return {
         kind = "tab",
         verify_commit = vim.fn.executable("gpg") == 1,
       },
-      preview_buffer = {
-        kind = "split",
-      },
       integrations = {
         telescope = true,
         diffview = true,
