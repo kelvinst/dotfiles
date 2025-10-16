@@ -20,7 +20,8 @@ list_kitty_sockets() {
 list_kitty_windows() {
   if [ -z "$1" ]; then
     for s in $(list_kitty_sockets); do
-      list_kitty_windows "$s" | jq -r 'map(. + {socket: "'$s'"})'
+      list_kitty_windows "$s" | 
+        jq -r --arg kitty_socket "$s" 'map(. + {socket: $kitty_socket})'
     done | jq -s 'add'
   else
     kitten @ ls --to "unix:$1" 2>/dev/null | 
@@ -64,6 +65,18 @@ best_kitty_socket() {
 
 }
 
+focus_nvim_window() {
+  nvim_window=$(list_kitty_windows | jq -r --arg nvim_socket "$1" '
+    map({socket, id, fg_cmdline: .fg_cmdlines[]}) |
+      map(select(
+        (.fg_cmdline | startswith("nvim")) and 
+          (.fg_cmdline | contains("--listen " + $nvim_socket)))
+      ))
+  ')
+
+  kitten @ focus-window --to "unix:$(jq -r '.socket' <<< $nvim_window)" --window-id "$(jq -r '.id' <<< $nvim_window)" 2>/dev/null
+}
+
 # This script is intended to be used as a URL handler for nvim:// URLs.
 #
 # Example URL: 
@@ -93,12 +106,12 @@ if [ -n "$full" ]; then
   # If nvim socket found, open a new tab in that instance
   if [ -n "$nvim_socket" ]; then
     echo "Adding new tab to existing nvim instance at socket: $nvim_socket"
-    echo "  Commands:"
-    echo "    nvim --server $nvim_socket --remote-tab $file"
-    echo "    nvim --server $nvim_socket --remote-send \"${line}G\""
 
     nvim --server "$nvim_socket" --remote-tab "$file"
     nvim --server "$nvim_socket" --remote-send "${line}G"
+
+    focus_nvim_window $nvim_socket
+
     exit 0
   fi
 
@@ -107,16 +120,16 @@ if [ -n "$full" ]; then
   # If kitty socket found, open a new tab in that instance
   if [ -n "$kitty_socket" ]; then
     echo "Adding new tab to existing kitty instance at socket: $kitty_socket"
-    echo "  Command: kitten @ --to unix:$kitty_socket --copy-env --type=tab nvim +${line} $file"
 
     wid=$(kitten @ launch --to="unix:$kitty_socket" --copy-env --type=tab nvim +"${line}" "$file")
+
     kitten @ focus-window --to="unix:$kitty_socket" --match=id:"$wid"
+
     exit 0
   fi
 
   # Final fallback: open a new kitty instance
   echo "No existing kitty instance found, opening a new one"
-  echo "  Command: kitty nvim +${line} $file"
 
   kitty --single-instance nvim +"${line}" "$file"
 fi
