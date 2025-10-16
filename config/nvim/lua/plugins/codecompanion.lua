@@ -1,5 +1,3 @@
-local history_dir = vim.fn.stdpath("data") .. "/codecompanion-history"
-
 return {
   -- Using AI to assist with coding
   "olimorris/codecompanion.nvim",
@@ -123,7 +121,6 @@ return {
             adapter = "copilot",
             model = "gpt-5-mini",
           },
-          dir_to_save = history_dir,
         },
       },
     },
@@ -142,20 +139,6 @@ return {
           {
             role = "user",
             content = function()
-              local last_commit_ts = vim.fn
-                .system("git log -1 --format=%ct 2>/dev/null")
-                :gsub("%s+", "")
-
-              local search_hours_back = 24
-
-              local cutoff_time
-              if last_commit_ts == "" then
-                cutoff_time = os.time() - (search_hours_back * 60 * 60)
-              else
-                cutoff_time = tonumber(last_commit_ts)
-                  - (search_hours_back * 60 * 60)
-              end
-
               return string.format(
                 [[
 You are an expert at following the Conventional Commit specification. 
@@ -174,14 +157,8 @@ The body should provide additional context about the changes, starting with
 bullet points of the multiple changes made in the commit, and finishing it
 with an explanation of why the changes were made. Keep the body lines under
 80 characters, use 2 line breaks to separate paragraphs.
-
-To improve the reasoning on "why the changes were made" part, you should
-use the @{get_file_contents} tool on the code companion history files 
-located at `%s` that were modified after timestamp %d (Unix epoch). 
 ]],
-                vim.fn.system("git diff --no-ext-diff --staged"),
-                history_dir,
-                cutoff_time
+                vim.fn.system("git diff --no-ext-diff --staged")
               )
             end,
             opts = {
