@@ -49,6 +49,14 @@ vim.keymap.set(
   { desc = "[R]ename word" }
 )
 
+-- Grep a word under cursor
+vim.keymap.set(
+  "n",
+  "<leader>cg",
+  [[:grep <C-r><C-w><cr>]],
+  { desc = "[G]rep word" }
+)
+
 -- Load the LSP errors to the quickfix list
 vim.keymap.set(
   "n",
