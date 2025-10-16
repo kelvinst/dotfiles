@@ -29,9 +29,12 @@ list_kitty_windows() {
         map(.tabs) | flatten | 
           map(.windows) | flatten | 
           map({
-            id: .id, 
-            cwd: .cwd, 
-            fg_cmdlines: .foreground_processes | map(.cmdline | join(" "))
+            id,
+            cwd,
+            fg_processes: .foreground_processes | map({
+              cwd,
+              cmdline: .cmdline | join(" "),
+            })
           })
         '
   fi
@@ -62,19 +65,54 @@ best_kitty_socket() {
     end) |
     .socket
   '
-
 }
 
+# List all kitty windows that have nvim running in them
+list_nvim_windows() {
+  list_kitty_windows | jq -r '
+    map({socket, id, fg_process: .fg_processes[]}) |
+      map({socket, id, cwd: .fg_process.cwd, cmdline: .fg_process.cmdline}) |
+      map(select(.cmdline | startswith("nvim")))
+  '
+}
+
+# Returns the "best" nvim socket to start the new vim tab in
+best_nvim_socket() {
+  list_nvim_windows | jq -r --arg file $1 '
+    # Sort by the longest cwds first
+    sort_by(.cwd | length) | reverse |
+
+    # Find matching windows
+    map(
+      . as $window |
+      select(
+        ($file | startswith($window.cwd + "/")) or ($file == .cwd)
+      )
+    ) |
+
+    first |
+    if . == null then
+      # Return nothing if no good nvim instance is found
+      empty
+    else
+      # Extract the nvim socket from the cmdline
+      .cmdline | capture("--listen (?<nvim_socket>\\S+)") | .nvim_socket
+    end
+  '
+}
+
+# Focus the kitty window that has the nvim instance running at the given socket
 focus_nvim_window() {
-  nvim_window=$(list_kitty_windows | jq -r --arg nvim_socket "$1" '
-    map({socket, id, fg_cmdline: .fg_cmdlines[]}) |
-      map(select(
-        (.fg_cmdline | startswith("nvim")) and 
-          (.fg_cmdline | contains("--listen " + $nvim_socket)))
-      ))
+  nvim_window=$(list_nvim_windows | jq -r --arg nvim_socket "$1" '
+    map(select(
+      .cmdline | contains("--listen " + $nvim_socket)
+    )) | first
   ')
 
-  kitten @ focus-window --to "unix:$(jq -r '.socket' <<< $nvim_window)" --window-id "$(jq -r '.id' <<< $nvim_window)" 2>/dev/null
+  kitten @ focus-window \
+    --to="unix:$(jq -r '.socket' <<< $nvim_window)" \
+    --match=id:"$(jq -r '.id' <<< $nvim_window)" \
+    2>/dev/null
 }
 
 # This script is intended to be used as a URL handler for nvim:// URLs.
@@ -101,7 +139,7 @@ if [ -n "$full" ]; then
   fi
 
   # Find an existing nvim socket
-  nvim_socket=$(ls /tmp/nvim-* 2>/dev/null | sort | head -n 1 || true)
+  nvim_socket=$(best_nvim_socket "$file")
 
   # If nvim socket found, open a new tab in that instance
   if [ -n "$nvim_socket" ]; then
