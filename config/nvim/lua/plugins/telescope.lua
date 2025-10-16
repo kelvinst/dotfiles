@@ -13,6 +13,7 @@ return { -- Fuzzy Finder (files, lsp, etc)
     },
     { "nvim-telescope/telescope-ui-select.nvim" },
     { "nvim-tree/nvim-web-devicons", enabled = true },
+    { "folke/which-key.nvim" },
   },
   config = function()
     local telescope = require("telescope")

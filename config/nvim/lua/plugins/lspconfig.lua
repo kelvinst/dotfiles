@@ -20,6 +20,9 @@ return {
 
     -- Allows extra capabilities provided by nvim-cmp
     "hrsh7th/cmp-nvim-lsp",
+    
+    -- Ensure which-key is loaded before LSP attaches
+    "folke/which-key.nvim",
   },
   config = function()
     -- Brief aside: **What is LSP?**

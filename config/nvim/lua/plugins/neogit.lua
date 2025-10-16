@@ -4,6 +4,7 @@ return {
     "nvim-lua/plenary.nvim",
     "sindrets/diffview.nvim",
     "nvim-telescope/telescope.nvim",
+    "folke/which-key.nvim",
   },
   keys = {
     { "<leader>gg", vim.cmd.Neogit, desc = "[G]it Status" },
