@@ -3,11 +3,11 @@
 # Outptu all output to a log file for debugging
 exec >> /tmp/nvim_url_handler.log 2>&1
 
-# Find an existing kitty socket with windows, that's not quick-access
-find_kitty_socket() {
-  for s in /tmp/kitty-*; do
-    quick_access_pid=$(pgrep -x kitty-quick-access)
+# List all kitty sockets that are not quick-access and have windows
+list_kitty_sockets() {
+  quick_access_pid=$(pgrep -x kitty-quick-access)
 
+  for s in /tmp/kitty-*; do
     if [[ -n "$quick_access_pid" && "$s" == *"$quick_access_pid"* ]]; then
       continue
     fi
@@ -15,7 +15,6 @@ find_kitty_socket() {
     out=$(kitten @ --to "unix:$s" ls 2>/dev/null)
     if [[ -n "$out" && "$out" != "[]" ]]; then
       echo $s
-      break
     fi
   done
 }
@@ -60,8 +59,7 @@ if [ -n "$full" ]; then
     exit 0
   fi
 
-  kitty_socket=$(find_kitty_socket)
-  echo "Found kitty socket: $kitty_socket"
+  kitty_socket=$(list_kitty_sockets | sort | head -n 1 || true)
 
   # If kitty socket found, open a new tab in that instance
   if [ -n "$kitty_socket" ]; then
