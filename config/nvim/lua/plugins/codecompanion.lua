@@ -36,26 +36,6 @@ return {
       mode = "n",
     },
     {
-      "<leader>as",
-      function()
-        require("codecompanion").toggle({
-          window_opts = { layout = "horizontal", height = 25 },
-        })
-      end,
-      desc = "Horizontal [S]plit Chat",
-      mode = "n",
-    },
-    {
-      "<leader>av",
-      function()
-        require("codecompanion").toggle({
-          window_opts = { layout = "vertical", width = 80 },
-        })
-      end,
-      desc = "[V]ertical Split Chat",
-      mode = "n",
-    },
-    {
       "<leader>ag",
       function()
         vim.cmd.CodeCompanion("/commit")
