@@ -103,6 +103,9 @@ end
 
 return { -- Asynchronous tasks
   "trekdemo/vim-dispatch",
+  dependencies = {
+    "folke/which-key.nvim",
+  },
   branch = "kitty-support",
   -- 'tpope/vim-dispatch',
   -- dev = true,
@@ -158,32 +161,33 @@ return { -- Asynchronous tasks
 
     -- Configure which-key with the dispatch mappings
     require("which-key").add({
-      { "m", group = "[M]ake / Set [m]ark" },
       { "m<CR>", desc = "Make" },
       { "m<Space>", desc = "Make <type here>" },
       { "m!", desc = "Make <type here> (background)" },
       { "m?", desc = "Show 'makeprg'" },
 
-      { "`", group = "Dispatch / Go to mark" },
-      { "`z", group = "Dispatch [z]sh..." },
       { "`<CR>", desc = "Dispatch" },
       { "`<Space>", desc = "Dispatch <type here>" },
       { "`!", desc = "Dispatch <type here> (background)" },
       { "`?", desc = "Show default Dispatch" },
 
-      { "'", group = "Start / Go to mark" },
-      { "'z", group = "Start [z]sh..." },
       { "'<CR>", desc = "Start" },
       { "'<Space>", desc = "Start <type here>" },
       { "'!", desc = "Start <type here> (background)" },
       { "'?", desc = "Show default Start" },
 
-      { "g", group = "Spawn / [G]o to" },
-      { "g'z", group = "Spawn [z]sh..." },
       { "g'<CR>", desc = "Spawn" },
       { "g'<Space>", desc = "Spawn <type here>" },
       { "g'!", desc = "Spawn <type here> (background)" },
       { "g'?", desc = "Show 'shell'" },
+    })
+
+    local whichkey = require("which-key")
+    whichkey.add({
+      { "m", group = "[M]ake / Set [m]ark" },
+      { "`", group = "Dispatch / Go to mark" },
+      { "'", group = "Start / Go to mark" },
+      { "g", group = "Spawn / [G]o to" },
     })
 
     dispatchGroup({
