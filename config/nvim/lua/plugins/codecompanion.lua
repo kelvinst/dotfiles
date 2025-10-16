@@ -73,6 +73,7 @@ return {
       },
       inline = {
         adapter = "copilot",
+        model = "gpt-5-mini",
       },
     },
     adapters = {
@@ -120,7 +121,7 @@ return {
           auto_generate_title = true,
           title_generation_opts = {
             adapter = "copilot",
-            model = "gpt-4o",
+            model = "gpt-5-mini",
           },
           dir_to_save = history_dir,
         },
