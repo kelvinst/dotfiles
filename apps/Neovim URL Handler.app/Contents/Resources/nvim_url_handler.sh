@@ -3,6 +3,23 @@
 # Outptu all output to a log file for debugging
 exec >> /tmp/nvim_url_handler.log 2>&1
 
+# Find an existing kitty socket with windows, that's not quick-access
+find_kitty_socket() {
+  for s in /tmp/kitty-*; do
+    quick_access_pid=$(pgrep -x kitty-quick-access)
+
+    if [[ -n "$quick_access_pid" && "$s" == *"$quick_access_pid"* ]]; then
+      continue
+    fi
+
+    out=$(kitten @ --to "unix:$s" ls 2>/dev/null)
+    if [[ -n "$out" && "$out" != "[]" ]]; then
+      echo $s
+      break
+    fi
+  done
+}
+
 # This script is intended to be used as a URL handler for nvim:// URLs.
 #
 # Example URL: 
@@ -43,20 +60,8 @@ if [ -n "$full" ]; then
     exit 0
   fi
 
-  # Find an existing kitty socket with windows, that's not quick-access
-  quick_access_pid=$(pgrep -x kitty-quick-access)
-  kitty_socket=""
-  for s in /tmp/kitty-*; do
-    if [[ "$s" == *"$quick_access_pid"* ]]; then
-      continue
-    fi
-    
-    out=$(kitten @ --to "unix:$s" ls 2>/dev/null)
-    if [[ -n "$out" && "$out" != "[]" ]]; then
-      kitty_socket=$s
-      break
-    fi
-  done
+  kitty_socket=$(find_kitty_socket)
+  echo "Found kitty socket: $kitty_socket"
 
   # If kitty socket found, open a new tab in that instance
   if [ -n "$kitty_socket" ]; then
