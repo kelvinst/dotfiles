@@ -26,8 +26,7 @@ list_kitty_windows() {
   else
     kitten @ ls --to "unix:$1" 2>/dev/null | 
       jq -r '
-        map(.tabs) | flatten | 
-          map(.windows) | flatten | 
+        [.[].tabs[].windows[]]
           map({
             id,
             cwd,
