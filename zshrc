@@ -135,7 +135,8 @@ alias sz='source ~/.zshrc && source ~/.zshenv'
 alias t='tmux'
 
 # vim/nvim
-alias v='nvim --listen /tmp/nvim-$(date +%s%N)'
+alias nvim='nvim --listen /tmp/nvim-$(date +%s%N)'
+alias v='nvim'
 
 # Remove some useless predefined aliases
 unalias -m run-help
