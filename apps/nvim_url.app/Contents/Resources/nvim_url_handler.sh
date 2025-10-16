@@ -3,6 +3,8 @@
 # Outptu all output to a log file for debugging
 exec >> /tmp/nvim_url_handler.log 2>&1
 
+PATH="/Applications/kitty.app/Contents/MacOS:/opt/homebrew/bin:$PATH"
+
 # List all kitty sockets that are not quick-access and have windows
 list_kitty_sockets() {
   quick_access_pid=$(pgrep -x kitty-quick-access)
@@ -10,13 +12,56 @@ list_kitty_sockets() {
   for s in /tmp/kitty-*; do
     [[ -n "$quick_access_pid" && "$s" == *"$quick_access_pid"* ]] && continue
 
-    [[ $(list_kitty_windows $s) != "[]" ]] && echo $s
+    echo $s
   done
 }
 
 # List all windows in a kitty instance
 list_kitty_windows() {
-  kitten @ ls --to "unix:$1" 2>/dev/null | jq -r 'map(.tabs) | flatten | map(.windows) | flatten | map({id: .id, cwd: .cwd, fg_cmdlines: .foreground_processes | map(.cmdline | join(" "))})'
+  if [ -z "$1" ]; then
+    for s in $(list_kitty_sockets); do
+      list_kitty_windows "$s" | jq -r 'map(. + {socket: "'$s'"})'
+    done | jq -s 'add'
+  else
+    kitten @ ls --to "unix:$1" 2>/dev/null | 
+      jq -r '
+        map(.tabs) | flatten | 
+          map(.windows) | flatten | 
+          map({
+            id: .id, 
+            cwd: .cwd, 
+            fg_cmdlines: .foreground_processes | map(.cmdline | join(" "))
+          })
+        '
+  fi
+}
+
+# Returns the "best" kitty socket to start the new vim tab in
+best_kitty_socket() {
+  list_kitty_windows | jq -r --arg file $1 '
+    # Sort by the longest cwds first
+    sort_by(.cwd | length) | reverse |
+
+    # Save all windows
+    . as $all |
+    
+    # Find matching windows
+    map(
+      . as $window |
+      select(
+        ($file | startswith($window.cwd + "/")) or ($file == .cwd)
+      )
+    ) |
+
+    # Return the first one (the longest match)
+    (if length > 0 then
+      first
+    else
+      $all | first
+    end) |
+    .socket
+  '
+
 }
 
 # This script is intended to be used as a URL handler for nvim:// URLs.
@@ -24,8 +69,6 @@ list_kitty_windows() {
 # Example URL: 
 #   nvim://file/~/.zshrc:40
 full="$1"
-
-PATH="/Applications/kitty.app/Contents/MacOS:/opt/homebrew/bin:$PATH"
 
 if [ -n "$full" ]; then
   # URL-decode if needed (keeps working even if python3 is missing)
@@ -59,14 +102,15 @@ if [ -n "$full" ]; then
     exit 0
   fi
 
-  kitty_socket=$(list_kitty_sockets | sort | head -n 1 || true)
+  kitty_socket=$(best_kitty_socket "$file")
 
   # If kitty socket found, open a new tab in that instance
   if [ -n "$kitty_socket" ]; then
     echo "Adding new tab to existing kitty instance at socket: $kitty_socket"
     echo "  Command: kitten @ --to unix:$kitty_socket --copy-env --type=tab nvim +${line} $file"
 
-    kitten @ launch --to "unix:$kitty_socket" --copy-env --type=tab nvim +"${line}" "$file"
+    wid=$(kitten @ launch --to="unix:$kitty_socket" --copy-env --type=tab nvim +"${line}" "$file")
+    kitten @ focus-window --to="unix:$kitty_socket" --match=id:"$wid"
     exit 0
   fi
 
