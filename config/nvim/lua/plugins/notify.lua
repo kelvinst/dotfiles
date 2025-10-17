@@ -12,5 +12,15 @@ return {
     })
 
     vim.notify = notify
+
+    local telescope = require("telescope")
+    telescope.load_extension("notify")
+
+    vim.keymap.set(
+      "n",
+      "<leader>pN",
+      telescope.extensions.notify.notify,
+      { desc = "[N]otifications (nvim-notify)" }
+    )
   end,
 }
