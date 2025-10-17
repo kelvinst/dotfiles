@@ -47,7 +47,7 @@ local opts = { buffer = true, silent = true }
 -- Just quit
 multi_keymap(
   "n",
-  { "q", "<leader>q" },
+  { "<cr>", "q", "<leader>q" },
   "<cmd>q<CR>",
   vim.tbl_extend("force", opts, { desc = "[Q]uit commit" })
 )
