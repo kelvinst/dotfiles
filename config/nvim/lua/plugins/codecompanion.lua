@@ -144,6 +144,9 @@ return {
       ["Generate a Commit Message"] = {
         strategy = "inline",
         description = "Generate a commit message",
+        condition = function()
+          return vim.bo.filetype == "gitcommit"
+        end,
         opts = {
           index = 10,
           is_default = true,
