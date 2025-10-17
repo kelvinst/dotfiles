@@ -77,7 +77,12 @@ return {
     adapters = {
       acp = {
         claude_code = function()
-          return require("codecompanion.adapters").extend("claude_code", {})
+          return require("codecompanion.adapters").extend("claude_code", {
+            opts = {
+              vision = true,
+              stream = true,
+            },
+          })
         end,
       },
     },
