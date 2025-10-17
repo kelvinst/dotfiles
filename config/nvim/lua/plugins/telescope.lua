@@ -22,6 +22,13 @@ return { -- Fuzzy Finder (files, lsp, etc)
     local previewers = require("telescope.previewers")
     local Job = require("plenary.job")
 
+    local is_image = function(filepath)
+      local image_extensions = { "png", "jpg", "jpeg", "gif", "bmp", "webp" }
+      local split_path = vim.split(filepath:lower(), ".", { plain = true })
+      local extension = split_path[#split_path]
+      return vim.tbl_contains(image_extensions, extension)
+    end
+
     local new_maker = function(filepath, bufnr, opts)
       filepath = vim.fn.expand(filepath)
 
@@ -30,7 +37,7 @@ return { -- Fuzzy Finder (files, lsp, etc)
         args = { "--mime-type", "-b", filepath },
         on_exit = function(j)
           local mime_type = vim.split(j:result()[1], "/")[1]
-          if mime_type == "text" then
+          if mime_type == "text" or is_image(filepath) then
             previewers.buffer_previewer_maker(filepath, bufnr, opts)
           else
             -- Do not preview binary files
@@ -49,13 +56,6 @@ return { -- Fuzzy Finder (files, lsp, etc)
           filesize_limit = 0.1,
           -- Preview images
           mime_hook = function(filepath, bufnr, opts)
-            local is_image = function(filepath)
-              local image_extensions = { "png", "jpg" } -- Supported image formats
-              local split_path =
-                vim.split(filepath:lower(), ".", { plain = true })
-              local extension = split_path[#split_path]
-              return vim.tbl_contains(image_extensions, extension)
-            end
             if is_image(filepath) then
               local term = vim.api.nvim_open_term(bufnr, {})
               local function send_output(_, data, _)
