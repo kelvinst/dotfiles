@@ -77,7 +77,7 @@
 
 # kitty {{{
 
-# open a quick access kitty
+# open kitty
 cmd + ctrl - return : kitty --single-instance --directory ~
 
 # open a quick access kitty
@@ -88,7 +88,8 @@ cmd + ctrl + shift - return : kitten quick-access-terminal
 # yabai {{{
 
 # restart the yabai service (reload everything from scratch, key: `,`)
-alt + ctrl - 0x2B : yabai --stop-service && yabai --start-service
+alt + ctrl - 0x2B : open nvim://file/~/Developer/dotfiles/yabairc
+alt + ctrl + shift - 0x2B : yabai --stop-service && yabai --start-service
 
 # swap to main
 alt + ctrl - return : yabai -m window --swap last
