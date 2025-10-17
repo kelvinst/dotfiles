@@ -149,9 +149,14 @@ return {
           return vim.bo.filetype == "gitcommit"
         end,
         opts = {
+          adapter = {
+            name = "copilot",
+            model = "gpt-5-mini",
+          },
           index = 10,
           is_default = true,
           is_slash_cmd = true,
+          stop_context_insertion = true,
           short_name = "commit",
           auto_submit = true,
         },
