@@ -71,7 +71,6 @@ return {
       },
       inline = {
         adapter = "copilot",
-        model = "gpt-5-mini",
       },
     },
     adapters = {
@@ -81,6 +80,19 @@ return {
             opts = {
               vision = true,
               stream = true,
+            },
+          })
+        end,
+      },
+      copilot = {
+        copilot = function()
+          return require("codecompanion.adapters").extend("copilot", {
+            opts = {
+              vision = true,
+              stream = true,
+            },
+            schema = {
+              model = "gpt-5-mini",
             },
           })
         end,
@@ -124,7 +136,6 @@ return {
           auto_generate_title = true,
           title_generation_opts = {
             adapter = "copilot",
-            model = "gpt-5-mini",
           },
         },
       },
