@@ -18,7 +18,7 @@ return { -- Fuzzy Finder (files, lsp, etc)
   config = function()
     local telescope = require("telescope")
     local themes = require("telescope.themes")
-
+    local actions = require("telescope.actions")
     local previewers = require("telescope.previewers")
     local Job = require("plenary.job")
 
@@ -52,6 +52,12 @@ return { -- Fuzzy Finder (files, lsp, etc)
     telescope.setup({
       defaults = {
         buffer_previewer_maker = new_maker,
+        mappings = {
+          i = {
+            ["<C-s>"] = actions.cycle_previewers_next,
+            ["<C-a>"] = actions.cycle_previewers_prev,
+          },
+        },
         preview = {
           filesize_limit = 0.1,
           -- Preview images
