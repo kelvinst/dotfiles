@@ -1,32 +1,62 @@
+local function without_vimade(cmd)
+  return function()
+    vim.cmd.VimadeDisable()
+    cmd()
+    vim.cmd.VimadeEnable()
+  end
+end
+
 return { -- Easily jump around in your file
   "smoka7/hop.nvim",
   event = "VimEnter",
   version = "v2.7.2",
   keys = {
     {
-      "<leader><space>",
-      function()
-        vim.cmd.VimadeDisable()
-        vim.cmd.HopChar1()
-        vim.cmd.VimadeEnable()
-      end,
+      "<leader><space><space>",
+      without_vimade(vim.cmd.HopChar1),
       desc = "Hop to a char",
     },
-    { "<leader>h/", vim.cmd.HopPattern, desc = "Search like [/]" },
-    { "<leader>hC", vim.cmd.HopChar2, desc = "2 [C]har" },
-    { "<leader>ha", vim.cmd.HopAnywhere, desc = "[A]nywhere" },
-    { "<leader>hc", vim.cmd.HopChar1, desc = "1 [C]har)" },
-    { "<leader>hh", vim.cmd.HopChar1, desc = "Default (1 char)" },
-    { "<leader>hl", vim.cmd.HopLine, desc = "[L]ine" },
     {
-      "<leader>hn",
+      "<leader><space>/",
+      without_vimade(vim.cmd.HopPattern),
+      desc = "Search like [/]",
+    },
+    {
+      "<leader><space>1",
+      without_vimade(vim.cmd.HopChar1),
+      desc = "[1] Char",
+    },
+    {
+      "<leader><space>2",
+      without_vimade(vim.cmd.HopChar2),
+      desc = "[2] Char",
+    },
+    {
+      "<leader><space>a",
+      without_vimade(vim.cmd.HopAnywhere),
+      desc = "[A]nywhere",
+    },
+    {
+      "<leader><space>h",
+      without_vimade(vim.cmd.HopChar1),
+      desc = "Default (1 char)",
+    },
+    { "<leader><space>l", without_vimade(vim.cmd.HopLine), desc = "[L]ine" },
+    {
+      "<leader><space>n",
       function()
-        require("hop").hint_patterns({}, vim.fn.getreg("/"))
+        without_vimade(function()
+          require("hop").hint_patterns({}, vim.fn.getreg("/"))
+        end)()
       end,
       desc = "[N]ext pattern (based on what was searched on /)",
     },
-    { "<leader>ht", vim.cmd.HopNodes, desc = "[T]reesiter nodes" },
-    { "<leader>hw", vim.cmd.HopWord, desc = "[W]ord" },
+    {
+      "<leader><space>t",
+      without_vimade(vim.cmd.HopNodes),
+      desc = "[T]reesiter nodes",
+    },
+    { "<leader><space>w", without_vimade(vim.cmd.HopWord), desc = "[W]ord" },
   },
   config = function()
     local hop = require("hop")
