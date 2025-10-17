@@ -32,7 +32,8 @@ return {
       mappings = {
         status = {
           ["<esc>"] = "Close",
-          ZZ = "Close",
+          ["<C-c>"] = "Close",
+          ["ZZ"] = "Close",
         },
       },
     })
