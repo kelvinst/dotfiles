@@ -20,20 +20,42 @@ vim.opt_local.formatoptions:append("c") -- Auto-wrap comments using textwidth
 vim.opt_local.formatoptions:append("q") -- Allow formatting of comments with "gq"
 vim.opt_local.formatoptions:append("j") -- Remove comment leader when joining lines
 
--- Start in insert mode at the beginning of the file
-vim.cmd("startinsert")
+-- Autosave on each edit (TextChanged for normal mode, TextChangedI for insert mode)
+local augroup =
+  vim.api.nvim_create_augroup("GitCommitAutoSave", { clear = true })
+
+vim.api.nvim_create_autocmd({ "TextChanged", "TextChangedI" }, {
+  group = augroup,
+  buffer = 0,
+  callback = function()
+    if vim.bo.modified then
+      vim.cmd("silent! write")
+    end
+  end,
+  desc = "Auto-save git commit message on changes",
+})
+
+local function multi_keymap(mode, keys, command, options)
+  for i, key in ipairs(keys) do
+    vim.keymap.set(mode, key, command, options)
+  end
+end
 
 -- Keymaps for git commit workflow
 local opts = { buffer = true, silent = true }
 
--- Quick save and quit
-vim.keymap.set("n", "<leader>w", "<cmd>wq<CR>", vim.tbl_extend("force", opts, { desc = "Save and quit commit" }))
+-- Just quit
+multi_keymap(
+  "n",
+  { "q", "<leader>q" },
+  "<cmd>q<CR>",
+  vim.tbl_extend("force", opts, { desc = "Quit commit" })
+)
 
 -- Abort commit
-vim.keymap.set("n", "<leader>q", "<cmd>cq<CR>", vim.tbl_extend("force", opts, { desc = "Abort commit" }))
-
--- Navigate to subject line (first line)
-vim.keymap.set("n", "gs", "gg", vim.tbl_extend("force", opts, { desc = "Go to subject line" }))
-
--- Navigate to body (line 3)
-vim.keymap.set("n", "gb", "3G", vim.tbl_extend("force", opts, { desc = "Go to body" }))
+multi_keymap(
+  "n",
+  { "Q", "<leader>Q" },
+  "<cmd>cq<CR>",
+  vim.tbl_extend("force", opts, { desc = "Abort commit" })
+)
