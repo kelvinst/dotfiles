@@ -19,6 +19,11 @@ return { -- Fuzzy Finder (files, lsp, etc)
     local telescope = require("telescope")
     local themes = require("telescope.themes")
     telescope.setup({
+      defaults = {
+        preview = {
+          filesize_limit = 0.1,
+        },
+      },
       extensions = {
         ["ui-select"] = {
           themes.get_dropdown(),
