@@ -20,21 +20,6 @@ vim.opt_local.formatoptions:append("c") -- Auto-wrap comments using textwidth
 vim.opt_local.formatoptions:append("q") -- Allow formatting of comments with "gq"
 vim.opt_local.formatoptions:append("j") -- Remove comment leader when joining lines
 
--- Autosave on each edit (TextChanged for normal mode, TextChangedI for insert mode)
-local augroup =
-  vim.api.nvim_create_augroup("GitCommitAutoSave", { clear = true })
-
-vim.api.nvim_create_autocmd({ "TextChanged", "TextChangedI" }, {
-  group = augroup,
-  buffer = 0,
-  callback = function()
-    if vim.bo.modified then
-      vim.cmd("silent! write")
-    end
-  end,
-  desc = "Auto-save git commit message on changes",
-})
-
 local function multi_keymap(mode, keys, command, options)
   for i, key in ipairs(keys) do
     vim.keymap.set(mode, key, command, options)
@@ -44,18 +29,18 @@ end
 -- Keymaps for git commit workflow
 local opts = { buffer = true, silent = true }
 
--- Just quit
+-- Commit
 multi_keymap(
   "n",
-  { "<cr>", "q", "<leader>q" },
-  "<cmd>q<CR>",
-  vim.tbl_extend("force", opts, { desc = "[Q]uit commit" })
+  { "<cr>", "<leader><cr>" },
+  "<cmd>wq<CR>",
+  vim.tbl_extend("force", opts, { desc = "Commit" })
 )
 
 -- Abort commit
 multi_keymap(
   "n",
-  { "Q", "<leader>Q" },
+  { "q", "<leader>q" },
   "<cmd>cq<CR>",
-  vim.tbl_extend("force", opts, { desc = "[A]bort commit" })
+  vim.tbl_extend("force", opts, { desc = "[A]bort" })
 )
