@@ -1,5 +1,8 @@
 -- Clear highlights on search when pressing <Esc> in normal mode
-vim.keymap.set("n", "<Esc>", "<cmd>nohlsearch<CR>")
+vim.keymap.set("n", "<Esc>", function()
+  vim.cmd("nohlsearch")
+  vim.cmd.Noice("dismiss")
+end)
 
 -- Move selected line / block of text in visual mode
 vim.keymap.set("v", "J", ":m '>+1<CR>gv=gv")

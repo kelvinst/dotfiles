@@ -17,12 +17,13 @@ return { -- Useful plugin to show you pending keybinds.
 
     -- Existing keybindings
     spec = {
+      { "<leader><space>", group = "Hop" },
       { "<leader>a", group = "[A]I", mode = "nv" },
       { "<leader>c", group = "[C]ommand" },
       { "<leader>e", group = "[E]rror diagnostics" },
       { "<leader>f", group = "[F]iles" },
       { "<leader>g", group = "[G]it" },
-      { "<leader>h", group = "[H]op" },
+      { "<leader>n", group = "[N]otifications" },
       { "<leader>s", group = "[S]essions" },
       { "<leader>v", group = "[V]im" },
       { "<leader>y", group = "[Y]ank" },
@@ -30,7 +31,7 @@ return { -- Useful plugin to show you pending keybinds.
 
     triggers = {
       { "<auto>", mode = "nxsoi" },
-      { "s" },
+      { "s", mode = "nv" },
     },
   },
 }
