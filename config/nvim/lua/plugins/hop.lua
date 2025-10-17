@@ -3,7 +3,15 @@ return { -- Easily jump around in your file
   event = "VimEnter",
   version = "v2.7.2",
   keys = {
-    { "<leader><space>", vim.cmd.HopChar1, desc = "Hop to a char" },
+    {
+      "<leader><space>",
+      function()
+        vim.cmd.VimadeDisable()
+        vim.cmd.HopChar1()
+        vim.cmd.VimadeEnable()
+      end,
+      desc = "Hop to a char",
+    },
     { "<leader>h/", vim.cmd.HopPattern, desc = "Search like [/]" },
     { "<leader>hC", vim.cmd.HopChar2, desc = "2 [C]har" },
     { "<leader>ha", vim.cmd.HopAnywhere, desc = "[A]nywhere" },
