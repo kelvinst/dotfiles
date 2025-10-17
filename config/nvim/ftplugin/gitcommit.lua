@@ -49,7 +49,7 @@ multi_keymap(
   "n",
   { "q", "<leader>q" },
   "<cmd>q<CR>",
-  vim.tbl_extend("force", opts, { desc = "Quit commit" })
+  vim.tbl_extend("force", opts, { desc = "[Q]uit commit" })
 )
 
 -- Abort commit
@@ -57,5 +57,5 @@ multi_keymap(
   "n",
   { "Q", "<leader>Q" },
   "<cmd>cq<CR>",
-  vim.tbl_extend("force", opts, { desc = "Abort commit" })
+  vim.tbl_extend("force", opts, { desc = "[A]bort commit" })
 )
