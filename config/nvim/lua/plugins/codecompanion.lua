@@ -38,7 +38,7 @@ return {
     {
       "<leader>ag",
       function()
-        vim.cmd.CodeCompanion("/commit")
+        require("codecompanion").prompt("commit")
       end,
       desc = "[G]it commit message",
       mode = "n",
