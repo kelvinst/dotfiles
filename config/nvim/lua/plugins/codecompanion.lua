@@ -160,7 +160,8 @@ return {
 You are an expert at following the Conventional Commit specification. 
 
 Given the git diff listed below, please generate a commit message for me and 
-insert it in #{buffer} using the @{insert_edit_into_file} tool.
+insert it at the first line of #{buffer} using the @{insert_edit_into_file} 
+tool.
 
 ```diff
 %s
