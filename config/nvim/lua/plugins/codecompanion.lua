@@ -57,21 +57,32 @@ return {
             modes = { n = "<C-c>" },
           },
           _acp_allow_always = {
-            modes = { n = "gdy" },
+            modes = { n = "<S-Enter>" },
           },
           _acp_allow_once = {
-            modes = { n = "gda" },
+            modes = { n = "<cr>" },
           },
           _acp_reject_once = {
-            modes = { n = "gdr" },
+            modes = { n = "<esc>" },
           },
           _acp_reject_always = {
-            modes = { n = "gdn" },
+            modes = { n = "<S-Esc>" },
           },
         },
       },
       inline = {
         adapter = "copilot",
+        keymaps = {
+          accept_change = {
+            modes = { n = "<cr>" },
+          },
+          reject_change = {
+            modes = { n = "<esc>" },
+          },
+          always_accept = {
+            modes = { n = "<S-Enter>" },
+          },
+        },
       },
     },
     adapters = {
