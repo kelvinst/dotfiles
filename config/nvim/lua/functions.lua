@@ -1,3 +1,9 @@
+function CmdFn(cmd)
+  return function()
+    vim.cmd(cmd)
+  end
+end
+
 function ClearInvisibleBuffers()
   -- Get visible buffers
   local visible_buffers = {}

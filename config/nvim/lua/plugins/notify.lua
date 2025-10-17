@@ -5,20 +5,12 @@ return {
     local notify = require("notify")
 
     notify.setup({
+      timeout = 300,
       max_width = 50,
+      max_height = 10,
       merge_duplicates = true,
     })
 
     vim.notify = notify
-
-    local telescope = require("telescope")
-    telescope.load_extension("notify")
-
-    vim.keymap.set(
-      "n",
-      "<leader>pn",
-      telescope.extensions.notify.notify,
-      { desc = "[N]otifications" }
-    )
   end,
 }
