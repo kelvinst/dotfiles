@@ -42,6 +42,7 @@ return {
       end,
       desc = "[G]it commit message",
       mode = "n",
+      ft = { "gitcommit" },
     },
   },
   opts = {
