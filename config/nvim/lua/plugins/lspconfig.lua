@@ -9,12 +9,11 @@ return {
 
     -- Useful status updates for LSP.
     {
-      "mrded/nvim-lsp-notify",
+      "zyriab/nvim-lsp-notify",
+      branch = "fix/do-not-replace-non-existing-notifications",
       dependencies = { "rcarriga/nvim-notify" },
       config = function()
-        require("lsp-notify").setup({
-          notifier = require("notify"),
-        })
+        require("lsp-notify").setup({})
       end,
     },
 
