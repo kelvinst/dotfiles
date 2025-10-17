@@ -180,6 +180,14 @@ My new, simplified, dotfiles
     brew install neovim
     ```
 
+1. Install [`nvim_url`](https://github.com/kelvinst/nvim_url):
+
+    ```shell
+   git clone https://github.com/kelvinst/nvim_url.git
+   cd nvim_url
+   make install
+   ```
+
 1. Install [yabai](https://github.com/koekeishiya/yabai/wiki#yabai)
 
     ```shell
