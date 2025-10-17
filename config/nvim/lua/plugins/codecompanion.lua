@@ -151,7 +151,7 @@ return {
         opts = {
           adapter = {
             name = "copilot",
-            model = "gpt-5-mini",
+            model = "gpt-4.1",
           },
           index = 10,
           is_default = true,
