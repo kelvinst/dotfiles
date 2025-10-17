@@ -45,9 +45,7 @@ return { -- Easily jump around in your file
     {
       "<leader><space>n",
       function()
-        without_vimade(function()
-          require("hop").hint_patterns({}, vim.fn.getreg("/"))
-        end)()
+        require("hop").hint_patterns({}, vim.fn.getreg("/"))
       end,
       desc = "[N]ext pattern (based on what was searched on /)",
     },
