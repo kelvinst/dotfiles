@@ -84,19 +84,19 @@ return {
           })
         end,
       },
-      copilot = {
-        copilot = function()
-          return require("codecompanion.adapters").extend("copilot", {
-            opts = {
-              vision = true,
-              stream = true,
+      copilot = function()
+        return require("codecompanion.adapters").extend("copilot", {
+          opts = {
+            vision = true,
+            stream = true,
+          },
+          schema = {
+            model = {
+              default = "gpt-5-mini",
             },
-            schema = {
-              model = "gpt-5-mini",
-            },
-          })
-        end,
-      },
+          },
+        })
+      end,
     },
     display = {
       chat = {
