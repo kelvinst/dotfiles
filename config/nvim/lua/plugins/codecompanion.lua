@@ -200,8 +200,6 @@ with an explanation of why the changes were made. Keep the body lines under
 paragraphs, just use 2 line breaks to separate paragraphs.
 
 To build the "why this changes were made" section, here's a bit of context:
-
-
 ]],
                 vim.fn.system("git diff --no-ext-diff --staged")
               )
