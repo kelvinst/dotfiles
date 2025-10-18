@@ -169,14 +169,15 @@ return {
           index = 10,
           is_default = true,
           is_slash_cmd = true,
-          stop_context_insertion = true,
+          stop_context_insertion = false,
           short_name = "commit",
           auto_submit = true,
+          user_prompt = true,
         },
         prompts = {
           {
             role = "user",
-            content = function()
+            content = function(context)
               return string.format(
                 [[
 You are an expert at following the Conventional Commit specification. 
@@ -197,6 +198,10 @@ bullet points of the multiple changes made in the commit, and finishing it
 with an explanation of why the changes were made. Keep the body lines under
 72 characters, it's ok to break bullet items in multiple lines, as well as
 paragraphs, just use 2 line breaks to separate paragraphs.
+
+To build the "why this changes were made" section, here's a bit of context:
+
+
 ]],
                 vim.fn.system("git diff --no-ext-diff --staged")
               )
