@@ -105,6 +105,14 @@ return {
             end
           end
 
+          -- Delete all Neogit buffers
+          for _, buf in ipairs(vim.api.nvim_list_bufs()) do
+            local name = vim.api.nvim_buf_get_name(buf)
+            if name:match("Neogit") then
+              vim.api.nvim_buf_delete(buf, { force = true })
+            end
+          end
+
           ClearInvisibleBuffers()
 
           vim.cmd([[ScopeSaveState]]) -- Scope.nvim saving
