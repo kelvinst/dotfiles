@@ -33,7 +33,12 @@ return {
         status = {
           ["<esc>"] = "Close",
           ["<C-c>"] = "Close",
-          ["ZZ"] = "Close",
+          ["<c-s>"] = false,
+          ["S"] = "StageAll",
+        },
+        popup = {
+          ["Z"] = false,
+          ["<c-s>"] = "StashPopup",
         },
       },
     })
