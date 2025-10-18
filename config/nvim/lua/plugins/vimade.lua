@@ -13,7 +13,7 @@ return {
     vim.api.nvim_create_autocmd("FocusLost", {
       group = vimade_group,
       callback = function()
-        vim.cmd("VimadeFadeActive")
+        vim.cmd.VimadeFadeActive()
       end,
     })
 
@@ -21,7 +21,7 @@ return {
     vim.api.nvim_create_autocmd("FocusGained", {
       group = vimade_group,
       callback = function()
-        vim.cmd("VimadeUnfadeActive")
+        vim.cmd.VimadeUnfadeActive()
       end,
     })
   end,
