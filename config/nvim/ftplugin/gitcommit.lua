@@ -21,7 +21,7 @@ vim.opt_local.formatoptions:append("q") -- Allow formatting of comments with "gq
 vim.opt_local.formatoptions:append("j") -- Remove comment leader when joining lines
 
 local function multi_keymap(mode, keys, command, options)
-  for i, key in ipairs(keys) do
+  for _, key in ipairs(keys) do
     vim.keymap.set(mode, key, command, options)
   end
 end
