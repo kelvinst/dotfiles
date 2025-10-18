@@ -6,9 +6,25 @@ return {
   keys = {
     { "]b", vim.cmd.BufferLineCycleNext, desc = "Next [B]uffer" },
     { "[b", vim.cmd.BufferLineCyclePrev, desc = "Previous [B]uffer" },
+    { "gb", vim.cmd.BufferLineCycleNext, desc = "Next [B]uffer" },
+    { "gB", vim.cmd.BufferLineCyclePrev, desc = "Previous [B]uffer" },
     { "]t", "gt", desc = "Next [T]ab" },
     { "[t", "gT", desc = "Previous [T]ab" },
-    { "<leader>bp", vim.cmd.BufferLinePick, desc = "[P]ick" },
+    {
+      "<leader>bp",
+      function()
+        vim.cmd.VimadeFadeActive()
+
+        vim.defer_fn(function()
+          pcall(function()
+            vim.cmd.BufferLinePick()
+          end)
+
+          vim.cmd.VimadeUnfadeActive()
+        end, 100)
+      end,
+      desc = "[P]ick",
+    },
     { "<leader>bm", vim.cmd.BufferLineCycleNext, desc = "[M]ove" },
     { "<leader>bc", ClearInvisibleBuffers, desc = "[C]lear invisible buffers" },
     { "<leader>bd", vim.cmd.bd, desc = "[D]elete current buffer" },
