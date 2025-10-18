@@ -169,7 +169,7 @@ return {
           index = 10,
           is_default = true,
           is_slash_cmd = true,
-          stop_context_insertion = false,
+          stop_context_insertion = true,
           short_name = "commit",
           auto_submit = true,
           user_prompt = true,
@@ -193,11 +193,12 @@ tool.
 The commit subject should be a short but descriptive summary of the changes,
 try to keep it under 50 characters, but it's ok to go above that. 
 
-The body should provide additional context about the changes, starting with
-bullet points of the multiple changes made in the commit, and finishing it
-with an explanation of why the changes were made. Keep the body lines under
-72 characters, it's ok to break bullet items in multiple lines, as well as
-paragraphs, just use 2 line breaks to separate paragraphs.
+The body should provide additional context about the changes, focused on the
+"why the changes were made", not just on which changes were made. Explain
+individual changes in separate paragraphs if needed.
+
+Keep the body lines under 72 characters, it's ok to break paragraphs in 
+multiple lines, just use 2 line breaks to separate paragraphs.
 
 To build the "why this changes were made" section, here's a bit of context:
 ]],
