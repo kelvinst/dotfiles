@@ -1,3 +1,21 @@
+local function delete_bad_buffer(buf)
+  if vim.api.nvim_buf_is_valid(buf) then
+    -- Delete all CodeCompanion buffers
+    local buftype = vim.bo[buf].filetype
+    if buftype == "codecompanion" or buftype == "qf" then
+      vim.api.nvim_buf_delete(buf, { force = true })
+      return
+    end
+
+    -- Delete all NeoGit buffers
+    local name = vim.api.nvim_buf_get_name(buf)
+    if name:match("Neogit") then
+      vim.api.nvim_buf_delete(buf, { force = true })
+      return
+    end
+  end
+end
+
 local function session_file()
   local dir = vim.fn.stdpath("data") .. "/tabnames"
   vim.fn.mkdir(dir, "p")
@@ -92,25 +110,11 @@ return {
       require("nvim-possession").setup({
         autosave = true,
         autoload = true,
-        autoprompt = true,
+        autoprompt = false,
         autoswitch = { enable = true, notify = true },
         save_hook = function()
-          -- Delete all CodeCompanion buffers
           for _, buf in ipairs(vim.api.nvim_list_bufs()) do
-            if vim.api.nvim_buf_is_valid(buf) then
-              local buftype = vim.bo[buf].filetype
-              if buftype == "codecompanion" then
-                vim.api.nvim_buf_delete(buf, { force = true })
-              end
-            end
-          end
-
-          -- Delete all Neogit buffers
-          for _, buf in ipairs(vim.api.nvim_list_bufs()) do
-            local name = vim.api.nvim_buf_get_name(buf)
-            if name:match("Neogit") then
-              vim.api.nvim_buf_delete(buf, { force = true })
-            end
+            delete_bad_buffer(buf)
           end
 
           ClearInvisibleBuffers()
