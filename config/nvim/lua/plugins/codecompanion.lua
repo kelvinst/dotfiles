@@ -177,7 +177,7 @@ return {
         prompts = {
           {
             role = "user",
-            content = function(context)
+            content = function()
               return string.format(
                 [[
 You are an expert at following the Conventional Commit specification. 
