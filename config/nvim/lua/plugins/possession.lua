@@ -29,7 +29,7 @@ local function save_tab_names()
 
   local names = {}
   -- Order matters: index 1..N corresponds to tabpage #1..#N
-  for i = 1, #vim.api.nvim_list_tabpages() do
+  for _, i in ipairs(vim.api.nvim_list_tabpages()) do
     names[i] = vim.t[i] and vim.t[i].name or nil
   end
   local ok, json = pcall(vim.json.encode, names)
