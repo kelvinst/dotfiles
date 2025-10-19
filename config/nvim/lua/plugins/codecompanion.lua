@@ -53,6 +53,9 @@ return {
           close = {
             modes = { n = "q" },
           },
+          send = {
+            modes = { n = "<C-Enter>", i = "<C-Enter>" },
+          },
           stop = {
             modes = { n = "<C-c>" },
           },
@@ -69,7 +72,7 @@ return {
             modes = { n = "<C-Enter>" },
           },
           _acp_reject_once = {
-            modes = { n = "<C-Esc>" },
+            modes = { n = "<Esc>" },
           },
           _acp_reject_always = {
             modes = { n = "<S-Esc>" },
@@ -83,7 +86,7 @@ return {
             modes = { n = "<C-Enter>" },
           },
           reject_change = {
-            modes = { n = "<C-Esc>" },
+            modes = { n = "<Esc>" },
           },
           always_accept = {
             modes = { n = "<S-Enter>" },
