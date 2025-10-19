@@ -21,6 +21,27 @@ local function session_file()
   return string.format("%s/%s.json", dir, vim.g.session)
 end
 
+local function is_codecompanion_open()
+  -- Check if any buffer has codecompanion filetype
+  for _, buf in ipairs(vim.api.nvim_list_bufs()) do
+    if
+      vim.api.nvim_buf_is_valid(buf)
+      and vim.bo[buf].filetype == "codecompanion"
+    then
+      -- Check if the buffer is visible in any window
+      for _, win in ipairs(vim.api.nvim_list_wins()) do
+        if
+          vim.api.nvim_win_is_valid(win)
+          and vim.api.nvim_win_get_buf(win) == buf
+        then
+          return true
+        end
+      end
+    end
+  end
+  return false
+end
+
 local function tab_names()
   if not vim.g.session or vim.g.session == "" then
     return
@@ -38,6 +59,7 @@ end
 local function save_session_data()
   local session_data = {
     tab_names = tab_names(),
+    codecompanion_open = is_codecompanion_open(),
   }
 
   local ok, json = pcall(vim.json.encode, session_data)
@@ -84,6 +106,16 @@ local function restore_session()
   local session_data = load_session_data()
   if session_data then
     restore_tab_names(session_data.tab_names)
+
+    -- Restore CodeCompanion chat state
+    if session_data.codecompanion_open == true then
+      vim.defer_fn(function()
+        local codecompanion = require("codecompanion")
+        if codecompanion then
+          codecompanion.chat()
+        end
+      end, 100)
+    end
   end
 end
 
