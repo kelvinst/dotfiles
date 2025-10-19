@@ -54,7 +54,7 @@ return {
             modes = { n = "q" },
           },
           send = {
-            modes = { n = "<C-Enter>", i = "<C-Enter>" },
+            modes = { n = { "<C-Enter>", "<Enter>" }, i = "<C-Enter>" },
           },
           stop = {
             modes = { n = "<C-c>" },
@@ -69,7 +69,7 @@ return {
             modes = { n = "<S-Enter>" },
           },
           _acp_allow_once = {
-            modes = { n = "<C-Enter>" },
+            modes = { n = "<Enter>" },
           },
           _acp_reject_once = {
             modes = { n = "<Esc>" },
@@ -83,7 +83,7 @@ return {
         adapter = "copilot",
         keymaps = {
           accept_change = {
-            modes = { n = "<C-Enter>" },
+            modes = { n = "<Enter>" },
           },
           reject_change = {
             modes = { n = "<Esc>" },
