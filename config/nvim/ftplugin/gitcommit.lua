@@ -20,27 +20,21 @@ vim.opt_local.formatoptions:append("c") -- Auto-wrap comments using textwidth
 vim.opt_local.formatoptions:append("q") -- Allow formatting of comments with "gq"
 vim.opt_local.formatoptions:append("j") -- Remove comment leader when joining lines
 
-local function multi_keymap(mode, keys, command, options)
-  for _, key in ipairs(keys) do
-    vim.keymap.set(mode, key, command, options)
-  end
-end
-
 -- Keymaps for git commit workflow
 local opts = { buffer = true, silent = true }
 
 -- Commit
-multi_keymap(
+vim.keymap.set(
   "n",
-  { "<cr>", "<leader><cr>" },
+  "<C-Enter>",
   "<cmd>wq<CR>",
   vim.tbl_extend("force", opts, { desc = "Commit" })
 )
 
 -- Abort commit
-multi_keymap(
+vim.keymap.set(
   "n",
-  { "q", "<leader>q" },
+  "<C-c>",
   "<cmd>cq<CR>",
-  vim.tbl_extend("force", opts, { desc = "[A]bort" })
+  vim.tbl_extend("force", opts, { desc = "Abort" })
 )
