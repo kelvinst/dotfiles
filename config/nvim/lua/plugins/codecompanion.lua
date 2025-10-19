@@ -66,10 +66,10 @@ return {
             modes = { n = "<S-Enter>" },
           },
           _acp_allow_once = {
-            modes = { n = "<cr>" },
+            modes = { n = "<C-Enter>" },
           },
           _acp_reject_once = {
-            modes = { n = "<esc>" },
+            modes = { n = "<C-Esc>" },
           },
           _acp_reject_always = {
             modes = { n = "<S-Esc>" },
@@ -80,10 +80,10 @@ return {
         adapter = "copilot",
         keymaps = {
           accept_change = {
-            modes = { n = "<cr>" },
+            modes = { n = "<C-Enter>" },
           },
           reject_change = {
-            modes = { n = "<esc>" },
+            modes = { n = "<C-Esc>" },
           },
           always_accept = {
             modes = { n = "<S-Enter>" },
