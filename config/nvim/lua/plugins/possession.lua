@@ -2,7 +2,9 @@ local function delete_bad_buffer(buf)
   if vim.api.nvim_buf_is_valid(buf) then
     -- Delete all CodeCompanion buffers
     local buftype = vim.bo[buf].filetype
-    if vim.tbl_contains({ "codecompanion", "qf", "gitcommit" }, buftype) then
+    if
+      vim.tbl_contains({ "", "codecompanion", "qf", "gitcommit" }, buftype)
+    then
       vim.api.nvim_buf_delete(buf, { force = true })
       return
     end
