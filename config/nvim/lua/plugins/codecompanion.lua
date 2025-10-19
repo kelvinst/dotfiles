@@ -203,13 +203,15 @@ The commit subject should be a short but descriptive summary of the changes,
 try to keep it under 50 characters, but it's ok to go above that. 
 
 The body should provide additional context about the changes, focused on the
-"why the changes were made", not just on which changes were made. Explain
-individual changes in separate paragraphs if needed.
+"why the changes were made", not just on which changes were made. Read the
+files changed using @{read_file} tool if you need more context.
+
+Explain individual changes in separate paragraphs if needed.
 
 Keep the body lines under 72 characters, it's ok to break paragraphs in 
 multiple lines, just use 2 line breaks to separate paragraphs.
 
-To build the "why this changes were made" section, here's a bit of context:
+Here is some extra info to take into account when writing it:
 ]],
                 vim.fn.system("git diff --no-ext-diff --staged")
               )
