@@ -65,9 +65,9 @@ return {
 
     vim.keymap.set(
       "n",
-      "<leader>pn",
+      "<leader>np",
       telescope.extensions.noice.noice,
-      { desc = "[N]otifications" }
+      { desc = "[P]ick" }
     )
   end,
 }

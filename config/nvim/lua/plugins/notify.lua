@@ -18,7 +18,7 @@ return {
 
     vim.keymap.set(
       "n",
-      "<leader>pN",
+      "<leader>pn",
       telescope.extensions.notify.notify,
       { desc = "[N]otifications (nvim-notify)" }
     )
