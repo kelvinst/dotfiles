@@ -1,3 +1,41 @@
+function GetFileReference(str)
+  if str == nil then
+    str = vim.fn.expand("<cWORD>")
+  end
+
+  -- Get the current WORD under the cursor
+  local fname = str:gsub(":%d+$", "")
+
+  -- Check if the word is a valid file
+  if vim.fn.filereadable(fname) == 0 then
+    vim.notify('"' .. fname .. '" is not a valid file', vim.log.levels.WARN)
+    return
+  end
+
+  -- Get the current line and cursor position
+  local line = vim.api.nvim_get_current_line()
+
+  -- Here are the patterns to match the line number
+  local lnum_patterns = {
+    ":(%d+)", -- <file>:<line>
+    "%s*@%s*(%d+)", -- <file> @ <line>
+    "%s*%(%d+)", -- <file> (<line>)
+    "%s*%(line%s*(%d+)", -- <file> (line <line>)
+    "%s+(%d+)", -- file line
+  }
+
+  -- Now apply each pattern to find the line number
+  for _, pat in ipairs(lnum_patterns) do
+    local lnum = line:match(fname .. pat)
+    if lnum then
+      return { fname = fname, lnum = tonumber(lnum) }
+    end
+  end
+
+  -- if no line number found, return only the filename
+  return { fname = fname }
+end
+
 function CmdFn(cmd)
   return function()
     vim.cmd(cmd)
@@ -31,8 +69,9 @@ function BreakLine(max_length)
 
   -- If line is already short enough, do nothing
   if #line <= max_length then
-    print(
-      "Line is already " .. #line .. " characters (max: " .. max_length .. ")"
+    vim.notify(
+      "Line is already " .. #line .. " characters (max: " .. max_length .. ")",
+      vim.log.levels.WARN
     )
     return
   end
@@ -72,8 +111,9 @@ function BreakLine(max_length)
     for i = 2, #lines do
       vim.fn.append(line_num + i - 2, lines[i])
     end
-    print(
-      "Broke line into " .. #lines .. " lines (max: " .. max_length .. " chars)"
+    vim.notify(
+      "Broke line into " .. #lines .. " lines (max: " .. max_length .. " chars)",
+      vim.log.levels.INFO
     )
   end
 end

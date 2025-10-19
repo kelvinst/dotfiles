@@ -17,19 +17,65 @@ vim.keymap.set("n", "<C-u>", "<C-u>zz")
 vim.keymap.set("n", "n", "nzzzv")
 vim.keymap.set("n", "N", "Nzzzv")
 
+-- Make `gf` go to line by default
+vim.keymap.set("n", "gf", "gF")
+
+local function open_file_in_editor(ref)
+  if ref then
+    local command = { "open", "-t", ref.fname }
+    local msg = "Opening file editor: %s"
+
+    if ref.lnum then
+      table.insert(command, "--args")
+      table.insert(command, string.format("--line=%d", ref.lnum))
+      msg = msg .. " (line %d)"
+    end
+
+    vim.notify(string.format(msg, ref.fname, ref.lnum), vim.log.levels.INFO)
+    vim.notify(
+      string.format("Opening command: ", vim.inspect(command)),
+      vim.log.levels.DEBUG
+    )
+
+    vim.fn.system(command)
+  end
+end
+
+-- Open file under cursor in default text editor (macOS)
+vim.keymap.set("n", "gF", function()
+  open_file_in_editor(GetFileReference())
+end, { desc = "Open file under cursor in system's editor" })
+
+local function get_selected_text()
+  local _, csrow, cscol = unpack(vim.fn.getpos("'<"))
+  local _, cerow, cecol = unpack(vim.fn.getpos("'>"))
+
+  if csrow == cerow then
+    local line = vim.fn.getline(csrow)
+    return string.sub(line, cscol, cecol)
+  end
+
+  return ""
+end
+
+-- Open selected text as file in default text editor (macOS)
+vim.keymap.set("v", "gF", function()
+  open_file_in_editor(GetFileReference(get_selected_text()))
+end, { desc = "Open selected text as file in system's editor" })
+
 local function copyFilenameWithLines()
   local filename = vim.fn.expand("%")
   local line = vim.fn.line(".")
   local currentLine = filename .. ":" .. line
   vim.fn.setreg("*", currentLine)
   vim.api.nvim_input("<Esc>")
-  print("Copied to clipboard: " .. currentLine)
+  vim.notify("Copied to clipboard: " .. currentLine, vim.log.levels.INFO)
 end
 
 local function copyFilename()
   local filename = vim.fn.expand("%")
   vim.fn.setreg("*", filename)
-  print("Copied to clipboard: " .. filename)
+  vim.notify("Copied to clipboard: " .. filename, vim.log.levels.INFO)
 end
 
 -- Copy file info to clipboard
@@ -128,7 +174,10 @@ vim.keymap.set("n", "<leader>cb", function()
       if max_length and max_length > 0 then
         BreakLine(max_length)
       else
-        print("Invalid length: must be a positive number")
+        vim.notify(
+          "Invalid length: must be a positive number",
+          vim.log.levels.ERROR
+        )
       end
     end
   end)
