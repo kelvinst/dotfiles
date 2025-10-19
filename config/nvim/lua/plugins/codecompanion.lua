@@ -51,10 +51,16 @@ return {
         adapter = "claude_code",
         keymaps = {
           close = {
-            modes = { n = { "q" }, i = "<C-c>" },
+            modes = { n = "q" },
           },
           stop = {
             modes = { n = "<C-c>" },
+          },
+          fold_code = {
+            modes = { n = "zM" },
+          },
+          goto_file_under_cursor = {
+            modes = { n = "<c-w>gf" },
           },
           _acp_allow_always = {
             modes = { n = "<S-Enter>" },
