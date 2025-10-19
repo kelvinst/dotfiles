@@ -1,10 +1,7 @@
 local function delete_bad_buffer(buf)
   if vim.api.nvim_buf_is_valid(buf) then
-    -- Delete all CodeCompanion buffers
     local buftype = vim.bo[buf].filetype
-    if
-      vim.tbl_contains({ "", "codecompanion", "qf", "gitcommit" }, buftype)
-    then
+    if vim.tbl_contains({ "", "qf", "gitcommit" }, buftype) then
       vim.api.nvim_buf_delete(buf, { force = true })
       return
     end
@@ -24,7 +21,7 @@ local function session_file()
   return string.format("%s/%s.json", dir, vim.g.session)
 end
 
-local function save_tab_names()
+local function tab_names()
   if not vim.g.session or vim.g.session == "" then
     return
   end
@@ -34,13 +31,22 @@ local function save_tab_names()
   for _, i in ipairs(vim.api.nvim_list_tabpages()) do
     names[i] = vim.t[i] and vim.t[i].name or nil
   end
-  local ok, json = pcall(vim.json.encode, names)
+
+  return names
+end
+
+local function save_session_data()
+  local session_data = {
+    tab_names = tab_names(),
+  }
+
+  local ok, json = pcall(vim.json.encode, session_data)
   if ok then
     vim.fn.writefile({ json }, session_file())
   end
 end
 
-local function restore_tab_names()
+local function load_session_data()
   if not vim.g.session or vim.g.session == "" then
     return
   end
@@ -53,16 +59,31 @@ local function restore_tab_names()
   if not lines or not lines[1] then
     return
   end
-  local ok, names = pcall(vim.json.decode, table.concat(lines, "\n"))
-  if not ok or type(names) ~= "table" then
+  local ok, session_data = pcall(vim.json.decode, table.concat(lines, "\n"))
+
+  if not ok or type(session_data) ~= "table" then
     return
   end
-  for i, name in ipairs(names) do
-    if type(name) == "string" and name ~= "" then
-      -- Bufferline reads this: :BufferLineTabRename sets the same var
-      vim.t[i] = vim.t[i] or {}
-      vim.t[i].name = name
+
+  return session_data
+end
+
+local function restore_tab_names(names)
+  if type(names) == "table" then
+    for i, name in ipairs(names) do
+      if type(name) == "string" and name ~= "" then
+        -- Bufferline reads this: :BufferLineTabRename sets the same var
+        vim.t[i] = vim.t[i] or {}
+        vim.t[i].name = name
+      end
     end
+  end
+end
+
+local function restore_session()
+  local session_data = load_session_data()
+  if session_data then
+    restore_tab_names(session_data.tab_names)
   end
 end
 
@@ -115,18 +136,18 @@ return {
         autoprompt = false,
         autoswitch = { enable = true, notify = true },
         save_hook = function()
+          ClearInvisibleBuffers()
+
+          vim.cmd([[ScopeSaveState]]) -- Scope.nvim saving
+          save_session_data()
+        end,
+        post_hook = function()
           for _, buf in ipairs(vim.api.nvim_list_bufs()) do
             delete_bad_buffer(buf)
           end
 
-          ClearInvisibleBuffers()
-
-          vim.cmd([[ScopeSaveState]]) -- Scope.nvim saving
-          save_tab_names()
-        end,
-        post_hook = function()
           vim.cmd([[ScopeLoadState]]) -- Scope.nvim loading
-          restore_tab_names()
+          restore_session()
         end,
       })
     end
