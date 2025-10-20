@@ -21,7 +21,7 @@ local function session_file()
   return string.format("%s/%s.json", dir, vim.g.session)
 end
 
-local function is_codecompanion_open()
+local function get_codecompanion_chat_id()
   -- Check if any buffer has codecompanion filetype
   for _, buf in ipairs(vim.api.nvim_list_bufs()) do
     if
@@ -34,12 +34,18 @@ local function is_codecompanion_open()
           vim.api.nvim_win_is_valid(win)
           and vim.api.nvim_win_get_buf(win) == buf
         then
-          return true
+          -- Get the chat object from the buffer
+          local chat_module = require("codecompanion.strategies.chat")
+          local chat = chat_module.buf_get_chat(buf)
+          if chat and chat.opts and chat.opts.save_id then
+            return chat.opts.save_id
+          end
+          return true -- Chat is open but no save_id yet
         end
       end
     end
   end
-  return false
+  return nil
 end
 
 local function tab_names()
@@ -59,7 +65,7 @@ end
 local function save_session_data()
   local session_data = {
     tab_names = tab_names(),
-    codecompanion_open = is_codecompanion_open(),
+    codecompanion_chat_id = get_codecompanion_chat_id(),
   }
 
   local ok, json = pcall(vim.json.encode, session_data)
@@ -102,20 +108,69 @@ local function restore_tab_names(names)
   end
 end
 
+local function restore_codecompanion_chat(chat_id)
+  if chat_id then
+    local codecompanion = require("codecompanion")
+
+    if chat_id == true then
+      vim.notify(
+        "Restoring CodeCompanion chat...",
+        vim.log.levels.INFO,
+        { title = "CodeCompanion" }
+      )
+
+      codecompanion.chat()
+      return
+    end
+
+    vim.notify(
+      string.format("Restoring CodeCompanion chat #%s...", chat_id),
+      vim.log.levels.INFO,
+      { title = "CodeCompanion" }
+    )
+
+    local history = codecompanion.extensions.history
+    local chat_data = history.load_chat(chat_id) or {}
+    local context = require("codecompanion.utils.context").get(nil)
+
+    local chat = require("codecompanion.strategies.chat").new({
+      save_id = chat_id,
+      messages = chat_data.messages or {},
+      buffer_context = context,
+      settings = chat_data.settings or {},
+      adapter = chat_data.adapter,
+      title = chat_data.title,
+      callbacks = {},
+      last_role = "user",
+    })
+
+    -- Handle both old (refs) and new (context_items) storage formats
+    local stored_context_items = chat_data.context_items or chat_data.refs or {}
+    local chat_context_items = chat.context_items or {}
+    for _, item in ipairs(stored_context_items) do
+      -- Avoid adding duplicates related to #48
+      local is_duplicate = vim.tbl_contains(
+        chat_context_items,
+        function(chat_item)
+          return chat_item.id == item.id
+        end,
+        { predicate = true }
+      )
+      if not is_duplicate then
+        chat.context:add(item)
+      end
+    end
+    chat.tool_registry.schemas = chat_data.schemas or {}
+    chat.tool_registry.in_use = chat_data.in_use or {}
+    chat.cycle = chat_data.cycle or 1
+  end
+end
+
 local function restore_session()
   local session_data = load_session_data()
   if session_data then
     restore_tab_names(session_data.tab_names)
-
-    -- Restore CodeCompanion chat state
-    if session_data.codecompanion_open == true then
-      vim.defer_fn(function()
-        local codecompanion = require("codecompanion")
-        if codecompanion then
-          codecompanion.chat()
-        end
-      end, 100)
-    end
+    restore_codecompanion_chat(session_data.codecompanion_chat_id)
   end
 end
 
@@ -129,6 +184,8 @@ return {
       config = true,
     },
     "ibhagwan/fzf-lua",
+    "olimorris/codecompanion.nvim",
+    "ravitemer/codecompanion-history.nvim",
   },
   keys = {
     {
