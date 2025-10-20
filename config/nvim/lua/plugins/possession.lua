@@ -145,11 +145,29 @@ local function restore_codecompanion_chat(chat_id)
 
     local history = codecompanion.extensions.history
     local chat_data = history.load_chat(chat_id) or {}
+    local messages = chat_data.messages or {}
+
+    local last_msg = messages[#messages]
+
+    -- Ensure last message is from user to show header
+    if
+      last_msg
+      and (
+        last_msg.role ~= "user"
+        or (last_msg.role == "user" and (last_msg.opts or {}).visible == false)
+      )
+    then
+      table.insert(messages, {
+        role = "user",
+        content = "",
+        opts = { visible = true },
+      })
+    end
     local context = require("codecompanion.utils.context").get(nil)
 
     local chat = require("codecompanion.strategies.chat").new({
       save_id = chat_id,
-      messages = chat_data.messages or {},
+      messages = messages,
       buffer_context = context,
       settings = chat_data.settings or {},
       adapter = chat_data.adapter,
