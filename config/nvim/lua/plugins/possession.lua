@@ -143,21 +143,8 @@ local function restore_codecompanion_chat(saved_chat)
     end
 
     if chat_id == true then
-      vim.notify(
-        "Restoring CodeCompanion chat...",
-        vim.log.levels.INFO,
-        { title = "CodeCompanion" }
-      )
-
-      codecompanion.chat()
       return
     end
-
-    vim.notify(
-      string.format("Restoring CodeCompanion chat #%s...", chat_id),
-      vim.log.levels.INFO,
-      { title = "CodeCompanion" }
-    )
 
     local history = codecompanion.extensions.history
     local chat_data = history.load_chat(chat_id) or {}
