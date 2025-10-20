@@ -1,7 +1,7 @@
 local function delete_bad_buffer(buf)
   if vim.api.nvim_buf_is_valid(buf) then
     local buftype = vim.bo[buf].filetype
-    if vim.tbl_contains({ "", "qf", "gitcommit" }, buftype) then
+    if vim.tbl_contains({ "", "gitcommit" }, buftype) then
       vim.api.nvim_buf_delete(buf, { force = true })
       return
     end
