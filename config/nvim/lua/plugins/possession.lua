@@ -66,11 +66,10 @@ end
 local function get_focused_buffer()
   local buf = vim.api.nvim_get_current_buf()
   if vim.api.nvim_buf_is_valid(buf) then
-    local bufname = vim.api.nvim_buf_get_name(buf)
-    -- Only save if it's a real file buffer
-    if bufname ~= "" and vim.bo[buf].buftype == "" then
-      return bufname
-    end
+    return {
+      name = vim.api.nvim_buf_get_name(buf),
+      filetype = vim.bo[buf].filetype,
+    }
   end
   return nil
 end
@@ -181,32 +180,58 @@ local function restore_codecompanion_chat(chat_id)
   end
 end
 
-local function restore_focused_buffer(bufname)
-  if bufname and vim.fn.filereadable(bufname) == 1 then
-    -- Find if buffer already exists and is visible in a window
+local function restore_focused_buffer(focused_buffer)
+  if not focused_buffer then
+    return
+  end
+
+  local buf_to_focus = nil
+
+  -- First, try to find a buffer with the same name
+  if focused_buffer.name and focused_buffer.name ~= "" then
     for _, buf in ipairs(vim.api.nvim_list_bufs()) do
       if
         vim.api.nvim_buf_is_valid(buf)
-        and vim.api.nvim_buf_get_name(buf) == bufname
+        and vim.api.nvim_buf_get_name(buf) == focused_buffer.name
       then
-        -- Check if buffer is displayed in any window
-        for _, win in ipairs(vim.api.nvim_list_wins()) do
-          if
-            vim.api.nvim_win_is_valid(win)
-            and vim.api.nvim_win_get_buf(win) == buf
-          then
-            -- Focus the window containing this buffer
-            vim.api.nvim_set_current_win(win)
-            return
-          end
-        end
-        -- Buffer exists but not visible, set it in current window
-        vim.api.nvim_set_current_buf(buf)
+        buf_to_focus = buf
+        break
+      end
+    end
+  end
+
+  -- If not found by name, try to find a buffer with the same filetype
+  if
+    not buf_to_focus
+    and focused_buffer.filetype
+    and focused_buffer.filetype ~= ""
+  then
+    for _, buf in ipairs(vim.api.nvim_list_bufs()) do
+      if
+        vim.api.nvim_buf_is_valid(buf)
+        and vim.bo[buf].filetype == focused_buffer.filetype
+      then
+        buf_to_focus = buf
+        break
+      end
+    end
+  end
+
+  -- Set the focus to the found buffer
+  if buf_to_focus then
+    -- Check if buffer is displayed in any window
+    for _, win in ipairs(vim.api.nvim_list_wins()) do
+      if
+        vim.api.nvim_win_is_valid(win)
+        and vim.api.nvim_win_get_buf(win) == buf_to_focus
+      then
+        -- Focus the window containing this buffer
+        vim.api.nvim_set_current_win(win)
         return
       end
     end
-    -- Buffer doesn't exist, open it
-    vim.cmd.edit(vim.fn.fnameescape(bufname))
+    -- Buffer exists but not visible, set it in current window
+    vim.api.nvim_set_current_buf(buf_to_focus)
   end
 end
 
