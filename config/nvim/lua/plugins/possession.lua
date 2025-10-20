@@ -175,6 +175,14 @@ local function restore_session_data()
   end
 end
 
+local function save_quickfix()
+  require("quickfix").store(session_file("quickfix"))
+end
+
+local function restore_quickfix()
+  require("quickfix").restore(session_file("quickfix"))
+end
+
 return {
   "gennaro-tedesco/nvim-possession",
   lazy = false,
@@ -187,6 +195,7 @@ return {
     "ibhagwan/fzf-lua",
     "olimorris/codecompanion.nvim",
     "ravitemer/codecompanion-history.nvim",
+    "niuiic/quickfix.nvim",
   },
   keys = {
     {
@@ -230,6 +239,7 @@ return {
 
           vim.cmd([[ScopeSaveState]]) -- Scope.nvim saving
           save_session_data()
+          save_quickfix()
         end,
         post_hook = function()
           for _, buf in ipairs(vim.api.nvim_list_bufs()) do
@@ -238,6 +248,7 @@ return {
 
           vim.cmd([[ScopeLoadState]]) -- Scope.nvim loading
           restore_session_data()
+          restore_quickfix()
         end,
       })
     end
