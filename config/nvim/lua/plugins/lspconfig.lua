@@ -7,16 +7,6 @@ return {
     "williamboman/mason-lspconfig.nvim",
     "WhoIsSethDaniel/mason-tool-installer.nvim",
 
-    -- Useful status updates for LSP.
-    {
-      "zyriab/nvim-lsp-notify",
-      branch = "fix/do-not-replace-non-existing-notifications",
-      dependencies = { "rcarriga/nvim-notify" },
-      config = function()
-        require("lsp-notify").setup({})
-      end,
-    },
-
     -- Allows extra capabilities provided by nvim-cmp
     "hrsh7th/cmp-nvim-lsp",
 
