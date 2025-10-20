@@ -22,7 +22,7 @@ local function session_file(file)
   return string.format("%s/%s.json", dir, file)
 end
 
-local function get_codecompanion_chat_id()
+local function get_codecompanion_chat()
   -- Check if any buffer has codecompanion filetype
   for _, buf in ipairs(vim.api.nvim_list_bufs()) do
     if
@@ -35,13 +35,17 @@ local function get_codecompanion_chat_id()
           vim.api.nvim_win_is_valid(win)
           and vim.api.nvim_win_get_buf(win) == buf
         then
+          -- Get the tab number where this window is located
+          local tab = vim.api.nvim_win_get_tabpage(win)
+          local tab_number = vim.api.nvim_tabpage_get_number(tab)
+
           -- Get the chat object from the buffer
           local chat_module = require("codecompanion.strategies.chat")
           local chat = chat_module.buf_get_chat(buf)
           if chat and chat.opts and chat.opts.save_id then
-            return chat.opts.save_id
+            return { id = chat.opts.save_id, tab = tab_number }
           end
-          return true -- Chat is open but no save_id yet
+          return { id = true, tab = tab_number } -- Chat is open but no save_id yet
         end
       end
     end
@@ -77,7 +81,7 @@ end
 local function save_session_data()
   local session_data = {
     tab_names = tab_names(),
-    codecompanion_chat_id = get_codecompanion_chat_id(),
+    codecompanion_chat = get_codecompanion_chat(),
     quickfix_open = vim.fn.getqflist({ winid = 0 }).winid ~= 0,
     focused_buffer = get_focused_buffer(),
   }
@@ -122,9 +126,21 @@ local function restore_tab_names(names)
   end
 end
 
-local function restore_codecompanion_chat(chat_id)
-  if chat_id then
+local function restore_codecompanion_chat(saved_chat)
+  if saved_chat then
     local codecompanion = require("codecompanion")
+
+    -- Handle both old format (just chat_id) and new format (table with id and tab)
+    local chat_id = type(saved_chat) == "table" and saved_chat.id
+    local tab_number = type(saved_chat) == "table" and saved_chat.tab or nil
+
+    -- Switch to the correct tab if specified
+    if tab_number then
+      local tabpages = vim.api.nvim_list_tabpages()
+      if tab_number <= #tabpages then
+        vim.api.nvim_set_current_tabpage(tabpages[tab_number])
+      end
+    end
 
     if chat_id == true then
       vim.notify(
@@ -257,7 +273,7 @@ local function restore_session_data()
   local session_data = load_session_data()
   if session_data then
     restore_tab_names(session_data.tab_names)
-    restore_codecompanion_chat(session_data.codecompanion_chat_id)
+    restore_codecompanion_chat(session_data.codecompanion_chat)
 
     if session_data.quickfix_open then
       vim.cmd("bot copen")
