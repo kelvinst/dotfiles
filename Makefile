@@ -8,6 +8,7 @@ install:
 	cp -r ./config/nvim/* ~/.config/nvim/
 	mkdir -p ~/.config/tms/
 	cp -r ./config/tms/* ~/.config/tms/
+	cp ./config/starship.toml ~/.config/starship.toml
 	mkdir -p ~/.hammerspoon/
 	cp -r ./hammerspoon/* ~/.hammerspoon/
 	cp ./gitconfig ~/.gitconfig
@@ -22,6 +23,7 @@ clean:
 	rm -rf ~/.config/kitty/*
 	rm -rf ~/.config/nvim/*
 	rm -rf ~/.config/tms/*
+	rm -rf ~/.config/starship.toml
 	rm -rf ~/.hammerspoon/*
 	rm -rf ~/.gitconfig
 	rm -rf ~/.global_gitignore
@@ -38,6 +40,7 @@ update:
 	cp -r ~/.config/nvim/* ./config/nvim/
 	mkdir -p ./config/tms/
 	cp -r ~/.config/tms/* ./config/tms/
+	cp ~/.config/starship.toml ./config/starship.toml
 	mkdir -p ./hammerspoon
 	cp -r ~/.hammerspoon/* ./hammerspoon/
 	cp ~/.gitconfig ./gitconfig
