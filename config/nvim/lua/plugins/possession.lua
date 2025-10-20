@@ -166,7 +166,7 @@ local function restore_codecompanion_chat(chat_id)
   end
 end
 
-local function restore_session()
+local function restore_session_data()
   local session_data = load_session_data()
   if session_data then
     restore_tab_names(session_data.tab_names)
@@ -236,7 +236,7 @@ return {
           end
 
           vim.cmd([[ScopeLoadState]]) -- Scope.nvim loading
-          restore_session()
+          restore_session_data()
         end,
       })
     end
