@@ -81,6 +81,9 @@ eval "$(starship init zsh)"
 # The better `cd` command
 eval "$(zoxide init zsh)"
 
+# Use shell vim mode
+bindkey -v
+
 # NOTE: Dev stuff
 
 # The runtime version manager
