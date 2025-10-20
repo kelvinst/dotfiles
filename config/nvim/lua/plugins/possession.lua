@@ -67,6 +67,7 @@ local function save_session_data()
   local session_data = {
     tab_names = tab_names(),
     codecompanion_chat_id = get_codecompanion_chat_id(),
+    quickfix_open = vim.fn.getqflist({ winid = 0 }).winid ~= 0,
   }
 
   local ok, json = pcall(vim.json.encode, session_data)
@@ -172,6 +173,10 @@ local function restore_session_data()
   if session_data then
     restore_tab_names(session_data.tab_names)
     restore_codecompanion_chat(session_data.codecompanion_chat_id)
+
+    if session_data.quickfix_open then
+      vim.cmd("bot copen")
+    end
   end
 end
 
