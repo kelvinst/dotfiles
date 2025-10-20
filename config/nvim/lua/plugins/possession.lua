@@ -15,10 +15,11 @@ local function delete_bad_buffer(buf)
   end
 end
 
-local function session_file()
-  local dir = vim.fn.stdpath("data") .. "/tabnames"
+local function session_file(file)
+  local dir =
+    string.format("%s/session_data/%s", vim.fn.stdpath("data"), vim.g.session)
   vim.fn.mkdir(dir, "p")
-  return string.format("%s/%s.json", dir, vim.g.session)
+  return string.format("%s/%s.json", dir, file)
 end
 
 local function get_codecompanion_chat_id()
@@ -70,7 +71,7 @@ local function save_session_data()
 
   local ok, json = pcall(vim.json.encode, session_data)
   if ok then
-    vim.fn.writefile({ json }, session_file())
+    vim.fn.writefile({ json }, session_file("data"))
   end
 end
 
@@ -79,7 +80,7 @@ local function load_session_data()
     return
   end
 
-  local file = session_file()
+  local file = session_file("data")
   if vim.fn.filereadable(file) == 0 then
     return
   end
