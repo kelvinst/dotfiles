@@ -63,11 +63,24 @@ local function tab_names()
   return names
 end
 
+local function get_focused_buffer()
+  local buf = vim.api.nvim_get_current_buf()
+  if vim.api.nvim_buf_is_valid(buf) then
+    local bufname = vim.api.nvim_buf_get_name(buf)
+    -- Only save if it's a real file buffer
+    if bufname ~= "" and vim.bo[buf].buftype == "" then
+      return bufname
+    end
+  end
+  return nil
+end
+
 local function save_session_data()
   local session_data = {
     tab_names = tab_names(),
     codecompanion_chat_id = get_codecompanion_chat_id(),
     quickfix_open = vim.fn.getqflist({ winid = 0 }).winid ~= 0,
+    focused_buffer = get_focused_buffer(),
   }
 
   local ok, json = pcall(vim.json.encode, session_data)
@@ -168,6 +181,35 @@ local function restore_codecompanion_chat(chat_id)
   end
 end
 
+local function restore_focused_buffer(bufname)
+  if bufname and vim.fn.filereadable(bufname) == 1 then
+    -- Find if buffer already exists and is visible in a window
+    for _, buf in ipairs(vim.api.nvim_list_bufs()) do
+      if
+        vim.api.nvim_buf_is_valid(buf)
+        and vim.api.nvim_buf_get_name(buf) == bufname
+      then
+        -- Check if buffer is displayed in any window
+        for _, win in ipairs(vim.api.nvim_list_wins()) do
+          if
+            vim.api.nvim_win_is_valid(win)
+            and vim.api.nvim_win_get_buf(win) == buf
+          then
+            -- Focus the window containing this buffer
+            vim.api.nvim_set_current_win(win)
+            return
+          end
+        end
+        -- Buffer exists but not visible, set it in current window
+        vim.api.nvim_set_current_buf(buf)
+        return
+      end
+    end
+    -- Buffer doesn't exist, open it
+    vim.cmd.edit(vim.fn.fnameescape(bufname))
+  end
+end
+
 local function restore_session_data()
   local session_data = load_session_data()
   if session_data then
@@ -177,6 +219,8 @@ local function restore_session_data()
     if session_data.quickfix_open then
       vim.cmd("bot copen")
     end
+
+    restore_focused_buffer(session_data.focused_buffer)
   end
 end
 
