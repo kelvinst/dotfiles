@@ -44,7 +44,7 @@ source ~/.fzf-tab/fzf-tab.plugin.zsh
 source ~/.fzf-tab-source/*.plugin.zsh
 
 # Command prompt formatter starship
-eval $(starship completions zsh)
+eval "$(starship completions zsh)"
 
 # All these are configurations for the fuzzy finder completion tool
 # Disable sort when completing `git checkout`
@@ -76,8 +76,31 @@ source $(brew --prefix)/share/zsh-autosuggestions/zsh-autosuggestions.zsh
 # Syntax highlightning for the shell commands
 source ~/.fsyh/fast-syntax-highlighting.plugin.zsh
 
-# The command line prompt
-eval "$(starship init zsh)"
+# Function to load the solid starship prompt
+load_solid_prompt() {
+  export STARSHIP_CONFIG=$HOME/.config/starship/solid.toml
+  source $HOME/.config/starship/init.sh
+}
+
+# Load solid prompt before each command
+precmd_functions+=(load_solid_prompt)
+
+# Function to set the transparent prompt
+load_transparent_prompt() {
+  if [[ $PROMPT != '%# ' ]]; then
+    export STARSHIP_CONFIG=$HOME/.config/starship/transparent.toml
+    source $HOME/.config/starship/init.sh
+    zle .reset-prompt
+  fi
+}
+
+# Load transparent prompt when a line is finished
+zle-line-finish() { load_transparent_prompt }
+zle -N zle-line-finish
+trap 'set-short-prompt; return 130' INT
+
+# Load the solid prompt on startup
+load_solid_prompt
 
 # The better `cd` command
 eval "$(zoxide init zsh)"
