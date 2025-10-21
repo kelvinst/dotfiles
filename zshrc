@@ -203,11 +203,9 @@ precmd() {
 }
 
 # Show alias commands when executing them
-_-accept-line () {
-    emulate -L zsh
-
+show_alias_feedback() {
     local -a words
-    words=( ${(z)BUFFER} )
+    words=( ${(z)1} )  # $1 contains the command string
     local -r firstword=${words[1]}
 
     # Some colors for the output
@@ -215,10 +213,11 @@ _-accept-line () {
     local reset=$'\e[0m'
 
     [[ "$(whence -w $firstword 2>/dev/null)" == "${firstword}: alias" ]] &&
-        echo -nE $'\n'"${gray}  ↳ aka ${reset}$(whence $firstword)"
-    zle .accept-line
+        echo -nE "${gray}↳ aka ${reset}$(whence $firstword)"
 }
-zle -N accept-line _-accept-line
+
+# Add to preexec functions (runs before command execution)
+preexec_functions+=(show_alias_feedback)
 
 # Function to load the solid starship prompt
 load_solid_prompt() {
