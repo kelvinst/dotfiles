@@ -35,15 +35,16 @@ export FPATH=$(brew --prefix)/share/zsh-completions:$FPATH
 # The following lines have been added by Docker Desktop to enable Docker CLI completions.
 fpath=(/Users/kelvinstinghen/.docker/completions $fpath)
 
-
 # Load the completion system
 autoload -Uz compinit
 compinit
 
 # Load the amazing tab completion fuzzy finder
 source ~/.fzf-tab/fzf-tab.plugin.zsh
-
 source ~/.fzf-tab-source/*.plugin.zsh
+
+# Command prompt formatter starship
+eval $(starship completions zsh)
 
 # All these are configurations for the fuzzy finder completion tool
 # Disable sort when completing `git checkout`
