@@ -1,4 +1,4 @@
-format = """
+format = """\
 $character\
 ([ \
 $username\
@@ -103,7 +103,10 @@ $cmd_duration\
 $time\
 $custom\
 ](black bg:green))\
-$line_break\n\r"""
+$line_break
+"""
+
+add_newline = false
 
 # Builtin colors:
 #
