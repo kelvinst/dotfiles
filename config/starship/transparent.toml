@@ -110,7 +110,7 @@ add_newline = false
 
 [cmd_duration]
 disabled = false
-format = "[ ↳ ](white)executed in 🕘[$duration]($style)"
+format = "[ ↳ executed in ](white)🕘[$duration]($style)"
 style = 'bold yellow'
 show_milliseconds = true
 min_time = 1
