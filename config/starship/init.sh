@@ -63,9 +63,24 @@ starship_zle-keymap-select() {
 }
 
 ## Check for existing keymap-select widget.
-# zle-keymap-select is a special widget so it'll be "user:fnName" or nothing. Let's get fnName only.
-__starship_preserved_zle_keymap_select=${widgets[zle-keymap-select]#user:}
-zle -N zle-keymap-select starship_zle-keymap-select;
+# If the env var already exists, we have already wrapped the existing 
+# keymap-select widget.
+if [[ -z $__starship_preserved_zle_keymap_select ]]; then
+  # zle-keymap-select is a special widget so it'll be "user:fnName" or nothing. 
+  # Let's get fnName only.
+  __starship_preserved_zle_keymap_select=${widgets[zle-keymap-select]#user:}
+  if [[ -z $__starship_preserved_zle_keymap_select ]]; then
+      zle -N zle-keymap-select starship_zle-keymap-select;
+  else
+      # Define a wrapper fn to call the original widget fn and then Starship's.
+      starship_zle-keymap-select-wrapped() {
+          $__starship_preserved_zle_keymap_select "$@";
+          starship_zle-keymap-select "$@";
+      }
+      zle -N zle-keymap-select starship_zle-keymap-select-wrapped;
+  fi
+fi
+
 
 export STARSHIP_SHELL="zsh"
 

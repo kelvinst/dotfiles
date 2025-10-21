@@ -95,12 +95,8 @@ load_transparent_prompt() {
 }
 
 # Load transparent prompt when a line is finished
-zle-line-finish() { load_transparent_prompt }
-zle -N zle-line-finish
+zle -N zle-line-finish load_transparent_prompt
 trap 'set-short-prompt; return 130' INT
-
-# Load the solid prompt on startup
-load_solid_prompt
 
 # The better `cd` command
 eval "$(zoxide init zsh)"
