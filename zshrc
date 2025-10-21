@@ -76,26 +76,6 @@ source $(brew --prefix)/share/zsh-autosuggestions/zsh-autosuggestions.zsh
 # Syntax highlightning for the shell commands
 source ~/.fsyh/fast-syntax-highlighting.plugin.zsh
 
-# Function to load the solid starship prompt
-load_solid_prompt() {
-  export STARSHIP_CONFIG=$HOME/.config/starship/solid.toml
-  source $HOME/.config/starship/init.sh
-}
-
-# Load solid prompt before each command
-precmd_functions+=(load_solid_prompt)
-
-# Function to set the transparent prompt
-load_transparent_prompt() {
-  export STARSHIP_CONFIG=$HOME/.config/starship/transparent.toml
-  source $HOME/.config/starship/init.sh
-  zle .reset-prompt
-}
-
-# Load transparent prompt when a line is finished
-zle -N zle-line-finish load_transparent_prompt
-trap 'set-short-prompt; return 130' INT
-
 # The better `cd` command
 eval "$(zoxide init zsh)"
 
@@ -240,7 +220,28 @@ _-accept-line () {
 }
 zle -N accept-line _-accept-line
 
+# Function to load the solid starship prompt
+load_solid_prompt() {
+  export STARSHIP_CONFIG=$HOME/.config/starship/solid.toml
+  source $HOME/.config/starship/init.sh
+}
+
+# Load solid prompt before each command
+precmd_functions+=(load_solid_prompt)
+
+# Function to set the transparent prompt
+load_transparent_prompt() {
+  export STARSHIP_CONFIG=$HOME/.config/starship/transparent.toml
+  source $HOME/.config/starship/init.sh
+  zle .reset-prompt
+}
+
+# Load transparent prompt when a line is finished
+zle -N zle-line-finish load_transparent_prompt
+trap 'set-short-prompt; return 130' INT
+
 # NOTE: Load private zshrc if it exists
+
 if [ -f ~/.zshrc_private ]; then
   source ~/.zshrc_private
 fi

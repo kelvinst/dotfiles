@@ -1,5 +1,5 @@
 format = """\
-$cmd_duration
+[ ↳ exited with $status( in $cmd_duration)](white)
 $character\
 ([ \
 $username\
@@ -99,7 +99,6 @@ $os\
 $container\
 $netns\
 $shell\
-$status\
 $time\
 $custom\
 ](black bg:green))\
@@ -134,9 +133,20 @@ bg-border = '#3b4261'
 bg-middle = '#2f334d'
 bg-inactive = '0'
 
+[status]
+disabled = false
+format = '[$symbol$status]($style)'
+symbol = '❗'
+failure_style = 'bold red'
+success_style = 'bold green'
+success_symbol = '✅'
+not_executable_symbol = '🚫'
+not_found_symbol = '❓'
+signal_symbol = '💥'
+
 [cmd_duration]
 disabled = false
-format = "[ ↳ executed in ](white)🕘[$duration]($style)"
+format = "[🕘$duration]($style)"
 style = 'bold yellow'
 show_milliseconds = true
 min_time = 1
@@ -724,7 +734,7 @@ threshold = 100
 style = 'bold black bg:green'
 
 [os]
-disabled = true
+disabled = false
 format = '[$symbol ]($style)'
 style = 'bold black bg:green'
 
@@ -797,16 +807,6 @@ symbol = '🛜'
 disabled = true
 format = '[🐢$indicator ]($style)'
 style = 'bold black bg:green'
-
-[status]
-disabled = false
-format = '[$symbol$status ]($style)'
-style = 'bold black bg:green'
-symbol = '❗'
-success_symbol = '✅'
-not_executable_symbol = '🚫'
-not_found_symbol = '❓'
-signal_symbol = '💥'
 
 [time]
 disabled = true
