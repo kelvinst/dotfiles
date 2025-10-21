@@ -87,11 +87,9 @@ precmd_functions+=(load_solid_prompt)
 
 # Function to set the transparent prompt
 load_transparent_prompt() {
-  if [[ $PROMPT != '%# ' ]]; then
-    export STARSHIP_CONFIG=$HOME/.config/starship/transparent.toml
-    source $HOME/.config/starship/init.sh
-    zle .reset-prompt
-  fi
+  export STARSHIP_CONFIG=$HOME/.config/starship/transparent.toml
+  source $HOME/.config/starship/init.sh
+  zle .reset-prompt
 }
 
 # Load transparent prompt when a line is finished
