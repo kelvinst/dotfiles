@@ -9,6 +9,7 @@ install:
 	mkdir -p ~/.config/tms/
 	cp -r ./config/tms/* ~/.config/tms/
 	cp ./config/starship.toml ~/.config/starship.toml
+	cp ./config/invisible_starship.toml ~/.config/invisible_starship.toml
 	mkdir -p ~/.hammerspoon/
 	cp -r ./hammerspoon/* ~/.hammerspoon/
 	cp ./gitconfig ~/.gitconfig
@@ -24,6 +25,7 @@ clean:
 	rm -rf ~/.config/nvim/*
 	rm -rf ~/.config/tms/*
 	rm -rf ~/.config/starship.toml
+	rm -rf ~/.config/invisible_starship.toml
 	rm -rf ~/.hammerspoon/*
 	rm -rf ~/.gitconfig
 	rm -rf ~/.global_gitignore
@@ -41,6 +43,7 @@ update:
 	mkdir -p ./config/tms/
 	cp -r ~/.config/tms/* ./config/tms/
 	cp ~/.config/starship.toml ./config/starship.toml
+	cp ~/.config/invisible_starship.toml ./config/invisible_starship.toml
 	mkdir -p ./hammerspoon
 	cp -r ~/.hammerspoon/* ./hammerspoon/
 	cp ~/.gitconfig ./gitconfig

@@ -1,0 +1,637 @@
+format = """
+( \
+$username\
+$hostname\
+$localip\
+$shlvl\
+$singularity\
+$kubernetes\
+$vcsh\
+$fossil_branch\
+$fossil_metrics\
+$git_branch\
+$git_commit\
+$git_state\
+$git_metrics\
+$git_status\
+$hg_branch\
+$pijul_channel\
+$docker_context\
+)\
+( \
+$directory\
+$fill\
+)\
+( \
+$nix_shell\
+$conda\
+$meson\
+$spack\
+$memory_usage\
+$aws\
+$gcloud\
+$openstack\
+$azure\
+$pulumi\
+$nats\
+$direnv\
+$env_var\
+$mise\
+$pixi\
+$sudo\
+$jobs\
+$battery\
+$os\
+$container\
+$netns\
+$shell\
+$status\
+$cmd_duration\
+$time\
+$custom\
+)\
+$line_break\
+$character"""
+
+add_newline = false
+
+[username]
+disabled = false
+format = '[👤$user ]($style)'
+
+[hostname]
+disabled = false
+format = '[$ssh_symbol$hostname ]($style)'
+ssh_symbol = '🌐'
+
+[localip]
+disabled = false
+format = '[📡$localipv4 ]($style)'
+
+[shlvl]
+disabled = false
+format = '[$symbol$shlvl ]($style)'
+symbol = '🔼'
+
+[singularity]
+disabled = false
+format = '[$symbol$env ]($style)'
+symbol = '🧪'
+
+[kubernetes]
+disabled = false
+format = '[$symbol$context( \($namespace\)) ]($style)'
+symbol = '⛵'
+
+[vcsh]
+disabled = false
+format = '[$symbol$repo ]($style)'
+symbol = '📇'
+
+[fossil_branch]
+disabled = false
+format = '[$symbol$branch ]($style)'
+symbol = '🦎'
+
+[fossil_metrics]
+disabled = false
+format = '([+$added ]($added_style))([-$deleted ]($deleted_style))'
+
+[git_branch]
+disabled = false
+format = '[$symbol$branch(:$remote_branch) ]($style)'
+symbol = '🌱'
+only_attached = true
+
+[git_commit]
+disabled = false
+format = '[🍃$hash( $tag) ]($style)'
+only_detached = true
+tag_disabled = false
+tag_symbol = '🔖'
+
+[git_state]
+disabled = false
+format = '[\($state( $progress_current/$progress_total)\) ]($style)'
+
+[git_metrics]
+disabled = false
+format = '([+$added]($added_style))([-$deleted ]($deleted_style))'
+
+[git_status]
+disabled = false
+format = '([\[$all_status$ahead_behind\] ]($style))'
+
+[hg_branch]
+disabled = false
+format = '[$symbol$branch(:$topic) ]($style)'
+symbol = '🪩'
+
+[pijul_channel]
+disabled = false
+format = '[$symbol$channel ]($style)'
+symbol = '🐦'
+
+[docker_context]
+disabled = false
+format = '[$symbol$context ]($style)'
+symbol = '🐳'
+
+[directory]
+disabled = false
+repo_root_format = """
+[$before_root_path]($before_repo_root_style)\
+[$repo_root]($repo_root_style)\
+[$path]($style)\
+[$read_only]($read_only_style)"""
+before_repo_root_style = 'white'
+repo_root_style = 'bold cyan'
+format = '[$path]($style)'
+style = 'bold dimmed cyan'
+read_only = '🔒'
+truncate_to_repo = true
+truncation_symbol = ''
+
+[fill]
+disabled = false
+symbol = ' '
+
+[package]
+disabled = false
+format = '[$symbol$version ]($style)'
+symbol = '📦'
+version_format = '${raw}'
+
+[c]
+disabled = false
+format = '[$symbol($version(-$name)) ]($style)'
+symbol = '🌊'
+version_format = '${raw}'
+
+[cpp]
+disabled = false
+format = '[$symbol($version(-$name)) ]($style)'
+symbol = '✨'
+version_format = '${raw}'
+
+[cmake]
+disabled = false
+format = '[$symbol($version) ]($style)'
+symbol = '📐'
+version_format = '${raw}'
+
+[cobol]
+disabled = false
+format = '[$symbol($version) ]($style)'
+symbol = '🔩'
+version_format = '${raw}'
+
+[crystal]
+disabled = false
+format = '[$symbol($version) ]($style)'
+symbol = '🥂'
+version_format = '${raw}'
+
+[daml]
+disabled = false
+format = '[$symbol($version) ]($style)'
+symbol = '🔗'
+version_format = '${raw}'
+
+[dart]
+disabled = false
+format = '[$symbol($version) ]($style)'
+symbol = '🎯'
+version_format = '${raw}'
+
+[deno]
+disabled = false
+format = '[$symbol($version) ]($style)'
+symbol = '🦕'
+version_format = '${raw}'
+
+[dotnet]
+disabled = false
+format = '[$symbol($version)( 🎯$tfm) ]($style)'
+symbol = '🧩'
+version_format = '${raw}'
+
+[elixir]
+disabled = false
+format = '[$symbol($version 🍷$otp_version) ]($style)'
+symbol = '🔮'
+version_format = '${raw}'
+
+[elm]
+disabled = false
+format = '[$symbol($version) ]($style)'
+symbol = '🌳'
+version_format = '${raw}'
+
+[erlang]
+disabled = false
+format = '[$symbol($version) ]($style)'
+symbol = '🍷'
+version_format = '${raw}'
+
+[fennel]
+disabled = false
+format = '[$symbol($version) ]($style)'
+symbol = '🧄'
+version_format = '${raw}'
+
+[gleam]
+disabled = false
+format = '[$symbol($version) ]($style)'
+symbol = '⭐'
+version_format = '${raw}'
+
+[golang]
+disabled = false
+format = '[$symbol($version) ]($style)'
+symbol = '🐹'
+version_format = '${raw}'
+
+[guix_shell]
+disabled = false
+format = '[$symbol($version) ]($style)'
+symbol = '🐃'
+
+[haskell]
+disabled = false
+format = '[$symbol($version) ]($style)'
+symbol = '🧬'
+version_format = '${raw}'
+
+[haxe]
+disabled = false
+format = '[$symbol($version) ]($style)'
+symbol = '🔶'
+version_format = '${raw}'
+
+[helm]
+disabled = false
+format = '[$symbol($version) ]($style)'
+symbol = '🪖'
+version_format = '${raw}'
+
+[java]
+disabled = false
+format = '[$symbol($version) ]($style)'
+symbol = '☕'
+version_format = '${raw}'
+
+[julia]
+disabled = false
+format = '[$symbol($version) ]($style)'
+symbol = '💎'
+version_format = '${raw}'
+
+[kotlin]
+disabled = false
+format = '[$symbol($version) ]($style)'
+symbol = '🪶'
+version_format = '${raw}'
+
+[gradle]
+disabled = false
+format = '[$symbol($version) ]($style)'
+symbol = '🔧'
+version_format = '${raw}'
+
+[lua]
+disabled = false
+format = '[$symbol($version) ]($style)'
+symbol = '🌙'
+version_format = '${raw}'
+
+[mojo]
+disabled = false
+format = '[$symbol($version) ]($style)'
+symbol = '🔥'
+
+[nim]
+disabled = false
+format = '[$symbol($version) ]($style)'
+symbol = '👑'
+version_format = '${raw}'
+
+[nodejs]
+disabled = false
+format = '[$symbol($version) ]($style)'
+symbol = '🤮'
+version_format = '${raw}'
+
+[ocaml]
+disabled = false
+format = '[$symbol($version)( \($switch_indicator$switch_name\)) ]($style)'
+symbol = '🐫'
+version_format = '${raw}'
+
+[odin]
+disabled = false
+format = '[$symbol($version) ]($style)'
+symbol = '🪓'
+
+[opa]
+disabled = false
+format = '[$symbol($version) ]($style)'
+symbol = '🔰'
+version_format = '${raw}'
+
+[perl]
+disabled = false
+format = '[$symbol($version) ]($style)'
+symbol = '🦪'
+version_format = '${raw}'
+
+[php]
+disabled = false
+format = '[$symbol($version) ]($style)'
+symbol = '🐘'
+version_format = '${raw}'
+
+[purescript]
+disabled = false
+format = '[$symbol($version) ]($style)'
+symbol = '📜'
+
+[python]
+disabled = false
+format = '[${symbol}${pyenv_prefix}(${version})( \($virtualenv\)) ]($style)'
+symbol = '🐍'
+
+[quarto]
+disabled = false
+format = '[$symbol($version) ]($style)'
+symbol = '🛌'
+
+[raku]
+disabled = false
+format = '[$symbol($version-$vm_version) ]($style)'
+symbol = '🦋'
+
+[rlang]
+disabled = false
+format = '[$symbol($version) ]($style)'
+symbol = '📉'
+
+[red]
+disabled = false
+format = '[$symbol($version) ]($style)'
+symbol = '🟥'
+
+[ruby]
+disabled = false
+format = '[$symbol($version) ]($style)'
+symbol = '♦️'
+
+[rust]
+disabled = false
+format = '[$symbol($version) ]($style)'
+symbol = '🦀'
+
+[scala]
+disabled = false
+format = '[$symbol($version) ]($style)'
+symbol = '🪜'
+
+[solidity]
+disabled = false
+format = '[$symbol($version) ]($style)'
+symbol = '🪨'
+
+[swift]
+disabled = false
+format = '[$symbol($version) ]($style)'
+symbol = '🪽'
+
+[terraform]
+disabled = false
+format = '[$symbol$workspace ]($style)'
+symbol = '💠'
+
+[typst]
+disabled = false
+format = '[$symbol($version) ]($style)'
+symbol = '🎹'
+
+[vlang]
+disabled = false
+format = '[$symbol($version) ]($style)'
+symbol = '🖖'
+
+[vagrant]
+disabled = false
+format = '[$symbol($version) ]($style)'
+symbol = '🚶'
+
+[zig]
+disabled = false
+format = '[$symbol($version) ]($style)'
+symbol = '🧟'
+
+[buf]
+disabled = false
+format = '[$symbol($version) ]($style)'
+symbol = '🪄'
+
+[nix_shell]
+disabled = false
+format = '[$symbol$state( \($name\)) ]($style)'
+symbol = '⛄'
+
+[conda]
+disabled = false
+format = '[$symbol$environment ]($style)'
+symbol = '🆑'
+
+[meson]
+disabled = false
+format = '[$symbol$project ]($style)'
+symbol = '🟣'
+
+[spack]
+disabled = false
+format = '[$symbol$environment ]($style)'
+symbol = '🧳'
+
+[memory_usage]
+disabled = false
+format = '[$symbol${ram}(|${swap}) ]($style)'
+symbol = '🐏'
+threshold = 85
+
+[aws]
+disabled = false
+format = '[$symbol($profile)(\($region\))(\[$duration\]) ]($style)'
+symbol = '⛅'
+
+[gcloud]
+disabled = false
+format = '[$symbol$account(@$domain)(\($region\)) ]($style)'
+symbol = '⛅'
+
+[openstack]
+disabled = false
+format = '[$symbol$cloud(\($project\)) ]($style)'
+symbol = '⛅'
+
+[azure]
+disabled = false
+format = '[$symbol($subscription) ]($style)'
+symbol = '⛅'
+
+[pulumi]
+disabled = false
+format = '[$symbol($username@)$stack ]($style)'
+symbol = '⛅'
+
+[nats]
+disabled = false
+format = '[$symbol$name ]($style)'
+symbol = '💌'
+
+[direnv]
+disabled = false
+format = '[$symbol$loaded/$allowed ]($style)'
+symbol = '📁'
+
+[env_var]
+disabled = false
+format = '[$symbol$env_value ]($style)'
+symbol = '❓'
+
+[mise]
+disabled = false
+format = '[$symbol$health ]($style)'
+symbol = '🍳'
+healthy_symbol = '✅'
+unhealthy_symbol = '❌'
+
+[pixi]
+disabled = false
+format = '[$symbol($version)(\($environment\)) ]($style)'
+symbol = '🧚'
+
+[sudo]
+disabled = false
+format = '[$symbol ]($style)'
+symbol = '🧙'
+
+[jobs]
+disabled = false
+format = '[$symbol$number ]($style)'
+symbol = '👷'
+
+[battery]
+disabled = true
+format = '[$symbol$percentage ]($style)'
+full_symbol = '🔋'
+charging_symbol = '🔌'
+discharging_symbol = '⚡'
+unknown_symbol = '❓'
+empty_symbol = '🪫'
+
+[[battery.display]]
+threshold = 100
+
+[os]
+disabled = true
+format = '[$symbol ]($style)'
+
+[os.symbols]
+AIX = "➿"
+Alpaquita = "🔔"
+AlmaLinux = "💠"
+Alpine = "🗻"
+Amazon = "🙂"
+Android = "🤖"
+Arch = "🎗️"
+Artix = "🎗️"
+Bluefin = "🐟"
+CachyOS = "🎗️"
+CentOS = "💠"
+Debian = "🌀"
+DragonFly = "🐉"
+Emscripten = "🔗"
+EndeavourOS = "🚀"
+Fedora = "🎩"
+FreeBSD = "😈"
+Garuda = "🦅"
+Gentoo = "🗜️"
+HardenedBSD = "🛡️"
+Illumos = "🐦"
+Kali = "🐉"
+Linux = "🐧"
+Mabox = "📦"
+Macos = "🍎"
+Manjaro = "🥭"
+Mariner = "🌊"
+MidnightBSD = "🌘"
+Mint = "🌿"
+NetBSD = "🚩"
+NixOS = "❄️"
+Nobara = "🎩"
+OpenBSD = "🐡"
+OpenCloudOS = "☁️"
+openEuler = "🦉"
+openSUSE = "🦎"
+OracleLinux = "🦴"
+Pop = "🍭"
+Raspbian = "🍓"
+Redhat = "🎩"
+RedHatEnterprise = "🎩"
+RockyLinux = "💠"
+Redox = "🧪"
+Solus = "⛵"
+SUSE = "🦎"
+Ubuntu = "🎯"
+Ultramarine = "🔷"
+Unknown = "❓"
+Uos = "🐲"
+Void = "🌌"
+Windows = "🪟"
+
+[container]
+disabled = false
+format = '[$symbol$name ]($style)'
+symbol = '🐋'
+
+[netns]
+disabled = false
+format = '[$symbol$name ]($style)'
+symbol = '🛜'
+
+[shell]
+disabled = true
+format = '[🐢$indicator ]($style)'
+
+[status]
+disabled = false
+format = '[$symbol$status ]($style)'
+symbol = '❗'
+success_symbol = '✅'
+not_executable_symbol = '🚫'
+not_found_symbol = '❓'
+signal_symbol = '💥'
+
+[cmd_duration]
+disabled = false
+format = '[🕘$duration ]($style)'
+show_milliseconds = true
+min_time = 1
+
+[time]
+disabled = true
+format = '[🕒$time ]($style)'
+time_format = '%H:%M:%S'
+
+[custom]
+disabled = true
+
+[line_break]
+disabled = true
+
+[character]
+disabled = true
