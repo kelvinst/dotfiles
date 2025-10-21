@@ -197,23 +197,23 @@ flaky() {
 
 # Ring a bell on command failures
 precmd() {
-    if [[ $? -ne 0 ]]; then
-        printf "\a"
-    fi
+  if [[ $? -ne 0 ]]; then
+    printf "\a"
+  fi
 }
 
 # Show alias commands when executing them
 show_alias_feedback() {
-    local -a words
-    words=( ${(z)1} )  # $1 contains the command string
-    local -r firstword=${words[1]}
+  local -a words
+  words=( ${(z)1} )  # $1 contains the command string
+  local -r firstword=${words[1]}
 
-    # Some colors for the output
-    local gray=$'\e[37m' 
-    local reset=$'\e[0m'
+  # Some colors for the output
+  local gray=$'\e[37m' 
+  local reset=$'\e[0m'
 
-    [[ "$(whence -w $firstword 2>/dev/null)" == "${firstword}: alias" ]] &&
-        echo -nE "${gray}↳ aka ${reset}$(whence $firstword)"
+  [[ "$(whence -w $firstword 2>/dev/null)" == "${firstword}: alias" ]] &&
+    echo -nE "${gray}↳ aka ${reset}$(whence $firstword)"
 }
 
 # Add to preexec functions (runs before command execution)
