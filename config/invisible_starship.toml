@@ -1,4 +1,5 @@
 format = """\
+$character\
 ( \
 $username\
 $hostname\
@@ -18,11 +19,11 @@ $hg_branch\
 $pijul_channel\
 $docker_context\
 )\
-( \
+(\
 $directory\
 $fill\
 )\
-( \
+(\
 $package\
 $c\
 $cpp\
@@ -74,7 +75,7 @@ $vagrant\
 $zig\
 $buf\
 )\
-( \
+(\
 $nix_shell\
 $conda\
 $meson\
@@ -103,9 +104,19 @@ $time\
 $custom\
 )\
 $line_break\
-$character"""
+"""
 
 add_newline = false
+
+[character]
+disabled = false
+format = '$symbol'
+success_symbol = '[ I](bold green)'
+error_symbol = '[ I](bold green)'
+vimcmd_symbol = '[ N](bold blue)'
+vimcmd_replace_one_symbol = '[ R](bold red)'
+vimcmd_replace_symbol = '[ R](bold red)'
+vimcmd_visual_symbol = '[ V](bold purple)'
 
 [username]
 disabled = false
@@ -685,5 +696,3 @@ disabled = true
 [line_break]
 disabled = true
 
-[character]
-disabled = true
