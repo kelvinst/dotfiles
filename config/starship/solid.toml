@@ -815,8 +815,5 @@ format = '[🕒$time ]($style)'
 style = 'bold black bg:green'
 time_format = '%H:%M:%S'
 
-[custom]
-disabled = true
-
 [line_break]
 disabled = false

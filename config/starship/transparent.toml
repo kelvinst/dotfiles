@@ -1,4 +1,7 @@
-format = "[┗ finished in $cmd_duration with $status\n\r\n\r](white)"
+format = """
+[┗ finished in $cmd_duration with $status
+
+](white)"""
 
 add_newline = false
 
