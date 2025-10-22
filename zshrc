@@ -267,51 +267,60 @@ highlight_command() {
   print -- "$colored_cmd"
 }
 
+# Functions to enable/disable command info
+disable_cmd_info() { export DISABLE_CMD_INFO=1 }
+enable_cmd_info() { unset DISABLE_CMD_INFO }
 
 # Show alias commands when executing them
 print_info_before_cmd() {
   # Sace the last command executed
   LAST_CMD="$1"
 
-  # The the command being executed
-  local -a words
-  words=( ${(z)1} )  # $1 contains the command string
-  local cmd=${words[1]}
+  if [[ 
+    -z "$DISABLE_CMD_INFO" &&
+      "$LAST_CMD" != *disable_cmd_info* &&
+      "$LAST_CMD" != *enable_cmd_info*
+  ]]; then
+    # The the command being executed
+    local -a words
+    words=( ${(z)1} )  # $1 contains the command string
+    local cmd=${words[1]}
 
-  local cmd_desc=$(whence -v $cmd 2>/dev/null)
+    local cmd_desc=$(whence -v $cmd 2>/dev/null)
 
-  # Remove the "cmd is " or "cmd " prefix
-  cmd_desc=${cmd_desc#$cmd is }
-  cmd_desc=${cmd_desc#$cmd }
+    # Remove the "cmd is " or "cmd " prefix
+    cmd_desc=${cmd_desc#$cmd is }
+    cmd_desc=${cmd_desc#$cmd }
 
-  # Apply formatting based on content
-  if [[ $cmd_desc == "not found" ]]; then
-    cmd_desc="${bold_red}not found"
-  elif [[ $cmd_desc =~ "^an alias for (.+)$" ]]; then
-    local alias_target=$(highlight_command "${match[1]}")
-    cmd_desc="an ${blue}alias$nc$gray for $alias_target"
-  elif [[ $cmd_desc =~ "^a shell (builtin|function)$" ]]; then
-    cmd_desc="a shell ${blue}${match[1]}"
-  elif [[ $cmd_desc =~ "^an autoload shell function$" ]]; then
-    cmd_desc="an ${blue}autoload$nc$gray shell ${blue}function"
-  elif [[ $cmd_desc =~ "^an autoload shell function from (.+)$" ]]; then
-    local path="$purple${match[1]}"
-    cmd_desc="an ${blue}autoload$nc$gray shell ${blue}function$nc$gray from $path"
-  elif [[ $cmd_desc =~ "^a shell function from (.+)$" ]]; then
-    local path="$purple${match[1]}"
-    cmd_desc="a shell ${blue}function$nc$gray from $path"
-  elif [[ $cmd_desc =~ "^a reserved word$" ]]; then
-    cmd_desc="a ${blue}reserved$nc$gray word"
-  elif [[ $cmd_desc =~ "^/.*$" ]]; then
-    cmd_desc="located at $(highlight_command $cmd_desc)"
+    # Apply formatting based on content
+    if [[ $cmd_desc == "not found" ]]; then
+      cmd_desc="${bold_red}not found"
+    elif [[ $cmd_desc =~ "^an alias for (.+)$" ]]; then
+      local alias_target=$(highlight_command "${match[1]}")
+      cmd_desc="an ${blue}alias$nc$gray for $alias_target"
+    elif [[ $cmd_desc =~ "^a shell (builtin|function)$" ]]; then
+      cmd_desc="a shell ${blue}${match[1]}"
+    elif [[ $cmd_desc =~ "^an autoload shell function$" ]]; then
+      cmd_desc="an ${blue}autoload$nc$gray shell ${blue}function"
+    elif [[ $cmd_desc =~ "^an autoload shell function from (.+)$" ]]; then
+      local path="$purple${match[1]}"
+      cmd_desc="an ${blue}autoload$nc$gray shell ${blue}function$nc$gray from $path"
+    elif [[ $cmd_desc =~ "^a shell function from (.+)$" ]]; then
+      local path="$purple${match[1]}"
+      cmd_desc="a shell ${blue}function$nc$gray from $path"
+    elif [[ $cmd_desc =~ "^a reserved word$" ]]; then
+      cmd_desc="a ${blue}reserved$nc$gray word"
+    elif [[ $cmd_desc =~ "^/.*$" ]]; then
+      cmd_desc="located at $(highlight_command $cmd_desc)"
+    fi
+
+    # Wrap entire description in gray
+    cmd_desc="${gray}${cmd_desc}${nc}"
+    cmd=$(highlight_command "$cmd")
+
+    # Print the command info
+    echo "${gray}┏ running $cmd ${gray}(${nc}$cmd_desc${gray})$nc"
   fi
-
-  # Wrap entire description in gray
-  cmd_desc="${gray}${cmd_desc}${nc}"
-  cmd=$(highlight_command "$cmd")
-
-  # Print the command info
-  echo "${gray}┏ running $cmd ${gray}(${nc}$cmd_desc${gray})$nc"
 
   # Save that a command was executed
   LAST_CMD_EXECUTED=1
@@ -333,30 +342,37 @@ print_info_after_cmd() {
   load_starship_prompt
 
   if [[ $LAST_CMD_EXECUTED -eq 1 ]]; then
-    local last_cmd=$(highlight_command "$LAST_CMD")
-    local duration="🕘$bold_yellow ${STARSHIP_DURATION}ms$gray"
+    if [[ 
+      -z "$DISABLE_CMD_INFO" &&
+        "$LAST_CMD" != *disable_cmd_info* &&
+        "$LAST_CMD" != *enable_cmd_info*
+    ]]; then
+      local last_cmd=$(highlight_command "$LAST_CMD")
+      local duration="🕘$bold_yellow ${STARSHIP_DURATION}ms$gray"
 
-    if [[ $last_status -eq 0 ]]; then
-      last_status="✅$bold_green $last_status$gray"
-    elif [[ $last_status -eq 126 ]]; then
-      # Not executable
-      last_status="🚫$bold_red $last_status$gray"
-    elif [[ $last_status -eq 127 ]]; then
-      # Not found
-      last_status="❓$bold_red $last_status$gray"
-    elif [[ $last_status -ge 128 ]] && [[ $last_status -le 165 ]]; then
-      # Signal
-      last_status="💥$bold_red $last_status$gray"
-    else
-      # General failure
-      last_status="❗$bold_red $last_status$gray"
+      if [[ $last_status -eq 0 ]]; then
+        last_status="✅$bold_green $last_status$gray"
+      elif [[ $last_status -eq 126 ]]; then
+        # Not executable
+        last_status="🚫$bold_red $last_status$gray"
+      elif [[ $last_status -eq 127 ]]; then
+        # Not found
+        last_status="❓$bold_red $last_status$gray"
+      elif [[ $last_status -ge 128 ]] && [[ $last_status -le 165 ]]; then
+        # Signal
+        last_status="💥$bold_red $last_status$gray"
+      else
+        # General failure
+    j   last_status="❗$bold_red $last_status$gray"
+      fi
+
+      echo "$gray┗ finished $last_cmd in $duration with $last_status$nc"
     fi
 
-    echo "$gray┗ finished $last_cmd in $duration with $last_status$nc"
     echo
-
     unset LAST_CMD
   fi
+
   unset LAST_CMD_EXECUTED
 }
 add-zsh-hook precmd print_info_after_cmd
@@ -369,7 +385,7 @@ clear_prompt() {
 zle -N zle-line-finish clear_prompt
 trap 'clear_prompt; return 130' INT
 
-# }}}
+# }}j
 
 # Load private zshrc if it exists {{{
 
