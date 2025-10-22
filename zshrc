@@ -257,7 +257,7 @@ show_cmd_feedback() {
 }
 
 # Add to preexec functions (runs before command execution)
-preexec_functions+=(show_cmd_feedback)
+add-zsh-hook preexec show_cmd_feedback
 
 # Save the last executed command
 save_last_command() {
