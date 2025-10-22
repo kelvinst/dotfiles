@@ -194,6 +194,16 @@ flaky() {
 }
 
 # NOTE: Auto-commands
+# Add empty lines to move the prompt to the bottom of the terminal
+bottom_prompt() {
+  # Get the number of lines in the terminal (default 2)
+  local lines_to_keep=${1:-2}
+  local lines=$((LINES - $lines_to_keep))
+  printf '\n%.0s' {1..$lines}
+}
+
+# Put the prompt at the bottom on shell startup
+bottom_prompt 3
 
 # Load add-zsh-hook for managing hooks
 autoload -Uz add-zsh-hook
