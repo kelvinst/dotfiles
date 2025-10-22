@@ -11,6 +11,13 @@ when = '[[ -n "$LAST_CMD" ]]'
 style = 'bold bright-white'
 format = '[$output]($style)'
 
+[cmd_duration]
+disabled = false
+format = "[🕘$duration]($style)"
+style = 'bold yellow'
+show_milliseconds = true
+min_time = 1
+
 [status]
 disabled = false
 format = '[$symbol$status]($style)'
@@ -21,11 +28,4 @@ success_symbol = '✅'
 not_executable_symbol = '🚫'
 not_found_symbol = '❓'
 signal_symbol = '💥'
-
-[cmd_duration]
-disabled = false
-format = "[🕘$duration]($style)"
-style = 'bold yellow'
-show_milliseconds = true
-min_time = 1
 
