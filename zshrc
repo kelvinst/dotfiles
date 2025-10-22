@@ -273,12 +273,16 @@ load_transparent_prompt() {
   if [[ -z "$STARSHIP_DURATION" ]]; then
     PROMPT=''
   fi
-  
+}
+
+zle_load_transparent_prompt() {
+  load_transparent_prompt
+
   zle .reset-prompt
 }
 
 # Load transparent prompt when a line is finished
-zle -N zle-line-finish load_transparent_prompt
+zle -N zle-line-finish zle_load_transparent_prompt
 trap 'load_transparent_prompt; return 130' INT
 
 # NOTE: Load private zshrc if it exists
