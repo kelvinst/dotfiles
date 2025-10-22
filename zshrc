@@ -206,19 +206,28 @@ bell_on_error() {
 }
 add-zsh-hook precmd bell_on_error
 
+# Color codes
+local gray=$'\e[37m' 
+local white=$'\e[97;1m'
+local blue=$'\e[34;1m'
+local red=$'\e[31;1m'
+local green=$'\e[32;1m'
+local yellow=$'\e[33;1m'  # Bold yellow
+local nc=$'\e[0m'
+
+# Global variable to store the last executed command
+LAST_CMD=""
+LAST_CMD_EXECUTED=0
+
 # Show alias commands when executing them
-preexec_info() {
+print_info_before_cmd() {
+  # Sace the last command executed
+  LAST_CMD="$1"
+
+  # The the command being executed
   local -a words
   words=( ${(z)1} )  # $1 contains the command string
   local -r cmd=${words[1]}
-
-  # Color codes
-  local gray=$'\e[37m' 
-  local white=$'\e[97;1m'
-  local blue=$'\e[34;1m'
-  local red=$'\e[31;1m'
-  local green=$'\e[32;1m'
-  local nc=$'\e[0m'
 
   local cmd_desc=$(whence -v $cmd 2>/dev/null)
 
@@ -253,33 +262,59 @@ preexec_info() {
   # Wrap entire description in gray
   cmd_desc="${gray}${cmd_desc}${nc}"
 
+  # Print the command info
   echo "${gray}┏ running ${white}$cmd ${gray}(${nc}$cmd_desc${gray})$nc"
+
+  # Save that a command was executed
+  LAST_CMD_EXECUTED=1
 }
-add-zsh-hook preexec preexec_info
+add-zsh-hook preexec print_info_before_cmd
 
-# Global variable to store the last executed command
-LAST_CMD=""
-
-# Clear last ecevuted command before executing
-clear_last_command() {
-  unset LAST_CMD
-}
-add-zsh-hook preexec clear_last_command
-
-# Save the last executed command after execution
-save_last_command() {
-  export LAST_CMD="$1"
-}
-add-zsh-hook precmd save_last_command
-
-# Function to load the solid starship prompt
-load_solid_prompt() {
+# Load starship prompt before each prompt render
+load_starship_prompt() {
   export STARSHIP_CONFIG=$HOME/.config/starship/solid.toml
   source $HOME/.config/starship/init.sh
 }
-add-zsh-hook precmd load_solid_prompt
+load_starship_prompt
 
-# Clear the prompt on line finish or interrupt
+# Print info after command execution
+print_info_after_cmd() {
+  # Save the command status code
+  local last_status=$status
+
+  # Reload starship prompt, as it is reset after each cmd execution/interruption
+  load_starship_prompt
+
+  if [[ $LAST_CMD_EXECUTED -eq 1 ]]; then
+    local last_cmd="$white$LAST_CMD$gray"
+    local duration="${yellow}🕘${STARSHIP_DURATION}ms$gray"
+
+    if [[ $last_status -eq 0 ]]; then
+      last_status="✅$green$last_status"
+    elif [[ $last_status -eq 126 ]]; then
+      # Not executable
+      last_status="🚫$red$last_status"
+    elif [[ $last_status -eq 127 ]]; then
+      # Not found
+      last_status="❓$red$last_status"
+    elif [[ $last_status -ge 128 ]] && [[ $last_status -le 165 ]]; then
+      # Signal
+      last_status="💥$red$last_status"
+    else
+      # General failure
+      last_status="❗$red$last_status"
+    fi
+
+    echo "${gray}┗ finished $last_cmd in $duration with $last_status$nc"
+    echo ""
+
+    unset LAST_CMD
+  fi
+  unset LAST_CMD_EXECUTED
+}
+add-zsh-hook precmd print_info_after_cmd
+
+# Clear the prompt on command execution/interruption
 clear_prompt() {
   PROMPT=''
   zle .reset-prompt
@@ -292,4 +327,5 @@ trap 'clear_prompt; return 130' INT
 if [ -f ~/.zshrc_private ]; then
   source ~/.zshrc_private
 fi
+
 

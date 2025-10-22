@@ -1,7 +1,5 @@
 format = """\
-([┗ finished (${custom.last_cmd} )in $cmd_duration](white)
-
-)$character\
+$character\
 ([ \
 $username\
 $hostname\
