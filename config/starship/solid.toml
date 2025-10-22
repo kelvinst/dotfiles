@@ -1,5 +1,6 @@
 format = """\
 ([┗ finished in $cmd_duration](white)
+
 )$character\
 ([ \
 $username\
