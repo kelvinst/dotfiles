@@ -22,6 +22,14 @@ return {
       mode = { "n", "v" },
     },
     {
+      "<leader>ae",
+      function()
+        require("codecompanion").prompt("explain")
+      end,
+      desc = "[E]xplain",
+      mode = { "n", "v" },
+    },
+    {
       "<leader>ac",
       vim.cmd.CodeCompanionChat,
       desc = "[C]hat",
