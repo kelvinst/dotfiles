@@ -1,4 +1,4 @@
-format = "[┗ exited with $status( in $cmd_duration)\n\r\n\r](white)"
+format = "[┗ finished in $cmd_duration with $status\n\r\n\r](white)"
 
 add_newline = false
 

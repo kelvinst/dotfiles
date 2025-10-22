@@ -1,6 +1,6 @@
 format = """\
-[┗ exited with $status( in $cmd_duration)](white)
-$character\
+([┗ finished in $cmd_duration](white)
+)$character\
 ([ \
 $username\
 $hostname\
@@ -99,6 +99,7 @@ $os\
 $container\
 $netns\
 $shell\
+$status\
 $time\
 $custom\
 ](black bg:green))\
@@ -131,17 +132,6 @@ palette = 'tokyo-night-moon'
 bg-border = '#3b4261'
 bg-middle = '#2f334d'
 bg-inactive = '0'
-
-[status]
-disabled = false
-format = '[$symbol$status]($style)'
-symbol = '❗'
-failure_style = 'bold red'
-success_style = 'bold green'
-success_symbol = '✅'
-not_executable_symbol = '🚫'
-not_found_symbol = '❓'
-signal_symbol = '💥'
 
 [cmd_duration]
 disabled = false
@@ -733,7 +723,7 @@ threshold = 100
 style = 'bold black bg:green'
 
 [os]
-disabled = false
+disabled = true
 format = '[$symbol ]($style)'
 style = 'bold black bg:green'
 
@@ -806,6 +796,17 @@ symbol = '🛜'
 disabled = true
 format = '[🐢$indicator ]($style)'
 style = 'bold black bg:green'
+
+[status]
+disabled = false
+format = '[$symbol$status ]($style)'
+symbol = '❗'
+failure_style = 'bold black bg:green'
+success_style = 'bold black bg:green'
+success_symbol = '✅'
+not_executable_symbol = '🚫'
+not_found_symbol = '❓'
+signal_symbol = '💥'
 
 [time]
 disabled = true
