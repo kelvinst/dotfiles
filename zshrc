@@ -285,26 +285,20 @@ load_solid_prompt() {
 # Load solid prompt before each command
 precmd_functions+=(load_solid_prompt)
 
-# Function to set the transparent prompt
-load_transparent_prompt() {
-  export STARSHIP_CONFIG=$HOME/.config/starship/transparent.toml
-  source $HOME/.config/starship/init.sh
-  
-  # Override PROMPT to show nothing if no command was executed
-  if [[ -z "$STARSHIP_DURATION" ]]; then
-    PROMPT=''
-  fi
+# Clear the prompt
+clear_prompt() {
+  PROMPT=''
 }
 
-zle_load_transparent_prompt() {
-  load_transparent_prompt
+zle_clear_prompt() {
+  clear_prompt
 
   zle .reset-prompt
 }
 
-# Load transparent prompt when a line is finished
-zle -N zle-line-finish zle_load_transparent_prompt
-trap 'load_transparent_prompt; return 130' INT
+# Cleer prompt when a line is finished
+zle -N zle-line-finish zle_clear_prompt
+trap 'clear_prompt; return 130' INT
 
 # NOTE: Load private zshrc if it exists
 
