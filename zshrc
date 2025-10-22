@@ -260,6 +260,16 @@ autoload -Uz add-zsh-hook
 add-zsh-hook preexec save_last_command
 save_last_command() {
   export LAST_CMD="$1"
+  export LAST_CMD_EXECUTED=1
+}
+
+# Clear LAST_CMD if no command was executed
+add-zsh-hook precmd check_empty_command
+check_empty_command() {
+  if [[ -z "$LAST_CMD_EXECUTED" ]]; then
+    unset LAST_CMD
+  fi
+  unset LAST_CMD_EXECUTED
 }
 
 # Function to load the solid starship prompt
