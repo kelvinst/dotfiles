@@ -39,12 +39,15 @@ fpath=(/Users/kelvinstinghen/.docker/completions $fpath)
 autoload -Uz compinit
 compinit
 
+# Command prompt formatter starship
+eval "$(starship completions zsh)"
+
+# Suggest commands as you type
+source $(brew --prefix)/share/zsh-autosuggestions/zsh-autosuggestions.zsh
+
 # Load the amazing tab completion fuzzy finder
 source ~/.fzf-tab/fzf-tab.plugin.zsh
 source ~/.fzf-tab-source/*.plugin.zsh
-
-# Command prompt formatter starship
-eval "$(starship completions zsh)"
 
 # All these are configurations for the fuzzy finder completion tool
 # Disable sort when completing `git checkout`
@@ -67,9 +70,6 @@ zstyle ':fzf-tab:complete:git-checkout:*' fzf-preview 'case "$group" in "modifie
 zstyle ':fzf-tab:*' fzf-flags --bind=space:accept
 # Switch group using `<` and `>`
 zstyle ':fzf-tab:*' switch-group '<' '>'
-
-# Suggest commands as you type
-source $(brew --prefix)/share/zsh-autosuggestions/zsh-autosuggestions.zsh
 
 # NOTE: General shell improvements
 
@@ -240,7 +240,7 @@ print_info_before_cmd() {
     cmd_desc="${red}not found"
   elif [[ $cmd_desc =~ "^an alias for (.+)$" ]]; then
     local alias_target="${match[1]}"
-    cmd_desc="an ${blue}alias${gray} for ${green}${alias_target}"
+    cmd_desc="an ${blue}alias${gray} for ${white}${alias_target}"
   elif [[ $cmd_desc =~ "^a shell builtin$" ]]; then
     cmd_desc="a shell ${blue}builtin"
   elif [[ $cmd_desc =~ "^a shell function$" ]]; then
@@ -249,21 +249,21 @@ print_info_before_cmd() {
     cmd_desc="an ${blue}autoload${gray} shell ${blue}function"
   elif [[ $cmd_desc =~ "^an autoload shell function from (.+)$" ]]; then
     local path="${match[1]}"
-    cmd_desc="an ${blue}autoload${gray} shell ${blue}function${gray} from ${green}${path}"
+    cmd_desc="an ${blue}autoload${gray} shell ${blue}function${gray} from ${white}${path}"
   elif [[ $cmd_desc =~ "^a shell function from (.+)$" ]]; then
     local path="${match[1]}"
-    cmd_desc="a shell ${blue}function${gray} from ${green}${path}"
+    cmd_desc="a shell ${blue}function${gray} from ${white}${path}"
   elif [[ $cmd_desc =~ "^a reserved word$" ]]; then
     cmd_desc="a ${blue}reserved${gray} word"
   elif [[ $cmd_desc =~ "^/.*$" ]]; then
-    cmd_desc="located at ${green}${cmd_desc}"
+    cmd_desc="located at ${white}${cmd_desc}"
   fi
 
   # Wrap entire description in gray
   cmd_desc="${gray}${cmd_desc}${nc}"
 
   # Print the command info
-  echo "${gray}┏ running ${white}$cmd ${gray}(${nc}$cmd_desc${gray})$nc"
+  echo "${gray}┏ running ${green}$cmd ${gray}(${nc}$cmd_desc${gray})$nc"
 
   # Save that a command was executed
   LAST_CMD_EXECUTED=1
