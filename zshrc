@@ -1,4 +1,6 @@
-# NOTE: Env variables
+# vim: foldmethod=marker foldlevel=0
+
+# Env variables {{{
 
 # My preferred editor
 export EDITOR='nvim'
@@ -27,7 +29,9 @@ export XDG_CONFIG_HOME="$HOME/.config"
 # Coloring files
 export LS_COLORS="$(vivid generate tokyonight-moon)"
 
-# NOTE: Completions
+# }}}
+
+# Completions {{{
 
 # Configure additional completion definitions
 export FPATH=$(brew --prefix)/share/zsh-completions:$FPATH
@@ -71,7 +75,9 @@ zstyle ':fzf-tab:*' fzf-flags --bind=space:accept
 # Switch group using `<` and `>`
 zstyle ':fzf-tab:*' switch-group '<' '>'
 
-# NOTE: General shell improvements
+# }}}
+
+# General shell improvements {{{
 
 # Syntax highlightning for the shell commands
 source ~/.fsyh/fast-syntax-highlighting.plugin.zsh
@@ -82,12 +88,16 @@ eval "$(zoxide init zsh)"
 # Use shell vim mode
 bindkey -v
 
-# NOTE: Dev stuff
+# }}}
+
+# Dev stuff {{{
 
 # The runtime version manager
 . /opt/homebrew/opt/asdf/libexec/asdf.sh
 
-# NOTE: Aliases
+# }}}
+
+# Aliases {{{
 
 # alias
 alias a='aliases'
@@ -96,6 +106,7 @@ alias a='aliases'
 alias b='bat'
 
 # clear
+alias bp='bottom_prompt'
 alias c='clear'
 
 # eza
@@ -142,7 +153,9 @@ alias v='nvim'
 unalias -m run-help
 unalias -m which-command
 
-# NOTE: Functions
+# }}}
+
+# Functions {{{
 
 # Searches for aliases
 aliases() {
@@ -193,7 +206,6 @@ flaky() {
   done
 }
 
-# NOTE: Auto-commands
 # Add empty lines to move the prompt to the bottom of the terminal
 bottom_prompt() {
   # Get the number of lines in the terminal (default 2)
@@ -201,6 +213,10 @@ bottom_prompt() {
   local lines=$((LINES - $lines_to_keep))
   printf '\n%.0s' {1..$lines}
 }
+
+# }}}
+
+# Auto-commands {{{
 
 # Put the prompt at the bottom on shell startup
 bottom_prompt 3
@@ -353,10 +369,13 @@ clear_prompt() {
 zle -N zle-line-finish clear_prompt
 trap 'clear_prompt; return 130' INT
 
-# NOTE: Load private zshrc if it exists
+# }}}
+
+# Load private zshrc if it exists {{{
 
 if [ -f ~/.zshrc_private ]; then
   source ~/.zshrc_private
 fi
 
+# }}}
 
