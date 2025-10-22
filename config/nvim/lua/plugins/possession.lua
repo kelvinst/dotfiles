@@ -45,7 +45,9 @@ local function get_codecompanion_chat()
           if chat and chat.opts and chat.opts.save_id then
             return { id = chat.opts.save_id, tab = tab_number }
           end
-          return { id = true, tab = tab_number } -- Chat is open but no save_id yet
+
+          -- Chat is open but no save_id yet
+          return { id = true, tab = tab_number }
         end
       end
     end
@@ -130,7 +132,8 @@ local function restore_codecompanion_chat(saved_chat)
   if saved_chat then
     local codecompanion = require("codecompanion")
 
-    -- Handle both old format (just chat_id) and new format (table with id and tab)
+    -- Handle both old format (just chat_id) and
+    -- new format (table with id and tab)
     local chat_id = type(saved_chat) == "table" and saved_chat.id
     local tab_number = type(saved_chat) == "table" and saved_chat.tab or nil
 
