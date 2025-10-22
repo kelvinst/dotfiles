@@ -1,5 +1,5 @@
 format = """\
-[ ↳ exited with $status( in $cmd_duration)](white)
+[┗ exited with $status( in $cmd_duration)](white)
 $character\
 ([ \
 $username\
@@ -102,8 +102,7 @@ $shell\
 $time\
 $custom\
 ](black bg:green))\
-$line_break
-"""
+$line_break"""
 
 add_newline = false
 
@@ -818,4 +817,4 @@ time_format = '%H:%M:%S'
 disabled = true
 
 [line_break]
-disabled = true
+disabled = false
