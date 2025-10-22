@@ -76,7 +76,7 @@ source $(brew --prefix)/share/zsh-autosuggestions/zsh-autosuggestions.zsh
 # Syntax highlightning for the shell commands
 source ~/.fsyh/fast-syntax-highlighting.plugin.zsh
 
-# The better `cd` command
+# `z` - the fuzzy `cd`
 eval "$(zoxide init zsh)"
 
 # Use shell vim mode
