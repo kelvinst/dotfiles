@@ -195,12 +195,16 @@ flaky() {
 
 # NOTE: Auto-commands
 
+# Load add-zsh-hook for managing hooks
+autoload -Uz add-zsh-hook
+
 # Ring a bell on command failures
-precmd() {
+bell_on_error() {
   if [[ $? -ne 0 ]]; then
     printf "\a"
   fi
 }
+add-zsh-hook precmd bell_on_error
 
 # Show alias commands when executing them
 show_cmd_feedback() {
@@ -256,12 +260,12 @@ show_cmd_feedback() {
 preexec_functions+=(show_cmd_feedback)
 
 # Save the last executed command
-autoload -Uz add-zsh-hook
-add-zsh-hook preexec save_last_command
 save_last_command() {
   export LAST_CMD="$1"
   export LAST_CMD_EXECUTED=1
 }
+
+add-zsh-hook preexec save_last_command
 
 # Clear LAST_CMD if no command was executed
 add-zsh-hook precmd check_empty_command
