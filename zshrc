@@ -272,8 +272,7 @@ add-zsh-hook preexec print_info_before_cmd
 
 # Load starship prompt before each prompt render
 load_starship_prompt() {
-  export STARSHIP_CONFIG=$HOME/.config/starship/solid.toml
-  source $HOME/.config/starship/init.sh
+  source $HOME/.config/init_starship.sh
 }
 load_starship_prompt
 
