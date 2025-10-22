@@ -206,14 +206,50 @@ precmd() {
 show_alias_feedback() {
   local -a words
   words=( ${(z)1} )  # $1 contains the command string
-  local -r firstword=${words[1]}
+  local -r cmd=${words[1]}
 
-  # Some colors for the output
+  # Color codes
   local gray=$'\e[37m' 
-  local reset=$'\e[0m'
+  local white=$'\e[97;1m'
+  local blue=$'\e[34;1m'
+  local red=$'\e[31;1m'
+  local green=$'\e[32;1m'
+  local nc=$'\e[0m'
 
-  [[ "$(whence -w $firstword 2>/dev/null)" == "${firstword}: alias" ]] &&
-    echo -nE "${gray}↳ aka ${reset}$(whence $firstword)"
+  local cmd_desc=$(whence -v $cmd 2>/dev/null)
+
+  # Remove the "cmd is " or "cmd " prefix
+  cmd_desc=${cmd_desc#$cmd is }
+  cmd_desc=${cmd_desc#$cmd }
+
+  # Apply formatting based on content
+  if [[ $cmd_desc == "not found" ]]; then
+    cmd_desc="${red}not found"
+  elif [[ $cmd_desc =~ "^an alias for (.+)$" ]]; then
+    local alias_target="${match[1]}"
+    cmd_desc="an ${blue}alias${gray} for ${green}${alias_target}"
+  elif [[ $cmd_desc =~ "^a shell builtin$" ]]; then
+    cmd_desc="a shell ${blue}builtin"
+  elif [[ $cmd_desc =~ "^a shell function$" ]]; then
+    cmd_desc="a shell ${blue}${match[1]}"
+  elif [[ $cmd_desc =~ "^an autoload shell function$" ]]; then
+    cmd_desc="an ${blue}autoload${gray} shell ${blue}function"
+  elif [[ $cmd_desc =~ "^an autoload shell function from (.+)$" ]]; then
+    local path="${match[1]}"
+    cmd_desc="an ${blue}autoload${gray} shell ${blue}function${gray} from ${green}${path}"
+  elif [[ $cmd_desc =~ "^a shell function from (.+)$" ]]; then
+    local path="${match[1]}"
+    cmd_desc="a shell ${blue}function${gray} from ${green}${path}"
+  elif [[ $cmd_desc =~ "^a reserved word$" ]]; then
+    cmd_desc="a ${blue}reserved${gray} word"
+  elif [[ $cmd_desc =~ "^/.*$" ]]; then
+    cmd_desc="located at ${green}${cmd_desc}"
+  fi
+
+  # Wrap entire description in gray
+  cmd_desc="${gray}${cmd_desc}${nc}"
+
+  echo "${gray}┏ running ${white}$cmd ${gray}(${nc}$cmd_desc${gray})$nc"
 }
 
 # Add to preexec functions (runs before command execution)
