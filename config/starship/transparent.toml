@@ -1,8 +1,4 @@
-format = """\
-[\
-┗ exited with $status( in $cmd_duration)
-$fill \
-](white)"""
+format = "[┗ exited with $status( in $cmd_duration) $fill\n\r](white)"
 
 add_newline = false
 
@@ -27,5 +23,5 @@ min_time = 1
 [fill]
 disabled = false
 style = 'white'
-symbol = '='
+symbol = '━'
 
