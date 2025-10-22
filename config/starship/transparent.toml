@@ -1,4 +1,4 @@
-format = "[┗ exited with $status( in $cmd_duration) $fill\n\r](white)"
+format = "[┗ exited with $status( in $cmd_duration)\n\r\n\r](white)"
 
 add_newline = false
 
@@ -19,9 +19,4 @@ format = "[🕘$duration]($style)"
 style = 'bold yellow'
 show_milliseconds = true
 min_time = 1
-
-[fill]
-disabled = false
-style = 'white'
-symbol = '━'
 
