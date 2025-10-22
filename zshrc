@@ -273,7 +273,7 @@ load_transparent_prompt() {
 
 # Load transparent prompt when a line is finished
 zle -N zle-line-finish load_transparent_prompt
-trap 'set-short-prompt; return 130' INT
+trap 'load_transparent_prompt; return 130' INT
 
 # NOTE: Load private zshrc if it exists
 
