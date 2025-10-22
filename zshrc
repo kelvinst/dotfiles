@@ -203,7 +203,7 @@ precmd() {
 }
 
 # Show alias commands when executing them
-show_alias_feedback() {
+show_cmd_feedback() {
   local -a words
   words=( ${(z)1} )  # $1 contains the command string
   local -r cmd=${words[1]}
@@ -253,7 +253,14 @@ show_alias_feedback() {
 }
 
 # Add to preexec functions (runs before command execution)
-preexec_functions+=(show_alias_feedback)
+preexec_functions+=(show_cmd_feedback)
+
+# Save the last executed command
+autoload -Uz add-zsh-hook
+add-zsh-hook preexec save_last_command
+save_last_command() {
+  export LAST_CMD="$1"
+}
 
 # Function to load the solid starship prompt
 load_solid_prompt() {

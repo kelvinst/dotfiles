@@ -1,5 +1,5 @@
 format = """\
-([┗ finished in $cmd_duration](white)
+([┗ finished (${custom.last_cmd} )in $cmd_duration](white)
 
 )$character\
 ([ \
@@ -102,7 +102,6 @@ $netns\
 $shell\
 $status\
 $time\
-$custom\
 ](black bg:green))\
 $line_break"""
 
@@ -133,6 +132,12 @@ palette = 'tokyo-night-moon'
 bg-border = '#3b4261'
 bg-middle = '#2f334d'
 bg-inactive = '0'
+
+[custom.last_cmd]
+command = 'echo $LAST_CMD'
+when = '[[ -n "$LAST_CMD" ]]'
+style = 'bold bright-white'
+format = '[$output]($style)'
 
 [cmd_duration]
 disabled = false

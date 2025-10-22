@@ -1,9 +1,15 @@
 format = """
-[┗ finished in $cmd_duration with $status
+[┗ finished (${custom.last_cmd} )in $cmd_duration with $status
 
 ](white)"""
 
 add_newline = false
+
+[custom.last_cmd]
+command = 'echo $LAST_CMD'
+when = '[[ -n "$LAST_CMD" ]]'
+style = 'bold bright-white'
+format = '[$output]($style)'
 
 [status]
 disabled = false
