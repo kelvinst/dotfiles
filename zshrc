@@ -206,12 +206,24 @@ flaky() {
   done
 }
 
+# Functions to enable/disable command info
+disable_cmd_info() { export DISABLE_CMD_INFO=1 }
+enable_cmd_info() { unset DISABLE_CMD_INFO }
+
 # Add empty lines to move the prompt to the bottom of the terminal
 bottom_prompt() {
-  # Get the number of lines in the terminal (default 2)
-  local lines_to_keep=${1:-2}
-  local lines=$((LINES - $lines_to_keep))
-  printf '\n%.0s' {1..$lines}
+  # Get current cursor row position
+  print -n '\e[6n'
+  local row
+  IFS='[;' read -sdR _ row _
+  
+  # Calculate lines needed (discount lines already in terminal)
+  local lines=$((LINES - row - 1))
+  
+  # Only print newlines if we need to move down
+  if [[ $lines -gt 0 ]]; then
+    printf '\n%.0s' {1..$lines}
+  fi
 }
 
 # }}}
@@ -219,7 +231,7 @@ bottom_prompt() {
 # Auto-commands {{{
 
 # Put the prompt at the bottom on shell startup
-bottom_prompt 3
+bottom_prompt
 
 # Load add-zsh-hook for managing hooks
 autoload -Uz add-zsh-hook
@@ -266,10 +278,6 @@ highlight_command() {
   colored_cmd=$(print -P "$colored_cmd")
   print -- "$colored_cmd"
 }
-
-# Functions to enable/disable command info
-disable_cmd_info() { export DISABLE_CMD_INFO=1 }
-enable_cmd_info() { unset DISABLE_CMD_INFO }
 
 # Show alias commands when executing them
 print_info_before_cmd() {
@@ -394,4 +402,5 @@ if [ -f ~/.zshrc_private ]; then
 fi
 
 # }}}
+
 
