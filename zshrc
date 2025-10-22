@@ -268,6 +268,12 @@ precmd_functions+=(load_solid_prompt)
 load_transparent_prompt() {
   export STARSHIP_CONFIG=$HOME/.config/starship/transparent.toml
   source $HOME/.config/starship/init.sh
+  
+  # Override PROMPT to show nothing if no command was executed
+  if [[ -z "$STARSHIP_DURATION" ]]; then
+    PROMPT=''
+  fi
+  
   zle .reset-prompt
 }
 
@@ -280,3 +286,4 @@ trap 'load_transparent_prompt; return 130' INT
 if [ -f ~/.zshrc_private ]; then
   source ~/.zshrc_private
 fi
+
