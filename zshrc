@@ -75,6 +75,7 @@ zstyle ':fzf-tab:*' switch-group '<' '>'
 
 # Syntax highlightning for the shell commands
 source ~/.fsyh/fast-syntax-highlighting.plugin.zsh
+fast-theme default
 
 # `z` - the fuzzy `cd`
 eval "$(zoxide init zsh)"
@@ -219,6 +220,29 @@ local nc=$'\e[0m'
 LAST_CMD=""
 LAST_CMD_EXECUTED=0
 
+# Highlight the command using fast-syntax-highlighting
+highlight_command() {
+  local cmd="$1"
+  local -a reply
+  reply=()
+  -fast-highlight-process "" "$cmd" 0
+
+  # Now reply contains highlight specs like "0 5 fg=green,bold"
+  # We need to convert these to ANSI codes and apply them to the string
+  local colored_cmd=""
+  for seg in "${reply[@]}"; do
+    seg_list=( ${=seg} )
+    start=$seg_list[1]
+    finish=$seg_list[2]
+    color=$seg_list[3]
+    colored_cmd+="%F{${color//fg=/}}${cmd[$((start)),$((finish))]}%f"
+  done
+
+  colored_cmd=$(print -P "$colored_cmd")
+  print -- "$colored_cmd"
+}
+
+
 # Show alias commands when executing them
 print_info_before_cmd() {
   # Sace the last command executed
@@ -227,7 +251,7 @@ print_info_before_cmd() {
   # The the command being executed
   local -a words
   words=( ${(z)1} )  # $1 contains the command string
-  local -r cmd=${words[1]}
+  local cmd=${words[1]}
 
   local cmd_desc=$(whence -v $cmd 2>/dev/null)
 
@@ -239,11 +263,9 @@ print_info_before_cmd() {
   if [[ $cmd_desc == "not found" ]]; then
     cmd_desc="${red}not found"
   elif [[ $cmd_desc =~ "^an alias for (.+)$" ]]; then
-    local alias_target="${match[1]}"
-    cmd_desc="an ${blue}alias${gray} for ${white}${alias_target}"
-  elif [[ $cmd_desc =~ "^a shell builtin$" ]]; then
-    cmd_desc="a shell ${blue}builtin"
-  elif [[ $cmd_desc =~ "^a shell function$" ]]; then
+    local alias_target=$(highlight_command "${match[1]}")
+    cmd_desc="an ${blue}alias${gray} for ${alias_target}"
+  elif [[ $cmd_desc =~ "^a shell (builtin|function)$" ]]; then
     cmd_desc="a shell ${blue}${match[1]}"
   elif [[ $cmd_desc =~ "^an autoload shell function$" ]]; then
     cmd_desc="an ${blue}autoload${gray} shell ${blue}function"
@@ -261,9 +283,10 @@ print_info_before_cmd() {
 
   # Wrap entire description in gray
   cmd_desc="${gray}${cmd_desc}${nc}"
+  cmd=$(highlight_command "$cmd")
 
   # Print the command info
-  echo "${gray}┏ running ${green}$cmd ${gray}(${nc}$cmd_desc${gray})$nc"
+  echo "${gray}┏ running $cmd ${gray}(${nc}$cmd_desc${gray})$nc"
 
   # Save that a command was executed
   LAST_CMD_EXECUTED=1
@@ -285,23 +308,23 @@ print_info_after_cmd() {
   load_starship_prompt
 
   if [[ $LAST_CMD_EXECUTED -eq 1 ]]; then
-    local last_cmd="$white$LAST_CMD$gray"
-    local duration="${yellow}🕘${STARSHIP_DURATION}ms$gray"
+    local last_cmd=$(highlight_command "$LAST_CMD")
+    local duration="🕘$yellow ${STARSHIP_DURATION}ms$gray"
 
     if [[ $last_status -eq 0 ]]; then
-      last_status="✅$green$last_status"
+      last_status="✅$green $last_status"
     elif [[ $last_status -eq 126 ]]; then
       # Not executable
-      last_status="🚫$red$last_status"
+      last_status="🚫$red $last_status"
     elif [[ $last_status -eq 127 ]]; then
       # Not found
-      last_status="❓$red$last_status"
+      last_status="❓$red $last_status"
     elif [[ $last_status -ge 128 ]] && [[ $last_status -le 165 ]]; then
       # Signal
-      last_status="💥$red$last_status"
+      last_status="💥$red $last_status"
     else
       # General failure
-      last_status="❗$red$last_status"
+      last_status="❗$red $last_status"
     fi
 
     echo "${gray}┗ finished $last_cmd in $duration with $last_status$nc"
