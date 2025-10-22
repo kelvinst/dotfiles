@@ -207,7 +207,7 @@ bell_on_error() {
 add-zsh-hook precmd bell_on_error
 
 # Show alias commands when executing them
-show_cmd_feedback() {
+preexec_info() {
   local -a words
   words=( ${(z)1} )  # $1 contains the command string
   local -r cmd=${words[1]}
@@ -255,49 +255,36 @@ show_cmd_feedback() {
 
   echo "${gray}┏ running ${white}$cmd ${gray}(${nc}$cmd_desc${gray})$nc"
 }
+add-zsh-hook preexec preexec_info
 
-# Add to preexec functions (runs before command execution)
-add-zsh-hook preexec show_cmd_feedback
+# Global variable to store the last executed command
+LAST_CMD=""
 
-# Save the last executed command
+# Clear last ecevuted command before executing
+clear_last_command() {
+  unset LAST_CMD
+}
+add-zsh-hook preexec clear_last_command
+
+# Save the last executed command after execution
 save_last_command() {
   export LAST_CMD="$1"
-  export LAST_CMD_EXECUTED=1
 }
-
-add-zsh-hook preexec save_last_command
-
-# Clear LAST_CMD if no command was executed
-add-zsh-hook precmd check_empty_command
-check_empty_command() {
-  if [[ -z "$LAST_CMD_EXECUTED" ]]; then
-    unset LAST_CMD
-  fi
-  unset LAST_CMD_EXECUTED
-}
+add-zsh-hook precmd save_last_command
 
 # Function to load the solid starship prompt
 load_solid_prompt() {
   export STARSHIP_CONFIG=$HOME/.config/starship/solid.toml
   source $HOME/.config/starship/init.sh
 }
+add-zsh-hook precmd load_solid_prompt
 
-# Load solid prompt before each command
-precmd_functions+=(load_solid_prompt)
-
-# Clear the prompt
+# Clear the prompt on line finish or interrupt
 clear_prompt() {
   PROMPT=''
-}
-
-zle_clear_prompt() {
-  clear_prompt
-
   zle .reset-prompt
 }
-
-# Cleer prompt when a line is finished
-zle -N zle-line-finish zle_clear_prompt
+zle -N zle-line-finish clear_prompt
 trap 'clear_prompt; return 130' INT
 
 # NOTE: Load private zshrc if it exists
