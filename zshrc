@@ -216,9 +216,12 @@ bottom_prompt() {
   print -n '\e[6n'
   local row
   IFS='[;' read -sdR _ row _
+
+  # Default to keeping no lines, but accept keeping some if specified
+  local lines_to_keep=${1:-0}
   
   # Calculate lines needed (discount lines already in terminal)
-  local lines=$((LINES - row - 1))
+  local lines=$((LINES - row - $lines_to_keep))
   
   # Only print newlines if we need to move down
   if [[ $lines -gt 0 ]]; then
@@ -231,7 +234,7 @@ bottom_prompt() {
 # Auto-commands {{{
 
 # Put the prompt at the bottom on shell startup
-bottom_prompt
+bottom_prompt 1
 
 # Load add-zsh-hook for managing hooks
 autoload -Uz add-zsh-hook
@@ -392,6 +395,14 @@ clear_prompt() {
 }
 zle -N zle-line-finish clear_prompt
 trap 'clear_prompt; return 130' INT
+
+# trap 'bottom_prompt' WINCH
+TRAPWINCH() {
+  print -n "\033[1A\033[2K"
+  bottom_prompt
+  zle .reset-prompt
+}
+
 
 # }}j
 
