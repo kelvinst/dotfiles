@@ -1,14 +1,13 @@
 local function delete_bad_buffer(buf)
   if vim.api.nvim_buf_is_valid(buf) then
-    local buftype = vim.bo[buf].filetype
-    if vim.tbl_contains({ "", "gitcommit" }, buftype) then
-      vim.api.nvim_buf_delete(buf, { force = true })
-      return
+    -- Reopen NeogitStatus if it was saved to the session
+    local name = vim.api.nvim_buf_get_name(buf)
+    if name:match("NeogitStatus") then
+      vim.cmd.Neogit()
     end
 
-    -- Delete all NeoGit buffers
-    local name = vim.api.nvim_buf_get_name(buf)
-    if name:match("Neogit") then
+    local buftype = vim.bo[buf].filetype
+    if vim.tbl_contains({ "", "gitcommit" }, buftype) then
       vim.api.nvim_buf_delete(buf, { force = true })
       return
     end
@@ -294,6 +293,7 @@ return {
     "olimorris/codecompanion.nvim",
     "ravitemer/codecompanion-history.nvim",
     "niuiic/quickfix.nvim",
+    "NeogitOrg/neogit",
   },
   keys = {
     {
