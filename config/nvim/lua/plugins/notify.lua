@@ -5,6 +5,7 @@ return {
     local notify = require("notify")
 
     notify.setup({
+      render = "wrapped-compact",
       timeout = 300,
       max_width = 50,
       max_height = 10,
