@@ -1,5 +1,3 @@
-# vim: foldmethod=marker foldlevel=0
-
 # Env variables {{{
 
 # My preferred editor

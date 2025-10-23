@@ -1,8 +1,6 @@
 # NOTE: This file is loaded for all zsh invocations, including non-interactive ones.
 # So whatever you need for headless zsh, put it here. e.g. skhd keyboard shortcuts
 
-# vim: foldmethod=marker foldlevel=0
-
 # Query Functions - Get information about current state {{{
 # These functions query yabai for information about spaces, displays, and windows
 

@@ -1,5 +1,3 @@
--- vim:fileencoding=utf-8:foldmethod=marker
-
 -- General Settings {{{
 
 -- Set <space> as the leader key
