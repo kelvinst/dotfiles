@@ -267,59 +267,104 @@ local nc=$'\e[0m'
 LAST_CMD=""
 LAST_CMD_EXECUTED=0
 
+# Code extracted and adapted from here:
+#https://github.com/quicknir/nikud/blob/27f4dd0275730a9f64dae7e37db0ae1097834b2e/zsh/zdotdir/color_history.zsh#L1-L86
+highlight_to_format() {
+    local parts=(${(s/,/)1})
+    local before=""
+    local after=""
+    for part in $parts; do
+        case "$part" in
+            underline)
+                before+="%U"
+                after+="%u"
+                ;;
+            bold)
+                before+="%B"
+                after+="%b"
+                ;;
+            fg*)
+                local sub_parts=(${(s/=/)part})
+                before+="%F{$sub_parts[2]}"
+                after+="%f"
+                ;;
+            bg*)
+                local sub_parts=(${(s/=/)part})
+                before+="%K{$sub_parts[2]}"
+                after+="%k"
+                ;;
+        esac
+    done
+    pre_escape=${(%)before}
+    post_escape=${(%)after}
+}
+
+apply_format_to_substr() {
+    local mapped_first=$index_map[$first]
+    local mapped_last=$index_map[$last]
+    s=$1
+    local insert_string=${pre_escape}${s[$mapped_first,$mapped_last]}${post_escape}
+    s[$mapped_first,$mapped_last]=$insert_string
+}
+
+highlight_to_str() {
+    local str=$1
+    local highlight_arr_name=$2
+    local -A index_map
+    local str_length=${#str}
+    local i pre_escape post_escape s v
+
+    for i in {1..${#str}}; do index_map[$i]=$i; done
+
+    for highlight in ${(P)${highlight_arr_name}}; do
+        local parts=(${(s/ /)highlight})
+
+        if [[ ${#parts} != 3 ]]; then 
+            # Sometimes we get bad responses from fast-syntax highlighting
+            # e.g. if fed '($index++)', we get
+            # 0 1 fg=yellow 1 9 fg=red,bold 9 10 fg=yellow 0 1 fg=green,bold 9 10 fg=green,bold 9 10 bg=blue  1 bg=blue
+            # That trailing style doesn't have a begin and end; so we just ignore it
+            continue
+        fi
+
+        local first=$((parts[1]+1))
+        local last=$parts[2]
+
+        if [[ $first -gt $last ]]; then
+            # Again, fast-syntax sometimes includes segments like this where start is greater than end
+            # have observed it with git commit -m <quoted text>
+            continue
+        fi
+
+        highlight_to_format $parts[3]
+
+        local pre_escape_len=${#pre_escape}
+        local post_escape_len=${#post_escape}
+        apply_format_to_substr $str
+        str=${(%)s}
+        for i in {$first..$last}; do
+            v=$index_map[$i]
+            index_map[$i]=$((v+pre_escape_len))
+        done
+        if [[ $last != $str_length ]]; then
+            for i in {$((last+1))..$str_length}; do
+                v=$index_map[$i]
+                index_map[$i]=$((v+pre_escape_len+post_escape_len))
+            done
+        fi
+    done
+    echo -n $str
+}
+
 # Highlight the command using fast-syntax-highlighting
 highlight_command() {
   local cmd=$1
   local -a reply
   reply=()
   -fast-highlight-process "" $cmd 0
+  -fast-highlight-string-process "" "$1"
 
-  # Now reply contains highlight specs like "0 5 fg=green,bold"
-  # We need to convert these to ANSI codes and apply them to the string
-  local colored_cmd=""
-  for seg in ${reply[@]}; do
-    seg_list=( ${=seg} )
-    start=$seg_list[1]
-    finish=$seg_list[2]
-    color_spec=$seg_list[3]
-    partial=${cmd[$((start)),$((finish))]}
-    
-    # Parse color spec (e.g., "fg=green,bold" or "bg=blue,fg=red")
-    local fg_color=""
-    local bg_color=""
-    local attrs=""
-    
-    # Split by comma to get individual attributes
-    local -a color_parts
-    color_parts=( ${(s:,:)color_spec} )
-    
-    for part in ${color_parts[@]}; do
-      if [[ $part == fg=* ]]; then
-        fg_color=${part#fg=}
-      elif [[ $part == bg=* ]]; then
-        bg_color=${part#bg=}
-      elif [[ $part == bold ]]; then
-        attrs+="%B"
-      elif [[ $part == underline ]]; then
-        attrs+="%U"
-      elif [[ $part == standout ]]; then
-        attrs+="%S"
-      fi
-    done
-    
-    # Build the formatted string
-    local formatted="${attrs}"
-    [[ -n $fg_color ]] && formatted+="%F{${fg_color}}"
-    [[ -n $bg_color ]] && formatted+="%K{${bg_color}}"
-    formatted+="${partial}"
-    [[ -n $bg_color ]] && formatted+="%k"
-    [[ -n $fg_color ]] && formatted+="%f"
-    [[ $attrs == *%B* ]] && formatted+="%b"
-    [[ $attrs == *%U* ]] && formatted+="%u"
-    [[ $attrs == *%S* ]] && formatted+="%s"
-    
-    colored_cmd+="${formatted}"
-  done
+  local colored_cmd=$(highlight_to_str $cmd reply)
 
   colored_cmd="${colored_cmd//\$/\\$}"
 
@@ -365,8 +410,9 @@ print_info_before_cmd() {
       cmd_desc="$cmd is a shell ${blue}function$nc$gray from $path"
     elif [[ $cmd_desc =~ "^is a reserved word$" ]]; then
       cmd_desc="$cmd is a ${blue}reserved$nc$gray word"
-    elif [[ $cmd_desc =~ "^/.*$" ]]; then
-      cmd_desc="$cmd is located at $(highlight_command $cmd_desc)"
+    elif [[ $cmd_desc =~ "^is (.+)$" ]]; then
+      local executable=$(highlight_command ${match[1]})
+      cmd_desc="$cmd is $executable"
     fi
 
     # Wrap entire description in gray
@@ -455,4 +501,5 @@ if [ -f ~/.zshrc_private ]; then
 fi
 
 # }}}
+
 
