@@ -241,7 +241,7 @@ bottom_prompt() {
 # Auto-commands {{{
 
 # Put the prompt at the bottom on shell startup
-bottom_prompt
+bottom_prompt 2
 
 # Load add-zsh-hook for managing hooks
 autoload -Uz add-zsh-hook
@@ -269,75 +269,77 @@ LAST_CMD_EXECUTED=0
 
 # Highlight the command using fast-syntax-highlighting
 highlight_command() {
-  local cmd="$1"
+  local cmd=$1
   local -a reply
   reply=()
-  -fast-highlight-process "" "$cmd" 0
+  -fast-highlight-process "" $cmd 0
 
   # Now reply contains highlight specs like "0 5 fg=green,bold"
   # We need to convert these to ANSI codes and apply them to the string
   local colored_cmd=""
-  for seg in "${reply[@]}"; do
+  for seg in ${reply[@]}; do
     seg_list=( ${=seg} )
     start=$seg_list[1]
     finish=$seg_list[2]
     color=$seg_list[3]
-    colored_cmd+="%F{${color//fg=/}}${cmd[$((start)),$((finish))]}%f"
+    partial=${cmd[$((start)),$((finish))]}
+    colored_cmd+="%F{${color//fg=/}}${partial}%f"
   done
 
-  colored_cmd=$(print -P "$colored_cmd")
-  print -- "$colored_cmd"
+  colored_cmd="${colored_cmd//\$/\\$}"
+
+  print -Pr -- $colored_cmd
 }
 
 # Show alias commands when executing them
 print_info_before_cmd() {
   # Sace the last command executed
-  LAST_CMD="$1"
+  LAST_CMD=$1
 
   if [[ 
-    -z "$DISABLE_CMD_INFO" &&
-      "$LAST_CMD" != *disable_cmd_info* &&
-      "$LAST_CMD" != *enable_cmd_info*
+    -z $DISABLE_CMD_INFO &&
+      $LAST_CMD != *disable_cmd_info* &&
+      $LAST_CMD != *enable_cmd_info*
   ]]; then
     # The the command being executed
     local -a words
-    words=( ${(z)1} )  # $1 contains the command string
+    words=( ${(z)LAST_CMD} )
     local cmd=${words[1]}
 
     local cmd_desc=$(whence -v $cmd 2>/dev/null)
 
     # Remove the "cmd is " or "cmd " prefix
-    cmd_desc=${cmd_desc#$cmd is }
     cmd_desc=${cmd_desc#$cmd }
+    cmd="$(highlight_command $cmd)$gray"
 
     # Apply formatting based on content
     if [[ $cmd_desc == "not found" ]]; then
       cmd_desc="${bold_red}not found"
-    elif [[ $cmd_desc =~ "^an alias for (.+)$" ]]; then
-      local alias_target=$(highlight_command "${match[1]}")
-      cmd_desc="an ${blue}alias$nc$gray for $alias_target"
-    elif [[ $cmd_desc =~ "^a shell (builtin|function)$" ]]; then
-      cmd_desc="a shell ${blue}${match[1]}"
-    elif [[ $cmd_desc =~ "^an autoload shell function$" ]]; then
-      cmd_desc="an ${blue}autoload$nc$gray shell ${blue}function"
-    elif [[ $cmd_desc =~ "^an autoload shell function from (.+)$" ]]; then
+    elif [[ $cmd_desc =~ "^is an alias for (.+)$" ]]; then
+      local alias_target=$(highlight_command ${match[1]})
+      cmd_desc="$cmd is an ${blue}alias$nc$gray for $alias_target"
+    elif [[ $cmd_desc =~ "^is a shell (builtin|function)$" ]]; then
+      cmd_desc="$cmd is a shell ${blue}${match[1]}"
+    elif [[ $cmd_desc =~ "^is an autoload shell function$" ]]; then
+      cmd_desc="$cmd is an ${blue}autoload$nc$gray shell ${blue}function"
+    elif [[ $cmd_desc =~ "^is an autoload shell function from (.+)$" ]]; then
       local path="$purple${match[1]}"
-      cmd_desc="an ${blue}autoload$nc$gray shell ${blue}function$nc$gray from $path"
-    elif [[ $cmd_desc =~ "^a shell function from (.+)$" ]]; then
+      cmd_desc="$cmd is an ${blue}autoload$nc$gray shell ${blue}function$nc$gray from $path"
+    elif [[ $cmd_desc =~ "^is a shell function from (.+)$" ]]; then
       local path="$purple${match[1]}"
-      cmd_desc="a shell ${blue}function$nc$gray from $path"
-    elif [[ $cmd_desc =~ "^a reserved word$" ]]; then
-      cmd_desc="a ${blue}reserved$nc$gray word"
+      cmd_desc="$cmd is a shell ${blue}function$nc$gray from $path"
+    elif [[ $cmd_desc =~ "^is a reserved word$" ]]; then
+      cmd_desc="$cmd is a ${blue}reserved$nc$gray word"
     elif [[ $cmd_desc =~ "^/.*$" ]]; then
-      cmd_desc="located at $(highlight_command $cmd_desc)"
+      cmd_desc="$cmd is located at $(highlight_command $cmd_desc)"
     fi
 
     # Wrap entire description in gray
     cmd_desc="${gray}${cmd_desc}${nc}"
-    cmd=$(highlight_command "$cmd")
+    local last_cmd=$(highlight_command $LAST_CMD)
 
     # Print the command info
-    echo "${gray}┏ running $cmd ${gray}(${nc}$cmd_desc${gray})$nc"
+    echo "${gray}┏ running $last_cmd ${gray}(${nc}$cmd_desc${gray})$nc"
   fi
 
   # Save that a command was executed
