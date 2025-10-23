@@ -28,7 +28,7 @@ return {
       "n",
       "<leader>gl",
       with_saved_tab(vim.cmd.NeogitLogCurrent),
-      { desc = "[G]it Status" }
+      { desc = "[L]og (current file)" }
     )
     vim.keymap.set(
       "n",
