@@ -396,15 +396,16 @@ clear_prompt() {
 zle -N zle-line-finish clear_prompt
 trap 'clear_prompt; return 130' INT
 
-# trap 'bottom_prompt' WINCH
+# Keep the prompt at the bottom on terminal resize
 TRAPWINCH() {
+  # Clear the current prompt line
   print -n "\033[1A\033[2K"
+  
   bottom_prompt
   zle .reset-prompt
 }
 
-
-# }}j
+# }}}
 
 # Load private zshrc if it exists {{{
 
