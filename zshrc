@@ -212,21 +212,30 @@ enable_cmd_info() { unset DISABLE_CMD_INFO }
 
 # Add empty lines to move the prompt to the bottom of the terminal
 bottom_prompt() {
-  # Get current cursor row position
-  print -n '\e[6n'
-  local row
-  IFS='[;' read -sdR _ row _
+  local offset=${1:-1}
+  local filename="/tmp/kitty-output-$(date +%s)"
 
-  # Default to keeping no lines, but accept keeping some if specified
-  local lines_to_keep=${1:-0}
-  
-  # Calculate lines needed (discount lines already in terminal)
-  local lines=$((LINES - row - $lines_to_keep))
-  
-  # Only print newlines if we need to move down
-  if [[ $lines -gt 0 ]]; then
-    printf '\n%.0s' {1..$lines}
+  # Save terminal output to a temp file
+  kitten @ get-text --extent=all --ansi=yes --self=yes > $filename
+
+  # Get the number of lines in the output
+  local output_lines=$(wc -l < $filename)
+
+  # If the output is smaller than $LINES - 1, add newlines to the file
+  if [[ $output_lines -lt ($LINES - $offset) ]]; then
+    # Add newlines to the beginning of the file until we reach the bottom
+    while [[ $output_lines -lt ($LINES - $offset) ]]; do
+      sed -i '' '1i\
+
+        ' $filename
+      output_lines=$((output_lines + 1))
+    done
+
+    clear
+    cat $filename
   fi
+
+  rm -rf /tmp/kitty-output-*
 }
 
 # }}}
@@ -234,7 +243,7 @@ bottom_prompt() {
 # Auto-commands {{{
 
 # Put the prompt at the bottom on shell startup
-bottom_prompt 1
+bottom_prompt
 
 # Load add-zsh-hook for managing hooks
 autoload -Uz add-zsh-hook
@@ -398,9 +407,6 @@ trap 'clear_prompt; return 130' INT
 
 # Keep the prompt at the bottom on terminal resize
 TRAPWINCH() {
-  # Clear the current prompt line
-  print -n "\033[1A\033[2K"
-  
   bottom_prompt
   zle .reset-prompt
 }
