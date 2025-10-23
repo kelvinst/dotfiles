@@ -374,7 +374,7 @@ print_info_after_cmd() {
         last_status="💥$bold_red $last_status$gray"
       else
         # General failure
-    j   last_status="❗$bold_red $last_status$gray"
+       last_status="❗$bold_red $last_status$gray"
       fi
 
       echo "$gray┗ finished $last_cmd in $duration with $last_status$nc"
