@@ -281,9 +281,44 @@ highlight_command() {
     seg_list=( ${=seg} )
     start=$seg_list[1]
     finish=$seg_list[2]
-    color=$seg_list[3]
+    color_spec=$seg_list[3]
     partial=${cmd[$((start)),$((finish))]}
-    colored_cmd+="%F{${color//fg=/}}${partial}%f"
+    
+    # Parse color spec (e.g., "fg=green,bold" or "bg=blue,fg=red")
+    local fg_color=""
+    local bg_color=""
+    local attrs=""
+    
+    # Split by comma to get individual attributes
+    local -a color_parts
+    color_parts=( ${(s:,:)color_spec} )
+    
+    for part in ${color_parts[@]}; do
+      if [[ $part == fg=* ]]; then
+        fg_color=${part#fg=}
+      elif [[ $part == bg=* ]]; then
+        bg_color=${part#bg=}
+      elif [[ $part == bold ]]; then
+        attrs+="%B"
+      elif [[ $part == underline ]]; then
+        attrs+="%U"
+      elif [[ $part == standout ]]; then
+        attrs+="%S"
+      fi
+    done
+    
+    # Build the formatted string
+    local formatted="${attrs}"
+    [[ -n $fg_color ]] && formatted+="%F{${fg_color}}"
+    [[ -n $bg_color ]] && formatted+="%K{${bg_color}}"
+    formatted+="${partial}"
+    [[ -n $bg_color ]] && formatted+="%k"
+    [[ -n $fg_color ]] && formatted+="%f"
+    [[ $attrs == *%B* ]] && formatted+="%b"
+    [[ $attrs == *%U* ]] && formatted+="%u"
+    [[ $attrs == *%S* ]] && formatted+="%s"
+    
+    colored_cmd+="${formatted}"
   done
 
   colored_cmd="${colored_cmd//\$/\\$}"
