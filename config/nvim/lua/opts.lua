@@ -1,4 +1,4 @@
--- General Settings {{{
+-- NOTE: General Settings {{{
 
 -- Set <space> as the leader key
 vim.g.mapleader = " "
@@ -9,7 +9,7 @@ vim.opt.shell = "zsh -i"
 
 -- }}}
 
--- UI Settings {{{
+-- NOTE: UI Settings {{{
 
 -- Hide line numbers
 vim.opt.number = false
@@ -62,7 +62,7 @@ vim.opt.listchars = { tab = "» ", trail = "·", nbsp = "␣" }
 
 -- }}}
 
--- File and Backup Settings {{{
+-- NOTE: File and Backup Settings {{{
 
 -- Do not save backup/swap files
 vim.opt.backup = false
@@ -74,7 +74,7 @@ vim.opt.undofile = true
 
 -- }}}
 
--- Editing Behavior {{{
+-- NOTE: Editing Behavior {{{
 
 -- Tab/indent settings
 vim.opt.tabstop = 2

@@ -1,4 +1,4 @@
-# Env variables {{{
+# NOTE: Env variables {{{
 
 # My preferred editor
 export EDITOR='nvim'
@@ -29,7 +29,7 @@ export LS_COLORS="$(vivid generate tokyonight-moon)"
 
 # }}}
 
-# Completions {{{
+# NOTE: Completions {{{
 
 # Configure additional completion definitions
 export FPATH=$(brew --prefix)/share/zsh-completions:$FPATH
@@ -75,7 +75,7 @@ zstyle ':fzf-tab:*' switch-group '<' '>'
 
 # }}}
 
-# General shell improvements {{{
+# NOTE: General shell improvements {{{
 
 # Syntax highlightning for the shell commands
 source ~/.fsyh/fast-syntax-highlighting.plugin.zsh
@@ -88,14 +88,14 @@ bindkey -v
 
 # }}}
 
-# Dev stuff {{{
+# NOTE: Dev stuff {{{
 
 # The runtime version manager
 . /opt/homebrew/opt/asdf/libexec/asdf.sh
 
 # }}}
 
-# Aliases {{{
+# NOTE: Aliases {{{
 
 # alias
 alias a='aliases'
@@ -153,7 +153,7 @@ unalias -m which-command
 
 # }}}
 
-# Functions {{{
+# NOTE: Functions {{{
 
 # Searches for aliases
 aliases() {
@@ -238,7 +238,7 @@ bottom_prompt() {
 
 # }}}
 
-# Auto-commands {{{
+# NOTE: Auto-commands {{{
 
 # Put the prompt at the bottom on shell startup
 bottom_prompt 2
@@ -413,12 +413,11 @@ TRAPWINCH() {
 
 # }}}
 
-# Load private zshrc if it exists {{{
+# NOTE: Load private zshrc if it exists {{{
 
 if [ -f ~/.zshrc_private ]; then
   source ~/.zshrc_private
 fi
 
 # }}}
-
 

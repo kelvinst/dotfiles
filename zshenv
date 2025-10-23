@@ -1,7 +1,7 @@
-# NOTE: This file is loaded for all zsh invocations, including non-interactive ones.
+# WARNING: This file is loaded for all zsh invocations, including non-interactive ones.
 # So whatever you need for headless zsh, put it here. e.g. skhd keyboard shortcuts
 
-# Query Functions - Get information about current state {{{
+# NOTE: Query Functions - Get information about current state {{{
 # These functions query yabai for information about spaces, displays, and windows
 
 # Returns the index of the current space
@@ -25,7 +25,7 @@ current_window_id() {
 }
 # }}}
 
-# Space Navigation - Focus and switch between spaces {{{
+# NOTE: Space Navigation - Focus and switch between spaces {{{
 # Functions for moving focus between spaces within the current display
 
 # Focus next space (limiting per display)
@@ -47,7 +47,7 @@ focus_previous_space() {
 }
 # }}}
 
-# Space Management - Create and manage spaces {{{
+# NOTE: Space Management - Create and manage spaces {{{
 # Functions for creating new spaces
 
 # Create a new space and focus it
@@ -66,7 +66,7 @@ create_space_and_move_window() {
 }
 # }}}
 
-# Window Movement - Move windows between spaces and displays {{{
+# NOTE: Window Movement - Move windows between spaces and displays {{{
 # Functions for moving windows to different spaces and displays
 
 # Move current window to next space (limiting per display)
@@ -106,7 +106,7 @@ move_window_to_display() {
 }
 # }}}
 
-# Layout Functions - Configure window layouts {{{
+# NOTE: Layout Functions - Configure window layouts {{{
 # Functions for managing window layouts and split types
 
 # Force a determined split type for the current window
@@ -193,3 +193,4 @@ three_column_layout() {
   yabai -m window --resize right:240:0
 }
 # }}}
+

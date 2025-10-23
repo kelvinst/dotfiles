@@ -1,4 +1,4 @@
-# Documentation {{{
+# NOTE: Documentation {{{
 
 # ################################################################ #
 # THE FOLLOWING IS AN EXPLANATION OF THE GRAMMAR THAT SKHD PARSES. #
@@ -73,7 +73,7 @@
 #               an EOL character signifies the end of the bind.
 # }}}
 
-# kitty {{{
+# NOTE: kitty {{{
 
 # open kitty
 cmd + ctrl - return : kitty --single-instance --directory ~
@@ -83,7 +83,7 @@ cmd + ctrl + shift - return : kitten quick-access-terminal
 
 # }}}
 
-# yabai {{{
+# NOTE: yabai {{{
 
 # restart the yabai service (reload everything from scratch, key: `,`)
 alt + ctrl - 0x2B : yabai --stop-service && yabai --start-service
@@ -186,3 +186,4 @@ alt + ctrl - r : bsp_layout
 alt + ctrl - f : three_column_layout
 
 # }}}
+
