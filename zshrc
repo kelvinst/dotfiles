@@ -107,7 +107,8 @@ alias b='bat'
 
 # clear
 alias bp='bottom_prompt'
-alias c='bottom_prompt_clear'
+alias clear='bottom_prompt_clear'
+alias c='clear'
 
 # eza
 alias ez='eza'
@@ -377,7 +378,7 @@ highlight_command() {
 }
 
 # List of commands for which to disable info printing
-DISABLE_CMD_INFO_LIST=(disable_cmd_info bottom_prompt_clear c)
+DISABLE_CMD_INFO_LIST=(bottom_prompt_clear clear c)
 
 # Show alias commands when executing them
 print_info_before_cmd() {
