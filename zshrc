@@ -107,7 +107,7 @@ alias b='bat'
 
 # clear
 alias bp='bottom_prompt'
-alias c='clear'
+alias c='bottom_prompt_clear'
 
 # eza
 alias ez='eza'
@@ -206,10 +206,6 @@ flaky() {
   done
 }
 
-# Functions to enable/disable command info
-disable_cmd_info() { export DISABLE_CMD_INFO=1 }
-enable_cmd_info() { unset DISABLE_CMD_INFO }
-
 # Add empty lines to move the prompt to the bottom of the terminal
 bottom_prompt() {
   local offset=${1:-1}
@@ -236,6 +232,13 @@ bottom_prompt() {
   fi
 
   rm -rf /tmp/kitty-output-*
+}
+
+# Clear the terminal with the bottom prompt
+bottom_prompt_clear() {
+  for ((i=0; i<($LINES - 3); i++)); do
+    echo
+  done
 }
 
 # }}}
@@ -373,57 +376,61 @@ highlight_command() {
   print -Pr -- $colored_cmd
 }
 
+# List of commands for which to disable info printing
+DISABLE_CMD_INFO_LIST=(disable_cmd_info bottom_prompt_clear c)
+
 # Show alias commands when executing them
 print_info_before_cmd() {
   # Sace the last command executed
   LAST_CMD=$1
 
-  if [[ 
-    -z $DISABLE_CMD_INFO &&
-      $LAST_CMD != *disable_cmd_info* &&
-      $LAST_CMD != *enable_cmd_info*
-  ]]; then
-    # The the command being executed
-    local -a words
-    words=( ${(z)LAST_CMD} )
-    local cmd=${words[1]}
+  # Convert array to case pattern (pattern1|pattern2|pattern3)
+  local patterns="${(j:|:)DISABLE_CMD_INFO_LIST}"
 
-    local cmd_desc=$(whence -v $cmd 2>/dev/null)
+  case $LAST_CMD in
+    ${~patterns}) ;;  # Match any pattern, do nothing
+    *) 
+      # The the command being executed
+      local -a words
+      words=( ${(z)LAST_CMD} )
+      local cmd=${words[1]}
 
-    # Remove the "cmd is " or "cmd " prefix
-    cmd_desc=${cmd_desc#$cmd }
-    cmd="$(highlight_command $cmd)$gray"
+      local cmd_desc=$(whence -v $cmd 2>/dev/null)
 
-    # Apply formatting based on content
-    if [[ $cmd_desc == "not found" ]]; then
-      cmd_desc="${bold_red}not found"
-    elif [[ $cmd_desc =~ "^is an alias for (.+)$" ]]; then
-      local alias_target=$(highlight_command ${match[1]})
-      cmd_desc="$cmd is an ${blue}alias$nc$gray for $alias_target"
-    elif [[ $cmd_desc =~ "^is a shell (builtin|function)$" ]]; then
-      cmd_desc="$cmd is a shell ${blue}${match[1]}"
-    elif [[ $cmd_desc =~ "^is an autoload shell function$" ]]; then
-      cmd_desc="$cmd is an ${blue}autoload$nc$gray shell ${blue}function"
-    elif [[ $cmd_desc =~ "^is an autoload shell function from (.+)$" ]]; then
-      local path="$purple${match[1]}"
-      cmd_desc="$cmd is an ${blue}autoload$nc$gray shell ${blue}function$nc$gray from $path"
-    elif [[ $cmd_desc =~ "^is a shell function from (.+)$" ]]; then
-      local path="$purple${match[1]}"
-      cmd_desc="$cmd is a shell ${blue}function$nc$gray from $path"
-    elif [[ $cmd_desc =~ "^is a reserved word$" ]]; then
-      cmd_desc="$cmd is a ${blue}reserved$nc$gray word"
-    elif [[ $cmd_desc =~ "^is (.+)$" ]]; then
-      local executable=$(highlight_command ${match[1]})
-      cmd_desc="$cmd is $executable"
-    fi
+      # Remove the "cmd is " or "cmd " prefix
+      cmd_desc=${cmd_desc#$cmd }
+      cmd="$(highlight_command $cmd)$gray"
 
-    # Wrap entire description in gray
-    cmd_desc="${gray}${cmd_desc}${nc}"
-    local last_cmd=$(highlight_command $LAST_CMD)
+      # Apply formatting based on content
+      if [[ $cmd_desc == "not found" ]]; then
+        cmd_desc="${bold_red}not found"
+      elif [[ $cmd_desc =~ "^is an alias for (.+)$" ]]; then
+        local alias_target=$(highlight_command ${match[1]})
+        cmd_desc="$cmd is an ${blue}alias$nc$gray for $alias_target"
+      elif [[ $cmd_desc =~ "^is a shell (builtin|function)$" ]]; then
+        cmd_desc="$cmd is a shell ${blue}${match[1]}"
+      elif [[ $cmd_desc =~ "^is an autoload shell function$" ]]; then
+        cmd_desc="$cmd is an ${blue}autoload$nc$gray shell ${blue}function"
+      elif [[ $cmd_desc =~ "^is an autoload shell function from (.+)$" ]]; then
+        local path="$purple${match[1]}"
+        cmd_desc="$cmd is an ${blue}autoload$nc$gray shell ${blue}function$nc$gray from $path"
+      elif [[ $cmd_desc =~ "^is a shell function from (.+)$" ]]; then
+        local path="$purple${match[1]}"
+        cmd_desc="$cmd is a shell ${blue}function$nc$gray from $path"
+      elif [[ $cmd_desc =~ "^is a reserved word$" ]]; then
+        cmd_desc="$cmd is a ${blue}reserved$nc$gray word"
+      elif [[ $cmd_desc =~ "^is (.+)$" ]]; then
+        local executable=$(highlight_command ${match[1]})
+        cmd_desc="$cmd is $executable"
+      fi
 
-    # Print the command info
-    echo "${gray}┏ running $last_cmd ${gray}(${nc}$cmd_desc${gray})$nc"
-  fi
+      # Wrap entire description in gray
+      cmd_desc="${gray}${cmd_desc}${nc}"
+      local last_cmd=$(highlight_command $LAST_CMD)
+
+      # Print the command info
+      echo "${gray}┏ running $last_cmd ${gray}(${nc}$cmd_desc${gray})$nc"
+  esac
 
   # Save that a command was executed
   LAST_CMD_EXECUTED=1
@@ -445,32 +452,33 @@ print_info_after_cmd() {
   load_starship_prompt
 
   if [[ $LAST_CMD_EXECUTED -eq 1 ]]; then
-    if [[ 
-      -z "$DISABLE_CMD_INFO" &&
-        "$LAST_CMD" != *disable_cmd_info* &&
-        "$LAST_CMD" != *enable_cmd_info*
-    ]]; then
-      local last_cmd=$(highlight_command "$LAST_CMD")
-      local duration="🕘$bold_yellow ${STARSHIP_DURATION}ms$gray"
+    # Convert array to case pattern (pattern1|pattern2|pattern3)
+    local patterns="${(j:|:)DISABLE_CMD_INFO_LIST}"
 
-      if [[ $last_status -eq 0 ]]; then
-        last_status="✅$bold_green $last_status$gray"
-      elif [[ $last_status -eq 126 ]]; then
-        # Not executable
-        last_status="🚫$bold_red $last_status$gray"
-      elif [[ $last_status -eq 127 ]]; then
-        # Not found
-        last_status="❓$bold_red $last_status$gray"
-      elif [[ $last_status -ge 128 ]] && [[ $last_status -le 165 ]]; then
-        # Signal
-        last_status="💥$bold_red $last_status$gray"
-      else
-        # General failure
-       last_status="❗$bold_red $last_status$gray"
-      fi
+    case $LAST_CMD in
+      ${~patterns}) ;;  # Match any pattern, do nothing
+      *) 
+        local last_cmd=$(highlight_command "$LAST_CMD")
+        local duration="🕘$bold_yellow ${STARSHIP_DURATION}ms$gray"
 
-      echo "$gray┗ finished $last_cmd in $duration with $last_status$nc"
-    fi
+        if [[ $last_status -eq 0 ]]; then
+          last_status="✅$bold_green $last_status$gray"
+        elif [[ $last_status -eq 126 ]]; then
+          # Not executable
+          last_status="🚫$bold_red $last_status$gray"
+        elif [[ $last_status -eq 127 ]]; then
+          # Not found
+          last_status="❓$bold_red $last_status$gray"
+        elif [[ $last_status -ge 128 ]] && [[ $last_status -le 165 ]]; then
+          # Signal
+          last_status="💥$bold_red $last_status$gray"
+        else
+          # General failure
+         last_status="❗$bold_red $last_status$gray"
+        fi
+
+        echo "$gray┗ finished $last_cmd in $duration with $last_status$nc"
+    esac
 
     echo
     unset LAST_CMD
@@ -490,6 +498,7 @@ trap 'clear_prompt; return 130' INT
 
 # Keep the prompt at the bottom on terminal resize
 TRAPWINCH() {
+  emulate -L zsh
   bottom_prompt
   zle .reset-prompt
 }
