@@ -99,16 +99,16 @@ return { -- Fuzzy Finder (files, lsp, etc)
 
     -- Configure which-key with the telescope mappings
     require("which-key").add({
-      { "<leader>p", group = "[P]ick" },
+      { "<leader>p", group = "Pick" },
     })
 
     -- See `:help telescope.builtin`
     local builtin = require("telescope.builtin")
-    vim.keymap.set("n", "<leader>pp", builtin.builtin, { desc = "[P]ickers" })
-    vim.keymap.set("n", "<leader>ph", builtin.help_tags, { desc = "[H]elp" })
-    vim.keymap.set("n", "<leader>pk", builtin.keymaps, { desc = "[K]eymaps" })
-    vim.keymap.set("n", "<leader>pg", builtin.live_grep, { desc = "[G]rep" })
-    vim.keymap.set("n", "<leader>pr", builtin.resume, { desc = "[R]esume" })
+    vim.keymap.set("n", "<leader>pp", builtin.builtin, { desc = "Pickers" })
+    vim.keymap.set("n", "<leader>ph", builtin.help_tags, { desc = "Help" })
+    vim.keymap.set("n", "<leader>pk", builtin.keymaps, { desc = "Keymaps" })
+    vim.keymap.set("n", "<leader>pg", builtin.live_grep, { desc = "Grep" })
+    vim.keymap.set("n", "<leader>pr", builtin.resume, { desc = "Resume" })
     vim.keymap.set("n", "<leader>pf", function()
       builtin.git_files({
         git_command = {
@@ -120,7 +120,7 @@ return { -- Fuzzy Finder (files, lsp, etc)
         },
       })
     end, {
-      desc = "[F]iles (from git)",
+      desc = "Files (from git)",
     })
     vim.keymap.set("n", "<leader>pF", function()
       builtin.find_files({
@@ -129,16 +129,16 @@ return { -- Fuzzy Finder (files, lsp, etc)
         no_ignore_parent = true,
       })
     end, {
-      desc = "[F]iles (all)",
+      desc = "Files (all)",
     })
     vim.keymap.set("n", "<leader>po", builtin.oldfiles, {
-      desc = "[O]ld files",
+      desc = "Old files",
     })
     vim.keymap.set("n", "<leader>pd", builtin.diagnostics, {
-      desc = "[D]iagnostics",
+      desc = "Diagnostics",
     })
     vim.keymap.set("n", "<leader>pw", builtin.grep_string, {
-      desc = "Grep current [w]ord",
+      desc = "Grep current word",
     })
 
     vim.keymap.set("n", "<leader>p/", function()
@@ -146,6 +146,6 @@ return { -- Fuzzy Finder (files, lsp, etc)
         winblend = 10,
         previewer = false,
       }))
-    end, { desc = "[/] Fuzzy search current file" })
+    end, { desc = "Fuzzy search current file" })
   end,
 }

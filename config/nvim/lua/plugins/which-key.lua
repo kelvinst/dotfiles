@@ -18,15 +18,15 @@ return { -- Useful plugin to show you pending keybinds.
     -- Existing keybindings
     spec = {
       { "<leader><space>", group = "Hop" },
-      { "<leader>a", group = "[A]I", mode = "nv" },
-      { "<leader>c", group = "[C]ommand" },
-      { "<leader>e", group = "[E]rror diagnostics" },
-      { "<leader>f", group = "[F]iles" },
-      { "<leader>g", group = "[G]it" },
-      { "<leader>n", group = "[N]otifications" },
-      { "<leader>s", group = "[S]essions" },
-      { "<leader>v", group = "[V]im" },
-      { "<leader>y", group = "[Y]ank" },
+      { "<leader>a", group = "AI", mode = "nv" },
+      { "<leader>c", group = "Command" },
+      { "<leader>e", group = "Error diagnostics" },
+      { "<leader>f", group = "Files" },
+      { "<leader>g", group = "Git" },
+      { "<leader>n", group = "Notifications" },
+      { "<leader>s", group = "Sessions" },
+      { "<leader>v", group = "Vim" },
+      { "<leader>y", group = "Yank" },
     },
 
     triggers = {

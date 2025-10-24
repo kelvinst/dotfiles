@@ -9,7 +9,7 @@ return { -- Collection of various small independent plugins/modules
 
     -- Configure which-key with the dispatch mappings
     require("which-key").add({
-      { "s", group = "[S]urround" },
+      { "s", group = "Surround" },
     })
 
     -- Simple and easy statusline.

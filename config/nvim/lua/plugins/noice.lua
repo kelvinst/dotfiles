@@ -11,22 +11,22 @@ return {
     {
       "<leader>nh",
       CmdFn("Noice history"),
-      desc = "[H]istory",
+      desc = "History",
     },
     {
       "<leader>nl",
       CmdFn("Noice last"),
-      desc = "[L]ast",
+      desc = "Last",
     },
     {
       "<leader>na",
       CmdFn("Noice all"),
-      desc = "[A]ll",
+      desc = "All",
     },
     {
       "<leader>ne",
       CmdFn("Noice errors"),
-      desc = "[E]rrors",
+      desc = "Errors",
     },
     {
       "<S-Enter>",
@@ -67,7 +67,7 @@ return {
       "n",
       "<leader>np",
       telescope.extensions.noice.noice,
-      { desc = "[P]ick" }
+      { desc = "Pick" }
     )
   end,
 }

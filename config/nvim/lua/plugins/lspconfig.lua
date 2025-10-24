@@ -70,14 +70,14 @@ return {
         map(
           "gd",
           require("telescope.builtin").lsp_definitions,
-          "[G]oto [D]efinition"
+          "Goto Definition"
         )
 
         -- Find references for the word under your cursor.
         map(
           "gr",
           require("telescope.builtin").lsp_references,
-          "[G]oto [R]eferences"
+          "Goto References"
         )
 
         -- Jump to the implementation of the word under your cursor.
@@ -85,16 +85,16 @@ return {
         map(
           "gI",
           require("telescope.builtin").lsp_implementations,
-          "[G]oto [I]mplementation"
+          "Goto Implementation"
         )
 
         -- WARN: This is not Goto Definition, this is Goto Declaration.
         --  For example, in C this would take you to the header.
-        map("gD", vim.lsp.buf.declaration, "[G]oto [D]eclaration")
+        map("gD", vim.lsp.buf.declaration, "Goto Declaration")
 
         -- Configure which-key with the LSP mappings
         require("which-key").add({
-          { "<leader>l", group = "[L]SP" },
+          { "<leader>l", group = "LSP" },
         })
 
         -- Jump to the type of the word under your cursor.
@@ -103,7 +103,7 @@ return {
         map(
           "<leader>ld",
           require("telescope.builtin").lsp_type_definitions,
-          "Type [D]efinition"
+          "Type Definition"
         )
 
         -- Fuzzy find all the symbols in your current document.
@@ -111,7 +111,7 @@ return {
         map(
           "<leader>ls",
           require("telescope.builtin").lsp_document_symbols,
-          "[S]ymbols (current file)"
+          "Symbols (current file)"
         )
 
         -- Fuzzy find all the symbols in your current workspace.
@@ -119,19 +119,19 @@ return {
         map(
           "<leader>lS",
           require("telescope.builtin").lsp_dynamic_workspace_symbols,
-          "[S]ymbols (workspace)"
+          "Symbols (workspace)"
         )
 
         -- Rename the variable under your cursor.
         --  Most Language Servers support renaming across files, etc.
-        map("<leader>lr", vim.lsp.buf.rename, "[R]ename")
+        map("<leader>lr", vim.lsp.buf.rename, "Rename")
 
         -- Execute a code action, usually your cursor needs to be on top of an error
         -- or a suggestion from your LSP for this to activate.
         map(
           "<leader>la",
           vim.lsp.buf.code_action,
-          "[A]ction (on suggestion)",
+          "Action (on suggestion)",
           { "n", "x" }
         )
 
@@ -182,7 +182,7 @@ return {
             vim.lsp.inlay_hint.enable(
               not vim.lsp.inlay_hint.is_enabled({ bufnr = event.buf })
             )
-          end, "Toggle Inlay [H]ints")
+          end, "Toggle Inlay Hints")
         end
       end,
     })

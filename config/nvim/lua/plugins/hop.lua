@@ -19,42 +19,42 @@ return { -- Easily jump around in your file
     {
       "<leader><space>/",
       without_vimade(vim.cmd.HopPattern),
-      desc = "Search like [/]",
+      desc = "Search like /",
     },
     {
       "<leader><space>1",
       without_vimade(vim.cmd.HopChar1),
-      desc = "[1] Char",
+      desc = "1 Char",
     },
     {
       "<leader><space>2",
       without_vimade(vim.cmd.HopChar2),
-      desc = "[2] Char",
+      desc = "2 Char",
     },
     {
       "<leader><space>a",
       without_vimade(vim.cmd.HopAnywhere),
-      desc = "[A]nywhere",
+      desc = "Anywhere",
     },
     {
       "<leader><space>h",
       without_vimade(vim.cmd.HopChar1),
       desc = "Default (1 char)",
     },
-    { "<leader><space>l", without_vimade(vim.cmd.HopLine), desc = "[L]ine" },
+    { "<leader><space>l", without_vimade(vim.cmd.HopLine), desc = "Line" },
     {
       "<leader><space>n",
       function()
         require("hop").hint_patterns({}, vim.fn.getreg("/"))
       end,
-      desc = "[N]ext pattern (based on what was searched on /)",
+      desc = "Next pattern (based on what was searched on /)",
     },
     {
       "<leader><space>t",
       without_vimade(vim.cmd.HopNodes),
-      desc = "[T]reesiter nodes",
+      desc = "Treesiter nodes",
     },
-    { "<leader><space>w", without_vimade(vim.cmd.HopWord), desc = "[W]ord" },
+    { "<leader><space>w", without_vimade(vim.cmd.HopWord), desc = "Word" },
   },
   config = function()
     local hop = require("hop")
@@ -71,14 +71,14 @@ return { -- Easily jump around in your file
         direction = require("hop.hint").HintDirection.AFTER_CURSOR,
         current_line_only = true,
       })
-    end, { desc = "Hop [f]or char (forward)" })
+    end, { desc = "Hop for char (forward)" })
 
     vim.keymap.set(modes, "F", function()
       hop.hint_char1({
         direction = require("hop.hint").HintDirection.BEFORE_CURSOR,
         current_line_only = true,
       })
-    end, { desc = "Hop [f]or char (backward)" })
+    end, { desc = "Hop for char (backward)" })
 
     vim.keymap.set(modes, "t", function()
       hop.hint_char1({
@@ -86,7 +86,7 @@ return { -- Easily jump around in your file
         current_line_only = true,
         hint_offset = -1,
       })
-    end, { desc = "Hop '[t]il char (forward)" })
+    end, { desc = "Hop 'til char (forward)" })
 
     vim.keymap.set(modes, "T", function()
       hop.hint_char1({
@@ -94,6 +94,6 @@ return { -- Easily jump around in your file
         current_line_only = true,
         hint_offset = -1,
       })
-    end, { desc = "Hop '[t]il char (backward)" })
+    end, { desc = "Hop 'til char (backward)" })
   end,
 }

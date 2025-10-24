@@ -31,7 +31,7 @@ return {
     }
 
     require("which-key").add({
-      { "<leader>fa", group = "[A]lternate" },
+      { "<leader>fa", group = "Alternate" },
     })
   end,
   keys = {
@@ -39,9 +39,9 @@ return {
     {
       "<leader>fas",
       ":AS<CR>",
-      desc = "In a horizontal [s]plit",
+      desc = "In a horizontal split",
       silent = true,
     },
-    { "<leader>fav", ":AV<CR>", desc = "In a [v]ertical split", silent = true },
+    { "<leader>fav", ":AV<CR>", desc = "In a vertical split", silent = true },
   },
 }

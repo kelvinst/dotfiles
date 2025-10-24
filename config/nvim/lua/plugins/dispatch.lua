@@ -112,31 +112,31 @@ return { -- Asynchronous tasks
   -- path = '~/projects/vim-dispatch',
   event = "VimEnter",
   keys = {
-    { "mq", quickfix, desc = "[Q]uickfix (from Make)" },
-    { "`q", quickfix, desc = "[Q]uickfix (from Dispatch)" },
+    { "mq", quickfix, desc = "Quickfix (from Make)" },
+    { "`q", quickfix, desc = "Quickfix (from Dispatch)" },
     { "`<Up>", ":Dispatch<Up><CR>", desc = "Repeat previous dispatch" },
 
     -- Open zsh in Dispatch (like Spawn does for Start, hence the "g`" mnemonics)
-    { "g`<CR>", ":Dispatch zsh<CR>", desc = "Dispatch [z]sh" },
-    { "g`<Space>", ":Dispatch zsh ", desc = "Dispatch [z]sh <type here>" },
+    { "g`<CR>", ":Dispatch zsh<CR>", desc = "Dispatch zsh" },
+    { "g`<Space>", ":Dispatch zsh ", desc = "Dispatch zsh <type here>" },
     {
       "g`!",
       ":Dispatch! zsh",
-      desc = "Dispatch [z]sh <type here> (background)",
+      desc = "Dispatch zsh <type here> (background)",
     },
 
     -- Use selected text on visual mode
-    { "m<CR>", ":Make<CR>", desc = "[M]ake (selected text)", mode = "v" },
+    { "m<CR>", ":Make<CR>", desc = "Make (selected text)", mode = "v" },
     {
       "m<Space>",
       ":Make ",
-      desc = "[M]ake <type here> (selected text)",
+      desc = "Make <type here> (selected text)",
       mode = "v",
     },
     {
       "m!",
       ":Make!",
-      desc = "[M]ake <type here> (selected text) (background)",
+      desc = "Make <type here> (selected text) (background)",
       mode = "v",
     },
     { "`<CR>", ":Dispatch<CR>", desc = "Dispatch (selected text)", mode = "v" },
@@ -184,44 +184,44 @@ return { -- Asynchronous tasks
 
     local whichkey = require("which-key")
     whichkey.add({
-      { "m", group = "[M]ake / Set [m]ark" },
+      { "m", group = "Make / Set mark" },
       { "`", group = "Dispatch / Go to mark" },
       { "'", group = "Start / Go to mark" },
-      { "g", group = "Spawn / [G]o to" },
+      { "g", group = "Spawn / Go to" },
     })
 
     dispatchGroup({
       key = "<leader>d",
-      desc = "[D]ispatch",
+      desc = "Dispatch",
       p = {
         filterByRootFiles = "mix.exs",
-        desc = "[P]hoenix (Elixir)",
+        desc = "Phoenix (Elixir)",
         default = "s",
         tasks = {
-          s = { "iex -S mix phx.server", desc = "[S]erver" },
-          t = { "mix phx.routes", desc = "[T]est routes" },
+          s = { "iex -S mix phx.server", desc = "Server" },
+          t = { "mix phx.routes", desc = "Test routes" },
         },
         g = {
-          desc = "[G]en",
+          desc = "Gen",
           default = "c",
           tasks = {
-            c = { "mix phx.gen.context", desc = "[C]ontext", wait = true },
-            h = { "mix phx.gen.html", desc = "[H]TML", wait = true },
-            j = { "mix phx.gen.json", desc = "[J]SON", wait = true },
-            l = { "mix phx.gen.live", desc = "[L]iveView", wait = true },
+            c = { "mix phx.gen.context", desc = "Context", wait = true },
+            h = { "mix phx.gen.html", desc = "HTML", wait = true },
+            j = { "mix phx.gen.json", desc = "JSON", wait = true },
+            l = { "mix phx.gen.live", desc = "LiveView", wait = true },
           },
         },
       },
       c = {
         filterByRootFiles = "mix.exs",
-        desc = "[C]ompile (Elixir)",
+        desc = "Compile (Elixir)",
         default = "d",
         tasks = {
-          d = { "mix compile", desc = "[D]ev" },
-          t = { "MIX_ENV=test mix compile", desc = "[T]est" },
+          d = { "mix compile", desc = "Dev" },
+          t = { "MIX_ENV=test mix compile", desc = "Test" },
         },
         w = {
-          desc = "[W]arnings as errors",
+          desc = "Warnings as errors",
           default = "d",
           tasks = function(groupTask)
             return groupTask .. " --warnings-as-errors"
@@ -230,28 +230,28 @@ return { -- Asynchronous tasks
       },
       d = {
         filterByRootFiles = "mix.exs",
-        desc = "[D]eps (Elixir)",
+        desc = "Deps (Elixir)",
         default = "g",
         tasks = {
-          g = { "mix deps.get", desc = "[G]et" },
-          a = { "mix deps.audit", desc = "[A]udit" },
-          u = { "mix deps.unlock --check-unused", desc = "Check [u]nused" },
-          r = { "mix hex.audit", desc = "Check [r]etired" },
-          o = { "mix hex.outdated", desc = "Check [o]utdated" },
+          g = { "mix deps.get", desc = "Get" },
+          a = { "mix deps.audit", desc = "Audit" },
+          u = { "mix deps.unlock --check-unused", desc = "Check unused" },
+          r = { "mix hex.audit", desc = "Check retired" },
+          o = { "mix hex.outdated", desc = "Check outdated" },
         },
       },
       e = {
         filterByRootFiles = "mix.exs",
-        desc = "[E]cto (Elixir)",
+        desc = "Ecto (Elixir)",
         default = "<Up>",
         tasks = {
-          ["<Up>"] = { "mix ecto.migrate", desc = "[Up]" },
-          ["<Down>"] = { "mix ecto.rollback", desc = "[Down]" },
-          d = { "mix ecto.drop", desc = "[D]rop" },
-          c = { "mix ecto.create", desc = "[C]create" },
-          s = { "mix ecto.setup", desc = "[S]etup" },
-          r = { "mix ecto.reset", desc = "[R]eset" },
-          l = { "mix ecto.load", desc = "[L]oad" },
+          ["<Up>"] = { "mix ecto.migrate", desc = "Up" },
+          ["<Down>"] = { "mix ecto.rollback", desc = "Down" },
+          d = { "mix ecto.drop", desc = "Drop" },
+          c = { "mix ecto.create", desc = "Ccreate" },
+          s = { "mix ecto.setup", desc = "Setup" },
+          r = { "mix ecto.reset", desc = "Reset" },
+          l = { "mix ecto.load", desc = "Load" },
           i = { "mix run priv/repo/seeds.exs", desc = "[I]nsert seeds" },
           g = {
             "mix ecto.gen.migration",
@@ -260,7 +260,7 @@ return { -- Asynchronous tasks
           },
         },
         t = {
-          desc = "[T]est",
+          desc = "Test",
           default = "a",
           tasks = function(groupTask)
             if groupTask == "mix ecto.gen.migration" then
@@ -273,44 +273,44 @@ return { -- Asynchronous tasks
       },
       f = {
         filterByRootFiles = "mix.exs",
-        desc = "[F]ormat (Elixir)",
+        desc = "Format (Elixir)",
         default = "a",
         tasks = {
-          a = { "mix format", desc = "[A]ll files" },
-          c = { "mix format %", desc = "[C]urrent file" },
+          a = { "mix format", desc = "All files" },
+          c = { "mix format %", desc = "Current file" },
         },
       },
       h = {
         filterByRootFiles = "mix.exs",
-        desc = "[H]elp (Elixir)",
+        desc = "Help (Elixir)",
         default = "r",
         tasks = {
-          r = { "mix doctor", desc = "Docto[r]" },
-          w = { "mix docs --warnings-as-errors", desc = "Check [w]arnings" },
+          r = { "mix doctor", desc = "Doctor" },
+          w = { "mix docs --warnings-as-errors", desc = "Check warnings" },
         },
       },
       l = {
         filterByRootFiles = "mix.exs",
-        desc = "[L]inters (Elixir)",
+        desc = "Linters (Elixir)",
         default = "c",
         tasks = {
-          c = { "mix credo", desc = "[C]ode" },
-          s = { "mix sobelow --config", desc = "[S]ecurity" },
-          t = { "mix dialyzer", desc = "[T]ypes" },
+          c = { "mix credo", desc = "Code" },
+          s = { "mix sobelow --config", desc = "Security" },
+          t = { "mix dialyzer", desc = "Types" },
         },
       },
       t = {
         filterByRootFiles = "mix.exs",
-        desc = "[T]est (Elixir)",
+        desc = "Test (Elixir)",
         default = "h",
         tasks = {
-          a = { "mix test", desc = "[A]ll" },
-          c = { "mix coveralls", desc = "[C]overage" },
-          h = { "mix coveralls.html", desc = "[H]TML coverage" },
-          i = { "mix test.interactive", desc = "[I]nteractive" },
+          a = { "mix test", desc = "All" },
+          c = { "mix coveralls", desc = "Coverage" },
+          h = { "mix coveralls.html", desc = "HTML coverage" },
+          i = { "mix test.interactive", desc = "Interactive" },
         },
         w = {
-          desc = "[W]arnings as errors",
+          desc = "Warnings as errors",
           default = "h",
           tasks = function(groupTask)
             return groupTask .. " --warnings-as-errors"

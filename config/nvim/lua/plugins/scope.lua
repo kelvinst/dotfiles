@@ -9,7 +9,7 @@ return {
       "n",
       "<leader>pb",
       telescope.extensions.scope.buffers,
-      { desc = "[B]uffers" }
+      { desc = "Buffers" }
     )
   end,
 }

@@ -43,9 +43,9 @@ return {
       },
     },
     keys = {
-      { "<leader>ff", ":Neotree toggle reveal<CR>", desc = "[F]iletree" },
-      { "<leader>fb", ":Neotree toggle buffers<CR>", desc = "[B]uffers" },
-      { "<leader>fg", ":Neotree toggle git_status<CR>", desc = "[G]it status" },
+      { "<leader>ff", ":Neotree toggle reveal<CR>", desc = "Filetree" },
+      { "<leader>fb", ":Neotree toggle buffers<CR>", desc = "Buffers" },
+      { "<leader>fg", ":Neotree toggle git_status<CR>", desc = "Git status" },
     },
     config = function()
       -- If you want icons for diagnostic errors, you'll need to define them somewhere:

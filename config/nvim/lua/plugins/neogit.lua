@@ -22,25 +22,25 @@ return {
       "n",
       "<leader>gg",
       with_saved_tab(vim.cmd.Neogit),
-      { desc = "[G]it Status" }
+      { desc = "Git Status" }
     )
     vim.keymap.set(
       "n",
       "<leader>gl",
       with_saved_tab(vim.cmd.NeogitLogCurrent),
-      { desc = "[L]og (current file)" }
+      { desc = "Log (current file)" }
     )
     vim.keymap.set(
       "n",
       "<leader>ghc",
       ":Dispatch .git/hooks/pre-commit<CR>",
-      { desc = "pre-[c]ommit" }
+      { desc = "pre-commit" }
     )
     vim.keymap.set(
       "n",
       "<leader>ghp",
       ":Dispatch .git/hooks/pre-push<CR>",
-      { desc = "pre-[p]ush" }
+      { desc = "pre-push" }
     )
 
     require("neogit").setup({
@@ -85,7 +85,7 @@ return {
     })
 
     require("which-key").add({
-      { "<leader>gh", group = "[H]ooks" },
+      { "<leader>gh", group = "Hooks" },
     })
   end,
 }

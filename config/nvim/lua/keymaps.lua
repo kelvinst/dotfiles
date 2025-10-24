@@ -82,12 +82,12 @@ local function copyFilename()
 end
 
 -- Copy file info to clipboard
-vim.keymap.set("n", "<leader>yf", copyFilename, { desc = "[Y]ank [f]ilename" })
+vim.keymap.set("n", "<leader>yf", copyFilename, { desc = "Yank filename" })
 vim.keymap.set(
   "n",
   "<leader>yl",
   copyFilenameWithLines,
-  { desc = "[Y]ank filename and [l]ine" }
+  { desc = "Yank filename and line" }
 )
 
 -- Paste without cutting the current selection
@@ -98,7 +98,7 @@ vim.keymap.set(
   "n",
   "<leader>cr",
   [[:%s/\<<C-r><C-w>\>//gI<Left><Left><Left>]],
-  { desc = "[R]ename word" }
+  { desc = "Rename word" }
 )
 
 -- Grep a word under cursor
@@ -106,7 +106,7 @@ vim.keymap.set(
   "n",
   "<leader>cg",
   [[:grep <C-r><C-w><cr>]],
-  { desc = "[G]rep word" }
+  { desc = "Grep word" }
 )
 
 -- Load the LSP errors to the quickfix list
@@ -114,7 +114,7 @@ vim.keymap.set(
   "n",
   "<leader>eq",
   vim.diagnostic.setqflist,
-  { desc = "[E]errors [Q]uickfix" }
+  { desc = "Eerrors Quickfix" }
 )
 
 local function any_unsaved_real_files()
@@ -164,7 +164,7 @@ local function restart_vim()
 end
 
 -- Restart vim
-vim.keymap.set("n", "<leader>vr", restart_vim, { desc = "[R]estart Vim" })
+vim.keymap.set("n", "<leader>vr", restart_vim, { desc = "Restart Vim" })
 
 -- Break long line into multiple lines
 vim.keymap.set("n", "<leader>cb", function()
@@ -184,4 +184,4 @@ vim.keymap.set("n", "<leader>cb", function()
       end
     end
   end)
-end, { desc = "[B]reak line" })
+end, { desc = "Break line" })

@@ -301,28 +301,28 @@ return {
       function()
         require("nvim-possession").list()
       end,
-      desc = "[L]ist sessions",
+      desc = "List sessions",
     },
     {
       "<leader>ss",
       function()
         require("nvim-possession").new()
       end,
-      desc = "Create new [s]ession",
+      desc = "Create new session",
     },
     {
       "<leader>su",
       function()
         require("nvim-possession").update()
       end,
-      desc = "[U]pdate current session",
+      desc = "Update current session",
     },
     {
       "<leader>sd",
       function()
         require("nvim-possession").delete()
       end,
-      desc = "[D]elete selected session",
+      desc = "Delete selected session",
     },
   },
   config = function()

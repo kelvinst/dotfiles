@@ -12,7 +12,7 @@ return { -- Yank history
       function()
         require("telescope").extensions.yank_history.yank_history({})
       end,
-      desc = "[Y]ank History",
+      desc = "Yank History",
     },
     { "y", "<Plug>(YankyYank)", mode = { "n", "x" }, desc = "Yank text" },
     {

@@ -6,9 +6,8 @@ return {
 
     notify.setup({
       render = "wrapped-compact",
-      timeout = 300,
+      timeout = 1000,
       max_width = 50,
-      max_height = 10,
       merge_duplicates = true,
     })
 
@@ -21,7 +20,7 @@ return {
       "n",
       "<leader>pn",
       telescope.extensions.notify.notify,
-      { desc = "[N]otifications (nvim-notify)" }
+      { desc = "Notifications (nvim-notify)" }
     )
   end,
 }

@@ -4,12 +4,12 @@ return {
   version = "*",
   dependencies = "nvim-tree/nvim-web-devicons",
   keys = {
-    { "]b", vim.cmd.BufferLineCycleNext, desc = "Next [B]uffer" },
-    { "[b", vim.cmd.BufferLineCyclePrev, desc = "Previous [B]uffer" },
-    { "gb", vim.cmd.BufferLineCycleNext, desc = "Next [B]uffer" },
-    { "gB", vim.cmd.BufferLineCyclePrev, desc = "Previous [B]uffer" },
-    { "]t", "gt", desc = "Next [T]ab" },
-    { "[t", "gT", desc = "Previous [T]ab" },
+    { "]b", vim.cmd.BufferLineCycleNext, desc = "Next Buffer" },
+    { "[b", vim.cmd.BufferLineCyclePrev, desc = "Previous Buffer" },
+    { "gb", vim.cmd.BufferLineCycleNext, desc = "Next Buffer" },
+    { "gB", vim.cmd.BufferLineCyclePrev, desc = "Previous Buffer" },
+    { "]t", "gt", desc = "Next Tab" },
+    { "[t", "gT", desc = "Previous Tab" },
     {
       "<leader>bp",
       function()
@@ -23,17 +23,17 @@ return {
           vim.cmd.VimadeUnfadeActive()
         end, 100)
       end,
-      desc = "[P]ick",
+      desc = "Pick",
     },
-    { "<leader>bm", vim.cmd.BufferLineCycleNext, desc = "[M]ove" },
-    { "<leader>bc", ClearInvisibleBuffers, desc = "[C]lear invisible buffers" },
-    { "<leader>bd", vim.cmd.bd, desc = "[D]elete current buffer" },
-    { "<leader>br", ":BufferLineTabRename ", desc = "[R]ename tab" },
+    { "<leader>bm", vim.cmd.BufferLineCycleNext, desc = "Move" },
+    { "<leader>bc", ClearInvisibleBuffers, desc = "Clear invisible buffers" },
+    { "<leader>bd", vim.cmd.bd, desc = "Delete current buffer" },
+    { "<leader>br", ":BufferLineTabRename ", desc = "Rename tab" },
   },
   config = function()
     require("which-key").add({
-      { "<leader>b", group = "[B]uffers" },
-      { "<leader>bt", group = "[T]abs" },
+      { "<leader>b", group = "Buffers" },
+      { "<leader>bt", group = "Tabs" },
     })
 
     local bufferline = require("bufferline")

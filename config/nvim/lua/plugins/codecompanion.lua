@@ -12,7 +12,7 @@ return {
     {
       "<leader>aa",
       vim.cmd.CodeCompanionActions,
-      desc = "[A]ctions",
+      desc = "Actions",
       mode = { "n", "v" },
     },
     {
@@ -26,13 +26,13 @@ return {
       function()
         require("codecompanion").prompt("explain")
       end,
-      desc = "[E]xplain",
+      desc = "Explain",
       mode = { "n", "v" },
     },
     {
       "<leader>ac",
       vim.cmd.CodeCompanionChat,
-      desc = "[C]hat",
+      desc = "Chat",
       mode = "v",
     },
     {
@@ -40,7 +40,7 @@ return {
       function()
         require("codecompanion").toggle()
       end,
-      desc = "[C]hat",
+      desc = "Chat",
       mode = "n",
     },
     {
@@ -48,7 +48,7 @@ return {
       function()
         require("codecompanion").prompt("commit")
       end,
-      desc = "[G]it commit message",
+      desc = "Git commit message",
       mode = "n",
       ft = { "gitcommit" },
     },
