@@ -48,7 +48,7 @@ return {
       disable_insert_on_commit = true,
       remember_settings = false,
       commit_editor = {
-        kind = "tab",
+        kind = "split",
         staged_diff_split_kind = "auto",
       },
       integrations = {
