@@ -30,11 +30,3 @@ vim.keymap.set(
   "<cmd>wq<CR>",
   vim.tbl_extend("force", opts, { desc = "Commit" })
 )
-
--- Abort commit
-vim.keymap.set(
-  "n",
-  "<C-c>",
-  "<cmd>cq<CR>",
-  vim.tbl_extend("force", opts, { desc = "Abort" })
-)
