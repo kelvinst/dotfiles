@@ -17,9 +17,6 @@ vim.keymap.set("n", "<C-u>", "<C-u>zz")
 vim.keymap.set("n", "n", "nzzzv")
 vim.keymap.set("n", "N", "Nzzzv")
 
--- Toggle folds with tab
-vim.keymap.set("n", "<Tab>", "za", { desc = "Toggle fold" })
-
 -- Make `gf` go to line by default
 vim.keymap.set("n", "gf", "gF")
 
