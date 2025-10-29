@@ -135,7 +135,7 @@ alt + ctrl - c : create_space
 alt + ctrl + shift - c : create_space_and_move_window
 
 # delete space
-alt + ctrl - d : yabai -m space --destroy
+alt + ctrl - x : yabai -m space --destroy
 
 # focus spaces
 alt + ctrl - n : focus_next_space

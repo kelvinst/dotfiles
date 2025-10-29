@@ -82,14 +82,18 @@ focus_previous_space() {
 # Create a new space and focus it
 create_space() {
   yabai -m space --create
-  index="$(yabai -m query --spaces --display | jq -r 'map(select(."is-native-fullscreen" == false))[-1].index')"
+  index="$(yabai -m query --spaces --display | jq -r '
+    map(select(."is-native-fullscreen" == false))[-1].index
+  ')"
   yabai -m space --focus "${index}"
 }
 
 # Create a new space and move the current window to it
 create_space_and_move_window() {
   yabai -m space --create
-  index="$(yabai -m query --spaces --display | jq -r 'map(select(."is-native-fullscreen" == false))[-1].index')"
+  index="$(yabai -m query --spaces --display | jq -r '
+    map(select(."is-native-fullscreen" == false))[-1].index
+  ')"
   yabai -m window --space "${index}"
   yabai -m space --focus "${index}"
 }
