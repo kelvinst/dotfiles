@@ -1,10 +1,37 @@
 # vim:fileencoding=utf-8:foldmethod=marker
 
-# WARNING: This file is loaded for all zsh invocations, including non-interactive ones.
-# So whatever you need for headless zsh, put it here. e.g. skhd keyboard shortcuts
+# WARNING: This file is loaded for all zsh invocations, including
+# non-interactive ones. So whatever you need for headless zsh, put it
+# here. e.g. skhd keyboard shortcuts
+
+# NOTE: Toggles - Functions to toggle features on and off {{{
+
+# Toggle focus-follows-mouse
+toggle_focus_follows_mouse() {
+  current_value=$(yabai -m config focus_follows_mouse)
+
+  if [ "$current_value" = "disabled" ]; then
+    yabai -m config focus_follows_mouse autofocus
+  else
+    yabai -m config focus_follows_mouse off
+  fi
+}
+
+# Toggle window opacity
+toggle_window_opacity() {
+  current_value=$(yabai -m config window_opacity)
+
+  if [ "$current_value" = "off" ]; then
+    yabai -m config window_opacity on
+  else
+    yabai -m config window_opacity off
+  fi
+}
+# }}}
 
 # NOTE: Query Functions - Get information about current state {{{
-# These functions query yabai for information about spaces, displays, and windows
+# These functions query yabai for information about spaces, 
+# displays, and windows
 
 # Returns the index of the current space
 current_space() {

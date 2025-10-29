@@ -165,8 +165,8 @@ alt + ctrl + shift - 8 : move_window_to_space 8
 alt + ctrl + shift - 9 : move_window_to_space 9
 alt + ctrl + shift - 0 : move_window_to_space 10
 
-# reenable focus follows mouse
-alt + ctrl - m : yabai -m config focus_follows_mouse autofocus
+# toggle focus follows mouse
+alt + ctrl - m : toggle_focus_follows_mouse
 
 # toggle window zoom
 alt + ctrl - z : yabai -m window --toggle zoom-fullscreen
@@ -186,6 +186,9 @@ alt + ctrl - r : bsp_layout
 
 # 3 column layout (when 3 screens are open)
 alt + ctrl - f : three_column_layout
+
+# toggle window opacity
+alt + ctrl - v : toggle_window_opacity
 
 # }}}
 
