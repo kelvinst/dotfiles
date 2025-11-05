@@ -468,7 +468,7 @@ version_format = '${raw}'
 disabled = false
 format = '[$symbol($version) ]($style)'
 style = 'bold green bg:bg-border'
-symbol = '🤮'
+symbol = '🤢'
 version_format = '${raw}'
 
 [ocaml]
