@@ -632,7 +632,7 @@ style = 'bold black bg:green'
 symbol = '🧳'
 
 [memory_usage]
-disabled = false
+disabled = true
 format = '[$symbol${ram}(|${swap}) ]($style)'
 style = 'bold black bg:green'
 symbol = '🐏'
