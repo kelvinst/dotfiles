@@ -263,7 +263,7 @@ return {
       ensure_installed = {
         -- We have to force this version for now, since the latest version of elixir-ls
         -- is not working in my local env
-        "elixirls@v0.26.4",
+        "elixirls@v0.29.3",
       },
       automatic_installation = false,
       automatic_enable = true,
