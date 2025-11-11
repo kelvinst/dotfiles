@@ -4,7 +4,6 @@ return {
   event = "VimEnter",
   dependencies = {
     "nvim-lua/plenary.nvim",
-    "ravitemer/mcphub.nvim",
     "lalitmee/codecompanion-spinners.nvim",
     "ravitemer/codecompanion-history.nvim",
   },
@@ -109,6 +108,7 @@ return {
             opts = {
               vision = true,
               stream = true,
+              trim_tool_output = true,
             },
           })
         end,
@@ -137,14 +137,6 @@ return {
       },
     },
     extensions = {
-      mcphub = {
-        callback = "mcphub.extensions.codecompanion",
-        opts = {
-          make_vars = true,
-          make_slash_commands = true,
-          show_result_in_chat = true,
-        },
-      },
       spinner = {
         enabled = true,
         opts = {
