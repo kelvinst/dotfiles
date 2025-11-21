@@ -260,11 +260,7 @@ return {
     })
 
     require("mason-lspconfig").setup({
-      ensure_installed = {
-        -- We have to force this version for now, since the latest version of elixir-ls
-        -- is not working in my local env
-        "elixirls@v0.29.3",
-      },
+      ensure_installed = ensure_installed,
       automatic_installation = false,
       automatic_enable = true,
       handlers = {
