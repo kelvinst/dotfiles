@@ -174,6 +174,9 @@ My new, simplified, dotfiles
     asdf plugin add just
     asdf install just latest
     asdf set -u just latest
+    asdf plugin add zig
+    asdf install zig latest
+    asdf set -u zig latest
     ```
 
 
