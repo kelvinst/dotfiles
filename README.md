@@ -16,10 +16,10 @@ My new, simplified, dotfiles
     /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
     ```
 
-1. You need to `make` `less` `git`! `unzip` your `gcc`, `catimg` `jq`:
+1. You need to `make` `less` `git`! `unzip` your `gcc`, `catimg` `jq` `git-lfs`:
 
     ```shell
-    brew install make less git unzip gcc jq catimg
+    brew install make less git unzip gcc jq catimg git-lfs
     ```
 
 1. Install GNU scripts, for better general tools: [`coreutils`](https://www.gnu.org/software/coreutils/)
