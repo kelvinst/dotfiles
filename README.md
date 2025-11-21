@@ -153,24 +153,27 @@ My new, simplified, dotfiles
 1. Install the plugins for `elixir`, `erlang`, `rust`, `python`, `nodejs` and `yarn`:
 
     ```shell
-    asdf plugin-add elixir
+    asdf plugin add elixir
     asdf install elixir latest
-    asdf global elixir latest
-    asdf plugin-add erlang
+    asdf set -u elixir latest
+    asdf plugin add erlang
     asdf install erlang latest
-    asdf global erlang latest
-    asdf plugin-add rust
+    asdf set -u erlang latest
+    asdf plugin add rust
     asdf install rust latest
-    asdf global rust latest
-    asdf plugin-add python
+    asdf set -u rust latest
+    asdf plugin add python
     asdf install python latest
-    asdf global python latest
-    asdf plugin-add nodejs
+    asdf set -u python latest
+    asdf plugin add nodejs
     asdf install nodejs latest
-    asdf global nodejs latest
-    asdf plugin-add yarn
+    asdf set -u nodejs latest
+    asdf plugin add yarn
     asdf install yarn latest
-    asdf global yarn latest
+    asdf set -u yarn latest
+    asdf plugin add just
+    asdf install just latest
+    asdf set -u just latest
     ```
 
 
