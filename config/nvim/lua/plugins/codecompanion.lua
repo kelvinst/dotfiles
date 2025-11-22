@@ -200,16 +200,12 @@ tool.
 ```
 
 The commit subject should be a short but descriptive summary of the changes,
-try to keep it under 50 characters, but it's ok to go above that. 
+try to keep it under 50 characters, but it's ok to go up to 72
 
-The body should provide additional context about the changes, focused on the
-"why the changes were made", not just on which changes were made. Read the
-files changed using @{read_file} tool if you need more context.
-
-Explain individual changes in separate paragraphs if needed.
-
-Keep the body lines under 72 characters, it's ok to break paragraphs in 
-multiple lines, just use 2 line breaks to separate paragraphs.
+The body should provide a succint context about the changes, focused on the
+"why the changes were made", not on which changes were made per se. Read the
+files changed using @{read_file} tool if you need more context. Keep the body 
+lines under 72 characters.
 
 Here is some extra info to take into account when writing it:
 ]],
