@@ -1,5 +1,12 @@
 # vim:fileencoding=utf-8:foldmethod=marker
 
+# NOTE: Homebrew setup {{{
+
+# Set Homebrew environment variables
+eval "$(/opt/homebrew/bin/brew shellenv zsh)"
+
+# }}}
+
 # NOTE: Env variables {{{
 
 # My preferred editor
