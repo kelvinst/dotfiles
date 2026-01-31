@@ -153,15 +153,13 @@ force_split_type() {
 
 # Default bsp layout
 bsp_layout() {
-  yabai -m config --space $(current_space) layout bsp && \
-  yabai -m window --swap last && \
-  yabai -m window --resize left:-140:0
+  yabai -m config --space $(current_space) layout bsp
 }
 
 # Build 3 column layout for current space
 three_column_layout() {
   # Reset the layout, we need to start from a clean state
-  yabai -m config --space $(current_space) layout bsp
+  bsp_layout
 
   windows_count=$(yabai -m query --windows --space | jq -r 'map(select(."is-visible")) | length')
   window_id=$(current_window_id)

@@ -162,7 +162,13 @@ alias t='tmux'
 
 # vim/nvim
 alias nvim='nvim --listen /tmp/nvim-$(date +%s%N)'
-alias v='nvim'
+
+# Custom function to set terminal title for Kitty
+v() {
+  local dirname="${PWD:t}"
+  print -Pn "\e]0;nvim $dirname\a"
+  nvim "$@"
+}
 
 # Remove some useless predefined aliases
 unalias -m run-help
