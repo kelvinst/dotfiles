@@ -16,7 +16,6 @@ install:
 	cp ./global_gitignore ~/.global_gitignore
 	cp ./skhdrc ~/.skhdrc
 	cp ./tmux.conf ~/.tmux.conf
-	cp ./yabairc ~/.yabairc
 	cp ./zshrc ~/.zshrc
 	cp ./zshenv ~/.zshenv
 
@@ -31,7 +30,6 @@ clean:
 	rm -rf ~/.global_gitignore
 	rm -rf ~/.skhdrc
 	rm -rf ~/.tmux.conf
-	rm -rf ~/.yabairc
 	rm -rf ~/.zshrc
 	rm -rf ~/.zshenv
 
@@ -50,6 +48,5 @@ update:
 	cp ~/.global_gitignore ./global_gitignore
 	cp ~/.skhdrc ./skhdrc
 	cp ~/.tmux.conf ./tmux.conf
-	cp ~/.yabairc ./yabairc
 	cp ~/.zshrc ./zshrc
 	cp ~/.zshenv ./zshenv

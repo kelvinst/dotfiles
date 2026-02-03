@@ -194,12 +194,6 @@ My new, simplified, dotfiles
    make install
    ```
 
-1. Install [yabai](https://github.com/koekeishiya/yabai/wiki#yabai)
-
-    ```shell
-    brew install koekeishiya/formulae/yabai
-    ```
-
 1. Install [skhd](https://github.com/koekeishiya/skhd)
 
     ```shell
