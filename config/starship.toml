@@ -101,7 +101,7 @@ $shell\
 $status\
 $time\
 ](black bg:green))\
-$line_break """
+$line_break"""
 
 add_newline = false
 
