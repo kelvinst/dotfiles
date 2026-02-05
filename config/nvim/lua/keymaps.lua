@@ -182,3 +182,34 @@ vim.keymap.set("n", "<leader>cb", function()
     end
   end)
 end, { desc = "Break line" })
+
+-- Tmp scripts
+local function new_tmp_script(ext)
+  local timestamp = os.date("%Y%m%d_%H%M%S")
+  vim.cmd("edit tmp/" .. timestamp .. "." .. ext)
+end
+
+vim.keymap.set("n", "<leader>tfe", function()
+  new_tmp_script("exs")
+end, { desc = "New tmp elixir script" })
+
+vim.keymap.set("n", "<leader>tfs", function()
+  new_tmp_script("sh")
+end, { desc = "New tmp shell script" })
+
+vim.keymap.set("n", "<leader>tfp", function()
+  new_tmp_script("py")
+end, { desc = "New tmp Python script" })
+
+vim.keymap.set("n", "<leader>tfj", function()
+  new_tmp_script("js")
+end, { desc = "New tmp JavaScript script" })
+
+vim.keymap.set("n", "<leader>tff", function()
+  vim.ui.input({ prompt = "Extension: " }, function(ext)
+    if ext then
+      local timestamp = os.date("%Y%m%d_%H%M%S")
+      vim.cmd("edit tmp/scripts/" .. timestamp .. "." .. ext)
+    end
+  end)
+end, { desc = "New tmp script (prompt for extension)" })

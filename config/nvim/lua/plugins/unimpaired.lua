@@ -47,7 +47,6 @@ return {
   config = function()
     -- Configure which-key with the unimpaired mappings
     require("which-key").add({
-      { "<leader>t", group = "Toggle" },
       { "<leader>to", group = "Toggle options" },
     })
   end,
