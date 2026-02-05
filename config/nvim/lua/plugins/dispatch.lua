@@ -283,9 +283,10 @@ return { -- Asynchronous tasks
       h = {
         filterByRootFiles = "mix.exs",
         desc = "Help (Elixir)",
-        default = "r",
+        default = "s",
         tasks = {
           r = { "mix doctor", desc = "Doctor" },
+          s = { "mix hex.search", desc = "Search docs" },
           w = { "mix docs --warnings-as-errors", desc = "Check warnings" },
         },
       },
