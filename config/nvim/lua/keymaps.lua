@@ -189,27 +189,37 @@ local function new_tmp_script(ext)
   vim.cmd("edit tmp/" .. timestamp .. "." .. ext)
 end
 
-vim.keymap.set("n", "<leader>tfe", function()
+vim.keymap.set("n", "<leader>fte", function()
   new_tmp_script("exs")
-end, { desc = "New tmp elixir script" })
+end, { desc = "Elixir" })
 
-vim.keymap.set("n", "<leader>tfs", function()
+vim.keymap.set("n", "<leader>fts", function()
   new_tmp_script("sh")
-end, { desc = "New tmp shell script" })
+end, { desc = "Shell" })
 
-vim.keymap.set("n", "<leader>tfp", function()
-  new_tmp_script("py")
-end, { desc = "New tmp Python script" })
+vim.keymap.set("n", "<leader>ftg", function()
+  local builtin = require("telescope.builtin")
+  builtin.live_grep({
+    cwd = "./tmp",
+  })
+end, { desc = "Grep" })
+
+vim.keymap.set("n", "<leader>ftp", function()
+  local builtin = require("telescope.builtin")
+  builtin.find_files({
+    cwd = "./tmp",
+  })
+end, { desc = "Pick" })
 
 vim.keymap.set("n", "<leader>tfj", function()
   new_tmp_script("js")
-end, { desc = "New tmp JavaScript script" })
+end, { desc = "New JavaScript" })
 
-vim.keymap.set("n", "<leader>tff", function()
+vim.keymap.set("n", "<leader>ft<cr>", function()
   vim.ui.input({ prompt = "Extension: " }, function(ext)
     if ext then
       local timestamp = os.date("%Y%m%d_%H%M%S")
       vim.cmd("edit tmp/scripts/" .. timestamp .. "." .. ext)
     end
   end)
-end, { desc = "New tmp script (prompt for extension)" })
+end, { desc = "New" })
