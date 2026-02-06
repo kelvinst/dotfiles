@@ -29,10 +29,6 @@ return {
         },
       },
     }
-
-    require("which-key").add({
-      { "<leader>fa", group = "Alternate" },
-    })
   end,
   keys = {
     { "<leader>faa", ":A<CR>", desc = "In current window", silent = true },

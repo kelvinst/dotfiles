@@ -83,9 +83,5 @@ return {
         end)
       end,
     })
-
-    require("which-key").add({
-      { "<leader>gx", group = "Execute Hooks" },
-    })
   end,
 }
