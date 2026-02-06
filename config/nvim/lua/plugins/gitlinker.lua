@@ -1,6 +1,5 @@
 return {
   "linrongbin16/gitlinker.nvim",
-  dependencies = { "folke/which-key.nvim" },
   keys = {
     {
       "<leader>gho",
@@ -15,10 +14,5 @@ return {
       desc = "Copy GitHub link",
     },
   },
-  config = function()
-    require("gitlinker").setup()
-    require("which-key").add({
-      { "<leader>gh", group = "GitHub" },
-    })
-  end,
+  opts = {},
 }
