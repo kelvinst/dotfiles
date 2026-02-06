@@ -32,13 +32,13 @@ return {
     )
     vim.keymap.set(
       "n",
-      "<leader>ghc",
+      "<leader>gxc",
       ":Dispatch .git/hooks/pre-commit<CR>",
       { desc = "pre-commit" }
     )
     vim.keymap.set(
       "n",
-      "<leader>ghp",
+      "<leader>gxp",
       ":Dispatch .git/hooks/pre-push<CR>",
       { desc = "pre-push" }
     )
@@ -85,7 +85,7 @@ return {
     })
 
     require("which-key").add({
-      { "<leader>gh", group = "Hooks" },
+      { "<leader>gx", group = "Execute Hooks" },
     })
   end,
 }
