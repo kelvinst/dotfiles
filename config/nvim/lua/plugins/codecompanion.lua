@@ -53,7 +53,7 @@ return {
     },
   },
   opts = {
-    strategies = {
+    interactions = {
       chat = {
         adapter = "claude_code",
         keymaps = {
@@ -130,6 +130,11 @@ return {
       },
     },
     display = {
+      action_palette = {
+        opts = {
+          show_preset_prompts = false,
+        },
+      },
       chat = {
         window = {
           width = 80,
@@ -165,7 +170,7 @@ return {
     },
     prompt_library = {
       ["Generate a Commit Message"] = {
-        strategy = "inline",
+        interaction = "inline",
         description = "Generate a commit message",
         condition = function()
           return vim.bo.filetype == "gitcommit"
@@ -179,9 +184,13 @@ return {
           is_default = true,
           is_slash_cmd = true,
           stop_context_insertion = true,
-          short_name = "commit",
+          alias = "commit",
           auto_submit = true,
+          placement = "before",
           user_prompt = true,
+          pre_hook = function()
+            vim.api.nvim_win_set_cursor(0, { 1, 0 })
+          end,
         },
         prompts = {
           {
@@ -189,23 +198,20 @@ return {
             content = function()
               return string.format(
                 [[
-You are an expert at following the Conventional Commit specification. 
+You are an expert at following the Conventional Commit specification.
 
-Given the git diff listed below, please generate a commit message for me and 
-insert it at the first line of #{buffer} using the @{insert_edit_into_file} 
-tool.
+Given the git diff listed below, please generate a commit message for me.
 
 ```diff
 %s
 ```
 
 The commit subject should be a short but descriptive summary of the changes,
-try to keep it under 50 characters, but it's ok to go up to 72
+try to keep it under 50 characters, but it's ok to go up to 72.
 
-The body should provide a succint context about the changes, focused on the
-"why the changes were made", not on which changes were made per se. Read the
-files changed using @{read_file} tool if you need more context. Keep the body 
-lines under 72 characters.
+The body should provide a succinct context about the changes, focused on the
+"why the changes were made", not on which changes were made per se. Keep the
+body lines under 72 characters.
 
 Here is some extra info to take into account when writing it:
 ]],
