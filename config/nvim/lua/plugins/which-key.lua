@@ -17,33 +17,33 @@ return { -- Useful plugin to show you pending keybinds.
 
     -- Existing keybindings
     spec = {
-      { "<leader><space>", group = "Hop" },
-      { "<leader>a", group = "AI", mode = "nv" },
-      { "<leader>b", group = "Buffers" },
-      { "<leader>bt", group = "Tabs" },
-      { "<leader>c", group = "Command" },
-      { "<leader>d", group = "Dispatch" },
-      { "<leader>e", group = "Error diagnostics" },
-      { "<leader>f", group = "Files" },
-      { "<leader>fa", group = "Alternate" },
-      { "<leader>ft", group = "Temporary files" },
-      { "<leader>g", group = "Git" },
-      { "<leader>gh", group = "GitHub" },
-      { "<leader>ghi", group = "Issues" },
-      { "<leader>ghp", group = "Pull Requests" },
-      { "<leader>gx", group = "Execute Hooks" },
-      { "<leader>l", group = "LSP" },
-      { "<leader>n", group = "Notifications" },
-      { "<leader>p", group = "Pick" },
-      { "<leader>s", group = "Sessions" },
-      { "<leader>t", group = "Toggle" },
-      { "<leader>to", group = "Toggle options" },
-      { "<leader>v", group = "Vim" },
-      { "<leader>y", group = "Yank" },
-      { "m", group = "Make / Set mark" },
-      { "`", group = "Dispatch / Go to mark" },
-      { "'", group = "Start / Go to mark" },
-      { "s", group = "Surround" },
+      { "<leader><space>", group = "Hop" }, -- hop.lua
+      { "<leader>a", group = "AI", mode = "nv" }, -- codecompanion.lua
+      { "<leader>b", group = "Buffers" }, -- bufferline.lua
+      { "<leader>bt", group = "Tabs" }, -- bufferline.lua
+      { "<leader>c", group = "Command" }, -- keymaps.lua
+      { "<leader>d", group = "Dispatch" }, -- dispatch.lua
+      { "<leader>e", group = "Error diagnostics" }, -- keymaps.lua
+      { "<leader>f", group = "Files" }, -- keymaps.lua
+      { "<leader>fa", group = "Alternate" }, -- projectionist.lua
+      { "<leader>ft", group = "Temporary files" }, -- keymaps.lua
+      { "<leader>g", group = "Git" }, -- neogit.lua, gitsigns.lua
+      { "<leader>gh", group = "GitHub" }, -- gitlinker.lua, octo.lua
+      { "<leader>ghi", group = "Issues" }, -- octo.lua
+      { "<leader>ghp", group = "Pull Requests" }, -- octo.lua
+      { "<leader>gx", group = "Execute Hooks" }, -- neogit.lua
+      { "<leader>l", group = "LSP" }, -- lspconfig.lua
+      { "<leader>n", group = "Notifications" }, -- noice.lua
+      { "<leader>p", group = "Pick" }, -- telescope.lua
+      { "<leader>s", group = "Sessions" }, -- possession.lua
+      { "<leader>t", group = "Toggle" }, -- unimpaired.lua
+      { "<leader>to", group = "Toggle options" }, -- unimpaired.lua
+      { "<leader>v", group = "Vim" }, -- keymaps.lua
+      { "<leader>y", group = "Yank" }, -- keymaps.lua
+      { "m", group = "Make / Set mark" }, -- dispatch.lua
+      { "`", group = "Dispatch / Go to mark" }, -- dispatch.lua
+      { "'", group = "Start / Go to mark" }, -- dispatch.lua
+      { "s", group = "Surround" }, -- mini.lua
     },
 
     triggers = {
