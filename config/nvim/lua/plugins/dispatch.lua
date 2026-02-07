@@ -90,11 +90,7 @@ end
 local function dispatchGroup(config)
   local prefix = config.key
   config.key = nil
-  local desc = config.desc
   config.desc = nil
-
-  local whichkey = require("which-key")
-  whichkey.add({ { prefix, group = desc } })
 
   for subgroupKey, subgroup in pairs(config) do
     dispatchSubgroup(prefix, subgroupKey, subgroup, {})
@@ -182,17 +178,8 @@ return { -- Asynchronous tasks
       { "g'?", desc = "Show 'shell'" },
     })
 
-    local whichkey = require("which-key")
-    whichkey.add({
-      { "m", group = "Make / Set mark" },
-      { "`", group = "Dispatch / Go to mark" },
-      { "'", group = "Start / Go to mark" },
-      { "g", group = "Spawn / Go to" },
-    })
-
     dispatchGroup({
       key = "<leader>d",
-      desc = "Dispatch",
       p = {
         filterByRootFiles = "mix.exs",
         desc = "Phoenix (Elixir)",

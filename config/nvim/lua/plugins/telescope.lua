@@ -97,11 +97,6 @@ return { -- Fuzzy Finder (files, lsp, etc)
     pcall(telescope.load_extension, "fzf")
     pcall(telescope.load_extension, "ui-select")
 
-    -- Configure which-key with the telescope mappings
-    require("which-key").add({
-      { "<leader>p", group = "Pick" },
-    })
-
     -- See `:help telescope.builtin`
     local builtin = require("telescope.builtin")
     vim.keymap.set("n", "<leader>pp", builtin.builtin, { desc = "Pickers" })

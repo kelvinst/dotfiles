@@ -31,11 +31,6 @@ return {
     { "<leader>br", ":BufferLineTabRename ", desc = "Rename tab" },
   },
   config = function()
-    require("which-key").add({
-      { "<leader>b", group = "Buffers" },
-      { "<leader>bt", group = "Tabs" },
-    })
-
     local bufferline = require("bufferline")
     bufferline.setup({
       options = {
