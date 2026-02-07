@@ -2,7 +2,7 @@ local function quickfix()
   vim.cmd("Copen!")
 end
 
-local function dispatchTask(key, task, commandFun)
+local function dispatchTask(key, task, commandFun, vimCommand)
   if type(task) == "table" and task[1] then
     local baseCommand = type(commandFun) == "function" and commandFun(task[1])
       or task[1]
@@ -11,7 +11,7 @@ local function dispatchTask(key, task, commandFun)
       return
     end
 
-    local dispatchCommand = ":Dispatch " .. baseCommand
+    local dispatchCommand = ":" .. vimCommand .. " " .. baseCommand
     local command = task.wait and dispatchCommand .. " "
       or dispatchCommand .. "<CR>"
     local taskDesc = task.desc and task.desc .. " (" .. baseCommand .. ")"
@@ -21,7 +21,7 @@ local function dispatchTask(key, task, commandFun)
   end
 end
 
-local function dispatchTasks(prefix, key, desc, default, tasks, parentTasks)
+local function dispatchTasks(prefix, key, desc, default, tasks, parentTasks, vimCommand)
   local tasksPrefix = prefix .. key
   if tasks then
     if desc then
@@ -31,7 +31,7 @@ local function dispatchTasks(prefix, key, desc, default, tasks, parentTasks)
     -- Set mappings for tasks
     if type(tasks) == "table" then
       for taskKey, taskConfig in pairs(tasks) do
-        dispatchTask(tasksPrefix .. taskKey, taskConfig)
+        dispatchTask(tasksPrefix .. taskKey, taskConfig, nil, vimCommand)
       end
 
       -- Set the default mapping if applicable
@@ -40,19 +40,19 @@ local function dispatchTasks(prefix, key, desc, default, tasks, parentTasks)
         vim.keymap.set(
           "n",
           tasksPrefix .. key,
-          ":Dispatch " .. default_cmd .. "<CR>",
+          ":" .. vimCommand .. " " .. default_cmd .. "<CR>",
           { desc = "Default (" .. default_cmd .. ")" }
         )
       end
     elseif type(tasks) == "function" then
       for taskKey, taskConfig in pairs(parentTasks) do
-        dispatchTask(tasksPrefix .. taskKey, taskConfig, tasks)
+        dispatchTask(tasksPrefix .. taskKey, taskConfig, tasks, vimCommand)
       end
     end
   end
 end
 
-local function dispatchSubgroup(prefix, key, subgroup, parentTasks)
+local function dispatchSubgroup(prefix, key, subgroup, parentTasks, vimCommand)
   local function fileExists(pattern)
     local root_dir = vim.fn.getcwd()
     local files = vim.fn.glob(root_dir .. "/" .. pattern, true, true)
@@ -74,26 +74,47 @@ local function dispatchSubgroup(prefix, key, subgroup, parentTasks)
       subgroup.desc,
       subgroup.default,
       tasks,
-      parentTasks
+      parentTasks,
+      vimCommand
     )
     subgroup.desc = nil
     subgroup.default = nil
     subgroup.tasks = nil
 
     for subgroupKey, subgroupConfig in pairs(subgroup) do
-      dispatchSubgroup(prefix .. key, subgroupKey, subgroupConfig, tasks)
+      dispatchSubgroup(prefix .. key, subgroupKey, subgroupConfig, tasks, vimCommand)
     end
   end
 end
 
--- Defines a group of dispatch commands
-local function dispatchGroup(config)
-  local prefix = config.key
-  config.key = nil
-  config.desc = nil
+-- Deep copies a table so each command type gets its own copy
+local function deepCopy(orig)
+  if type(orig) ~= "table" then
+    return orig
+  end
 
-  for subgroupKey, subgroup in pairs(config) do
-    dispatchSubgroup(prefix, subgroupKey, subgroup, {})
+  local copy = {}
+  for k, v in pairs(orig) do
+    copy[k] = deepCopy(v)
+  end
+
+  return copy
+end
+
+-- Defines a group of dispatch commands for each vim-dispatch command type
+local function dispatchGroup(config)
+  local commands = config.commands
+  config.commands = nil
+
+  for _, cmd in ipairs(commands) do
+    local prefix = cmd.key
+    local vimCommand = cmd.command
+
+    local configCopy = deepCopy(config)
+
+    for subgroupKey, subgroup in pairs(configCopy) do
+      dispatchSubgroup(prefix, subgroupKey, subgroup, {}, vimCommand)
+    end
   end
 end
 
@@ -179,7 +200,11 @@ return { -- Asynchronous tasks
     })
 
     dispatchGroup({
-      key = "<leader>d",
+      commands = {
+        { key = "<leader>`", command = "Dispatch" },
+        { key = "<leader>m", command = "Make" },
+        { key = "<leader>'", command = "Start" },
+      },
       p = {
         filterByRootFiles = "mix.exs",
         desc = "Phoenix (Elixir)",

@@ -22,7 +22,6 @@ return { -- Useful plugin to show you pending keybinds.
       { "<leader>b", group = "Buffers" }, -- bufferline.lua
       { "<leader>bt", group = "Tabs" }, -- bufferline.lua
       { "<leader>c", group = "Command" }, -- keymaps.lua
-      { "<leader>d", group = "Dispatch" }, -- dispatch.lua
       { "<leader>e", group = "Error diagnostics" }, -- keymaps.lua
       { "<leader>f", group = "Files" }, -- keymaps.lua
       { "<leader>fa", group = "Alternate" }, -- projectionist.lua
@@ -33,6 +32,7 @@ return { -- Useful plugin to show you pending keybinds.
       { "<leader>ghp", group = "Pull Requests" }, -- octo.lua
       { "<leader>gx", group = "Execute Hooks" }, -- neogit.lua
       { "<leader>l", group = "LSP" }, -- lspconfig.lua
+      { "<leader>m", group = "Make" }, -- dispatch.lua
       { "<leader>n", group = "Notifications" }, -- noice.lua
       { "<leader>p", group = "Pick" }, -- telescope.lua
       { "<leader>s", group = "Sessions" }, -- possession.lua
@@ -40,10 +40,12 @@ return { -- Useful plugin to show you pending keybinds.
       { "<leader>to", group = "Toggle options" }, -- unimpaired.lua
       { "<leader>v", group = "Vim" }, -- keymaps.lua
       { "<leader>y", group = "Yank" }, -- keymaps.lua
+      { "<leader>'", group = "Start" }, -- dispatch.lua
+      { "<leader>`", group = "Dispatch" }, -- dispatch.lua
       { "m", group = "Make / Set mark" }, -- dispatch.lua
-      { "`", group = "Dispatch / Go to mark" }, -- dispatch.lua
-      { "'", group = "Start / Go to mark" }, -- dispatch.lua
       { "s", group = "Surround" }, -- mini.lua
+      { "'", group = "Start / Go to mark" }, -- dispatch.lua
+      { "`", group = "Dispatch / Go to mark" }, -- dispatch.lua
     },
 
     triggers = {
