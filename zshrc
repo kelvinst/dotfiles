@@ -221,39 +221,34 @@ flaky() {
   done
 }
 
-# Add empty lines to move the prompt to the bottom of the terminal
-bottom_prompt() {
-  local offset=${1:-1}
-  local filename="/tmp/kitty-output-$(date +%s)"
+# Move cursor to the last terminal row so the next prompt renders at the bottom.
+prompt_to_bottom() {
+  [[ -o interactive ]] || return
+  [[ -t 1 ]] || return
+  [[ $TERM == "dumb" ]] && return
+  [[ -n $INSIDE_EMACS ]] && return
 
-  # Save terminal output to a temp file
-  kitten @ get-text --extent=all --ansi=yes --self=yes > $filename
+  # `cup` is 0-indexed (row, col).
+  local last_row=$((LINES - 1))
+  (( last_row < 0 )) && return
 
-  # Get the number of lines in the output
-  local output_lines=$(wc -l < $filename)
-
-  # If the output is smaller than $LINES - 1, add newlines to the file
-  if [[ $output_lines -lt ($LINES - $offset) ]]; then
-    # Add newlines to the beginning of the file until we reach the bottom
-    while [[ $output_lines -lt ($LINES - $offset) ]]; do
-      sed -i '' '1i\
-
-        ' $filename
-      output_lines=$((output_lines + 1))
-    done
-
-    clear
-    cat $filename
+  if zmodload -F zsh/terminfo b:echoti 2>/dev/null && (( ${+terminfo[cup]} )); then
+    echoti cup "$last_row" 0
+  else
+    # Fallback for terminals without terminfo integration.
+    printf '\e[%d;1H' "$LINES"
   fi
-
-  rm -rf /tmp/kitty-output-*
 }
 
-# Clear the terminal with the bottom prompt
+# Backwards-compatible alias target.
+bottom_prompt() {
+  prompt_to_bottom
+}
+
+# Clear screen and keep the next prompt aligned to the bottom.
 bottom_prompt_clear() {
-  for ((i=0; i<($LINES - 3); i++)); do
-    echo
-  done
+  command clear
+  prompt_to_bottom
 }
 
 # }}}
@@ -261,7 +256,7 @@ bottom_prompt_clear() {
 # NOTE: Auto-commands {{{
 
 # Put the prompt at the bottom on shell startup
-bottom_prompt 2
+bottom_prompt
 
 # Load add-zsh-hook for managing hooks
 autoload -Uz add-zsh-hook
@@ -515,7 +510,7 @@ trap 'clear_prompt; return 130' INT
 TRAPWINCH() {
   emulate -L zsh
   bottom_prompt
-  zle .reset-prompt
+  zle .reset-prompt 2>/dev/null
 }
 
 # }}}
