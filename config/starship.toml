@@ -104,6 +104,7 @@ $time\
 $line_break"""
 
 add_newline = false
+command_timeout = 3000
 
 # Builtin colors:
 #
