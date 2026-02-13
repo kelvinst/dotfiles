@@ -120,8 +120,6 @@ alias a='aliases'
 alias b='bat'
 
 # clear
-alias bp='bottom_prompt'
-alias clear='bottom_prompt_clear'
 alias c='clear'
 
 # eza
@@ -221,42 +219,9 @@ flaky() {
   done
 }
 
-# Move cursor to the last terminal row so the next prompt renders at the bottom.
-prompt_to_bottom() {
-  [[ -o interactive ]] || return
-  [[ -t 1 ]] || return
-  [[ $TERM == "dumb" ]] && return
-  [[ -n $INSIDE_EMACS ]] && return
-
-  # `cup` is 0-indexed (row, col).
-  local last_row=$((LINES - 1))
-  (( last_row < 0 )) && return
-
-  if zmodload -F zsh/terminfo b:echoti 2>/dev/null && (( ${+terminfo[cup]} )); then
-    echoti cup "$last_row" 0
-  else
-    # Fallback for terminals without terminfo integration.
-    printf '\e[%d;1H' "$LINES"
-  fi
-}
-
-# Backwards-compatible alias target.
-bottom_prompt() {
-  prompt_to_bottom
-}
-
-# Clear screen and keep the next prompt aligned to the bottom.
-bottom_prompt_clear() {
-  command clear
-  prompt_to_bottom
-}
-
 # }}}
 
 # NOTE: Auto-commands {{{
-
-# Put the prompt at the bottom on shell startup
-bottom_prompt
 
 # Load add-zsh-hook for managing hooks
 autoload -Uz add-zsh-hook
@@ -387,7 +352,7 @@ highlight_command() {
 }
 
 # List of commands for which to disable info printing
-DISABLE_CMD_INFO_LIST=(bottom_prompt_clear clear c)
+DISABLE_CMD_INFO_LIST=(clear c)
 
 # Show alias commands when executing them
 print_info_before_cmd() {
@@ -497,21 +462,6 @@ print_info_after_cmd() {
   unset LAST_CMD_EXECUTED
 }
 add-zsh-hook precmd print_info_after_cmd
-
-# Clear the prompt on command execution/interruption
-clear_prompt() {
-  PROMPT=''
-  zle .reset-prompt
-}
-zle -N zle-line-finish clear_prompt
-trap 'clear_prompt; return 130' INT
-
-# Keep the prompt at the bottom on terminal resize
-TRAPWINCH() {
-  emulate -L zsh
-  bottom_prompt
-  zle .reset-prompt 2>/dev/null
-}
 
 # }}}
 
