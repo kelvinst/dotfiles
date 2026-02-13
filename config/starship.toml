@@ -467,7 +467,7 @@ version_format = '${raw}'
 
 [nodejs]
 disabled = false
-format = '[$symbol($version) ]($style)'
+format = '[$symbol($version) ](bold green bg:bg-border)'
 style = 'bold green bg:bg-border'
 symbol = '🤢'
 version_format = '${raw}'
@@ -546,7 +546,7 @@ symbol = '🟥'
 disabled = false
 format = '[$symbol($version) ]($style)'
 style = 'bold red bg:bg-border'
-symbol = '♦️'
+symbol = '🛑'
 
 [rust]
 disabled = false
