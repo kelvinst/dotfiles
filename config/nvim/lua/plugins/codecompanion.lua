@@ -120,11 +120,6 @@ return {
               vision = true,
               stream = true,
             },
-            schema = {
-              model = {
-                default = "gpt-4.1",
-              },
-            },
           })
         end,
       },
