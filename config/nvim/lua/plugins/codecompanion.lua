@@ -192,8 +192,9 @@ return {
             content = function()
               return string.format(
                 [[
-Given the git diff listed below, please generate a commit message for me 
-following this repo's conventions.
+You are an expert at following the Conventional Commit specification.
+
+Given the git diff listed below, please generate a commit message:
 
 ```diff
 %s
