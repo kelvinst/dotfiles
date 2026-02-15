@@ -45,6 +45,7 @@ return {
 
     require("neogit").setup({
       console_timeout = 1000,
+      auto_show_console_on = "error",
       disable_insert_on_commit = true,
       remember_settings = false,
       commit_editor = {
