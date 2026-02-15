@@ -128,7 +128,6 @@ alias e='eza -Gla'
 
 # git
 alias g='git'
-alias gg='git status -sb'
 alias ga='git add --verbose'
 alias gac='ga . && gc'
 alias gc='git commit --verbose'
@@ -140,6 +139,9 @@ alias gpsup="git push --set-upstream origin \$(git_current_branch)"
 alias gpf='git push --force-with-lease --force-if-includes'
 alias gr='git reset'
 alias gu='git pull'
+
+# gigalixir
+alias gg='gigalixir'
 
 # lazygit
 alias lg='lazygit'
