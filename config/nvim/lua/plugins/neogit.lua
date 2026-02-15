@@ -45,7 +45,17 @@ return {
 
     require("neogit").setup({
       console_timeout = 1000,
-      auto_show_console_on = "error",
+      auto_show_console_on = "output",
+      preview_buffer = {
+        kind = "floating",
+      },
+      floating = {
+        relative = "editor",
+        width = 0.5,
+        height = 0.18,
+        style = "minimal",
+        border = "rounded",
+      },
       disable_insert_on_commit = true,
       remember_settings = false,
       commit_editor = {
