@@ -173,7 +173,6 @@ return {
         opts = {
           adapter = {
             name = "copilot",
-            model = "gpt-4.1",
           },
           index = 10,
           is_default = true,
@@ -193,9 +192,8 @@ return {
             content = function()
               return string.format(
                 [[
-You are an expert at following the Conventional Commit specification.
-
-Given the git diff listed below, please generate a commit message for me.
+Given the git diff listed below, please generate a commit message for me 
+following this repo's conventions.
 
 ```diff
 %s
