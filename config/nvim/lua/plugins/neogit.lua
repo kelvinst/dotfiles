@@ -93,6 +93,24 @@ return {
       },
     })
 
+    -- Hide Neogit's process preview once the commit editor opens.
+    -- The underlying git process can remain active until the commit message is saved.
+    vim.api.nvim_create_autocmd("FileType", {
+      pattern = "gitcommit",
+      callback = function()
+        for _, buf in ipairs(vim.api.nvim_list_bufs()) do
+          if
+            vim.api.nvim_buf_is_valid(buf)
+            and vim.bo[buf].filetype == "NeogitConsole"
+          then
+            for _, win in ipairs(vim.fn.win_findbuf(buf)) do
+              pcall(vim.api.nvim_win_close, win, true)
+            end
+          end
+        end
+      end,
+    })
+
     -- Return to previous tab when Neogit tab is closed
     vim.api.nvim_create_autocmd("TabClosed", {
       callback = function()
