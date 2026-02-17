@@ -45,7 +45,7 @@ return {
     {
       "<leader>ag",
       function()
-        require("codecompanion").prompt("commit")
+        require("codecompanion").prompt("my_commit")
       end,
       desc = "Git commit message",
       mode = "n",
@@ -125,11 +125,6 @@ return {
       },
     },
     display = {
-      action_palette = {
-        opts = {
-          show_preset_prompts = true,
-        },
-      },
       chat = {
         window = {
           width = 80,
@@ -164,7 +159,7 @@ return {
       },
     },
     prompt_library = {
-      ["Generate a Commit Message"] = {
+      my_commit = {
         interaction = "inline",
         description = "Generate a commit message",
         condition = function()
@@ -176,9 +171,9 @@ return {
           },
           index = 10,
           is_default = true,
-          is_slash_cmd = true,
+          slash_cmd = true,
           stop_context_insertion = true,
-          alias = "commit",
+          alias = "my_commit",
           auto_submit = true,
           placement = "before",
           user_prompt = true,
