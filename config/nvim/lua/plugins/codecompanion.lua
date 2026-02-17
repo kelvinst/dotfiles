@@ -127,7 +127,7 @@ return {
     display = {
       action_palette = {
         opts = {
-          show_preset_prompts = false,
+          show_preset_prompts = true,
         },
       },
       chat = {
