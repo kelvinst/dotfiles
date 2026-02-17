@@ -112,6 +112,9 @@ bindkey -v
 # The runtime version manager
 . $(brew --prefix)/opt/asdf/libexec/asdf.sh
 
+# Configure mix to use more parallelism when compiling dependencies
+MIX_OS_DEPS_COMPILE_PARTITION_COUNT=4
+
 # }}}
 
 # NOTE: Aliases {{{
@@ -479,5 +482,3 @@ fi
 
 # }}}
 
-
-MIX_OS_DEPS_COMPILE_PARTITION_COUNT=4
