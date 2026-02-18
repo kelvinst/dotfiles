@@ -211,7 +211,7 @@ vim.keymap.set("n", "<leader>ftp", function()
   })
 end, { desc = "Pick" })
 
-vim.keymap.set("n", "<leader>tfj", function()
+vim.keymap.set("n", "<leader>ftj", function()
   new_tmp_script("js")
 end, { desc = "New JavaScript" })
 
