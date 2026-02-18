@@ -133,6 +133,7 @@ alias ez='eza'
 alias e='eza -Gla'
 
 # git
+alias g-='gprune'
 alias g='git'
 alias ga='git add --verbose'
 alias gac='ga . && gc'
@@ -142,8 +143,8 @@ alias gco='git checkout'
 alias gd='git diff'
 alias gl='git log --oneline --decorate --graph'
 alias gp='git push'
-alias gpsup="git push --set-upstream origin \$(git_current_branch)"
 alias gpf='git push --force-with-lease --force-if-includes'
+alias gpsup="git push --set-upstream origin \$(git_current_branch)"
 alias gr='git reset'
 alias gu='git pull'
 
@@ -201,6 +202,12 @@ git() {
 # Returns the current git branch
 git_current_branch() {
   git rev-parse --abbrev-ref HEAD 2>/dev/null
+}
+
+# Prune remote-tracking branches and delete local branches that tracked them
+gprune() {
+  git remote prune origin
+  git branch -vv | awk '/: gone]/{print $1}' | xargs -r git branch -D
 }
 
 # Retries a command until it fails
