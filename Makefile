@@ -12,12 +12,13 @@ install:
 	cp -r ./hammerspoon/* ~/.hammerspoon/
 	cp -r ./config/init_starship.sh ~/.config/
 	cp -r ./config/starship.toml ~/.config/
+	cp ./default-gems ~/.default-gems
 	cp ./gitconfig ~/.gitconfig
 	cp ./global_gitignore ~/.global_gitignore
 	cp ./skhdrc ~/.skhdrc
 	cp ./tmux.conf ~/.tmux.conf
-	cp ./zshrc ~/.zshrc
 	cp ./zshenv ~/.zshenv
+	cp ./zshrc ~/.zshrc
 
 clean:
 	rm -rf ~/.config/kitty/*
@@ -26,12 +27,13 @@ clean:
 	rm -rf ~/.hammerspoon/*
 	rm -rf ~/.config/init_starship.sh
 	rm -rf ~/.config/starship.toml
+	rm -rf ~/.default-gems
 	rm -rf ~/.gitconfig
 	rm -rf ~/.global_gitignore
 	rm -rf ~/.skhdrc
 	rm -rf ~/.tmux.conf
-	rm -rf ~/.zshrc
 	rm -rf ~/.zshenv
+	rm -rf ~/.zshrc
 
 update: 
 	mkdir -p ./config/kitty/
@@ -44,9 +46,10 @@ update:
 	cp -r ~/.config/init_starship.sh ./config/
 	cp -r ~/.config/starship.toml ./config/
 	cp -r ~/.hammerspoon/* ./hammerspoon/
+	cp ~/.default-gems ./default-gems
 	cp ~/.gitconfig ./gitconfig
 	cp ~/.global_gitignore ./global_gitignore
 	cp ~/.skhdrc ./skhdrc
 	cp ~/.tmux.conf ./tmux.conf
-	cp ~/.zshrc ./zshrc
 	cp ~/.zshenv ./zshenv
+	cp ~/.zshrc ./zshrc
