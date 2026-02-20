@@ -133,7 +133,7 @@ alias ez='eza'
 alias e='eza -Gla'
 
 # git
-alias g-='gprune'
+alias g-='git_prune'
 alias g='git'
 alias ga='git add --verbose'
 alias gac='ga . && gc'
@@ -207,7 +207,7 @@ git_current_branch() {
 }
 
 # Prune remote-tracking branches and delete local branches that tracked them
-gprune() {
+git_prune() {
   git remote prune origin
   git branch -vv | awk '/: gone]/{print $1}' | xargs -r git branch -D
 }
