@@ -146,6 +146,8 @@ alias gp='git push'
 alias gpf='git push --force-with-lease --force-if-includes'
 alias gpsup="git push --set-upstream origin \$(git_current_branch)"
 alias gr='git reset'
+alias gsp='git stash pop'
+alias gsu='git stash --include-untracked --keep-index'
 alias gu='git pull'
 
 # gigalixir
