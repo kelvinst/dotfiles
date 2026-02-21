@@ -149,6 +149,9 @@ alias gr='git reset'
 alias gsp='git stash pop'
 alias gsu='git stash --include-untracked --keep-index'
 alias gu='git pull'
+alias gwa='git worktree add'
+alias gwl='git worktree list'
+alias gwr='git worktree remove'
 
 # gigalixir
 alias gg='gigalixir'
