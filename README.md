@@ -142,6 +142,12 @@ My new, simplified, dotfiles
     brew install ripgrep
     ```
 
+1. Install the per folder `.env` file loader: [`direnv`](https://direnv.net/)
+
+    ```shell
+    brew install direnv
+    ```
+
 1. Install "FiraCode Nerd Font Mono" from [here](https://www.nerdfonts.com/)
 
 1. Install the runtime version manager: [`asdf`](https://asdf-vm.com)
