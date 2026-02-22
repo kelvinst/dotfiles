@@ -46,6 +46,9 @@ export XDG_CONFIG_HOME="$HOME/.config"
 # Coloring files
 export LS_COLORS="$(vivid generate tokyonight-moon)"
 
+# Load dir specific env vars
+eval "$(direnv hook zsh)"
+
 # }}}
 
 # NOTE: Completions {{{
