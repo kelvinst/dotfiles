@@ -2,6 +2,8 @@
 all: clean install
 
 install:
+	mkdir -p ~/.config/direnv/
+	cp -r ./config/direnv/* ~/.config/direnv/
 	mkdir -p ~/.config/kitty/
 	cp -r ./config/kitty/* ~/.config/kitty/
 	mkdir -p ~/.config/nvim/
@@ -21,6 +23,7 @@ install:
 	cp ./zshrc ~/.zshrc
 
 clean:
+	rm -rf ~/.config/direnv/*
 	rm -rf ~/.config/kitty/*
 	rm -rf ~/.config/nvim/*
 	rm -rf ~/.config/tms/*
@@ -35,7 +38,9 @@ clean:
 	rm -rf ~/.zshenv
 	rm -rf ~/.zshrc
 
-update: 
+update:
+	mkdir -p ./config/direnv/
+	cp -r ~/.config/direnv/* ./config/direnv/
 	mkdir -p ./config/kitty/
 	cp -r ~/.config/kitty/* ./config/kitty/
 	mkdir -p ./config/nvim/
