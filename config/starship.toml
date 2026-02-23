@@ -677,9 +677,15 @@ symbol = '💌'
 
 [direnv]
 disabled = false
-format = '[$symbol$loaded/$allowed ]($style)'
+format = '[$symbol$allowed$loaded ]($style)'
 style = 'bold black bg:green'
-symbol = '📁'
+symbol = '📂'
+detect_files = ['.envrc', '.env']
+allowed_msg = '😀'
+not_allowed_msg = '☹️'
+denied_msg = '😡'
+loaded_msg = '🔼'
+unloaded_msg = '🔽'
 
 [env_var]
 disabled = false
