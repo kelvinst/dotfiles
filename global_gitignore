@@ -4,6 +4,7 @@
 *.bak
 Session.vim
 .mix_tasks
+.env
 .DS_Store
 tmp
 .vscode/
