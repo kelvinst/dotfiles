@@ -21,38 +21,6 @@ local function session_file(file)
   return string.format("%s/%s.json", dir, file)
 end
 
-local function get_codecompanion_chat()
-  -- Check if any buffer has codecompanion filetype
-  for _, buf in ipairs(vim.api.nvim_list_bufs()) do
-    if
-      vim.api.nvim_buf_is_valid(buf)
-      and vim.bo[buf].filetype == "codecompanion"
-    then
-      -- Check if the buffer is visible in any window
-      for _, win in ipairs(vim.api.nvim_list_wins()) do
-        if
-          vim.api.nvim_win_is_valid(win)
-          and vim.api.nvim_win_get_buf(win) == buf
-        then
-          -- Get the tab number where this window is located
-          local tab = vim.api.nvim_win_get_tabpage(win)
-          local tab_number = vim.api.nvim_tabpage_get_number(tab)
-
-          -- Get the chat object from the buffer
-          local chat_module = require("codecompanion.strategies.chat")
-          local chat = chat_module.buf_get_chat(buf)
-          if chat and chat.opts and chat.opts.save_id then
-            return { id = chat.opts.save_id, tab = tab_number }
-          end
-
-          -- Chat is open but no save_id yet
-          return { id = true, tab = tab_number }
-        end
-      end
-    end
-  end
-  return nil
-end
 
 local function tab_names()
   if not vim.g.session or vim.g.session == "" then
@@ -82,7 +50,6 @@ end
 local function save_session_data()
   local session_data = {
     tab_names = tab_names(),
-    codecompanion_chat = get_codecompanion_chat(),
     quickfix_open = vim.fn.getqflist({ winid = 0 }).winid ~= 0,
     focused_buffer = get_focused_buffer(),
   }
@@ -127,81 +94,6 @@ local function restore_tab_names(names)
   end
 end
 
-local function restore_codecompanion_chat(saved_chat)
-  if saved_chat then
-    local codecompanion = require("codecompanion")
-
-    -- Handle both old format (just chat_id) and
-    -- new format (table with id and tab)
-    local chat_id = type(saved_chat) == "table" and saved_chat.id
-    local tab_number = type(saved_chat) == "table" and saved_chat.tab or nil
-
-    -- Switch to the correct tab if specified
-    if tab_number then
-      local tabpages = vim.api.nvim_list_tabpages()
-      if tab_number <= #tabpages then
-        vim.api.nvim_set_current_tabpage(tabpages[tab_number])
-      end
-    end
-
-    if chat_id == true then
-      return
-    end
-
-    local history = codecompanion.extensions.history
-    local chat_data = history.load_chat(chat_id) or {}
-    local messages = chat_data.messages or {}
-
-    local last_msg = messages[#messages]
-
-    -- Ensure last message is from user to show header
-    if
-      last_msg
-      and (
-        last_msg.role ~= "user"
-        or (last_msg.role == "user" and (last_msg.opts or {}).visible == false)
-      )
-    then
-      table.insert(messages, {
-        role = "user",
-        content = "",
-        opts = { visible = true },
-      })
-    end
-    local context = require("codecompanion.utils.context").get(nil)
-
-    local chat = require("codecompanion.strategies.chat").new({
-      save_id = chat_id,
-      messages = messages,
-      buffer_context = context,
-      settings = chat_data.settings or {},
-      adapter = chat_data.adapter,
-      title = chat_data.title,
-      callbacks = {},
-      last_role = "user",
-    })
-
-    -- Handle both old (refs) and new (context_items) storage formats
-    local stored_context_items = chat_data.context_items or chat_data.refs or {}
-    local chat_context_items = chat.context_items or {}
-    for _, item in ipairs(stored_context_items) do
-      -- Avoid adding duplicates related to #48
-      local is_duplicate = vim.tbl_contains(
-        chat_context_items,
-        function(chat_item)
-          return chat_item.id == item.id
-        end,
-        { predicate = true }
-      )
-      if not is_duplicate then
-        chat.context:add(item)
-      end
-    end
-    chat.tool_registry.schemas = chat_data.schemas or {}
-    chat.tool_registry.in_use = chat_data.in_use or {}
-    chat.cycle = chat_data.cycle or 1
-  end
-end
 
 local function restore_focused_buffer(focused_buffer)
   if not focused_buffer then
@@ -262,7 +154,6 @@ local function restore_session_data()
   local session_data = load_session_data()
   if session_data then
     restore_tab_names(session_data.tab_names)
-    restore_codecompanion_chat(session_data.codecompanion_chat)
 
     if session_data.quickfix_open then
       vim.cmd("bot copen")
@@ -290,8 +181,6 @@ return {
       config = true,
     },
     "ibhagwan/fzf-lua",
-    "olimorris/codecompanion.nvim",
-    "ravitemer/codecompanion-history.nvim",
     "niuiic/quickfix.nvim",
     "NeogitOrg/neogit",
   },
