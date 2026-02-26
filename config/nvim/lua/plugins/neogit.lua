@@ -32,11 +32,16 @@ return {
     )
     vim.keymap.set("n", "<leader>gc", function()
       vim.fn.system({
-        "kitty", "@", "launch",
+        "kitty",
+        "@",
+        "launch",
         "--type=window",
         "--location=vsplit",
         "--cwd=" .. vim.fn.getcwd(),
-        "claude", "/commit",
+        "claude",
+        "--model",
+        "haiku",
+        "/commit",
       })
     end, { desc = "Git commit (claude)" })
     vim.keymap.set(
