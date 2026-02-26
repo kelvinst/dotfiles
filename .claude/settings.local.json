@@ -1,11 +1,6 @@
 {
   "permissions": {
     "allow": [
-      "Bash(git -C /Users/kelvinstinghen/Developer/dotfiles status)",
-      "Bash(git -C /Users/kelvinstinghen/Developer/dotfiles diff)",
-      "Bash(git -C /Users/kelvinstinghen/Developer/dotfiles log --oneline -5)",
-      "Bash(git -C /Users/kelvinstinghen/Developer/dotfiles add zshrc)",
-      "Bash(git -C /Users/kelvinstinghen/Developer/dotfiles commit -m \"$\\(cat <<''EOF''\nrevert\\(zshrc\\): restore simple v alias for nvim\n\nRemove the Kitty tab title function and restore the original simple alias.\n\nCo-Authored-By: Claude Opus 4.5 <noreply@anthropic.com>\nEOF\n\\)\")",
       "Bash(git add:*)",
       "Bash(git commit:*)",
       "Bash(git push)",
