@@ -2,6 +2,8 @@
 all: clean install
 
 install:
+	mkdir -p ~/.claude/skills/
+	cp -r ./claude/skills/* ~/.claude/skills/
 	mkdir -p ~/.config/direnv/
 	cp -r ./config/direnv/* ~/.config/direnv/
 	mkdir -p ~/.config/kitty/
@@ -23,6 +25,7 @@ install:
 	cp ./zshrc ~/.zshrc
 
 clean:
+	rm -rf ~/.claude/skills/*
 	rm -rf ~/.config/direnv/*
 	rm -rf ~/.config/kitty/*
 	rm -rf ~/.config/nvim/*
@@ -39,6 +42,8 @@ clean:
 	rm -rf ~/.zshrc
 
 update:
+	mkdir -p ./claude/skills/
+	cp -r ~/.claude/skills/* ./claude/skills/
 	mkdir -p ./config/direnv/
 	cp -r ~/.config/direnv/* ./config/direnv/
 	mkdir -p ./config/kitty/
