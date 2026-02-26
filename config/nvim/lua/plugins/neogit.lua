@@ -32,6 +32,12 @@ return {
     )
     vim.keymap.set(
       "n",
+      "<leader>gc",
+      ":Dispatch claude /commit<CR>",
+      { desc = "Git commit (claude)" }
+    )
+    vim.keymap.set(
+      "n",
       "<leader>gxc",
       ":Dispatch .git/hooks/pre-commit<CR>",
       { desc = "pre-commit" }
