@@ -17,9 +17,8 @@ return {
       md_files = { "AGENTS.md", "CLAUDE.md" },
     })
 
-    vim.keymap.set("v", "<leader>ar", _99.visual, { desc = "Replace" })
-    vim.keymap.set("n", "<leader>as", _99.search, { desc = "Search" })
-    vim.keymap.set("n", "<leader>a<cr>", _99.open, { desc = "Open" })
+    vim.keymap.set("v", "<leader>a<space>", _99.visual, { desc = "Replace" })
+    vim.keymap.set("n", "<leader>a<space>", _99.search, { desc = "Search" })
     vim.keymap.set("n", "<leader>al", _99.view_logs, { desc = "Logs" })
     vim.keymap.set(
       "n",
@@ -35,7 +34,9 @@ return {
     end, { desc = "Select provider" })
     vim.keymap.set("n", "<leader>aa", function()
       vim.fn.system({
-        "kitty", "@", "launch",
+        "kitty",
+        "@",
+        "launch",
         "--type=window",
         "--location=vsplit",
         "--cwd=" .. vim.fn.getcwd(),
