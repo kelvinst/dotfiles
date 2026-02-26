@@ -30,12 +30,15 @@ return {
       with_saved_tab(vim.cmd.NeogitLogCurrent),
       { desc = "Log (current file)" }
     )
-    vim.keymap.set(
-      "n",
-      "<leader>gc",
-      ":Start claude /commit ",
-      { desc = "Git commit (claude)" }
-    )
+    vim.keymap.set("n", "<leader>gc", function()
+      vim.fn.system({
+        "kitty", "@", "launch",
+        "--type=window",
+        "--location=vsplit",
+        "--cwd=" .. vim.fn.getcwd(),
+        "claude", "/commit",
+      })
+    end, { desc = "Git commit (claude)" })
     vim.keymap.set(
       "n",
       "<leader>gxc",

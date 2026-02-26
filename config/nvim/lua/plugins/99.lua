@@ -33,5 +33,14 @@ return {
     vim.keymap.set("n", "<leader>ap", function()
       require("99.extensions.fzf_lua").select_provider()
     end, { desc = "Select provider" })
+    vim.keymap.set("n", "<leader>aa", function()
+      vim.fn.system({
+        "kitty", "@", "launch",
+        "--type=window",
+        "--location=vsplit",
+        "--cwd=" .. vim.fn.getcwd(),
+        "claude",
+      })
+    end, { desc = "Claude" })
   end,
 }
