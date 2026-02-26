@@ -21,7 +21,15 @@ local function dispatchTask(key, task, commandFun, vimCommand)
   end
 end
 
-local function dispatchTasks(prefix, key, desc, default, tasks, parentTasks, vimCommand)
+local function dispatchTasks(
+  prefix,
+  key,
+  desc,
+  default,
+  tasks,
+  parentTasks,
+  vimCommand
+)
   local tasksPrefix = prefix .. key
   if tasks then
     if desc then
@@ -82,7 +90,13 @@ local function dispatchSubgroup(prefix, key, subgroup, parentTasks, vimCommand)
     subgroup.tasks = nil
 
     for subgroupKey, subgroupConfig in pairs(subgroup) do
-      dispatchSubgroup(prefix .. key, subgroupKey, subgroupConfig, tasks, vimCommand)
+      dispatchSubgroup(
+        prefix .. key,
+        subgroupKey,
+        subgroupConfig,
+        tasks,
+        vimCommand
+      )
     end
   end
 end
@@ -172,8 +186,8 @@ return { -- Asynchronous tasks
   },
   config = function()
     -- Set tmux and quickfix windows height
-    vim.g.dispatch_quickfix_height = 30
-    vim.g.dispatch_kitty_bias = 30
+    -- vim.g.dispatch_quickfix_height = 30
+    -- vim.g.dispatch_kitty_bias = 30
     vim.g.dispatch_compilers = { elixir = "exunit" }
 
     -- Prevent quickfix from auto-opening during dispatch execution;
