@@ -30,12 +30,18 @@ return {
       with_saved_tab(vim.cmd.NeogitLogCurrent),
       { desc = "Log (current file)" }
     )
-    vim.keymap.set(
-      "n",
-      "<leader>gc",
-      ":Dispatch claude /commit<CR>",
-      { desc = "Git commit (claude)" }
-    )
+    vim.keymap.set("n", "<leader>gc", function()
+      vim.cmd("split")
+      local win = vim.api.nvim_get_current_win()
+      vim.fn.termopen("claude /commit", {
+        on_exit = function()
+          if vim.api.nvim_win_is_valid(win) then
+            vim.api.nvim_win_close(win, true)
+          end
+        end,
+      })
+      vim.cmd("startinsert")
+    end, { desc = "Git commit (claude)" })
     vim.keymap.set(
       "n",
       "<leader>gxc",
