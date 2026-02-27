@@ -42,6 +42,15 @@ return {
           "id:" .. claude_window.id,
         })
 
+        vim.fn.system({
+          "kitty",
+          "@",
+          "send-text",
+          "--match",
+          "id:" .. claude_window.id,
+          "/commit\n",
+        })
+
         return
       end
 
