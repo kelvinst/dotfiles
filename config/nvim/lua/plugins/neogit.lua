@@ -30,12 +30,21 @@ return {
       with_saved_tab(vim.cmd.NeogitLogCurrent),
       { desc = "Log (current file)" }
     )
-    vim.keymap.set(
-      "n",
-      "<leader>gc",
-      ":Dispatch claude --print --model haiku /commit ",
-      { desc = "Git commit (claude)" }
-    )
+    vim.keymap.set("n", "<leader>gc", function()
+      vim.fn.system({
+        "kitty",
+        "@",
+        "launch",
+        "--type=window",
+        "--location=vsplit",
+        "--cwd=" .. vim.fn.getcwd(),
+        "claude",
+        "--model",
+        "haiku",
+        "/commit",
+        vim.fn.input("Why were the changes made? (optional)"),
+      })
+    end, { desc = "Git commit (claude)" })
     vim.keymap.set(
       "n",
       "<leader>gxc",
