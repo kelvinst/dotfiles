@@ -7,7 +7,8 @@
       "WebFetch(domain:github.com)",
       "Bash(echo:*)",
       "Bash(ls:*)",
-      "Bash(lsof:*)"
+      "Bash(lsof:*)",
+      "Bash(git hook:*)"
     ]
   }
 }
