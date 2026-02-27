@@ -1,28 +1,3 @@
-local function find_claude_window()
-  local ls_output = vim.fn.system({ "kitty", "@", "ls" })
-  local ok, data = pcall(vim.json.decode, ls_output)
-  if ok and data then
-    for _, os_window in ipairs(data) do
-      local focused_tab = vim.iter(os_window.tabs or {}):find(function(t)
-        return t.is_focused
-      end)
-
-      if focused_tab then
-        local claude_win = vim.iter(focused_tab.windows or {}):find(function(w)
-          return vim.iter(w.foreground_processes or {}):find(function(p)
-            return vim.iter(p.cmdline or {}):find(function(c)
-              return c:match("claude")
-            end)
-          end)
-        end)
-
-        return claude_win
-      end
-    end
-  end
-  return nil
-end
-
 return {
   -- AI agentic workflow plugin
   "ThePrimeagen/99",
@@ -58,7 +33,7 @@ return {
       require("99.extensions.fzf_lua").select_provider()
     end, { desc = "Select provider" })
     vim.keymap.set("n", "<leader>aa", function()
-      local claude_window = find_claude_window()
+      local claude_window = FindClaudeWindow()
 
       if claude_window then
         vim.fn.system({

@@ -31,6 +31,20 @@ return {
       { desc = "Log (current file)" }
     )
     vim.keymap.set("n", "<leader>gc", function()
+      local claude_window = FindClaudeWindow()
+
+      if claude_window then
+        vim.fn.system({
+          "kitty",
+          "@",
+          "focus-window",
+          "--match",
+          "id:" .. claude_window.id,
+        })
+
+        return
+      end
+
       vim.fn.system({
         "kitty",
         "@",
