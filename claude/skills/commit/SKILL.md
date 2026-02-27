@@ -13,6 +13,4 @@ Here's the context provided by the user: "$ARGUMENTS". If provided, treat it as 
    - **Subject**: short but descriptive summary, under 50 characters (max 72)
    - **Body**: explain *why* the changes were made, not what was changed. If the user supplied context, incorporate it into the body. Keep lines under 72 characters.
    - **Format**: `type(scope): description` — common types: `feat`, `fix`, `chore`, `refactor`, `docs`, `test`, `style`
-4. Display the generated commit message with a horizontal rule (`\n\n---\n\n`) before and after it so it stands out clearly.
-5. Use `AskUserQuestion` to ask: "Commit with this message?" with options: "Commit", "Edit" (user provides revised text via the notes field), and "Cancel".
-6. If confirmed, run `git commit -m "..."` using a heredoc to preserve formatting. If the user edits, incorporate their changes and commit. If cancelled, abort.
+6. Run `git commit -m "..."` using a heredoc to preserve formatting.
