@@ -21,7 +21,6 @@ local function session_file(file)
   return string.format("%s/%s.json", dir, file)
 end
 
-
 local function tab_names()
   if not vim.g.session or vim.g.session == "" then
     return
@@ -93,7 +92,6 @@ local function restore_tab_names(names)
     end
   end
 end
-
 
 local function restore_focused_buffer(focused_buffer)
   if not focused_buffer then

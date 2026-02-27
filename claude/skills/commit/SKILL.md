@@ -7,7 +7,7 @@ Generate a git commit message for the staged changes, then open the editor for t
 
 Here's the context provided by the user: "$ARGUMENTS". If provided, treat it as the reason/motivation behind the changes and use it to write the commit body.
 
-1. If there are `pre-commit` hooks, run them and ensure they pass before proceeding. If they fail, display the error messages and abort the commit process.
+1. Run `git hook pre-commit --ignore-missing` to ensure the commit will pass. If the hook fails, display the error message and abort the commit process. If it succeeds, proceed to the next step.
 2. Run `git diff --no-ext-diff --staged` to get the diff.
 3. Write a commit message following the Conventional Commit specification:
    - **Subject**: short but descriptive summary, under 50 characters (max 72)

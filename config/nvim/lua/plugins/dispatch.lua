@@ -133,7 +133,8 @@ local function dispatchGroup(config)
 end
 
 return { -- Asynchronous tasks
-  "trekdemo/vim-dispatch",
+  -- My branch has some fixes on top of trekdemo kitty-support branch
+  "kelvinst/vim-dispatch",
   dependencies = {
     "folke/which-key.nvim",
   },
@@ -189,42 +190,6 @@ return { -- Asynchronous tasks
     -- vim.g.dispatch_quickfix_height = 30
     -- vim.g.dispatch_kitty_bias = 30
     vim.g.dispatch_compilers = { elixir = "exunit" }
-
-    -- Prevent quickfix from auto-opening during dispatch execution;
-    -- only open it later on failure, respecting quickfix height.
-    local dispatch_augroup =
-      vim.api.nvim_create_augroup("dispatch_quickfix", { clear = true })
-
-    -- Close quickfix when dispatch starts (it gets opened by cgetfile on the
-    -- empty output file before the command has a chance to run)
-    vim.api.nvim_create_autocmd("QuickFixCmdPost", {
-      group = dispatch_augroup,
-      pattern = "dispatch-make",
-      callback = function()
-        vim.schedule(function()
-          vim.cmd("cclose")
-        end)
-      end,
-      desc = "Close quickfix when dispatch starts",
-    })
-
-    -- After dispatch completes, close quickfix on success (exit code 0)
-    vim.api.nvim_create_autocmd("ShellCmdPost", {
-      group = dispatch_augroup,
-      callback = function()
-        vim.schedule(function()
-          local request = vim.fn["dispatch#request"]()
-          if type(request) == "table" and request.file then
-            local complete_file = request.file .. ".complete"
-            local ok, lines = pcall(vim.fn.readfile, complete_file, "", 1)
-            if ok and lines[1] and tonumber(lines[1]) == 0 then
-              vim.cmd("cclose")
-            end
-          end
-        end)
-      end,
-      desc = "Close quickfix on successful dispatch completion",
-    })
 
     -- Configure which-key with the dispatch mappings
     require("which-key").add({
