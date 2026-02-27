@@ -38,11 +38,9 @@ return {
         "--type=window",
         "--location=vsplit",
         "--cwd=" .. vim.fn.getcwd(),
-        "claude",
-        "--model",
-        "haiku",
-        "/commit",
-        vim.fn.input("Why were the changes made? (optional)"),
+        "zsh",
+        "-ic",
+        "git hook run pre-commit --ignore-missing && claude --model haiku /commit",
       })
     end, { desc = "Git commit (claude)" })
     vim.keymap.set(
