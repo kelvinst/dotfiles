@@ -118,7 +118,7 @@ function BreakLine(max_length)
   end
 end
 
-function FindClaudeWindow()
+local function find_claude_window()
   local ls_output = vim.fn.system({ "kitty", "@", "ls" })
   local ok, data = pcall(vim.json.decode, ls_output)
   if ok and data then
@@ -141,4 +141,30 @@ function FindClaudeWindow()
     end
   end
   return nil
+end
+
+function OpenClaude()
+  local claude_window = find_claude_window()
+
+  if claude_window then
+    vim.fn.system({
+      "kitty",
+      "@",
+      "focus-window",
+      "--match",
+      "id:" .. claude_window.id,
+    })
+
+    return claude_window.id
+  end
+
+  return vim.fn.system({
+    "kitty",
+    "@",
+    "launch",
+    "--type=window",
+    "--location=vsplit",
+    "--cwd=" .. vim.fn.getcwd(),
+    "claude",
+  })
 end

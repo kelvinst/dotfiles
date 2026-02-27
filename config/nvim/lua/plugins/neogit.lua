@@ -31,39 +31,15 @@ return {
       { desc = "Log (current file)" }
     )
     vim.keymap.set("n", "<leader>gc", function()
-      local claude_window = FindClaudeWindow()
-
-      if claude_window then
-        vim.fn.system({
-          "kitty",
-          "@",
-          "focus-window",
-          "--match",
-          "id:" .. claude_window.id,
-        })
-
-        vim.fn.system({
-          "kitty",
-          "@",
-          "send-text",
-          "--match",
-          "id:" .. claude_window.id,
-          "/commit\n",
-        })
-
-        return
-      end
+      local claude_window = OpenClaude()
 
       vim.fn.system({
         "kitty",
         "@",
-        "launch",
-        "--type=window",
-        "--location=vsplit",
-        "--cwd=" .. vim.fn.getcwd(),
-        "zsh",
-        "-ic",
-        "git hook run pre-commit --ignore-missing && claude --model haiku /commit",
+        "send-text",
+        "--match",
+        "id:" .. claude_window,
+        "/commit ",
       })
     end, { desc = "Git commit (claude)" })
     vim.keymap.set(

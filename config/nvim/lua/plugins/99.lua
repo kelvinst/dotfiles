@@ -32,30 +32,6 @@ return {
     vim.keymap.set("n", "<leader>ap", function()
       require("99.extensions.fzf_lua").select_provider()
     end, { desc = "Select provider" })
-    vim.keymap.set("n", "<leader>aa", function()
-      local claude_window = FindClaudeWindow()
-
-      if claude_window then
-        vim.fn.system({
-          "kitty",
-          "@",
-          "focus-window",
-          "--match",
-          "id:" .. claude_window.id,
-        })
-
-        return
-      end
-
-      vim.fn.system({
-        "kitty",
-        "@",
-        "launch",
-        "--type=window",
-        "--location=vsplit",
-        "--cwd=" .. vim.fn.getcwd(),
-        "claude",
-      })
-    end, { desc = "Claude" })
+    vim.keymap.set("n", "<leader>aa", OpenClaude, { desc = "Claude" })
   end,
 }
