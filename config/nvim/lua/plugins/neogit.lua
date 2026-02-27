@@ -46,13 +46,13 @@ return {
     vim.keymap.set(
       "n",
       "<leader>gxc",
-      ":Dispatch .git/hooks/pre-commit<CR>",
+      ":Dispatch git hook run pre-commit --ignore-missing<CR>",
       { desc = "pre-commit" }
     )
     vim.keymap.set(
       "n",
       "<leader>gxp",
-      ":Dispatch .git/hooks/pre-push<CR>",
+      ":Dispatch git hook run pre-push --ignore-missing<CR>",
       { desc = "pre-push" }
     )
 

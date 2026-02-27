@@ -330,7 +330,7 @@ return { -- Asynchronous tasks
       t = {
         filterByRootFiles = "mix.exs",
         desc = "Test (Elixir)",
-        default = "h",
+        default = "p",
         tasks = {
           a = { "mix test", desc = "All" },
           c = { "mix coveralls", desc = "Coverage" },
