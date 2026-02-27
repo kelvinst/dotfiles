@@ -58,32 +58,9 @@ return {
       { desc = "pre-push" }
     )
 
-    local floating_width = math.min(80, vim.o.columns)
-    local floating_col = math.max(vim.o.columns - floating_width, 0)
-    local floating_height = math.max(math.floor(vim.o.lines * 0.18), 1)
-    local floating_row = math.max(
-      vim.o.lines
-        - floating_height
-        - vim.o.cmdheight
-        - (vim.o.laststatus > 0 and 1 or 0),
-      0
-    )
-
     require("neogit").setup({
       console_timeout = 1000,
       auto_show_console_on = "output",
-      preview_buffer = {
-        kind = "floating",
-      },
-      floating = {
-        relative = "editor",
-        width = floating_width,
-        height = floating_height,
-        col = floating_col,
-        row = floating_row,
-        style = "minimal",
-        border = "rounded",
-      },
       disable_insert_on_commit = true,
       remember_settings = false,
       commit_editor = {
