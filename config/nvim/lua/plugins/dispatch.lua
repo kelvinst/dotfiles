@@ -47,7 +47,7 @@ local function dispatchTasks(
         local default_cmd = tasks[default][1]
         vim.keymap.set(
           "n",
-          tasksPrefix .. key,
+          tasksPrefix .. "<CR>",
           ":" .. vimCommand .. " " .. default_cmd .. "<CR>",
           { desc = "Default (" .. default_cmd .. ")" }
         )
@@ -226,7 +226,7 @@ return { -- Asynchronous tasks
         default = "s",
         tasks = {
           s = { "iex -S mix phx.server", desc = "Server" },
-          t = { "mix phx.routes", desc = "Test routes" },
+          r = { "mix phx.routes", desc = "Test routes" },
         },
         g = {
           desc = "Gen",
@@ -275,7 +275,7 @@ return { -- Asynchronous tasks
           ["<Up>"] = { "mix ecto.migrate", desc = "Up" },
           ["<Down>"] = { "mix ecto.rollback", desc = "Down" },
           d = { "mix ecto.drop", desc = "Drop" },
-          c = { "mix ecto.create", desc = "Ccreate" },
+          c = { "mix ecto.create", desc = "Create" },
           s = { "mix ecto.setup", desc = "Setup" },
           r = { "mix ecto.reset", desc = "Reset" },
           l = { "mix ecto.load", desc = "Load" },
@@ -336,6 +336,7 @@ return { -- Asynchronous tasks
           c = { "mix coveralls", desc = "Coverage" },
           h = { "mix coveralls.html", desc = "HTML coverage" },
           i = { "mix test.interactive", desc = "Interactive" },
+          p = { "mix precommit", desc = "Precommit" },
         },
         w = {
           desc = "Warnings as errors",
