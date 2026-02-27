@@ -33,7 +33,7 @@ return {
     vim.keymap.set(
       "n",
       "<leader>gc",
-      ":Dispatch claude --model haiku /commit ",
+      ":Dispatch claude --print --model haiku /commit ",
       { desc = "Git commit (claude)" }
     )
     vim.keymap.set(
