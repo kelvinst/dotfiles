@@ -12,6 +12,7 @@ Here's the context provided by the user: "$ARGUMENTS". If provided, treat it as 
    - **Subject**: short but descriptive summary, under 50 characters (max 72)
    - **Body**: explain *why* the changes were made, not what was changed. If the user supplied context, incorporate it into the body. Keep lines under 72 characters.
    - **Format**: `type(scope): description` — common types: `feat`, `fix`, `chore`, `refactor`, `docs`, `test`, `style`
+   - **DO NOT ADD** `Co-Authored-By` footer note, as you actually just helped me generate the commit message, not co-authored it.
 3. Display the generated commit message with a horizontal rule (`\n\n---\n\n`) before and after it so it stands out clearly.
 4. Use `AskUserQuestion` to ask: "Commit with this message?" with options: "Commit", "Edit" (user provides revised text via the notes field), and "Cancel".
    - If cancelled, abort the commit process.
