@@ -165,6 +165,9 @@ function OpenClaude()
     "--type=window",
     "--location=vsplit",
     "--cwd=" .. vim.fn.getcwd(),
-    "ai-jail claude",
+    "zsh",
+    "-i",
+    "-c",
+    "claude",
   })
 end
