@@ -17,3 +17,4 @@ Here's the context provided by the user: "$ARGUMENTS". If provided, treat it as 
    - If cancelled, abort the commit process.
    - If the user edits, incorporate their changes and commit. If cancelled, abort.
    - If confirmed, run `git commit -m "..."` using a heredoc to preserve formatting.
+5. If any error occurs during the commit process, display an error message and abort, **do not attempt to fix it yourself**.
