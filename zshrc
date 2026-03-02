@@ -128,8 +128,16 @@ alias a='aliases'
 # bat
 alias b='bat'
 
+# claude
+alias claude='ai-jail claude'
+alias cl='claude'
+
 # clear
 alias c='clear'
+
+# codex
+alias codex='ai-jail codex'
+alias cx='codex'
 
 # eza
 alias ez='eza'

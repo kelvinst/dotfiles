@@ -8,3 +8,4 @@ Session.vim
 .DS_Store
 tmp
 .vscode/
+.ai-jail

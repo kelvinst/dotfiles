@@ -212,10 +212,16 @@ My new, simplified, dotfiles
     brew install koekeishiya/formulae/skhd
     ```
 
-1. Install [claude code](https://github.com/anthropics/claude-code)
+1. Install [ai-jail](https://github.com/akitaonrails/ai-jail)
 
     ```shell
-    npm install -g @anthropic-ai/claude-code
+    brew tap akitaonrails/tap && brew install ai-jail
+    ```
+
+1. Install [claude code](https://claude.com/product/claude-code)
+
+    ```shell
+    curl -fsSL https://claude.ai/install.sh | bash
     ```
 
 1. Install [claude code acp](https://github.com/zed-industries/claude-code-acp)
