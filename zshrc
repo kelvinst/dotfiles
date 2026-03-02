@@ -131,6 +131,7 @@ alias b='bat'
 # claude
 alias claude='ai-jail claude'
 alias cl='claude'
+alias cl!='cl --dangerously-skip-permissions'
 
 # clear
 alias c='clear'
