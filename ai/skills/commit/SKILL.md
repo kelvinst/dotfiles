@@ -14,8 +14,5 @@ Here's the context provided by the user: "$ARGUMENTS". If provided, treat it as 
    - **Format**: `type(scope): description` — common types: `feat`, `fix`, `chore`, `refactor`, `docs`, `test`, `style`
    - **DO NOT ADD** `Co-Authored-By` footer note, as you actually just helped me generate the commit message, not co-authored it.
 3. Display the generated commit message with a horizontal rule (`\n\n---\n\n`) before and after it so it stands out clearly.
-4. Use `AskUserQuestion` to ask: "Commit with this message?" with options: "Commit", "Edit" (user provides revised text via the notes field), and "Cancel".
-   - If cancelled, abort the commit process.
-   - If the user edits, incorporate their changes and commit. If cancelled, abort.
-   - If confirmed, run `git commit -m "..."` using a heredoc to preserve formatting.
+4. Run `git commit -m "..."` using a heredoc to preserve formatting. Do not push.
 5. If any error occurs during the commit process, display an error message and abort, **do not attempt to fix it yourself**.
