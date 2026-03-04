@@ -118,7 +118,7 @@ function BreakLine(max_length)
   end
 end
 
-local function find_claude_window()
+local function find_window_by_cmd(pattern)
   local ls_output = vim.fn.system({ "kitty", "@", "ls" })
   local ok, data = pcall(vim.json.decode, ls_output)
   if ok and data then
@@ -128,19 +128,46 @@ local function find_claude_window()
       end)
 
       if focused_tab then
-        local claude_win = vim.iter(focused_tab.windows or {}):find(function(w)
+        local win = vim.iter(focused_tab.windows or {}):find(function(w)
           return vim.iter(w.foreground_processes or {}):find(function(p)
             return vim.iter(p.cmdline or {}):find(function(c)
-              return c:match("claude")
+              return c:match(pattern)
             end)
           end)
         end)
 
-        return claude_win
+        return win
       end
     end
   end
   return nil
+end
+
+local function find_claude_window()
+  return find_window_by_cmd("claude")
+end
+
+local function launch_ai(cmd)
+  return vim.fn.system({
+    "kitty",
+    "@",
+    "launch",
+    "--type=window",
+    "--location=vsplit",
+    "--cwd=" .. vim.fn.getcwd(),
+    "zsh",
+    "-i",
+    "-c",
+    cmd,
+  })
+end
+
+function NewClaude()
+  return launch_ai("claude")
+end
+
+function NewCodex()
+  return launch_ai("codex")
 end
 
 function OpenClaude()
@@ -158,16 +185,23 @@ function OpenClaude()
     return claude_window.id
   end
 
-  return vim.fn.system({
-    "kitty",
-    "@",
-    "launch",
-    "--type=window",
-    "--location=vsplit",
-    "--cwd=" .. vim.fn.getcwd(),
-    "zsh",
-    "-i",
-    "-c",
-    "claude",
-  })
+  return launch_ai("claude")
+end
+
+function OpenCodex()
+  local codex_window = find_window_by_cmd("codex")
+
+  if codex_window then
+    vim.fn.system({
+      "kitty",
+      "@",
+      "focus-window",
+      "--match",
+      "id:" .. codex_window.id,
+    })
+
+    return codex_window.id
+  end
+
+  return launch_ai("codex")
 end

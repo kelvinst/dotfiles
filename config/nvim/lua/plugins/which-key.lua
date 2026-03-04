@@ -19,6 +19,7 @@ return { -- Useful plugin to show you pending keybinds.
     spec = {
       { "<leader><space>", group = "Hop" }, -- hop.lua
       { "<leader>a", group = "AI", mode = "nv" }, -- 99.lua
+      { "<leader>an", group = "New instance" }, -- 99.lua
       { "<leader>b", group = "Buffers" }, -- bufferline.lua
       { "<leader>bt", group = "Tabs" }, -- bufferline.lua
       { "<leader>c", group = "Command" }, -- keymaps.lua

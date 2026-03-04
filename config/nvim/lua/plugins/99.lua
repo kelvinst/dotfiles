@@ -22,7 +22,7 @@ return {
     vim.keymap.set("n", "<leader>al", _99.view_logs, { desc = "Logs" })
     vim.keymap.set(
       "n",
-      "<leader>ax",
+      "<leader>a<bs>",
       _99.stop_all_requests,
       { desc = "Stop requests" }
     )
@@ -32,6 +32,9 @@ return {
     vim.keymap.set("n", "<leader>ap", function()
       require("99.extensions.fzf_lua").select_provider()
     end, { desc = "Select provider" })
-    vim.keymap.set("n", "<leader>aa", OpenClaude, { desc = "Claude" })
+    vim.keymap.set("n", "<leader>ac", OpenClaude, { desc = "Focus Claude" })
+    vim.keymap.set("n", "<leader>ax", OpenCodex, { desc = "Focus Codex" })
+    vim.keymap.set("n", "<leader>anc", NewClaude, { desc = "New Claude" })
+    vim.keymap.set("n", "<leader>anx", NewCodex, { desc = "New Codex" })
   end,
 }
