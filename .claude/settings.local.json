@@ -1,14 +1,12 @@
 {
   "permissions": {
     "allow": [
-      "Bash(git add:*)",
-      "Bash(git commit:*)",
-      "Bash(git push)",
-      "WebFetch(domain:github.com)",
       "Bash(echo:*)",
+      "Bash(git commit:*)",
+      "Bash(git diff:*)",
+      "Bash(git hook run:*)",
       "Bash(ls:*)",
-      "Bash(lsof:*)",
-      "Bash(git hook:*)"
+      "Bash(lsof:*)"
     ]
   }
 }
