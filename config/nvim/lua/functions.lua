@@ -205,3 +205,78 @@ function OpenCodex()
 
   return launch_ai("codex")
 end
+
+local function get_visual_context()
+  -- Escape visual mode first so that '< and '> marks are updated
+  vim.api.nvim_feedkeys(
+    vim.api.nvim_replace_termcodes("<Esc>", true, false, true),
+    "x",
+    false
+  )
+  local start_line = vim.fn.line("'<")
+  local end_line = vim.fn.line("'>")
+  local lines = vim.api.nvim_buf_get_lines(0, start_line - 1, end_line, false)
+  local filename = vim.fn.expand("%:~:.")
+  local filetype = vim.bo.filetype
+  for i, line in ipairs(lines) do
+    lines[i] = line:gsub("\n", "\\n")
+  end
+  local content = table.concat(lines, "\n")
+  return "Here is the selected code from `"
+    .. filename
+    .. "` (lines "
+    .. start_line
+    .. "-"
+    .. end_line
+    .. "):\n\n```"
+    .. filetype
+    .. "\n"
+    .. content
+    .. "\n```\n\n"
+end
+
+local function send_to_ai_window(window_id, text)
+  if type(window_id) == "string" then
+    window_id = vim.trim(window_id)
+  end
+  vim.fn.system({
+    "kitty",
+    "@",
+    "send-text",
+    "--match",
+    "id:" .. tostring(window_id),
+    text,
+  })
+end
+
+function OpenClaudeWithContext()
+  local context = get_visual_context()
+  local window_id = OpenClaude()
+  vim.defer_fn(function()
+    send_to_ai_window(window_id, context)
+  end, 300)
+end
+
+function OpenCodexWithContext()
+  local context = get_visual_context()
+  local window_id = OpenCodex()
+  vim.defer_fn(function()
+    send_to_ai_window(window_id, context)
+  end, 300)
+end
+
+function NewClaudeWithContext()
+  local context = get_visual_context()
+  local window_id = NewClaude()
+  vim.defer_fn(function()
+    send_to_ai_window(window_id, context)
+  end, 2000)
+end
+
+function NewCodexWithContext()
+  local context = get_visual_context()
+  local window_id = NewCodex()
+  vim.defer_fn(function()
+    send_to_ai_window(window_id, context)
+  end, 2000)
+end

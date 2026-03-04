@@ -36,5 +36,9 @@ return {
     vim.keymap.set("n", "<leader>ax", OpenCodex, { desc = "Focus Codex" })
     vim.keymap.set("n", "<leader>anc", NewClaude, { desc = "New Claude" })
     vim.keymap.set("n", "<leader>anx", NewCodex, { desc = "New Codex" })
+    vim.keymap.set("v", "<leader>ac", OpenClaudeWithContext, { desc = "Focus Claude with context" })
+    vim.keymap.set("v", "<leader>ax", OpenCodexWithContext, { desc = "Focus Codex with context" })
+    vim.keymap.set("v", "<leader>anc", NewClaudeWithContext, { desc = "New Claude with context" })
+    vim.keymap.set("v", "<leader>anx", NewCodexWithContext, { desc = "New Codex with context" })
   end,
 }
