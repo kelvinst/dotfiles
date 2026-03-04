@@ -7,7 +7,7 @@ Generate a git commit message for the staged changes, then open the editor for t
 
 Here's the context provided by the user: "$ARGUMENTS". If provided, treat it as the reason/motivation behind the changes and use it to write the commit body.
 
-1. Run `git status --short` to check for unstaged changes or untracked files.
+1. Run `git status` to check for unstaged changes or untracked files.
    - If there are **no** unstaged/untracked files, skip to step 2.
    - If there **are** unstaged changes or untracked files, check `git diff --no-ext-diff`, give the user an overview of the changes and ask the user what to do. Present these options:
      - **Stage everything** — run `git add -A` then proceed
