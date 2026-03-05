@@ -18,7 +18,7 @@ vim.opt.number = false
 vim.opt.relativenumber = false
 
 -- Do not wrap lines
-vim.opt.wrap = true
+vim.opt.wrap = false
 
 -- Lines should be broken at word boundaries
 vim.opt.linebreak = true

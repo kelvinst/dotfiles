@@ -9,7 +9,7 @@ Here's the context provided by the user: "$ARGUMENTS". If provided, treat it as 
 
 1. Run `git status` to check for unstaged changes or untracked files.
    - If there are **no** unstaged/untracked files, skip to step 2.
-   - If there **are** unstaged changes or untracked files, check `git diff --no-ext-diff`, give the user an overview of the changes and ask the user what to do. Present these options:
+   - If there **are** unstaged changes or untracked files, check `git diff --no-ext-diff`, give the user an overview of the changes and ask the user what to do. Use the interactive choice tool available in your environment (e.g. `AskUserQuestion` in Claude, `askUserChoice` in Codex) to present these options:
      - **Stage everything** — run `git add -A` then proceed
      - **Stash unstaged/untracked, commit only what's staged** — run `git stash --include-untracked --keep-index` then proceed
      - **Abort** — stop here, the user will give instructions of what to with it
