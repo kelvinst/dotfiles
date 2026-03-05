@@ -47,7 +47,7 @@ local function dispatchTasks(
         local default_cmd = tasks[default][1]
         vim.keymap.set(
           "n",
-          tasksPrefix .. "<CR>",
+          tasksPrefix .. key,
           ":" .. vimCommand .. " " .. default_cmd .. "<CR>",
           { desc = "Default (" .. default_cmd .. ")" }
         )
