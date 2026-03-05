@@ -9,3 +9,4 @@ Session.vim
 tmp
 .vscode/
 .ai-jail
+.claude/settings.local.json
