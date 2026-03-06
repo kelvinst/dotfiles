@@ -1,8 +1,26 @@
-local function without_vimade(cmd)
+local function with_popup(label, cmd)
   return function()
+    local msg = "  " .. label .. "  "
+    local buf = vim.api.nvim_create_buf(false, true)
+    vim.api.nvim_buf_set_lines(buf, 0, -1, false, { msg })
+    local win = vim.api.nvim_open_win(buf, false, {
+      relative = "editor",
+      width = #msg,
+      height = 1,
+      col = math.floor((vim.o.columns - #msg) / 2),
+      row = math.floor((vim.o.lines - 1) / 2),
+      style = "minimal",
+      border = "rounded",
+      focusable = false,
+      zindex = 100,
+    })
+
     vim.cmd.VimadeDisable()
-    cmd()
+    pcall(cmd)
     vim.cmd.VimadeEnable()
+
+    pcall(vim.api.nvim_win_close, win, true)
+    pcall(vim.api.nvim_buf_delete, buf, { force = true })
   end
 end
 
@@ -13,84 +31,38 @@ return { -- Easily jump around in your file
   keys = {
     {
       "<leader><space>",
-      without_vimade(vim.cmd.HopChar1),
+      with_popup("Hop to char", vim.cmd.HopChar1),
       desc = "Hop to a char",
     },
     {
       "<leader>h/",
-      without_vimade(vim.cmd.HopPattern),
+      with_popup("Hop pattern", vim.cmd.HopPattern),
       desc = "Search like /",
     },
     {
       "<leader>h1",
-      without_vimade(vim.cmd.HopChar1),
+      with_popup("Hop 1 char", vim.cmd.HopChar1),
       desc = "1 Char",
     },
     {
       "<leader>h2",
-      without_vimade(vim.cmd.HopChar2),
+      with_popup("Hop 2 chars", vim.cmd.HopChar2),
       desc = "2 Char",
     },
-    {
-      "<leader>ha",
-      without_vimade(vim.cmd.HopAnywhere),
-      desc = "Anywhere",
-    },
-    {
-      "<leader>hh",
-      without_vimade(vim.cmd.HopChar1),
-      desc = "Default (1 char)",
-    },
-    { "<leader>hl", without_vimade(vim.cmd.HopLine), desc = "Line" },
-    {
-      "<leader>ht",
-      without_vimade(vim.cmd.HopNodes),
-      desc = "Treesiter nodes",
-    },
-    { "<leader>hw", without_vimade(vim.cmd.HopWord), desc = "Word" },
+    { "<leader>ha", vim.cmd.HopAnywhere, desc = "Anywhere" },
+    { "<leader>hh", vim.cmd.HopWord, desc = "Default (1 char)" },
+    { "<leader>hl", vim.cmd.HopLine, desc = "Line" },
+    { "<leader>ht", vim.cmd.HopNodes, desc = "Treesiter nodes" },
+    { "<leader>hw", vim.cmd.HopWord, desc = "Word" },
   },
   config = function()
     local hop = require("hop")
 
-    hop.setup({
-      multi_windows = true,
-      quit_key = "<leader>",
-    })
+    hop.setup({ multi_windows = true, quit_key = "<leader>" })
 
-    local modes = { "n", "v" }
-
-    vim.keymap.set(modes, "<leader>hn", function()
-      hop.hint_patterns(hop.opts, vim.fn.getreg("/"))
+    vim.keymap.set({ "n", "v" }, "<leader>hn", function()
+      ---@diagnostic disable-next-line: missing-fields
+      hop.hint_patterns({}, vim.fn.getreg("/"))
     end, { desc = "Next pattern (based on what was searched on /)" })
-
-    vim.keymap.set(modes, "f", function()
-      hop.hint_char1(hop.opts + {
-        direction = require("hop.hint").HintDirection.AFTER_CURSOR,
-        current_line_only = true,
-      })
-    end, { desc = "Hop for char (forward)" })
-
-    vim.keymap.set(modes, "F", function()
-      hop.hint_char1(hop.opts + {
-        direction = require("hop.hint").HintDirection.BEFORE_CURSOR,
-        current_line_only = true,
-      })
-    end, { desc = "Hop for char (backward)" })
-
-    vim.keymap.set(modes, "t", function()
-      hop.hint_char1(hop.opts + {
-        direction = require("hop.hint").HintDirection.AFTER_CURSOR,
-        current_line_only = true,
-        hint_offset = -1,
-      })
-    end, { desc = "Hop 'til char (forward)" })
-
-    vim.keymap.set(modes, "T", function()
-      hop.hint_char1(hop.opts + {
-        direction = require("hop.hint").HintDirection.BEFORE_CURSOR,
-        current_line_only = true,
-        hint_offset = -1,
-      })
-    end, { desc = "Hop 'til char (backward)" })
   end,
 }
