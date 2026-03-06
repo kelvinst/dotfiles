@@ -166,7 +166,7 @@ alias gwl='git worktree list'
 alias gwr='git worktree remove'
 
 # gigalixir
-alias gg='gigalixir'
+alias gx='gigalixir'
 
 # lazygit
 alias lg='lazygit'
