@@ -9,6 +9,8 @@ endif
 
 CompilerSet makeprg=mix\ precommit
 CompilerSet errorformat=
+            \%W[%.]\ %.\ %f:%l:%c\ %m,
+            \%W[%.]\ %.\ %f:%l\ %m,
             \%E┃\ [%.]\ %m,
             \%C┃%.%#\ %f:%l:%c\ %m,
             \%C┃%.%#\ %f:%l\ %m,%Z,
