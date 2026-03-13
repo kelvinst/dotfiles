@@ -85,3 +85,9 @@ cmd + ctrl + shift - return : kitten quick-access-terminal
 
 # }}}
 
+# NOTE: paneru {{{
+
+# restart paneru
+ctrl + alt - r : paneru restart
+
+# }}}

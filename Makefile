@@ -14,6 +14,8 @@ install:
 	cp -r ./config/nvim/* ~/.config/nvim/
 	mkdir -p ~/.config/tms/
 	cp -r ./config/tms/* ~/.config/tms/
+	mkdir -p ~/.config/tidewave/
+	cp -r ./config/tidewave/* ~/.config/tidewave/
 	mkdir -p ~/.hammerspoon/
 	cp -r ./hammerspoon/* ~/.hammerspoon/
 	cp -r ./config/init_starship.sh ~/.config/
@@ -21,6 +23,7 @@ install:
 	cp ./default-gems ~/.default-gems
 	cp ./gitconfig ~/.gitconfig
 	cp ./global_gitignore ~/.global_gitignore
+	cp ./paneru.toml ~/.paneru.toml
 	cp ./skhdrc ~/.skhdrc
 	cp ./tmux.conf ~/.tmux.conf
 	cp ./zshenv ~/.zshenv
@@ -33,12 +36,14 @@ clean:
 	rm -rf ~/.config/kitty/*
 	rm -rf ~/.config/nvim/*
 	rm -rf ~/.config/tms/*
+	rm -rf ~/.config/tidewave/*
 	rm -rf ~/.hammerspoon/*
 	rm -rf ~/.config/init_starship.sh
 	rm -rf ~/.config/starship.toml
 	rm -rf ~/.default-gems
 	rm -rf ~/.gitconfig
 	rm -rf ~/.global_gitignore
+	rm -rf ~/.paneru.toml
 	rm -rf ~/.skhdrc
 	rm -rf ~/.tmux.conf
 	rm -rf ~/.zshenv
@@ -57,6 +62,8 @@ update:
 	cp -r ~/.config/nvim/* ./config/nvim/
 	mkdir -p ./config/tms/
 	cp -r ~/.config/tms/* ./config/tms/
+	mkdir -p ./config/tidewave/
+	cp -r ~/.config/tidewave/* ./config/tidewave/
 	mkdir -p ./hammerspoon
 	cp -r ~/.config/init_starship.sh ./config/
 	cp -r ~/.config/starship.toml ./config/
@@ -64,6 +71,7 @@ update:
 	cp ~/.default-gems ./default-gems
 	cp ~/.gitconfig ./gitconfig
 	cp ~/.global_gitignore ./global_gitignore
+	cp ~/.paneru.toml ./paneru.toml
 	cp ~/.skhdrc ./skhdrc
 	cp ~/.tmux.conf ./tmux.conf
 	cp ~/.zshenv ./zshenv
