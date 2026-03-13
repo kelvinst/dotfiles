@@ -87,11 +87,13 @@ cmd + ctrl + shift - return : kitten quick-access-terminal
 
 # NOTE: paneru {{{
 
+# WARNING: Disabled paneru because the current version breaks quite easily
+
 # restart paneru
-ctrl + alt - r : paneru restart
+# ctrl + alt - r : paneru restart
 
 # shrink window (minus key can't be bound natively in paneru due to its '-'
 # separator syntax)
-ctrl + alt - 0x1B : paneru send-cmd window shrink
+# ctrl + alt - 0x1B : paneru send-cmd window shrink
 
 # }}}
