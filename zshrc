@@ -15,24 +15,6 @@ export EDITOR='nvim'
 # URL scheme for opening files in nvim from other applications
 export PLUG_EDITOR="nvim://file/__FILE__:__LINE__"
 
-# Add local bin to the beginning of PATH
-export PATH="$HOME/.local/bin:$PATH"
-
-# Add homebrew bins to the beginning of PATH
-export PATH="$(brew --prefix)/bin:$PATH"
-
-# Add rust bin to path
-export PATH="$(asdf where rust)/bin:$PATH"
-
-# Add npm bin to path
-export PATH="$(asdf where nodejs)/.npm/bin:$PATH"
-
-# Add opencode bin to path
-export PATH="$HOME/.opencode/bin:$PATH"
-
-# Add postgres bins to path
-export PATH="$(brew --prefix)/opt/postgresql@18/bin:$PATH"
-
 # Make compilers aware of postgres installation
 export LDFLAGS="-L/opt/homebrew/opt/postgresql@18/lib"
 export CPPFLAGS="-I/opt/homebrew/opt/postgresql@18/include"

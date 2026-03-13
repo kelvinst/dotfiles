@@ -90,4 +90,8 @@ cmd + ctrl + shift - return : kitten quick-access-terminal
 # restart paneru
 ctrl + alt - r : paneru restart
 
+# shrink window (minus key can't be bound natively in paneru due to its '-'
+# separator syntax)
+ctrl + alt - 0x1B : paneru send-cmd window shrink
+
 # }}}

@@ -7,7 +7,7 @@
 focus_follows_mouse = true
 
 # Enables mouse follows focus. Enabled by default, set to false to disable.
-# mouse_follows_focus = true
+mouse_follows_focus = true
 
 # Array of widths used by the `window_resize` action to cycle between.
 # Defaults to 25%, 33%, 50%, 66% and 75%.
@@ -90,10 +90,11 @@ window_swap_last = "ctrl + alt + shift - 9"
 window_center = "ctrl + alt - c"
 
 # Cycles between the window sizes defined in the `preset_column_widths` option.
-window_resize = "ctrl + alt - plus"
+window_resize = "ctrl + alt - ="
 
 # Cycles backwards through `preset_column_widths`.
-window_shrink = "ctrl + alt - minus"
+# handled via skhd (ctrl+alt+0x1B) since paneru can't bind the minus key natively
+# window_shrink: "ctrl + alt - minus"
 
 # Toggle full width for the current focused window.
 window_fullwidth = "ctrl + alt - f"
@@ -103,7 +104,7 @@ window_manage = "ctrl + alt - t"
 
 # Stacks and unstacks a window into the left column. Each window gets a 1/N of the height.
 window_stack = "ctrl + alt - ]"
-window_unstack = "ctrl + alt + shift - ]"
+window_unstack = "ctrl + alt - ["
 
 # Moves currently focused window to the next display.
 window_nextdisplay = "ctrl + alt + shift - n"
