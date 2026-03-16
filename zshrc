@@ -144,7 +144,7 @@ alias gsp='git stash pop'
 alias gsk='git stash --include-untracked --keep-index'
 alias gsa='git stash --include-untracked'
 alias gu='git pull'
-alias gwa='git worktree add'
+alias gwa='git_add_worktree'
 alias gwl='git worktree list'
 alias gwr='git worktree remove'
 
@@ -208,6 +208,10 @@ git_current_branch() {
 git_prune() {
   git remote prune origin
   git branch -vv | awk '/: gone]/{print $1}' | xargs -r git branch -D
+}
+
+git_add_worktree() {
+  git worktree add .worktrees/$1 $1 && cd .worktrees/$1
 }
 
 # Retries a command until it fails
