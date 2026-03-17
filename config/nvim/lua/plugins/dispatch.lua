@@ -217,6 +217,14 @@ return { -- Asynchronous tasks
         { key = "<leader>m", command = "Make" },
         { key = "<leader>'", command = "Start" },
       },
+      i = {
+        filterByRootFiles = "mix.exs",
+        desc = "Init (Elixir)",
+        default = "s",
+        tasks = {
+          s = { "mix setup", desc = "Setup" },
+        },
+      },
       p = {
         filterByRootFiles = "mix.exs",
         desc = "Phoenix (Elixir)",
