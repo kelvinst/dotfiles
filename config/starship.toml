@@ -213,8 +213,6 @@ disabled = false
 format = '[$symbol$branch(:$remote_branch) ]($style)'
 style = 'bold purple bg:bg-border'
 symbol = '🌱'
-truncation_length = 12
-truncation_symbol = '…'
 only_attached = true
 
 [git_commit]
