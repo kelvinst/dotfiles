@@ -147,9 +147,9 @@ alias gsp='git stash pop'
 alias gsk='git stash --include-untracked --keep-index'
 alias gsa='git stash --include-untracked'
 alias gu='git pull'
-alias gwa='git_add_worktree'
+alias gww='git_worktree_checkout'
 alias gwl='git worktree list'
-alias gwr='git worktree remove'
+alias gwr='git_worktree_remove'
 
 # gigalixir
 alias gx='gigalixir'
@@ -210,11 +210,39 @@ git_current_branch() {
 # Prune remote-tracking branches and delete local branches that tracked them
 git_prune() {
   git remote prune origin
-  git branch -vv | awk '/: gone]/{print $1}' | xargs -r git branch -D
+  git branch -vv | awk '/: gone]/{print $1}' | while read branch; do
+    [[ -d ".worktrees/$branch" ]] && git worktree remove .worktrees/$branch
+    git branch -D $branch
+  done
 }
 
-git_add_worktree() {
-  git worktree add .worktrees/$1 $1 && cd .worktrees/$1
+git_worktree_remove() {
+  local target
+  if [[ -d ".worktrees/$1" ]]; then
+    target=".worktrees/$1"
+  else
+    target="$1"
+  fi
+
+  local current=$(pwd)
+  local abs_target=$(realpath $target 2>/dev/null || echo $target)
+  git worktree remove $target && [[ "$current" == "$abs_target" ]] && cd ../..
+}
+
+git_worktree_checkout() {
+  if [[ "$1" == "-b" ]]; then
+    git branch $2
+    shift
+  fi
+
+  local branch=$1
+  if [[ -z "$branch" || "$branch" == "main" || "$branch" == "master" ]]; then
+    cd ../..
+  elif [[ -d ".worktrees/$branch" ]]; then
+    cd .worktrees/$branch
+  else
+    git worktree add .worktrees/$branch $branch && cd .worktrees/$branch
+  fi
 }
 
 # Retries a command until it fails
