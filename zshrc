@@ -210,7 +210,7 @@ git_current_branch() {
 # Prune remote-tracking branches and delete local branches that tracked them
 git_prune() {
   git remote prune origin
-  git branch -vv | awk '/: gone]/{print $1}' | while read branch; do
+  git branch -vv | awk '/: gone]/{print ($1 == "*" || $1 == "+") ? $2 : $1}' | while read branch; do
     [[ -d ".worktrees/$branch" ]] && git worktree remove .worktrees/$branch
     git branch -D $branch
   done
@@ -243,7 +243,7 @@ git_worktree_checkout() {
   else
     local base=$(pwd)
     git worktree add .worktrees/$branch $branch && cd .worktrees/$branch
-    local hook="$(git rev-parse --show-toplevel)/.git/hooks/post-worktree-checkout"
+    local hook="$(git rev-parse --git-common-dir)/hooks/post-worktree-checkout"
     [[ -x "$hook" ]] && "$hook" "$base"
   fi
 }
