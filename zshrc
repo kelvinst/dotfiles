@@ -241,7 +241,10 @@ git_worktree_checkout() {
   elif [[ -d ".worktrees/$branch" ]]; then
     cd .worktrees/$branch
   else
+    local base=$(pwd)
     git worktree add .worktrees/$branch $branch && cd .worktrees/$branch
+    local hook="$(git rev-parse --show-toplevel)/.git/hooks/post-worktree-checkout"
+    [[ -x "$hook" ]] && "$hook" "$base"
   fi
 }
 
