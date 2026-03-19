@@ -77,8 +77,6 @@ step until all steps are done:
    remain, report that the plan is complete and stop.
 2. Implement the next unchecked step exactly as described under `next` above
    (run project checks, fix failures, mark step as done).
-3. Stage the relevant changes with `git add` and commit using a message that
-   follows the project's commit convention (from CLAUDE.md/AGENTS.md or
-   inferred from `git log`). The commit body should describe what was
-   implemented in this step. Do **not** push.
+3. Run `/commit` with the step title/description as context to stage and
+   commit the changes.
 4. Repeat from step 1 until all steps are checked off.
