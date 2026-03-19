@@ -57,8 +57,15 @@ for each step describing what to implement and how.
 
 Read PLAN.md and implement the next unchecked step. Run the project checks
 configured in CLAUDE.md/AGENTS.md and fix any failures. Once they pass, mark
-the step as done (`- [x]`) in the PLAN.md TOC and wait for 
+the step as done (`- [x]`) in the PLAN.md TOC and wait for
 review before committing.
+
+If the implementation required any deviation from the original step description
+(different approach, scope change, discovered constraints), update the step's
+section in PLAN.md to reflect what was actually done. Also review the remaining
+unchecked steps — if the deviation affects them, carefully update their
+descriptions to stay accurate and consistent with the current state of the
+codebase.
 
 ### `add <description>`
 
