@@ -236,14 +236,6 @@ My new, simplified, dotfiles
     npm install -g @zed-industries/claude-code-acp
     ```
 
-1. Create a claude code OAuth token with `claude setup-token`
-
-1. Copy the token and add it to your `~/.zsh_private` file like this:
-
-    ```shell
-    export CLAUDE_CODE_OAUTH_TOKEN=<your_token_here>
-    ```
-
 1. Clone this repo and run `make` to install:
 
     ```shell
