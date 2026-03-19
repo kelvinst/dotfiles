@@ -1,6 +1,6 @@
 ---
 name: plan
-description: Manage a GH task plan — `init <url>`, `next`, `add <desc>`
+description: Manage a GH task plan — `init <url>`, `next`, `add <desc>`, `execute`
 ---
 
 ## PLAN.md format
@@ -67,3 +67,18 @@ new step following the same format at the position requested in the
 `<description>` (if no position is given, assume it should be appended at the
 end). The step should be atomic and clearly describe what will be committed.
 Use `<description>` as the basis for the step content.
+
+### `execute`
+
+Fully execute the plan by repeatedly implementing and committing each unchecked
+step until all steps are done:
+
+1. Read PLAN.md and check if there are any unchecked steps (`- [ ]`). If none
+   remain, report that the plan is complete and stop.
+2. Implement the next unchecked step exactly as described under `next` above
+   (run project checks, fix failures, mark step as done).
+3. Stage the relevant changes with `git add` and commit using a message that
+   follows the project's commit convention (from CLAUDE.md/AGENTS.md or
+   inferred from `git log`). The commit body should describe what was
+   implemented in this step. Do **not** push.
+4. Repeat from step 1 until all steps are checked off.
