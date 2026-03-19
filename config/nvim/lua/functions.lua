@@ -166,8 +166,16 @@ function NewClaude()
   return launch_ai("claude")
 end
 
+function NewDangerClaude()
+  return launch_ai("claude --dangerously-skip-permissions")
+end
+
 function NewCodex()
   return launch_ai("codex")
+end
+
+function NewDangerCodex()
+  return launch_ai("codex --full-auto")
 end
 
 function OpenClaude()
