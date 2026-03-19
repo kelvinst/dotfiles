@@ -57,8 +57,8 @@ for each step describing what to implement and how.
 
 Read PLAN.md and implement the next unchecked step. Run the project checks
 configured in CLAUDE.md/AGENTS.md and fix any failures. Once they pass, mark
-the step as done (`- [x]`) in the PLAN.md TOC and wait for
-review before committing.
+the step as done (`- [x]`) in the PLAN.md TOC and run `/commit` with the step
+title/description as context.
 
 If the implementation required any deviation from the original step description
 (different approach, scope change, discovered constraints), update the step's
@@ -77,13 +77,5 @@ Use `<description>` as the basis for the step content.
 
 ### `execute`
 
-Fully execute the plan by repeatedly implementing and committing each unchecked
-step until all steps are done:
-
-1. Read PLAN.md and check if there are any unchecked steps (`- [ ]`). If none
-   remain, report that the plan is complete and stop.
-2. Implement the next unchecked step exactly as described under `next` above
-   (run project checks, fix failures, mark step as done).
-3. Run `/commit` with the step title/description as context to stage and
-   commit the changes.
-4. Repeat from step 1 until all steps are checked off.
+Repeatedly run `/plan next` until all steps in PLAN.md are checked off, then
+report that the plan is complete.
