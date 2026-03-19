@@ -218,17 +218,29 @@ git_prune() {
   done
 }
 
-git_worktree_remove() {
-  local target
-  if [[ -d ".worktrees/$1" ]]; then
-    target=".worktrees/$1"
-  else
-    target="$1"
-  fi
+git_worktree_main_dir() {
+  cd "$(git rev-parse --git-common-dir)/.." && pwd
+}
 
+git_worktree_dir() {
+  local base="$HOME/Developer/worktrees/$(basename "$(git_worktree_main_dir)")"
+  if [[ -n "$1" ]]; then
+    local existing=$(git worktree list --porcelain | grep -B2 "branch refs/heads/$1$" | head -1 | sed 's/^worktree //')
+    echo "${existing:-$base/$1}"
+  else
+    echo "$base"
+  fi
+}
+
+git_worktree_remove() {
+  if [[ -z "$1" ]]; then
+    echo "Usage: gwr <branch>"
+    return 1
+  fi
+  local target=$(git_worktree_dir $1)
   local current=$(pwd)
   local abs_target=$(realpath $target 2>/dev/null || echo $target)
-  git worktree remove $target && [[ "$current" == "$abs_target" ]] && cd ../..
+  git worktree remove $target && { [[ "$current" == "$abs_target" ]] && cd $(git_worktree_main_dir) || true; }
 }
 
 git_worktree_checkout() {
@@ -238,15 +250,18 @@ git_worktree_checkout() {
   fi
 
   local branch=$1
-  if [[ -z "$branch" || "$branch" == "main" || "$branch" == "master" ]]; then
-    cd ../..
-  elif [[ -d ".worktrees/$branch" ]]; then
-    cd .worktrees/$branch
+  local worktree_dir=$(git_worktree_dir $branch)
+
+  if [[ -z "$branch" ]]; then
+    cd $(git_worktree_main_dir)
+  elif [[ -d "$worktree_dir" ]]; then
+    cd "$worktree_dir"
   else
     local base=$(pwd)
-    git worktree add .worktrees/$branch $branch && cd .worktrees/$branch
+    mkdir -p "$(dirname "$worktree_dir")"
+    git worktree add "$worktree_dir" $branch && cd "$worktree_dir"
     local hook="$(git rev-parse --git-common-dir)/hooks/post-worktree-checkout"
-    [[ -x "$hook" ]] && "$hook" "$base"
+    [[ -x "$hook" ]] && "$hook" "$base" || true
   fi
 }
 
