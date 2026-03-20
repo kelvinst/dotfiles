@@ -1,9 +1,3 @@
--- Disable all scroll wheel input
-vim.keymap.set({ "n", "v", "i" }, "<ScrollWheelUp>", "<Nop>")
-vim.keymap.set({ "n", "v", "i" }, "<ScrollWheelDown>", "<Nop>")
-vim.keymap.set({ "n", "v", "i" }, "<ScrollWheelLeft>", "<Nop>")
-vim.keymap.set({ "n", "v", "i" }, "<ScrollWheelRight>", "<Nop>")
-
 -- Clear highlights on search when pressing <Esc> in normal mode
 vim.keymap.set("n", "<Esc>", function()
   vim.cmd("nohlsearch")
