@@ -77,5 +77,17 @@ Use `<description>` as the basis for the step content.
 
 ### `execute`
 
-Repeatedly run `/plan next` until all steps in PLAN.md are checked off, then
-report that the plan is complete.
+Run every remaining step in PLAN.md, one after another, until none are left.
+
+**Procedure — loop until done:**
+
+1. Read PLAN.md and find the first unchecked (`- [ ]`) step.
+2. If no unchecked step exists → stop and report "Plan complete."
+3. Otherwise, execute that step exactly as `/plan next` would (implement, run
+   checks, fix failures, mark done, commit, update plan if needed).
+4. Go back to step 1.
+
+**Important:** Do NOT stop after a single step. The whole point of `execute` is
+to finish the entire plan autonomously. Keep going until every step is checked
+off or an unrecoverable error forces you to stop (in which case, explain what
+blocked you and which steps remain).
