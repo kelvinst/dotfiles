@@ -30,18 +30,6 @@ return {
       with_saved_tab(vim.cmd.NeogitLogCurrent),
       { desc = "Log (current file)" }
     )
-    vim.keymap.set("n", "<leader>gc", function()
-      local claude_window = OpenClaude()
-
-      vim.fn.system({
-        "kitty",
-        "@",
-        "send-text",
-        "--match",
-        "id:" .. claude_window,
-        "/commit ",
-      })
-    end, { desc = "Git commit (claude)" })
     vim.keymap.set(
       "n",
       "<leader>gxc",

@@ -35,12 +35,67 @@ return {
     vim.keymap.set("n", "<leader>acc", OpenClaude, { desc = "Focus Claude" })
     vim.keymap.set("n", "<leader>axx", OpenCodex, { desc = "Focus Codex" })
     vim.keymap.set("n", "<leader>acn", NewClaude, { desc = "New Claude" })
-    vim.keymap.set("n", "<leader>ac!", NewDangerClaude, { desc = "New Claude (danger)" })
+    vim.keymap.set(
+      "n",
+      "<leader>ac!",
+      NewDangerClaude,
+      { desc = "New Claude (danger)" }
+    )
     vim.keymap.set("n", "<leader>axn", NewCodex, { desc = "New Codex" })
-    vim.keymap.set("n", "<leader>ax!", NewDangerCodex, { desc = "New Codex (danger)" })
-    vim.keymap.set("v", "<leader>acc", OpenClaudeWithContext, { desc = "Focus Claude with context" })
-    vim.keymap.set("v", "<leader>axx", OpenCodexWithContext, { desc = "Focus Codex with context" })
-    vim.keymap.set("v", "<leader>acn", NewClaudeWithContext, { desc = "New Claude with context" })
-    vim.keymap.set("v", "<leader>axn", NewCodexWithContext, { desc = "New Codex with context" })
+    vim.keymap.set(
+      "n",
+      "<leader>ax!",
+      NewDangerCodex,
+      { desc = "New Codex (danger)" }
+    )
+    vim.keymap.set(
+      "v",
+      "<leader>acc",
+      OpenClaudeWithContext,
+      { desc = "Focus Claude with context" }
+    )
+    vim.keymap.set(
+      "v",
+      "<leader>axx",
+      OpenCodexWithContext,
+      { desc = "Focus Codex with context" }
+    )
+    vim.keymap.set(
+      "v",
+      "<leader>acn",
+      NewClaudeWithContext,
+      { desc = "New Claude with context" }
+    )
+    vim.keymap.set(
+      "v",
+      "<leader>axn",
+      NewCodexWithContext,
+      { desc = "New Codex with context" }
+    )
+
+    vim.keymap.set("n", "<leader>acg", function()
+      local claude_window = OpenClaude()
+
+      vim.fn.system({
+        "kitty",
+        "@",
+        "send-text",
+        "--match",
+        "id:" .. claude_window,
+        "/commit ",
+      })
+    end, { desc = "Git commit" })
+    vim.keymap.set("n", "<leader>axg", function()
+      local codex_window = OpenCodex()
+
+      vim.fn.system({
+        "kitty",
+        "@",
+        "send-text",
+        "--match",
+        "id:" .. codex_window,
+        "/commit ",
+      })
+    end, { desc = "Git commit" })
   end,
 }
