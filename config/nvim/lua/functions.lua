@@ -214,7 +214,7 @@ function OpenCodex()
   return launch_ai("codex")
 end
 
-local function get_visual_context()
+function GetVisualContext()
   -- Escape visual mode first so that '< and '> marks are updated
   vim.api.nvim_feedkeys(
     vim.api.nvim_replace_termcodes("<Esc>", true, false, true),
@@ -258,7 +258,7 @@ local function send_to_ai_window(window_id, text)
 end
 
 function OpenClaudeWithContext()
-  local context = get_visual_context()
+  local context = GetVisualContext()
   local window_id = OpenClaude()
   vim.defer_fn(function()
     send_to_ai_window(window_id, context)
@@ -266,7 +266,7 @@ function OpenClaudeWithContext()
 end
 
 function OpenCodexWithContext()
-  local context = get_visual_context()
+  local context = GetVisualContext()
   local window_id = OpenCodex()
   vim.defer_fn(function()
     send_to_ai_window(window_id, context)
@@ -274,7 +274,7 @@ function OpenCodexWithContext()
 end
 
 function NewClaudeWithContext()
-  local context = get_visual_context()
+  local context = GetVisualContext()
   local window_id = NewClaude()
   vim.defer_fn(function()
     send_to_ai_window(window_id, context)
@@ -282,7 +282,7 @@ function NewClaudeWithContext()
 end
 
 function NewCodexWithContext()
-  local context = get_visual_context()
+  local context = GetVisualContext()
   local window_id = NewCodex()
   vim.defer_fn(function()
     send_to_ai_window(window_id, context)

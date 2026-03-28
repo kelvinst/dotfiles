@@ -87,6 +87,13 @@ vim.keymap.set(
   { desc = "Yank filename and line" }
 )
 
+-- Yank visual selection with file context
+vim.keymap.set("v", "<leader>yc", function()
+  local context = GetVisualContext()
+  vim.fn.setreg("+", context)
+  vim.notify("Copied visual context to clipboard", vim.log.levels.INFO)
+end, { desc = "Yank visual context" })
+
 -- Paste without cutting the current selection
 vim.keymap.set("x", "π", [["_dP]]) -- Alt+p
 
