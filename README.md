@@ -150,39 +150,23 @@ My new, simplified, dotfiles
 
 1. Install "FiraCode Nerd Font Mono" from [here](https://www.nerdfonts.com/)
 
-1. Install the runtime version manager: [`asdf`](https://asdf-vm.com)
+1. Install the runtime version manager: [`mise`](https://mise.jdx.dev)
 
     ```shell
-    brew install asdf
+    brew install mise
     ```
 
-1. Install the plugins for `elixir`, `erlang`, `rust`, `python`, `nodejs` and `yarn`:
+1. Install runtimes for `elixir`, `erlang`, `rust`, `python`, `node`, `yarn`, `just` and `zig`:
 
     ```shell
-    asdf plugin add elixir
-    asdf install elixir latest
-    asdf set -u elixir latest
-    asdf plugin add erlang
-    asdf install erlang latest
-    asdf set -u erlang latest
-    asdf plugin add rust
-    asdf install rust latest
-    asdf set -u rust latest
-    asdf plugin add python
-    asdf install python latest
-    asdf set -u python latest
-    asdf plugin add nodejs
-    asdf install nodejs latest
-    asdf set -u nodejs latest
-    asdf plugin add yarn
-    asdf install yarn latest
-    asdf set -u yarn latest
-    asdf plugin add just
-    asdf install just latest
-    asdf set -u just latest
-    asdf plugin add zig
-    asdf install zig latest
-    asdf set -u zig latest
+    mise use -g elixir@latest
+    mise use -g erlang@latest
+    mise use -g rust@latest
+    mise use -g python@latest
+    mise use -g node@latest
+    mise use -g yarn@latest
+    mise use -g just@latest
+    mise use -g zig@latest
     ```
 
 

@@ -13,10 +13,10 @@ export PATH="$HOME/.local/bin:$PATH"
 export PATH="$(brew --prefix)/bin:$PATH"
 
 # Add rust bin to path
-export PATH="$(asdf where rust)/bin:$PATH"
+export PATH="$(mise where rust)/bin:$PATH"
 
 # Add npm bin to path
-export PATH="$(asdf where nodejs)/.npm/bin:$PATH"
+export PATH="$(mise where node)/.npm/bin:$PATH"
 
 # Add opencode bin to path
 export PATH="$HOME/.opencode/bin:$PATH"

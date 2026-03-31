@@ -230,7 +230,7 @@ function GetVisualContext()
     lines[i] = line:gsub("\n", "\\n")
   end
   local content = table.concat(lines, "\n")
-  return "Here is the selected code from `"
+  return "`"
     .. filename
     .. "` (lines "
     .. start_line
@@ -240,7 +240,7 @@ function GetVisualContext()
     .. filetype
     .. "\n"
     .. content
-    .. "\n```\n\n"
+    .. "\n```"
 end
 
 local function send_to_ai_window(window_id, text)

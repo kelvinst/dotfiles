@@ -95,7 +95,7 @@ bindkey -v
 # NOTE: Dev stuff {{{
 
 # The runtime version manager
-. $(brew --prefix)/opt/asdf/libexec/asdf.sh
+eval "$(mise activate zsh)"
 
 # Configure mix to use more parallelism when compiling dependencies
 MIX_OS_DEPS_COMPILE_PARTITION_COUNT=4
@@ -111,7 +111,7 @@ alias a='aliases'
 alias b='bat'
 
 # claude
-# alias claude='ai-jail claude'
+alias claude='ai-jail claude'
 alias cl='claude'
 alias cl!='cl --dangerously-skip-permissions'
 
@@ -119,7 +119,7 @@ alias cl!='cl --dangerously-skip-permissions'
 alias c='clear'
 
 # codex
-# alias codex='ai-jail codex'
+alias codex='ai-jail codex'
 alias cx='codex'
 
 # eza
