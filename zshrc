@@ -111,7 +111,7 @@ alias a='aliases'
 alias b='bat'
 
 # claude
-alias claude='ai-jail claude'
+alias claude='ai-jail-worktree claude'
 alias cl='claude'
 alias cl!='cl --dangerously-skip-permissions'
 
@@ -119,7 +119,7 @@ alias cl!='cl --dangerously-skip-permissions'
 alias c='clear'
 
 # codex
-alias codex='ai-jail codex'
+alias codex='ai-jail-worktree codex'
 alias cx='codex'
 
 # eza
@@ -213,9 +213,20 @@ git_current_branch() {
 git_prune() {
   git remote prune origin
   git branch -vv | awk '/: gone]/{print ($1 == "*" || $1 == "+") ? $2 : $1}' | while read branch; do
-    [[ -d ".worktrees/$branch" ]] && git worktree remove .worktrees/$branch
+    local wtdir="$HOME/Developer/worktrees/$branch"
+    [[ -d "$wtdir" ]] && git worktree remove $wtdir
     git branch -D $branch
   done
+}
+
+# Wraps ai-jail to allow .git writes in worktrees
+ai-jail-worktree() {
+  local git_common_dir=$(command git rev-parse --git-common-dir 2>/dev/null)
+  if [[ -n "$git_common_dir" && "$git_common_dir" != ".git" ]]; then
+    ai-jail --rw-map "$git_common_dir" "$@"
+  else
+    ai-jail "$@"
+  fi
 }
 
 git_worktree_main_dir() {
