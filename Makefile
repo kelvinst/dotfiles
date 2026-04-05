@@ -2,10 +2,6 @@
 all: clean install
 
 install:
-	mkdir -p ~/.claude/skills/
-	mkdir -p ~/.codex/skills/
-	cp -r ./ai/skills/* ~/.claude/skills/
-	cp -r ./ai/skills/* ~/.codex/skills/
 	mkdir -p ~/.config/direnv/
 	cp -r ./config/direnv/* ~/.config/direnv/
 	mkdir -p ~/.config/kitty/
@@ -30,8 +26,6 @@ install:
 	cp ./zshrc ~/.zshrc
 
 clean:
-	rm -rf ~/.claude/skills/*
-	rm -rf ~/.codex/skills/*
 	rm -rf ~/.config/direnv/*
 	rm -rf ~/.config/kitty/*
 	rm -rf ~/.config/nvim/*
@@ -50,10 +44,6 @@ clean:
 	rm -rf ~/.zshrc
 
 update:
-	mkdir -p ./ai/skills/
-	cp -r ~/.claude/skills/* ./ai/skills/
-	# We have to decide which one to copy here
-	# cp -r ~/.codex/skills/* ./ai/skills/
 	mkdir -p ./config/direnv/
 	cp -r ~/.config/direnv/* ./config/direnv/
 	mkdir -p ./config/kitty/
