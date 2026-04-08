@@ -202,6 +202,12 @@ My new, simplified, dotfiles
     brew tap akitaonrails/tap && brew install ai-jail
     ```
 
+1. Install the worktree manager: [`worktrunk`](https://github.com/0k-software/worktrunk)
+
+    ```shell
+    brew install worktrunk
+    ```
+
 1. Install the code formatter: [`prettier`](https://prettier.io)
 
     ```shell

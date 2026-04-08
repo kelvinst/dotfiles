@@ -97,6 +97,9 @@ bindkey -v
 # The runtime version manager
 eval "$(mise activate zsh)"
 
+# Worktrunk - worktree management tool
+if command -v wt >/dev/null 2>&1; then eval "$(command wt config shell init zsh)"; fi
+
 # Configure mix to use more parallelism when compiling dependencies
 MIX_OS_DEPS_COMPILE_PARTITION_COUNT=4
 
@@ -555,4 +558,3 @@ if [ -f ~/.zshrc_private ]; then
 fi
 
 # }}}
-
