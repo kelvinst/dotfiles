@@ -152,9 +152,6 @@ alias gsp='git stash pop'
 alias gsk='git stash --include-untracked --keep-index'
 alias gsa='git stash --include-untracked'
 alias gu='git pull'
-alias gww='git_worktree_checkout'
-alias gwl='git worktree list'
-alias gwr='git_worktree_remove'
 
 # gigalixir
 alias gx='gigalixir'
@@ -181,6 +178,13 @@ alias t='tmux'
 alias nvim='nvim --listen /tmp/nvim-$(date +%s%N)'
 alias v='nvim'
 
+# wt - worktrunk
+alias wtl='wt list'
+alias wtm='wt switch main'
+alias wtr='wt remove'
+alias wts='wt step'
+alias wtt='wt switch'
+
 # Remove some useless predefined aliases
 unalias -m run-help
 unalias -m which-command
@@ -198,12 +202,23 @@ aliases() {
   fi
 }
 
-# Shows `git status -sb` if no arguments are given, otherwise runs `git` with the provided arguments
+# Shows `git status -sb` if no arguments are given, otherwise runs `git` with
+# the provided arguments
 git() {
   if [[ $# -eq 0 ]]; then
     command git status -sb
   else
     command git "$@"
+  fi
+}
+
+# `wt switch` if no arguments are given, otherwise runs `wt` with the
+# provided arguments
+wt() {
+  if [[ $# -eq 0 ]]; then
+    command wt switch
+  else
+    command wt "$@"
   fi
 }
 
@@ -232,52 +247,6 @@ ai-jail-worktree() {
   fi
 }
 
-git_worktree_main_dir() {
-  cd "$(git rev-parse --git-common-dir)/.." && pwd
-}
-
-git_worktree_dir() {
-  local base="$HOME/Developer/worktrees/$(basename "$(git_worktree_main_dir)")"
-  if [[ -n "$1" ]]; then
-    local existing=$(git worktree list --porcelain | grep -B2 "branch refs/heads/$1$" | head -1 | sed 's/^worktree //')
-    echo "${existing:-$base/$1}"
-  else
-    echo "$base"
-  fi
-}
-
-git_worktree_remove() {
-  if [[ -z "$1" ]]; then
-    echo "Usage: gwr <branch>"
-    return 1
-  fi
-  local target=$(git_worktree_dir $1)
-  local current=$(pwd)
-  local abs_target=$(realpath $target 2>/dev/null || echo $target)
-  git worktree remove $target && { [[ "$current" == "$abs_target" ]] && cd $(git_worktree_main_dir) || true; }
-}
-
-git_worktree_checkout() {
-  if [[ "$1" == "-b" ]]; then
-    git branch $2
-    shift
-  fi
-
-  local branch=$1
-  local worktree_dir=$(git_worktree_dir $branch)
-
-  if [[ -z "$branch" ]]; then
-    cd $(git_worktree_main_dir)
-  elif [[ -d "$worktree_dir" ]]; then
-    cd "$worktree_dir"
-  else
-    local base=$(pwd)
-    mkdir -p "$(dirname "$worktree_dir")"
-    git worktree add "$worktree_dir" $branch && cd "$worktree_dir"
-    local hook="$(git rev-parse --git-common-dir)/hooks/post-worktree-checkout"
-    [[ -x "$hook" ]] && "$hook" "$base" || true
-  fi
-}
 
 # Retries a command until it fails
 flaky() {
