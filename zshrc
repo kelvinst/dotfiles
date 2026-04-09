@@ -179,6 +179,7 @@ alias nvim='nvim --listen /tmp/nvim-$(date +%s%N)'
 alias v='nvim'
 
 # wt - worktrunk
+alias wtc='wt switch --create'
 alias wtl='wt list'
 alias wtm='wt switch main'
 alias wtr='wt remove'
@@ -212,15 +213,6 @@ git() {
   fi
 }
 
-# `wt switch` if no arguments are given, otherwise runs `wt` with the
-# provided arguments
-wt() {
-  if [[ $# -eq 0 ]]; then
-    command wt switch
-  else
-    command wt "$@"
-  fi
-}
 
 # Returns the current git branch
 git_current_branch() {
