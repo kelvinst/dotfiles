@@ -230,12 +230,11 @@ git_prune() {
 
 # Wraps ai-jail to allow .git writes in worktrees and git push via ssh
 ai-jail-worktree() {
-  local ssh_args=(--ssh)
   local git_common_dir=$(command git rev-parse --git-common-dir 2>/dev/null)
   if [[ -n "$git_common_dir" && "$git_common_dir" != ".git" ]]; then
-    ai-jail "${ssh_args[@]}" --rw-map "$git_common_dir" "$@"
+    ai-jail --ssh --rw-map "$git_common_dir" "$@"
   else
-    ai-jail "${ssh_args[@]}" "$@"
+    ai-jail --ssh "$@"
   fi
 }
 
