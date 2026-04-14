@@ -143,10 +143,6 @@ local function find_window_by_cmd(pattern)
   return nil
 end
 
-local function find_claude_window()
-  return find_window_by_cmd("claude")
-end
-
 local function launch_ai(cmd)
   return vim.fn.system({
     "kitty",
@@ -163,23 +159,27 @@ local function launch_ai(cmd)
 end
 
 function NewClaude()
-  return launch_ai("claude")
+  -- use the alias, to make sure we start ti from ai-jail
+  return launch_ai("cl")
 end
 
 function NewDangerClaude()
-  return launch_ai("claude --dangerously-skip-permissions")
+  -- use the alias, to make sure we start ti from ai-jail
+  return launch_ai("cl!")
 end
 
 function NewCodex()
-  return launch_ai("codex")
+  -- use the alias, to make sure we start ti from ai-jail
+  return launch_ai("cx")
 end
 
 function NewDangerCodex()
-  return launch_ai("codex --full-auto")
+  -- use the alias, to make sure we start ti from ai-jail
+  return launch_ai("cx!")
 end
 
 function OpenClaude()
-  local claude_window = find_claude_window()
+  local claude_window = find_window_by_cmd("claude")
 
   if claude_window then
     vim.fn.system({
@@ -193,7 +193,8 @@ function OpenClaude()
     return claude_window.id
   end
 
-  return launch_ai("claude")
+  -- use the alias, to make sure we start ti from ai-jail
+  return launch_ai("cl")
 end
 
 function OpenCodex()
@@ -211,7 +212,7 @@ function OpenCodex()
     return codex_window.id
   end
 
-  return launch_ai("codex")
+  return launch_ai("cx")
 end
 
 function GetVisualContext()

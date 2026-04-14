@@ -114,16 +114,15 @@ alias a='aliases'
 alias b='bat'
 
 # claude
-alias claude='ai-jail-worktree claude'
-alias cl='claude'
+alias cl='ai-jail-worktree claude'
 alias cl!='cl --dangerously-skip-permissions'
 
 # clear
 alias c='clear'
 
 # codex
-alias codex='ai-jail-worktree codex'
-alias cx='codex'
+alias cx='ai-jail-worktree codex'
+alias cx!='cl --full-auto'
 
 # eza
 alias ez='eza'
