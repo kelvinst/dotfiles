@@ -10,7 +10,7 @@
 export PATH="$HOME/.local/bin:$PATH"
 
 # Add homebrew bins to the beginning of PATH
-export PATH="$(brew --prefix)/bin:$PATH"
+export PATH="/opt/homebrew/bin:$PATH"
 
 # Add rust bin to path
 export PATH="$(mise where rust)/bin:$PATH"
@@ -22,6 +22,6 @@ export PATH="$(mise where node)/.npm/bin:$PATH"
 export PATH="$HOME/.opencode/bin:$PATH"
 
 # Add postgres bins to path
-export PATH="$(brew --prefix)/opt/postgresql@18/bin:$PATH"
+export PATH="/opt/homebrew/opt/postgresql@18/bin:$PATH"
 
 # }}}
