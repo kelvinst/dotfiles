@@ -222,8 +222,8 @@ git_current_branch() {
 git_prune() {
   git remote prune origin
   git branch -vv | awk '/: gone]/{print ($1 == "*" || $1 == "+") ? $2 : $1}' | while read branch; do
-    local wtdir="$HOME/Developer/worktrees/$branch"
-    [[ -d "$wtdir" ]] && git worktree remove $wtdir
+    local wtpath=$(git worktree list --porcelain | awk -v b="$branch" '/^worktree /{p=$2} /^branch refs\/heads\//{if ($2 == "refs/heads/"b) print p}')
+    [[ -n "$wtpath" ]] && git worktree remove "$wtpath"
     git branch -D $branch
   done
 }
