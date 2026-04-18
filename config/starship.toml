@@ -1,5 +1,8 @@
 format = """\
 $character\
+([ \
+$git_status\
+](bg:bg-border))\
 [ \
 $directory\
 $fill\
@@ -48,6 +51,11 @@ style = 'bold dimmed cyan bg:bg-middle'
 read_only = '🔒'
 truncate_to_repo = true
 truncation_symbol = ''
+
+[git_status]
+disabled = false
+format = '🌱([\[$all_status$ahead_behind\] ]($style))'
+style = 'bold red bg:bg-border'
 
 [status]
 disabled = false
