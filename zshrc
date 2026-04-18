@@ -235,9 +235,9 @@ git_prune() {
 ai-jail-worktree() {
   local git_common_dir=$(command git rev-parse --git-common-dir 2>/dev/null)
   if [[ -n "$git_common_dir" && "$git_common_dir" != ".git" ]]; then
-    ai-jail "${ssh_args[@]}" --ssh --rw-map "$git_common_dir" "$@"
+    ai-jail --ssh --rw-map "$git_common_dir" "$@"
   else
-    ai-jail "${ssh_args[@]}" --ssh "$@"
+    ai-jail --ssh "$@"
   fi
 }
 
