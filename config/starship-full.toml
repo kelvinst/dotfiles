@@ -106,31 +106,36 @@ $line_break"""
 add_newline = false
 command_timeout = 3000
 
-# Builtin colors:
-#
-#  0. black
-#  1. red
-#  2. green
-#  3. yellow
-#  4. blue
-#  5. magenta
-#  6. cyan
-#  7. white (off white)
-#  8. bright-black (dark gray)
-#  9. bright-red
-# 10: bright-green
-# 11: bright-yellow
-# 12: bright-blue
-# 13: bright-magenta
-# 14: bright-cyan
-# 15: bright-white
-
 palette = 'tokyo-night-moon'
 
 [palettes.tokyo-night-moon]
 bg-border = '#3b4261'
 bg-middle = '#2f334d'
 bg-inactive = '0'
+fg-black = '0'
+fg-red = '1'
+fg-green = '2'
+fg-yellow = '3'
+fg-blue = '4'
+fg-purple = '5'
+fg-cyan = '6'
+fg-white = '7'
+fg-neon-black = '240'
+fg-neon-red = '196'
+fg-neon-green = '46'
+fg-neon-yellow = '226'
+fg-neon-blue = '39'
+fg-neon-purple = '201'
+fg-neon-cyan = '49'
+fg-neon-white = '231'
+fg-orange = '208'
+fg-vermilion = '202'
+fg-lime = '149'
+fg-lavender = '147'
+fg-periwinkle = '105'
+fg-pink = '#FFAFF3'
+fg-sky = '#75AADB'
+fg-teal = '#0093A7'
 
 [custom.last_cmd]
 command = 'echo $LAST_CMD'
@@ -236,8 +241,20 @@ deleted_style = 'bold red bg:bg-border'
 
 [git_status]
 disabled = false
-format = '([\[$all_status$ahead_behind\] ]($style))'
-style = 'bold red bg:bg-border'
+format = '([$all_status$ahead_behind ]($style))'
+style = 'bold bg:bg-border'
+conflicted = '[≠${count}](bold fg-neon-purple bg:bg-border)'
+ahead = '[⇡${count}](bold fg-green bg:bg-border)'
+behind = '[⇣${count}](bold fg-red bg:bg-border)'
+diverged = '[⇡${ahead_count}](bold fg-green bg:bg-border)[⇣${behind_count}(bold fg-red bg:bg-border)'
+up_to_date = '[✔︎](bold fg-green bg:bg-border)'
+untracked = '[?${count}](bold fg-blue bg:bg-border)'
+stashed = '[\$${count}](bold fg-purple bg:bg-border)'
+modified = '[!${count}](bold fg-yellow bg:bg-border)'
+staged = '[+${count}](bold fg-neon-green bg:bg-border)'
+renamed = '[»${count}](bold fg-cyan bg:bg-border)'
+deleted = '[x${count}](bold fg-neon-red bg:bg-border)'
+typechanged = '[±${count}](bold fg-neon-blue bg:bg-border)'
 
 [hg_branch]
 disabled = false
@@ -280,21 +297,21 @@ truncation_symbol = ''
 [package]
 disabled = false
 format = '[$symbol$version ]($style)'
-style = 'bold 208 bg:bg-border'
+style = 'bold fg-orange bg:bg-border'
 symbol = '📦'
 version_format = '${raw}'
 
 [c]
 disabled = false
 format = '[$symbol($version(-$name)) ]($style)'
-style = 'bold 149 bg:bg-border'
+style = 'bold fg-lime bg:bg-border'
 symbol = '🌊'
 version_format = '${raw}'
 
 [cpp]
 disabled = false
 format = '[$symbol($version(-$name)) ]($style)'
-style = 'bold 149 bg:bg-border'
+style = 'bold fg-lime bg:bg-border'
 symbol = '✨'
 version_format = '${raw}'
 
@@ -378,7 +395,7 @@ version_format = '${raw}'
 [gleam]
 disabled = false
 format = '[$symbol($version) ]($style)'
-style = 'bold #FFAFF3 bg:bg-border'
+style = 'bold fg-pink bg:bg-border'
 symbol = '⭐'
 version_format = '${raw}'
 
@@ -406,7 +423,7 @@ version_format = '${raw}'
 [haxe]
 disabled = false
 format = '[$symbol($version) ]($style)'
-style = 'bold 202 bg:bg-border'
+style = 'bold fg-vermilion bg:bg-border'
 symbol = '🔶'
 version_format = '${raw}'
 
@@ -455,7 +472,7 @@ version_format = '${raw}'
 [mojo]
 disabled = false
 format = '[$symbol($version) ]($style)'
-style = 'bold 208 bg:bg-border'
+style = 'bold fg-orange bg:bg-border'
 symbol = '🔥'
 
 [nim]
@@ -495,14 +512,14 @@ version_format = '${raw}'
 [perl]
 disabled = false
 format = '[$symbol($version) ]($style)'
-style = 'bold 149 bg:bg-border'
+style = 'bold fg-lime bg:bg-border'
 symbol = '🦪'
 version_format = '${raw}'
 
 [php]
 disabled = false
 format = '[$symbol($version) ]($style)'
-style = 'bold 147 bg:bg-border'
+style = 'bold fg-lavender bg:bg-border'
 symbol = '🐘'
 version_format = '${raw}'
 
@@ -521,13 +538,13 @@ symbol = '🐍'
 [quarto]
 disabled = false
 format = '[$symbol($version) ]($style)'
-style = 'bold #75AADB bg:bg-border'
+style = 'bold fg-sky bg:bg-border'
 symbol = '🛌'
 
 [raku]
 disabled = false
 format = '[$symbol($version-$vm_version) ]($style)'
-style = 'bold 149 bg:bg-border'
+style = 'bold fg-lime bg:bg-border'
 symbol = '🦋'
 
 [rlang]
@@ -569,19 +586,19 @@ symbol = '🪨'
 [swift]
 disabled = false
 format = '[$symbol($version) ]($style)'
-style = 'bold 202 bg:bg-border'
+style = 'bold fg-vermilion bg:bg-border'
 symbol = '🪽'
 
 [terraform]
 disabled = false
 format = '[$symbol$workspace ]($style)'
-style = 'bold 105 bg:bg-border'
+style = 'bold fg-periwinkle bg:bg-border'
 symbol = '💠'
 
 [typst]
 disabled = false
 format = '[$symbol($version) ]($style)'
-style = 'bold #0093A7 bg:bg-border'
+style = 'bold fg-teal bg:bg-border'
 symbol = '🎹'
 
 [vlang]
