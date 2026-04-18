@@ -16,6 +16,7 @@ install:
 	cp -r ./hammerspoon/* ~/.hammerspoon/
 	cp -r ./config/init_starship.sh ~/.config/
 	cp -r ./config/starship.toml ~/.config/
+	cp -r ./config/starship-full.toml ~/.config/
 	cp ./default-gems ~/.default-gems
 	cp ./gitconfig ~/.gitconfig
 	cp ./global_gitignore ~/.global_gitignore
@@ -34,6 +35,7 @@ clean:
 	rm -rf ~/.hammerspoon/*
 	rm -rf ~/.config/init_starship.sh
 	rm -rf ~/.config/starship.toml
+	rm -rf ~/.config/starship-full.toml
 	rm -rf ~/.default-gems
 	rm -rf ~/.gitconfig
 	rm -rf ~/.global_gitignore
@@ -57,6 +59,7 @@ update:
 	mkdir -p ./hammerspoon
 	cp -r ~/.config/init_starship.sh ./config/
 	cp -r ~/.config/starship.toml ./config/
+	cp -r ~/.config/starship-full.toml ./config/
 	cp -r ~/.hammerspoon/* ./hammerspoon/
 	cp ~/.default-gems ./default-gems
 	cp ~/.gitconfig ./gitconfig

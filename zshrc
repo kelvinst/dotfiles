@@ -170,6 +170,9 @@ alias m='make'
 alias s='source'
 alias sz='source ~/.zshrc && source ~/.zshenv'
 
+# starship
+alias ss='toggle_starship_short_mode'
+
 # tmux
 alias t='tmux'
 
@@ -463,6 +466,22 @@ load_starship_prompt() {
   source $HOME/.config/init_starship.sh
 }
 load_starship_prompt
+
+# Toggle between short (default) and long starship prompt
+toggle_starship_short_mode() {
+  case "$1" in
+    long)  export STARSHIP_CONFIG="$HOME/.config/starship-full.toml" ;;
+    short) unset STARSHIP_CONFIG ;;
+    *)
+      if [[ "$STARSHIP_CONFIG" == "$HOME/.config/starship-full.toml" ]]; then
+        unset STARSHIP_CONFIG
+      else
+        export STARSHIP_CONFIG="$HOME/.config/starship-full.toml"
+      fi
+      ;;
+  esac
+  load_starship_prompt
+}
 
 # Print info after command execution
 print_info_after_cmd() {
