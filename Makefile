@@ -17,6 +17,7 @@ install:
 	cp -r ./config/init_starship.sh ~/.config/
 	cp -r ./config/starship.toml ~/.config/
 	cp -r ./config/starship-full.toml ~/.config/
+	cp ./ai-jail ~/.ai-jail
 	cp ./default-gems ~/.default-gems
 	cp ./gitconfig ~/.gitconfig
 	cp ./global_gitignore ~/.global_gitignore
@@ -36,6 +37,7 @@ clean:
 	rm -rf ~/.config/init_starship.sh
 	rm -rf ~/.config/starship.toml
 	rm -rf ~/.config/starship-full.toml
+	rm -rf ~/.ai-jail
 	rm -rf ~/.default-gems
 	rm -rf ~/.gitconfig
 	rm -rf ~/.global_gitignore
@@ -61,6 +63,7 @@ update:
 	cp -r ~/.config/starship.toml ./config/
 	cp -r ~/.config/starship-full.toml ./config/
 	cp -r ~/.hammerspoon/* ./hammerspoon/
+	cp ~/.ai-jail ./ai-jail
 	cp ~/.default-gems ./default-gems
 	cp ~/.gitconfig ./gitconfig
 	cp ~/.global_gitignore ./global_gitignore
