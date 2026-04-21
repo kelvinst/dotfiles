@@ -183,7 +183,7 @@ alias v='nvim'
 # wt - worktrunk
 alias wtc='wt switch --create'
 alias wtl='wt list'
-alias wtm='wt switch main'
+alias wtm='wt switch $(main_worktree_branch)'
 alias wtr='wt remove'
 alias wts='wt step'
 alias wtt='wt switch'
@@ -219,6 +219,12 @@ git() {
 # Returns the current git branch
 git_current_branch() {
   git rev-parse --abbrev-ref HEAD 2>/dev/null
+}
+
+# Returns the branch checked out in the main git worktree
+main_worktree_branch() {
+  local main_path=$(command git worktree list --porcelain | awk '/^worktree / { print $2; exit }')
+  command git -C "$main_path" branch --show-current
 }
 
 # Prune remote-tracking branches and delete local branches that tracked them
