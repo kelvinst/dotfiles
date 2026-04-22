@@ -7,15 +7,19 @@ set -eu
 
 bundle_id="$1"
 
-if aerospace list-windows --workspace focused --app-bundle-id "$bundle_id" 2>/dev/null | grep -q .; then
-    osascript -e "tell application id \"$bundle_id\" to activate"
-elif [ "$(osascript -e "application id \"$bundle_id\" is running")" = "true" ]; then
-    osascript -e "tell application id \"$bundle_id\"
-                      try
-                          make new window
-                      end try
-                      activate
-                  end tell"
+window_id=$(aerospace list-windows --workspace focused --app-bundle-id "$bundle_id" --format '%{window-id}' 2>/dev/null | head -n1)
+
+if [ -n "$window_id" ]; then
+  aerospace focus --window-id "$window_id"
+elif [ "$bundle_id" = "com.apple.finder" ]; then
+  # Finder uses a non-standard AppleScript verb and rejects `tell` until
+  # activated.
+  osascript -e 'tell application "Finder"
+                    make new Finder window
+                    activate
+                end tell'
+elif osascript -e "tell application id \"$bundle_id\" to make new window" >/dev/null 2>&1; then
+  osascript -e "tell application id \"$bundle_id\" to activate"
 else
-    open -b "$bundle_id"
+  open -b "$bundle_id"
 fi

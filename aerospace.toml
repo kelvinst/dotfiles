@@ -195,18 +195,18 @@ on-mode-changed = []
     alt-tab = 'move-workspace-to-monitor --wrap-around next'
 
     # Opening applications
-    cmd-ctrl-enter = 'exec-and-forget open -a /Applications/kitty.app'
-    cmd-ctrl-1 = 'exec-and-forget open -a /Applications/1Password.app'
-    cmd-ctrl-comma = 'exec-and-forget open -a /System/Applications/System\ Settings.app'
-    cmd-ctrl-a = 'exec-and-forget open -a /System/Applications/Calendar.app'
+    cmd-ctrl-enter = 'exec-and-forget aerospace-open-app net.kovidgoyal.kitty'
+    cmd-ctrl-1 = 'exec-and-forget aerospace-open-app com.1password.1password'
+    cmd-ctrl-comma = 'exec-and-forget aerospace-open-app com.apple.systempreferences'
+    cmd-ctrl-a = 'exec-and-forget aerospace-open-app com.apple.iCal'
     cmd-ctrl-b = 'exec-and-forget aerospace-open-app com.google.Chrome'
-    cmd-ctrl-f = 'exec-and-forget open -a /System/Library/CoreServices/Finder.app'
-    cmd-ctrl-k = 'exec-and-forget open -a /Applications/keymapp.app'
-    cmd-ctrl-m = 'exec-and-forget open -a /System/Applications/Mail.app'
-    cmd-ctrl-n = 'exec-and-forget open -a /System/Applications/Notes.app'
-    cmd-ctrl-p = 'exec-and-forget open -a /System/Applications/Music.app'
-    cmd-ctrl-w = 'exec-and-forget open -a /Applications/Whatsapp.app'
-    cmd-ctrl-z = 'exec-and-forget open -a /Applications/zoom.us.app'
+    cmd-ctrl-f = 'exec-and-forget aerospace-open-app com.apple.finder'
+    cmd-ctrl-k = 'exec-and-forget aerospace-open-app io.zsa.keymapp'
+    cmd-ctrl-m = 'exec-and-forget aerospace-open-app com.apple.mail'
+    cmd-ctrl-n = 'exec-and-forget aerospace-open-app com.apple.Notes'
+    cmd-ctrl-p = 'exec-and-forget aerospace-open-app com.apple.Music'
+    cmd-ctrl-w = 'exec-and-forget aerospace-open-app net.whatsapp.WhatsApp'
+    cmd-ctrl-z = 'exec-and-forget aerospace-open-app us.zoom.xos'
 
     # See: https://nikitabobko.github.io/AeroSpace/commands#mode
     alt-semicolon = 'mode service'
@@ -235,6 +235,11 @@ on-mode-changed = []
 
 [[on-window-detected]]
     if.app-id = 'com.apple.mail'
+    check-further-callbacks = true
+    run = ['move-node-to-workspace 0']
+
+[[on-window-detected]]
+    if.app-id = 'io.zsa.keymapp'
     check-further-callbacks = true
     run = ['move-node-to-workspace 0']
 

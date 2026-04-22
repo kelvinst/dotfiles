@@ -113,6 +113,10 @@ MIX_OS_DEPS_COMPILE_PARTITION_COUNT=4
 # alias
 alias a='aliases'
 
+# aerospace
+alias asp='aerospace'
+alias aspo='aerospace-open-app'
+
 # bat
 alias b='bat'
 
@@ -168,6 +172,9 @@ alias l='lc --color -Gla'
 
 # make
 alias m='make'
+
+# open
+alias o='open'
 
 # source
 alias s='source'
