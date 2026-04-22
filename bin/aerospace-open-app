@@ -18,6 +18,9 @@ elif [ "$bundle_id" = "com.apple.finder" ]; then
                     make new Finder window
                     activate
                 end tell'
+elif [ "$bundle_id" = "net.kovidgoyal.kitty" ]; then
+  # Kitty doesn't respond to AppleScript; `open -n` spawns a new OS window.
+  open -nb "$bundle_id"
 elif osascript -e "tell application id \"$bundle_id\" to make new window" >/dev/null 2>&1; then
   osascript -e "tell application id \"$bundle_id\" to activate"
 else

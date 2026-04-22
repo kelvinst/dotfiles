@@ -234,12 +234,12 @@ on-mode-changed = []
     run = ['move-node-to-workspace 0']
 
 [[on-window-detected]]
-    if.app-id = 'com.apple.mail'
+    if.app-id = 'io.zsa.keymapp'
     check-further-callbacks = true
     run = ['move-node-to-workspace 0']
 
 [[on-window-detected]]
-    if.app-id = 'io.zsa.keymapp'
+    if.app-id = 'com.apple.mail'
     check-further-callbacks = true
     run = ['move-node-to-workspace 0']
 
