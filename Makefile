@@ -14,6 +14,9 @@ install:
 	cp -r ./config/tidewave/* ~/.config/tidewave/
 	mkdir -p ~/.hammerspoon/
 	cp -r ./hammerspoon/* ~/.hammerspoon/
+	mkdir -p ~/.local/bin/
+	cp ./bin/* ~/.local/bin/
+	chmod +x ~/.local/bin/aerospace-open-app
 	mkdir -p ~/.zsh/completions/
 	cp -r ./zsh/completions/* ~/.zsh/completions/
 	cp -r ./config/init_starship.sh ~/.config/
@@ -37,6 +40,7 @@ clean:
 	rm -rf ~/.config/tms/*
 	rm -rf ~/.config/tidewave/*
 	rm -rf ~/.hammerspoon/*
+	rm -f ~/.local/bin/aerospace-open-app
 	rm -rf ~/.zsh/completions/*
 	rm -rf ~/.config/init_starship.sh
 	rm -rf ~/.config/starship.toml
@@ -70,6 +74,8 @@ update:
 	cp -r ~/.config/starship.toml ./config/
 	cp -r ~/.config/starship-full.toml ./config/
 	cp -r ~/.hammerspoon/* ./hammerspoon/
+	mkdir -p ./bin/
+	cp ~/.local/bin/aerospace-open-app ./bin/
 	cp ~/.aerospace.toml ./aerospace.toml
 	cp ~/.ai-jail ./ai-jail
 	cp ~/.default-gems ./default-gems

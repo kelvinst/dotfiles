@@ -1,0 +1,17 @@
+#!/bin/sh
+# Focus an app in the current aerospace workspace, or spawn a new window here.
+#
+# Usage: aerospace-open-app <bundle-id>
+
+set -eu
+
+bundle_id="$1"
+
+if aerospace list-windows --workspace focused --app-bundle-id "$bundle_id" 2>/dev/null | grep -q .; then
+    osascript -e "tell application id \"$bundle_id\" to activate"
+elif [ "$(osascript -e "application id \"$bundle_id\" is running")" = "true" ]; then
+    osascript -e "tell application id \"$bundle_id\" to make new window" \
+              -e "tell application id \"$bundle_id\" to activate"
+else
+    open -b "$bundle_id"
+fi

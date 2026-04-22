@@ -77,8 +77,9 @@
 
 # NOTE: kitty {{{
 
+# WARNING: Disabled quick access, I never used it anyway
 # open a quick access kitty
-cmd + ctrl + shift - return : kitten quick-access-terminal
+# cmd + ctrl + shift - return : kitten quick-access-terminal
 
 # }}}
 
