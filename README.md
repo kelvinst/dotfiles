@@ -58,7 +58,7 @@ My new, simplified, dotfiles
     brew install zoxide
     ```
 
-1. Isntall the modern replace for ls: [`eza`](https://github.com/eza-community/eza)
+1. Install the modern replace for ls: [`eza`](https://github.com/eza-community/eza)
 
     ```shell
     brew install eza
@@ -194,6 +194,12 @@ My new, simplified, dotfiles
 
     ```shell
     brew install koekeishiya/formulae/skhd
+    ```
+
+1. Install [JankyBorders](https://github.com/FelixKratz/JankyBorders)
+
+    ```shell
+    brew tap FelixKratz/formulae && brew install borders
     ```
 
 1. Install [ai-jail](https://github.com/akitaonrails/ai-jail)
