@@ -10,8 +10,12 @@ bundle_id="$1"
 if aerospace list-windows --workspace focused --app-bundle-id "$bundle_id" 2>/dev/null | grep -q .; then
     osascript -e "tell application id \"$bundle_id\" to activate"
 elif [ "$(osascript -e "application id \"$bundle_id\" is running")" = "true" ]; then
-    osascript -e "tell application id \"$bundle_id\" to make new window" \
-              -e "tell application id \"$bundle_id\" to activate"
+    osascript -e "tell application id \"$bundle_id\"
+                      try
+                          make new window
+                      end try
+                      activate
+                  end tell"
 else
     open -b "$bundle_id"
 fi
