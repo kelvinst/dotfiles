@@ -19,6 +19,8 @@ Commands:
                           passed, it is stripped and, on focus failure, the
                           adjacent workspace is focused (right/down → next,
                           left/up → prev).
+  focus dfs-first         Focus the first window (`--dfs-index 0`).
+  focus dfs-last          Focus the last window on the focused workspace.
   help                    Show this help.
 
 Any other command is forwarded to `aerospace` verbatim, so
@@ -64,6 +66,19 @@ cmd_open() {
 }
 
 cmd_focus() {
+  # Custom shorthands for `--dfs-index` endpoints.
+  case "${1:-}" in
+  dfs-first)
+    aerospace focus --dfs-index 0
+    return
+    ;;
+  dfs-last)
+    last=$(($(aerospace list-windows --workspace focused --format '%{window-id}' | wc -l) - 1))
+    aerospace focus --dfs-index "$last"
+    return
+    ;;
+  esac
+
   # Extend `aerospace focus` with a custom `--boundaries-action
   # focus-sibling-workspace` value: strip that flag and, on focus failure,
   # switch to the adjacent workspace (right/down → next, left/up → prev).
@@ -96,12 +111,11 @@ cmd_focus() {
   case "$direction" in
   right | down)
     aerospace workspace --wrap-around --no-stdin next
-    aerospace focus --dfs-index 0
+    cmd_focus dfs-first
     ;;
   left | up)
     aerospace workspace --wrap-around --no-stdin prev
-    last=$(($(aerospace list-windows --workspace focused --format '%{window-id}' | wc -l) - 1))
-    aerospace focus --dfs-index "$last"
+    cmd_focus dfs-last
     ;;
   *) return 1 ;;
   esac
