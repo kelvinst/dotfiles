@@ -14,6 +14,8 @@ install:
 	cp -r ./config/tidewave/* ~/.config/tidewave/
 	mkdir -p ~/.hammerspoon/
 	cp -r ./hammerspoon/* ~/.hammerspoon/
+	mkdir -p ~/.zsh/completions/
+	cp -r ./zsh/completions/* ~/.zsh/completions/
 	cp -r ./config/init_starship.sh ~/.config/
 	cp -r ./config/starship.toml ~/.config/
 	cp -r ./config/starship-full.toml ~/.config/
@@ -35,6 +37,7 @@ clean:
 	rm -rf ~/.config/tms/*
 	rm -rf ~/.config/tidewave/*
 	rm -rf ~/.hammerspoon/*
+	rm -rf ~/.zsh/completions/*
 	rm -rf ~/.config/init_starship.sh
 	rm -rf ~/.config/starship.toml
 	rm -rf ~/.config/starship-full.toml
@@ -61,6 +64,8 @@ update:
 	mkdir -p ./config/tidewave/
 	cp -r ~/.config/tidewave/* ./config/tidewave/
 	mkdir -p ./hammerspoon
+	mkdir -p ./zsh/completions/
+	cp -r ~/.zsh/completions/* ./zsh/completions/
 	cp -r ~/.config/init_starship.sh ./config/
 	cp -r ~/.config/starship.toml ./config/
 	cp -r ~/.config/starship-full.toml ./config/
