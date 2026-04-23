@@ -134,16 +134,21 @@ on-mode-changed = []
     alt-shift-r = ['reload-config', '''exec-and-forget osascript -e 'display notification "Config reloaded" with title "AeroSpace"' ''']
 
     # See: https://nikitabobko.github.io/AeroSpace/commands#focus
-    alt-h = 'exec-and-forget orbit focus --boundaries-action focus-sibling-workspace left'
-    alt-j = 'exec-and-forget orbit focus --boundaries-action focus-sibling-workspace down'
-    alt-k = 'exec-and-forget orbit focus --boundaries-action focus-sibling-workspace up'
-    alt-l = 'exec-and-forget orbit focus --boundaries-action focus-sibling-workspace right'
+    alt-h = 'exec-and-forget orbit focus --boundaries-action sibling-workspace left'
+    alt-j = 'exec-and-forget orbit focus --boundaries-action sibling-workspace down'
+    alt-k = 'exec-and-forget orbit focus --boundaries-action sibling-workspace up'
+    alt-l = 'exec-and-forget orbit focus --boundaries-action sibling-workspace right'
 
     # See: https://nikitabobko.github.io/AeroSpace/commands#move
     alt-shift-h = 'swap --wrap-around left'
     alt-shift-j = 'swap --wrap-around down'
     alt-shift-k = 'swap --wrap-around up'
     alt-shift-l = 'swap --wrap-around right'
+
+    alt-shift-ctrl-h = 'exec-and-forget orbit move --boundaries-action sibling-workspace left'
+    alt-shift-ctrl-j = 'exec-and-forget orbit move --boundaries-action sibling-workspace down'
+    alt-shift-ctrl-k = 'exec-and-forget orbit move --boundaries-action sibling-workspace up'
+    alt-shift-ctrl-l = 'exec-and-forget orbit move --boundaries-action sibling-workspace right'
 
     alt-ctrl-h = 'join-with left'
     alt-ctrl-j = 'join-with down'

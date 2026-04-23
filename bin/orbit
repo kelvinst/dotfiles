@@ -12,6 +12,7 @@ Usage: orbit <command> [args...]
 Commands:
   open     Focus or spawn an app window by bundle-id.
   focus    A wrapper around `aerospace focus` that adds more options to it.
+  move     A wrapper around `aerospace move` that adds more options to it.
   help     Show this help.
 
 Run `orbit <command> help` for details on a command.
@@ -39,13 +40,26 @@ Usage: orbit focus dfs-first
 A wrapper around `aerospace focus` that adds more options to it.
 
 Added options:
-  --boundaries-action focus-sibling-workspace
+  --boundaries-action sibling-workspace
         On focus failure, focus the adjacent workspace instead
         (right/down → next, left/up → prev).
 
 Added subcommands:
   dfs-first   Focus the first window (`--dfs-index 0`).
   dfs-last    Focus the last window on the focused workspace.
+EOF
+}
+
+cmd_move_help() {
+  cat <<'EOF'
+Usage: orbit move [args...]
+
+A wrapper around `aerospace move` that adds more options to it.
+
+Added options:
+  --boundaries-action sibling-workspace
+        On move failure, move the window to the adjacent workspace instead
+        (right/down → next, left/up → prev).
 EOF
 }
 
@@ -111,14 +125,14 @@ cmd_focus() {
   esac
 
   # Extend `aerospace focus` with a custom `--boundaries-action
-  # focus-sibling-workspace` value: strip that flag and, on focus failure,
+  # sibling-workspace` value: strip that flag and, on focus failure,
   # switch to the adjacent workspace (right/down → next, left/up → prev).
   # Any other invocation is forwarded verbatim.
   sibling=0
   count=$#
   idx=0
   while [ "$idx" -lt "$count" ]; do
-    if [ "$1" = "--boundaries-action" ] && [ "${2:-}" = "focus-sibling-workspace" ]; then
+    if [ "$1" = "--boundaries-action" ] && [ "${2:-}" = "sibling-workspace" ]; then
       sibling=1
       shift 2
       idx=$((idx + 2))
@@ -152,6 +166,56 @@ cmd_focus() {
   esac
 }
 
+cmd_move() {
+  case "${1:-}" in
+  help | -h | --help)
+    cmd_move_help
+    return
+    ;;
+  esac
+
+  # Extend `aerospace move` with a custom `--boundaries-action
+  # sibling-workspace` value: strip that flag and, on move failure,
+  # send the window to the adjacent workspace (right/down → next, left/up →
+  # prev). Any other invocation is forwarded verbatim.
+  sibling=0
+  count=$#
+  idx=0
+  while [ "$idx" -lt "$count" ]; do
+    if [ "$1" = "--boundaries-action" ] && [ "${2:-}" = "sibling-workspace" ]; then
+      sibling=1
+      shift 2
+      idx=$((idx + 2))
+      continue
+    fi
+    arg="$1"
+    shift
+    set -- "$@" "$arg"
+    idx=$((idx + 1))
+  done
+
+  if [ "$sibling" -eq 0 ]; then
+    exec aerospace move "$@"
+  fi
+
+  if aerospace move --boundaries-action fail "$@" 2>/dev/null; then
+    return
+  fi
+  direction=""
+  for arg in "$@"; do direction="$arg"; done
+  case "$direction" in
+  right | down)
+    aerospace move-node-to-workspace --wrap-around --focus-follows-window --no-stdin next
+    while aerospace move --boundaries-action fail left 2>/dev/null; do :; done
+    ;;
+  left | up)
+    aerospace move-node-to-workspace --wrap-around --focus-follows-window --no-stdin prev
+    while aerospace move --boundaries-action fail right 2>/dev/null; do :; done
+    ;;
+  *) return 1 ;;
+  esac
+}
+
 case "${1:-help}" in
 open)
   shift
@@ -160,6 +224,10 @@ open)
 focus)
   shift
   cmd_focus "$@"
+  ;;
+move)
+  shift
+  cmd_move "$@"
   ;;
 help | -h | --help) cmd_help ;;
 *) exec aerospace "$@" ;;
