@@ -92,10 +92,15 @@ EOF
 
 cmd_preset_help() {
   cat <<'EOF'
-Usage: orbit preset <preset-name>
+Usage: orbit preset [options] <preset-name>
 
 Arrange the focused workspace into a predefined layout. The focused window
 becomes the "main" window of the preset.
+
+Options:
+  --main-size <delta>   Resize the main window by <delta> along the preset's
+                        main dimension — width for column presets, height
+                        for row presets (e.g. `+150`, `-50`).
 
 Presets:
   2-col-left    Main window on the left, remaining windows stacked
@@ -318,23 +323,41 @@ cmd_swap_or_move() {
 }
 
 cmd_preset() {
+  main_size=""
+  while [ "$#" -gt 0 ]; do
+    case "$1" in
+    help | -h | --help | "")
+      cmd_preset_help
+      return
+      ;;
+    --main-size)
+      main_size="${2:-}"
+      shift 2
+      ;;
+    --)
+      shift
+      break
+      ;;
+    -*)
+      echo "orbit preset: unknown option '$1'" >&2
+      cmd_preset_help >&2
+      return 2
+      ;;
+    *)
+      break
+      ;;
+    esac
+  done
+
   case "${1:-}" in
-  help | -h | --help | "")
+  "")
     cmd_preset_help
     return
     ;;
-  2-col-left)
-    cmd_preset_2 left
-    ;;
-  2-col-right)
-    cmd_preset_2 right
-    ;;
-  2-row-top)
-    cmd_preset_2 top
-    ;;
-  2-row-bottom)
-    cmd_preset_2 bottom
-    ;;
+  2-col-left) cmd_preset_2 left ;;
+  2-col-right) cmd_preset_2 right ;;
+  2-row-top) cmd_preset_2 top ;;
+  2-row-bottom) cmd_preset_2 bottom ;;
   *)
     echo "orbit preset: unknown preset '$1'" >&2
     cmd_preset_help >&2
@@ -349,10 +372,10 @@ cmd_preset_2() {
   # normalized to aerospace's up/down direction names for move/join-with.
   main_side="$1"
   case "$main_side" in
-  left) stack_side=right top_layout=h_tiles ;;
-  right) stack_side=left top_layout=h_tiles ;;
-  top) main_side=up stack_side=down top_layout=v_tiles ;;
-  bottom) main_side=down stack_side=up top_layout=v_tiles ;;
+  left) stack_side=right top_layout=h_tiles main_dim=width ;;
+  right) stack_side=left top_layout=h_tiles main_dim=width ;;
+  top) stack_side=down top_layout=v_tiles main_dim=height main_side=up ;;
+  bottom) stack_side=up top_layout=v_tiles main_dim=height main_side=down ;;
   esac
 
   main_id=$(aerospace list-windows --focused --format '%{window-id}')
@@ -364,55 +387,32 @@ cmd_preset_2() {
   # Push main to the chosen edge of the top-level container.
   while aerospace move --boundaries-action fail "$main_side" 2>/dev/null; do :; done
 
-  # Collect non-main windows in dfs order.
-  others=$(aerospace list-windows --workspace focused --format '%{window-id}' |
-    grep -v "^${main_id}\$" || :)
-  # shellcheck disable=SC2086
-  set -- $others
-
-  if [ "$#" -ge 2 ]; then
-    # Anchor the nested container on the stack side: if the stack comes first
-    # in dfs order (stack_side left/up), the anchor is window #2 joining with
-    # #1; otherwise it's the second-to-last joining with the last.
-    case "$stack_side" in
-    left | up) anchor_idx=2 ;;
-    right | down) anchor_idx=$(($# - 1)) ;;
-    esac
-    eval "anchor=\${$anchor_idx}"
-    aerospace focus --window-id "$anchor"
-    aerospace join-with "$stack_side"
-
-    # Pull the remaining non-main windows into the nested container, starting
-    # with the one closest to it so each move's neighbor is the container
-    # rather than another plain window.
-    case "$stack_side" in
-    left | up)
-      shift 2
-      while [ "$#" -gt 0 ]; do
-        aerospace focus --window-id "$1"
-        aerospace move "$stack_side"
-        shift
-      done
-      ;;
-    right | down)
-      i=$(($# - 2))
-      while [ "$i" -ge 1 ]; do
-        eval "id=\${$i}"
-        aerospace focus --window-id "$id"
-        aerospace move "$stack_side"
-        i=$((i - 1))
-      done
-      ;;
-    esac
+  # Build the nested stack container by navigating with focus/move rather than
+  # trusting list-windows to return tree order. Skip if there are fewer than
+  # two non-main windows (nothing to stack).
+  total=$(aerospace list-windows --workspace focused --count)
+  if [ "$total" -ge 3 ]; then
+    # Focus the stack_side-most window (furthest from main).
+    while aerospace focus --boundaries-action fail "$stack_side" 2>/dev/null; do :; done
+    # Wrap it with its main_side neighbor into a new container whose layout
+    # is opposite to the top-level — i.e., the stack container.
+    aerospace join-with "$main_side"
+    # Pull each remaining non-main window into the container: step toward main
+    # by focus, then push the window back toward stack_side. Stop once focus
+    # reaches the main window.
+    while aerospace focus --boundaries-action fail "$main_side" 2>/dev/null; do
+      current_id=$(aerospace list-windows --focused --format '%{window-id}')
+      [ "$current_id" = "$main_id" ] && break
+      aerospace move "$stack_side"
+    done
   fi
 
   aerospace focus --window-id "$main_id"
   aerospace balance-sizes
 
-  # Widen main slightly in column layouts. Row layouts keep balanced heights.
-  case "$main_side" in
-  left | right) aerospace resize width +150 2>/dev/null || : ;;
-  esac
+  if [ -n "$main_size" ]; then
+    aerospace resize "$main_dim" "$main_size" 2>/dev/null || :
+  fi
 }
 
 case "${1:-help}" in
