@@ -207,7 +207,7 @@ on-mode-changed = []
     cmd-ctrl-n = 'exec-and-forget aerospace-open-app -a com.apple.Notes'
     cmd-ctrl-p = 'exec-and-forget aerospace-open-app -a com.apple.Music'
     cmd-ctrl-w = 'exec-and-forget aerospace-open-app -a net.whatsapp.WhatsApp'
-    cmd-ctrl-z = 'exec-and-forget aerospace-open-app us.zoom.xos'
+    cmd-ctrl-z = 'exec-and-forget aerospace-open-app -a us.zoom.xos'
 
     # See: https://nikitabobko.github.io/AeroSpace/commands#mode
     alt-semicolon = 'mode service'
@@ -258,3 +258,9 @@ on-mode-changed = []
     if.app-id = 'net.whatsapp.WhatsApp'
     check-further-callbacks = true
     run = ['move-node-to-workspace 0']
+
+[[on-window-detected]]
+    if.app-id = 'us.zoom.xos'
+    check-further-callbacks = true
+    run = ['move-node-to-workspace 0']
+
