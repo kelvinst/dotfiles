@@ -1,9 +1,23 @@
+import os
 import re
+import subprocess
 
 from kittens.tui.handler import result_handler
 from kitty.key_encoding import KeyEvent, parse_shortcut
 
 VIM_ID = "n?vim"
+
+# kitty's subprocess PATH doesn't inherit our login shell's additions, so the
+# bare `orbit` name isn't resolvable. Use the absolute path instead.
+ORBIT = os.path.expanduser("~/.local/bin/orbit")
+
+# kitty uses top/bottom/left/right; aerospace uses up/down/left/right.
+AEROSPACE_DIRECTION = {
+    "top": "up",
+    "bottom": "down",
+    "left": "left",
+    "right": "right",
+}
 
 
 def is_window_vim(window):
@@ -47,4 +61,19 @@ def handle_result(args, result, target_window_id, boss):
             encoded = encode_key_mapping(window, keymap)
             window.write_to_child(encoded)
     else:
+        before = boss.active_window.id if boss.active_window else None
         boss.active_tab.neighboring_window(direction)
+        after = boss.active_window.id if boss.active_window else None
+        if before is not None and before == after:
+            # No kitty pane in this direction — escalate to aerospace focus.
+            aero_dir = AEROSPACE_DIRECTION.get(direction)
+            if aero_dir:
+                subprocess.Popen(
+                    [
+                        ORBIT,
+                        "focus",
+                        "--boundaries-action",
+                        "sibling-workspace",
+                        aero_dir,
+                    ]
+                )
