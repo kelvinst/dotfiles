@@ -113,6 +113,8 @@ Presets:
                 in a single row above.
   3-col-left    Main window on the left, remaining windows split between
                 two columns on the right, each stacked vertically.
+  3-col-right   Main window on the right, remaining windows split between
+                two columns on the left, each stacked vertically.
 EOF
 }
 
@@ -361,6 +363,7 @@ cmd_preset() {
   2-row-top) cmd_preset_2 top ;;
   2-row-bottom) cmd_preset_2 bottom ;;
   3-col-left) cmd_preset_3 left ;;
+  3-col-right) cmd_preset_3 right ;;
   *)
     echo "orbit preset: unknown preset '$1'" >&2
     cmd_preset_help >&2
