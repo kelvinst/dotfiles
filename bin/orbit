@@ -10,25 +10,50 @@ orbit — aerospace helper.
 Usage: orbit <command> [args...]
 
 Commands:
-  open [-a|--all] <bundle-id>
-                          Focus an app window in the focused aerospace
-                          workspace, or spawn a new window here. With
-                          -a/--all, focus an existing window in any workspace.
-  focus [args...]         Run `aerospace focus` with the given args. If
-                          `--boundaries-action focus-sibling-workspace` is
-                          passed, it is stripped and, on focus failure, the
-                          adjacent workspace is focused (right/down → next,
-                          left/up → prev).
-  focus dfs-first         Focus the first window (`--dfs-index 0`).
-  focus dfs-last          Focus the last window on the focused workspace.
-  help                    Show this help.
+  open     Focus or spawn an app window by bundle-id.
+  focus    Focus a window, with optional sibling-workspace fallback.
+  help     Show this help.
+
+Run `orbit <command> help` for details on a command.
 
 Any other command is forwarded to `aerospace` verbatim, so
 `orbit reload-config` runs `aerospace reload-config`.
 EOF
 }
 
+cmd_open_help() {
+  cat <<'EOF'
+Usage: orbit open [-a|--all] <bundle-id>
+
+Focus an app window in the focused aerospace workspace, or spawn a new window
+here. With -a/--all, focus an existing window in any workspace.
+EOF
+}
+
+cmd_focus_help() {
+  cat <<'EOF'
+Usage: orbit focus [args...]
+       orbit focus dfs-first
+       orbit focus dfs-last
+
+Run `aerospace focus` with the given args. If `--boundaries-action
+focus-sibling-workspace` is passed, it is stripped and, on focus failure, the
+adjacent workspace is focused (right/down → next, left/up → prev).
+
+Shorthands:
+  dfs-first   Focus the first window (`--dfs-index 0`).
+  dfs-last    Focus the last window on the focused workspace.
+EOF
+}
+
 cmd_open() {
+  case "${1:-}" in
+  help | -h | --help)
+    cmd_open_help
+    return
+    ;;
+  esac
+
   any_workspace=0
   case "${1:-}" in
   -a | --all)
@@ -66,8 +91,11 @@ cmd_open() {
 }
 
 cmd_focus() {
-  # Custom shorthands for `--dfs-index` endpoints.
   case "${1:-}" in
+  help | -h | --help)
+    cmd_focus_help
+    return
+    ;;
   dfs-first)
     aerospace focus --dfs-index 0
     return
