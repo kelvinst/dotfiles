@@ -126,6 +126,8 @@ on-mode-changed = []
 
     alt-q = 'exec-and-forget orbit preset 2-col-left'
     alt-w = 'exec-and-forget orbit preset 2-col-right'
+    alt-shift-q = 'exec-and-forget orbit preset 2-row-top'
+    alt-shift-w = 'exec-and-forget orbit preset 2-row-bottom'
 
     alt-t = 'layout floating tiling' # Toggle between floating and tiling layout
 
