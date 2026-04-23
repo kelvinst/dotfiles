@@ -50,8 +50,9 @@ A wrapper around `aerospace focus` that adds more options to it.
 
 Added options:
   --boundaries-action sibling-workspace
-        On focus failure, focus the adjacent workspace instead
-        (right/down → next, left/up → prev).
+        On horizontal focus failure, focus the adjacent workspace
+        instead (right → next, left → prev). Only applies to
+        left/right — up/down just fail at the boundary.
 
 Added subcommands:
   dfs-first   Focus the first window (`--dfs-index 0`).
@@ -67,8 +68,9 @@ A wrapper around `aerospace move` that adds more options to it.
 
 Added options:
   --boundaries-action sibling-workspace
-        On move failure, move the window to the adjacent workspace instead
-        (right/down → next, left/up → prev).
+        On horizontal move failure, move the window to the adjacent
+        workspace instead (right → next, left → prev). Only applies
+        to left/right — up/down just fail at the boundary.
 EOF
 }
 
@@ -234,11 +236,11 @@ cmd_focus() {
   direction=""
   for arg in "$@"; do direction="$arg"; done
   case "$direction" in
-  right | down)
+  right)
     aerospace workspace --wrap-around --no-stdin next
     cmd_focus dfs-first
     ;;
-  left | up)
+  left)
     aerospace workspace --wrap-around --no-stdin prev
     cmd_focus dfs-last
     ;;
@@ -255,9 +257,10 @@ cmd_move() {
   esac
 
   # Extend `aerospace move` with a custom `--boundaries-action
-  # sibling-workspace` value: strip that flag and, on move failure,
-  # send the window to the adjacent workspace (right/down → next, left/up →
-  # prev). Any other invocation is forwarded verbatim.
+  # sibling-workspace` value: strip that flag and, on horizontal move
+  # failure, send the window to the adjacent workspace (right → next,
+  # left → prev). up/down fall through to the default fail behavior.
+  # Any other invocation is forwarded verbatim.
   sibling=0
   count=$#
   idx=0
@@ -296,11 +299,11 @@ cmd_move() {
   direction=""
   for arg in "$@"; do direction="$arg"; done
   case "$direction" in
-  right | down)
+  right)
     aerospace move-node-to-workspace --wrap-around --focus-follows-window --no-stdin next
     while aerospace move --boundaries-action fail left 2>/dev/null; do :; done
     ;;
-  left | up)
+  left)
     aerospace move-node-to-workspace --wrap-around --focus-follows-window --no-stdin prev
     while aerospace move --boundaries-action fail right 2>/dev/null; do :; done
     ;;
