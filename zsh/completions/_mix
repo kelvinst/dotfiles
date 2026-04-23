@@ -65,7 +65,9 @@ _mix() {
     return
   fi
 
-  # Build a cache key from project path + mtimes of mix.exs and mix.lock
+  # Build a cache key from project path + mtimes of mix.exs, mix.lock, and
+  # the global archives dir (so `mix archive.install`/`archive.uninstall` also
+  # invalidates cached task lists).
   local project_hash=$(echo -n "$project_dir" | shasum -a 256 | cut -c1-16)
   local project_cache_dir="$cache_dir/$project_hash"
   mkdir -p "$project_cache_dir"
@@ -73,7 +75,10 @@ _mix() {
   local mix_exs_mtime=$(stat -f %m "$project_dir/mix.exs" 2>/dev/null || echo 0)
   local mix_lock_mtime=0
   [[ -f "$project_dir/mix.lock" ]] && mix_lock_mtime=$(stat -f %m "$project_dir/mix.lock" 2>/dev/null || echo 0)
-  local cache_key="$mix_exs_mtime:$mix_lock_mtime"
+  local mix_archives_dir="${MIX_HOME:-$HOME/.mix}/archives"
+  local mix_archives_mtime=0
+  [[ -d "$mix_archives_dir" ]] && mix_archives_mtime=$(stat -f %m "$mix_archives_dir" 2>/dev/null || echo 0)
+  local cache_key="$mix_exs_mtime:$mix_lock_mtime:$mix_archives_mtime"
 
   # Check if task list cache is valid
   local needs_refresh=1
