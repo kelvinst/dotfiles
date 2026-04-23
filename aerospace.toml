@@ -193,17 +193,18 @@ on-mode-changed = []
     alt-comma = 'workspace --wrap-around prev'
 
     alt-tab = 'move-workspace-to-monitor --wrap-around next'
+    alt-shift-tab = 'move-workspace-to-monitor --wrap-around prev'
 
     # Opening applications
     cmd-ctrl-enter = 'exec-and-forget aerospace-open-app net.kovidgoyal.kitty'
-    cmd-ctrl-1 = 'exec-and-forget aerospace-open-app com.1password.1password'
+    cmd-ctrl-1 = 'exec-and-forget aerospace-open-app -a com.1password.1password'
     cmd-ctrl-comma = 'exec-and-forget aerospace-open-app -a com.apple.systempreferences'
     cmd-ctrl-a = 'exec-and-forget aerospace-open-app -a com.apple.iCal'
     cmd-ctrl-b = 'exec-and-forget aerospace-open-app com.google.Chrome'
     cmd-ctrl-f = 'exec-and-forget aerospace-open-app com.apple.finder'
     cmd-ctrl-k = 'exec-and-forget aerospace-open-app -a io.zsa.keymapp'
     cmd-ctrl-m = 'exec-and-forget aerospace-open-app -a com.apple.mail'
-    cmd-ctrl-n = 'exec-and-forget aerospace-open-app com.apple.Notes'
+    cmd-ctrl-n = 'exec-and-forget aerospace-open-app -a com.apple.Notes'
     cmd-ctrl-p = 'exec-and-forget aerospace-open-app -a com.apple.Music'
     cmd-ctrl-w = 'exec-and-forget aerospace-open-app -a net.whatsapp.WhatsApp'
     cmd-ctrl-z = 'exec-and-forget aerospace-open-app us.zoom.xos'
@@ -244,9 +245,14 @@ on-mode-changed = []
     run = ['move-node-to-workspace 0']
 
 [[on-window-detected]]
-    if.app-id = 'com.apple.Music'
+    if.app-id = 'com.apple.Notes'
     check-further-callbacks = true
     run = ['move-node-to-workspace 0']
+
+[[on-window-detected]]
+    if.app-id = 'com.apple.Music'
+    check-further-callbacks = true
+    run = ['move-node-to-workspace 0', 'layout tiling']
 
 [[on-window-detected]]
     if.app-id = 'net.whatsapp.WhatsApp'
