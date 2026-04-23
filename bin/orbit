@@ -1,0 +1,65 @@
+#!/bin/sh
+# orbit — our aerospace wrapper with more commands
+
+set -eu
+
+cmd_help() {
+  cat <<'EOF'
+orbit — aerospace helper.
+
+Usage: orbit <command> [args...]
+
+Commands:
+  open [-a] <bundle-id>   Focus an app window in the focused aerospace
+                          workspace, or spawn a new window here. With -a,
+                          focus an existing window in any workspace.
+  help                    Show this help.
+EOF
+}
+
+cmd_open() {
+  any_workspace=0
+  if [ "${1:-}" = "-a" ]; then
+    any_workspace=1
+    shift
+  fi
+
+  bundle_id="$1"
+
+  if [ "$any_workspace" -eq 1 ]; then
+    window_id=$(aerospace list-windows --all --format '%{window-id} %{app-bundle-id}' 2>/dev/null |
+      awk -v id="$bundle_id" '$2 == id {print $1; exit}')
+  else
+    window_id=$(aerospace list-windows --workspace focused --app-bundle-id "$bundle_id" --format '%{window-id}' 2>/dev/null | head -n1)
+  fi
+
+  if [ -n "$window_id" ]; then
+    aerospace focus --window-id "$window_id"
+  elif [ "$bundle_id" = "com.apple.finder" ]; then
+    osascript -e 'tell application "Finder"
+                      make new Finder window
+                      activate
+                  end tell'
+  elif [ "$bundle_id" = "net.kovidgoyal.kitty" ]; then
+    socket=$(ls -t /tmp/kitty-* 2>/dev/null | head -n1)
+    kitten @ --to "unix:$socket" launch --type=os-window >/dev/null
+  elif [ "$bundle_id" = "com.apple.Notes" ]; then
+    open -b com.apple.Notes
+  elif osascript -e "tell application id \"$bundle_id\" to make new window" >/dev/null 2>&1; then
+    osascript -e "tell application id \"$bundle_id\" to activate"
+  else
+    open -b "$bundle_id"
+  fi
+}
+
+case "${1:-help}" in
+open)
+  shift
+  cmd_open "$@"
+  ;;
+help | -h | --help) cmd_help ;;
+*)
+  cmd_help
+  exit 1
+  ;;
+esac

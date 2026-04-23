@@ -114,8 +114,8 @@ MIX_OS_DEPS_COMPILE_PARTITION_COUNT=4
 alias a='aliases'
 
 # aerospace
-alias asp='aerospace'
-alias aspo='aerospace-open-app'
+alias aer='aerospace'
+alias orb='orbit'
 
 # bat
 alias b='bat'

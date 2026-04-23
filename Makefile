@@ -15,8 +15,8 @@ install:
 	mkdir -p ~/.hammerspoon/
 	cp -r ./hammerspoon/* ~/.hammerspoon/
 	mkdir -p ~/.local/bin/
-	cp ./bin/* ~/.local/bin/
-	chmod +x ~/.local/bin/aerospace-open-app
+	cp -r ./bin/* ~/.local/bin/
+	for f in ./bin/*; do chmod -R +x ~/.local/bin/$$(basename $$f); done
 	mkdir -p ~/.zsh/completions/
 	cp -r ./zsh/completions/* ~/.zsh/completions/
 	cp -r ./config/init_starship.sh ~/.config/
@@ -40,8 +40,7 @@ clean:
 	rm -rf ~/.config/tms/*
 	rm -rf ~/.config/tidewave/*
 	rm -rf ~/.hammerspoon/*
-	rm -f ~/.local/bin/aerospace-open-app
-	rm -rf ~/.zsh/completions/*
+	for f in ./bin/*; do rm -rf ~/.local/bin/$$(basename $$f); done
 	rm -rf ~/.config/init_starship.sh
 	rm -rf ~/.config/starship.toml
 	rm -rf ~/.config/starship-full.toml
@@ -75,7 +74,7 @@ update:
 	cp -r ~/.config/starship-full.toml ./config/
 	cp -r ~/.hammerspoon/* ./hammerspoon/
 	mkdir -p ./bin/
-	cp ~/.local/bin/aerospace-open-app ./bin/
+	for f in ./bin/*; do cp -r ~/.local/bin/$$(basename $$f) ./bin/; done
 	cp ~/.aerospace.toml ./aerospace.toml
 	cp ~/.ai-jail ./ai-jail
 	cp ~/.default-gems ./default-gems
