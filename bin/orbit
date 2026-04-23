@@ -113,10 +113,16 @@ Presets:
                 in a single row above.
   3-col-left    Main window on the left, remaining windows split between
                 two columns on the right, each stacked vertically.
+  3-col-middle  Main window in the middle column, remaining windows split
+                between a column on the left and a column on the right,
+                each stacked vertically.
   3-col-right   Main window on the right, remaining windows split between
                 two columns on the left, each stacked vertically.
   3-row-top     Main window on top, remaining windows split between two
                 rows below, each tiled horizontally.
+  3-row-middle  Main window in the middle row, remaining windows split
+                between a row above and a row below, each tiled
+                horizontally.
   3-row-bottom  Main window on the bottom, remaining windows split between
                 two rows above, each tiled horizontally.
 EOF
@@ -367,8 +373,10 @@ cmd_preset() {
   2-row-top) cmd_preset_2 top ;;
   2-row-bottom) cmd_preset_2 bottom ;;
   3-col-left) cmd_preset_3 left ;;
+  3-col-middle) cmd_preset_3_middle col ;;
   3-col-right) cmd_preset_3 right ;;
   3-row-top) cmd_preset_3 top ;;
+  3-row-middle) cmd_preset_3_middle row ;;
   3-row-bottom) cmd_preset_3 bottom ;;
   *)
     echo "orbit preset: unknown preset '$1'" >&2
@@ -432,7 +440,14 @@ cmd_preset_3() {
   # Builds a 3-slot layout: main on one side, with the remaining windows
   # split roughly in half between two perpendicular stacks on the opposite
   # side. top/bottom are normalized to aerospace's up/down for move/focus.
+  #
+  # $2 may be `defer-resize`, in which case the `--main-size` resize is
+  # skipped and the caller is responsible for applying it — used by
+  # `cmd_preset_3_middle` so the resize lands on main's final slot instead
+  # of its build-time slot (which could be discarded by a container transit
+  # or mislaid by a sibling swap).
   main_side="$1"
+  defer_resize="${2:-}"
   case "$main_side" in
   left) stack_side=right top_layout=h_tiles main_dim=width ;;
   right) stack_side=left top_layout=h_tiles main_dim=width ;;
@@ -492,6 +507,32 @@ cmd_preset_3() {
   aerospace focus --window-id "$main_id"
   aerospace balance-sizes
 
+  if [ "$defer_resize" != defer-resize ] && [ -n "$main_size" ]; then
+    aerospace resize "$main_dim" "$main_size" 2>/dev/null || :
+  fi
+}
+
+cmd_preset_3_middle() {
+  # $1 is col or row. Builds `3-col-left` or `3-row-top` then shifts main
+  # toward stack_side until it lands in the middle slot. The number of
+  # moves depends on what sits to the stack side of main:
+  #   inner_count >= 2  the inner slot is a perpendicular container —
+  #                     main needs two moves to transit it (in, then out).
+  #   inner_count == 1  the inner slot is a bare window — one swap lands
+  #                     main in the middle.
+  #   inner_count == 0  there's no inner slot (≤2 windows total) and no
+  #                     meaningful middle; leave main where it is.
+  # `--main-size` is deferred so it applies to main's final slot.
+  case "$1" in
+  col) cmd_preset_3 left defer-resize ;;
+  row) cmd_preset_3 top defer-resize ;;
+  esac
+  if [ "$inner_count" -ge 2 ]; then
+    aerospace move "$stack_side"
+    aerospace move "$stack_side"
+  elif [ "$inner_count" -ge 1 ]; then
+    aerospace move "$stack_side"
+  fi
   if [ -n "$main_size" ]; then
     aerospace resize "$main_dim" "$main_size" 2>/dev/null || :
   fi
