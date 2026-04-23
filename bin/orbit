@@ -15,6 +15,9 @@ Commands:
                           workspace, or spawn a new window here. With
                           -a/--all, focus an existing window in any workspace.
   help                    Show this help.
+
+Any other command is forwarded to `aerospace` verbatim, so
+`orbit reload-config` runs `aerospace reload-config`.
 EOF
 }
 
@@ -61,8 +64,5 @@ open)
   cmd_open "$@"
   ;;
 help | -h | --help) cmd_help ;;
-*)
-  cmd_help
-  exit 1
-  ;;
+*) exec aerospace "$@" ;;
 esac
