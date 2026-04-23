@@ -11,7 +11,7 @@ Usage: orbit <command> [args...]
 
 Commands:
   open     Focus or spawn an app window by bundle-id.
-  focus    Focus a window, with optional sibling-workspace fallback.
+  focus    A wrapper around `aerospace focus` that adds more options to it.
   help     Show this help.
 
 Run `orbit <command> help` for details on a command.
@@ -32,15 +32,18 @@ EOF
 
 cmd_focus_help() {
   cat <<'EOF'
-Usage: orbit focus [args...]
-       orbit focus dfs-first
+Usage: orbit focus dfs-first
        orbit focus dfs-last
+       orbit focus [args...]
 
-Run `aerospace focus` with the given args. If `--boundaries-action
-focus-sibling-workspace` is passed, it is stripped and, on focus failure, the
-adjacent workspace is focused (right/down → next, left/up → prev).
+A wrapper around `aerospace focus` that adds more options to it.
 
-Shorthands:
+Added options:
+  --boundaries-action focus-sibling-workspace
+        On focus failure, focus the adjacent workspace instead
+        (right/down → next, left/up → prev).
+
+Added subcommands:
   dfs-first   Focus the first window (`--dfs-index 0`).
   dfs-last    Focus the last window on the focused workspace.
 EOF
