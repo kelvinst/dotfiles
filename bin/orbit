@@ -148,6 +148,18 @@ cmd_focus() {
     exec aerospace focus "$@"
   fi
 
+  # `--boundaries all-monitors-outer-frame` would let focus cross monitors at
+  # the workspace edge, so the boundary never fails and the sibling-workspace
+  # fallback never fires. Reject the combination explicitly.
+  prev=""
+  for arg in "$@"; do
+    if [ "$prev" = "--boundaries" ] && [ "$arg" = "all-monitors-outer-frame" ]; then
+      echo "orbit focus: --boundaries all-monitors-outer-frame is incompatible with --boundaries-action sibling-workspace" >&2
+      return 2
+    fi
+    prev="$arg"
+  done
+
   if aerospace focus --boundaries-action fail "$@" 2>/dev/null; then
     return
   fi
@@ -197,6 +209,18 @@ cmd_move() {
   if [ "$sibling" -eq 0 ]; then
     exec aerospace move "$@"
   fi
+
+  # `--boundaries all-monitors-outer-frame` would let move cross monitors at
+  # the workspace edge, so the boundary never fails and the sibling-workspace
+  # fallback never fires. Reject the combination explicitly.
+  prev=""
+  for arg in "$@"; do
+    if [ "$prev" = "--boundaries" ] && [ "$arg" = "all-monitors-outer-frame" ]; then
+      echo "orbit move: --boundaries all-monitors-outer-frame is incompatible with --boundaries-action sibling-workspace" >&2
+      return 2
+    fi
+    prev="$arg"
+  done
 
   if aerospace move --boundaries-action fail "$@" 2>/dev/null; then
     return
