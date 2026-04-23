@@ -140,10 +140,10 @@ on-mode-changed = []
     alt-l = 'exec-and-forget orbit focus --boundaries-action sibling-workspace right'
 
     # See: https://nikitabobko.github.io/AeroSpace/commands#move
-    alt-shift-h = 'swap --wrap-around left'
-    alt-shift-j = 'swap --wrap-around down'
-    alt-shift-k = 'swap --wrap-around up'
-    alt-shift-l = 'swap --wrap-around right'
+    alt-shift-h = 'exec-and-forget orbit swap-or-move-node-to-workspace left'
+    alt-shift-j = 'exec-and-forget orbit swap-or-move-node-to-workspace down'
+    alt-shift-k = 'exec-and-forget orbit swap-or-move-node-to-workspace up'
+    alt-shift-l = 'exec-and-forget orbit swap-or-move-node-to-workspace right'
 
     alt-shift-ctrl-h = 'exec-and-forget orbit move --boundaries-action sibling-workspace left'
     alt-shift-ctrl-j = 'exec-and-forget orbit move --boundaries-action sibling-workspace down'

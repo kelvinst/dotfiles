@@ -13,6 +13,9 @@ Commands:
   open     Focus or spawn an app window by bundle-id.
   focus    A wrapper around `aerospace focus` that adds more options to it.
   move     A wrapper around `aerospace move` that adds more options to it.
+  swap-or-move-node-to-workspace
+           Swap the focused window with its neighbor; at the workspace edge,
+           move the window to the adjacent workspace instead.
   help     Show this help.
 
 Run `orbit <command> help` for details on a command.
@@ -60,6 +63,17 @@ Added options:
   --boundaries-action sibling-workspace
         On move failure, move the window to the adjacent workspace instead
         (right/down → next, left/up → prev).
+EOF
+}
+
+cmd_swap_or_move_help() {
+  cat <<'EOF'
+Usage: orbit swap-or-move-node-to-workspace [args...] <direction>
+
+Run `aerospace swap` (without `--wrap-around`) with the given args. If the
+swap fails because the window is at the workspace boundary, fall back to
+`orbit move --boundaries-action sibling-workspace <direction>` so the window
+is sent to the adjacent workspace instead.
 EOF
 }
 
@@ -240,6 +254,22 @@ cmd_move() {
   esac
 }
 
+cmd_swap_or_move() {
+  case "${1:-}" in
+  help | -h | --help)
+    cmd_swap_or_move_help
+    return
+    ;;
+  esac
+
+  if aerospace swap "$@" 2>/dev/null; then
+    return
+  fi
+  direction=""
+  for arg in "$@"; do direction="$arg"; done
+  cmd_move --boundaries-action sibling-workspace "$direction"
+}
+
 case "${1:-help}" in
 open)
   shift
@@ -252,6 +282,10 @@ focus)
 move)
   shift
   cmd_move "$@"
+  ;;
+swap-or-move-node-to-workspace)
+  shift
+  cmd_swap_or_move "$@"
   ;;
 help | -h | --help) cmd_help ;;
 *) exec aerospace "$@" ;;
