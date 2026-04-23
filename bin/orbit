@@ -115,6 +115,10 @@ Presets:
                 two columns on the right, each stacked vertically.
   3-col-right   Main window on the right, remaining windows split between
                 two columns on the left, each stacked vertically.
+  3-row-top     Main window on top, remaining windows split between two
+                rows below, each tiled horizontally.
+  3-row-bottom  Main window on the bottom, remaining windows split between
+                two rows above, each tiled horizontally.
 EOF
 }
 
@@ -364,6 +368,8 @@ cmd_preset() {
   2-row-bottom) cmd_preset_2 bottom ;;
   3-col-left) cmd_preset_3 left ;;
   3-col-right) cmd_preset_3 right ;;
+  3-row-top) cmd_preset_3 top ;;
+  3-row-bottom) cmd_preset_3 bottom ;;
   *)
     echo "orbit preset: unknown preset '$1'" >&2
     cmd_preset_help >&2
@@ -422,35 +428,38 @@ cmd_preset_2() {
 }
 
 cmd_preset_3() {
-  # $1 is the side where the main window lives. Builds a 3-column layout:
-  # main on one side, and the remaining windows split roughly in half between
-  # two vertically-stacked columns on the opposite side.
+  # $1 is the side where the main window lives: left, right, top, or bottom.
+  # Builds a 3-slot layout: main on one side, with the remaining windows
+  # split roughly in half between two perpendicular stacks on the opposite
+  # side. top/bottom are normalized to aerospace's up/down for move/focus.
   main_side="$1"
   case "$main_side" in
-  left) stack_side=right main_dim=width ;;
-  right) stack_side=left main_dim=width ;;
+  left) stack_side=right top_layout=h_tiles main_dim=width ;;
+  right) stack_side=left top_layout=h_tiles main_dim=width ;;
+  top) stack_side=down top_layout=v_tiles main_dim=height main_side=up ;;
+  bottom) stack_side=up top_layout=v_tiles main_dim=height main_side=down ;;
   esac
 
   main_id=$(aerospace list-windows --focused --format '%{window-id}')
 
   aerospace flatten-workspace-tree
   aerospace focus --window-id "$main_id"
-  aerospace layout h_tiles 2>/dev/null || :
+  aerospace layout "$top_layout" 2>/dev/null || :
 
   # Push main to the chosen edge of the top-level container.
   while aerospace move --boundaries-action fail "$main_side" 2>/dev/null; do :; done
 
   total=$(aerospace list-windows --workspace focused --count)
   non_main=$((total - 1))
-  # Split the non-main windows between two stack-side columns. The
-  # stack_side-most (outer) column gets ceil(non_main / 2); the inner column
+  # Split the non-main windows between two stack-side slots. The
+  # stack_side-most (outer) slot gets ceil(non_main / 2); the inner slot
   # gets the rest.
   outer_count=$(((non_main + 1) / 2))
   inner_count=$((non_main - outer_count))
 
-  # Only wrap a column in a v_tiles container when it'll hold more than one
-  # window. A single-window column is already its own top-level slot, and
-  # `join-with` would fold it into a neighbor — collapsing 3 columns into 2.
+  # Only wrap a slot in a perpendicular container when it'll hold more than
+  # one window. A single-window slot is already its own top-level entry, and
+  # `join-with` would fold it into a neighbor — collapsing 3 slots into 2.
   if [ "$outer_count" -ge 2 ]; then
     while aerospace focus --boundaries-action fail "$stack_side" 2>/dev/null; do :; done
     aerospace join-with "$main_side"
