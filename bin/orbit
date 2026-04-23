@@ -13,6 +13,8 @@ Commands:
   open     Focus or spawn an app window by bundle-id.
   focus    A wrapper around `aerospace focus` that adds more options to it.
   move     A wrapper around `aerospace move` that adds more options to it.
+  swap     A wrapper around `aerospace swap`: falls back to `move` in
+           accordion layouts where swap is equivalent but buggier.
   swap-or-move-node-to-workspace
            Swap the focused window with its neighbor; at the workspace edge,
            move the window to the adjacent workspace instead.
@@ -66,12 +68,22 @@ Added options:
 EOF
 }
 
+cmd_swap_help() {
+  cat <<'EOF'
+Usage: orbit swap [args...]
+
+A wrapper around `aerospace swap`. In accordion layouts, `aerospace swap` is
+essentially the same as `aerospace move` but behaves strangely, so fall back
+to `aerospace move` in that case.
+EOF
+}
+
 cmd_swap_or_move_help() {
   cat <<'EOF'
 Usage: orbit swap-or-move-node-to-workspace [args...] <direction>
 
-Run `aerospace swap` (without `--wrap-around`) with the given args. If the
-swap fails because the window is at the workspace boundary, fall back to
+Run `orbit swap` (without `--wrap-around`) with the given args. If the swap
+fails because the window is at the workspace boundary, fall back to
 `orbit move --boundaries-action sibling-workspace <direction>` so the window
 is sent to the adjacent workspace instead.
 EOF
@@ -254,6 +266,21 @@ cmd_move() {
   esac
 }
 
+cmd_swap() {
+  case "${1:-}" in
+  help | -h | --help)
+    cmd_swap_help
+    return
+    ;;
+  esac
+
+  layout=$(aerospace list-windows --focused --format '%{window-parent-container-layout}')
+  case "$layout" in
+  *accordion*) aerospace move "$@" ;;
+  *) aerospace swap "$@" ;;
+  esac
+}
+
 cmd_swap_or_move() {
   case "${1:-}" in
   help | -h | --help)
@@ -262,7 +289,7 @@ cmd_swap_or_move() {
     ;;
   esac
 
-  if aerospace swap "$@" 2>/dev/null; then
+  if cmd_swap "$@" 2>/dev/null; then
     return
   fi
   direction=""
@@ -282,6 +309,10 @@ focus)
 move)
   shift
   cmd_move "$@"
+  ;;
+swap)
+  shift
+  cmd_swap "$@"
   ;;
 swap-or-move-node-to-workspace)
   shift
