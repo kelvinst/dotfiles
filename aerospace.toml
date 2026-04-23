@@ -134,10 +134,10 @@ on-mode-changed = []
     alt-shift-r = ['reload-config', '''exec-and-forget osascript -e 'display notification "Config reloaded" with title "AeroSpace"' ''']
 
     # See: https://nikitabobko.github.io/AeroSpace/commands#focus
-    alt-h = 'focus --boundaries-action wrap-around-the-workspace left'
-    alt-j = 'focus --boundaries-action wrap-around-the-workspace down'
-    alt-k = 'focus --boundaries-action wrap-around-the-workspace up'
-    alt-l = 'focus --boundaries-action wrap-around-the-workspace right'
+    alt-h = 'exec-and-forget orbit focus --boundaries-action focus-sibling-workspace left'
+    alt-j = 'exec-and-forget orbit focus --boundaries-action focus-sibling-workspace down'
+    alt-k = 'exec-and-forget orbit focus --boundaries-action focus-sibling-workspace up'
+    alt-l = 'exec-and-forget orbit focus --boundaries-action focus-sibling-workspace right'
 
     # See: https://nikitabobko.github.io/AeroSpace/commands#move
     alt-shift-h = 'swap --wrap-around left'

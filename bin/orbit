@@ -14,6 +14,11 @@ Commands:
                           Focus an app window in the focused aerospace
                           workspace, or spawn a new window here. With
                           -a/--all, focus an existing window in any workspace.
+  focus [args...]         Run `aerospace focus` with the given args. If
+                          `--boundaries-action focus-sibling-workspace` is
+                          passed, it is stripped and, on focus failure, the
+                          adjacent workspace is focused (right/down → next,
+                          left/up → prev).
   help                    Show this help.
 
 Any other command is forwarded to `aerospace` verbatim, so
@@ -24,10 +29,10 @@ EOF
 cmd_open() {
   any_workspace=0
   case "${1:-}" in
-    -a | --all)
-      any_workspace=1
-      shift
-      ;;
+  -a | --all)
+    any_workspace=1
+    shift
+    ;;
   esac
 
   bundle_id="$1"
@@ -58,10 +63,58 @@ cmd_open() {
   fi
 }
 
+cmd_focus() {
+  # Extend `aerospace focus` with a custom `--boundaries-action
+  # focus-sibling-workspace` value: strip that flag and, on focus failure,
+  # switch to the adjacent workspace (right/down → next, left/up → prev).
+  # Any other invocation is forwarded verbatim.
+  sibling=0
+  count=$#
+  idx=0
+  while [ "$idx" -lt "$count" ]; do
+    if [ "$1" = "--boundaries-action" ] && [ "${2:-}" = "focus-sibling-workspace" ]; then
+      sibling=1
+      shift 2
+      idx=$((idx + 2))
+      continue
+    fi
+    arg="$1"
+    shift
+    set -- "$@" "$arg"
+    idx=$((idx + 1))
+  done
+
+  if [ "$sibling" -eq 0 ]; then
+    exec aerospace focus "$@"
+  fi
+
+  if aerospace focus --boundaries-action fail "$@" 2>/dev/null; then
+    return
+  fi
+  direction=""
+  for arg in "$@"; do direction="$arg"; done
+  case "$direction" in
+  right | down)
+    aerospace workspace --wrap-around --no-stdin next
+    aerospace focus --dfs-index 0
+    ;;
+  left | up)
+    aerospace workspace --wrap-around --no-stdin prev
+    last=$(($(aerospace list-windows --workspace focused --format '%{window-id}' | wc -l) - 1))
+    aerospace focus --dfs-index "$last"
+    ;;
+  *) return 1 ;;
+  esac
+}
+
 case "${1:-help}" in
 open)
   shift
   cmd_open "$@"
+  ;;
+focus)
+  shift
+  cmd_focus "$@"
   ;;
 help | -h | --help) cmd_help ;;
 *) exec aerospace "$@" ;;
