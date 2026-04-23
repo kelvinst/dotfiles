@@ -19,6 +19,9 @@ Commands:
            Swap the focused window with its neighbor; at the workspace edge,
            move the window to the adjacent workspace instead.
   preset   Arrange the focused workspace into a predefined layout.
+  move-workspace-to-secondary-monitor
+           Pin the given workspaces to the secondary monitor, flatten them,
+           and set them to accordion.
   help     Show this help.
 
 Run `orbit <command> help` for details on a command.
@@ -538,6 +541,41 @@ cmd_preset_3_middle() {
   fi
 }
 
+cmd_move_workspace_to_secondary_help() {
+  cat <<'EOF'
+Usage: orbit move-workspace-to-secondary-monitor <workspace> [workspace...]
+
+For each given workspace: pin it to the secondary monitor, flatten its
+window tree, and set its layout to `accordion horizontal`. Empty
+workspaces are pinned but have no layout applied — aerospace rejects
+`layout` without a window to hang it on and falls back to
+`default-root-container-layout` once a window arrives.
+
+No focus change: `move-workspace-to-monitor` and `flatten-workspace-tree`
+take `--workspace`, and `layout` is targeted via `--window-id`.
+EOF
+}
+
+cmd_move_workspace_to_secondary() {
+  case "${1:-}" in
+  help | -h | --help | "")
+    cmd_move_workspace_to_secondary_help
+    return
+    ;;
+  esac
+
+  # `move-workspace-to-monitor` is tolerated so the other setup still runs
+  # on single-monitor setups (the secondary pattern just won't match).
+  for ws in "$@"; do
+    aerospace move-workspace-to-monitor --workspace "$ws" secondary 2>/dev/null || :
+    aerospace flatten-workspace-tree --workspace "$ws"
+    wid=$(aerospace list-windows --workspace "$ws" --format '%{window-id}' | head -n1)
+    if [ -n "$wid" ]; then
+      aerospace layout --window-id "$wid" accordion horizontal
+    fi
+  done
+}
+
 case "${1:-help}" in
 open)
   shift
@@ -562,6 +600,10 @@ swap-or-move-node-to-workspace)
 preset)
   shift
   cmd_preset "$@"
+  ;;
+move-workspace-to-secondary-monitor)
+  shift
+  cmd_move_workspace_to_secondary "$@"
   ;;
 help | -h | --help) cmd_help ;;
 *) exec aerospace "$@" ;;
