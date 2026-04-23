@@ -39,7 +39,7 @@ eval "$(direnv hook zsh)"
 export FPATH=$(brew --prefix)/share/zsh-completions:$FPATH
 
 # Custom completions shipped with the dotfiles (e.g. _mix for Elixir's mix)
-fpath=(~/.zsh/completions $fpath)
+export FPATH=$HOME/.zsh/completions:$FPATH
 
 # The following lines have been added by Docker Desktop to enable Docker CLI completions.
 fpath=(/Users/kelvinstinghen/.docker/completions $fpath)
