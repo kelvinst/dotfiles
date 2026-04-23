@@ -123,7 +123,11 @@ on-mode-changed = []
     # See: https://nikitabobko.github.io/AeroSpace/commands#layout
     alt-slash = 'layout tiles horizontal vertical'
     alt-a = 'layout accordion horizontal vertical'
-    alt-f = 'layout floating tiling' # Toggle between floating and tiling layout
+
+    alt-q = 'exec-and-forget orbit preset 2-col-left'
+    alt-w = 'exec-and-forget orbit preset 2-col-right'
+
+    alt-t = 'layout floating tiling' # Toggle between floating and tiling layout
 
     # Fullscreen
     alt-z = 'fullscreen'

@@ -98,6 +98,8 @@ Arrange the focused workspace into a predefined layout. The focused window
 becomes the "main" window of the preset.
 
 Presets:
+  2-col-left    Main window on the left, remaining windows stacked
+                vertically in a single column on the right.
   2-col-right   Main window on the right, remaining windows stacked
                 vertically in a single column on the left.
 EOF
@@ -317,8 +319,11 @@ cmd_preset() {
     cmd_preset_help
     return
     ;;
+  2-col-left)
+    cmd_preset_2_col left
+    ;;
   2-col-right)
-    cmd_preset_2_col_right
+    cmd_preset_2_col right
     ;;
   *)
     echo "orbit preset: unknown preset '$1'" >&2
@@ -328,34 +333,68 @@ cmd_preset() {
   esac
 }
 
-cmd_preset_2_col_right() {
+cmd_preset_2_col() {
+  # $1 is the side where the main window lives: `left` or `right`.
+  # The stack of non-main windows ends up on the opposite side.
+  main_side="$1"
+  case "$main_side" in
+  left) stack_side=right ;;
+  right) stack_side=left ;;
+  esac
+
   main_id=$(aerospace list-windows --focused --format '%{window-id}')
 
   aerospace flatten-workspace-tree
   aerospace focus --window-id "$main_id"
   aerospace layout h_tiles 2>/dev/null || :
 
-  # Push main to the right edge of the top-level h_tiles container.
-  while aerospace move --boundaries-action fail right 2>/dev/null; do :; done
+  # Push main to the chosen edge of the top-level h_tiles container.
+  while aerospace move --boundaries-action fail "$main_side" 2>/dev/null; do :; done
 
-  # Collect non-main windows in left-to-right order (main is now rightmost).
+  # Collect non-main windows in left-to-right order.
   others=$(aerospace list-windows --workspace focused --format '%{window-id}' |
     grep -v "^${main_id}\$" || :)
   # shellcheck disable=SC2086
   set -- $others
 
   if [ "$#" -ge 2 ]; then
-    # Turn the first two non-main windows into a v_tiles container.
-    aerospace focus --window-id "$2"
-    aerospace join-with left
+    # Pick the anchor window that joins with its neighbor on the stack side to
+    # create the v_tiles container: when the stack is on the left, the anchor
+    # is the second window (joining left with the first); when the stack is on
+    # the right, it's the second-to-last (joining right with the last).
+    if [ "$stack_side" = left ]; then
+      anchor_idx=2
+    else
+      anchor_idx=$(($# - 1))
+    fi
+    eval "anchor=\${$anchor_idx}"
+    aerospace focus --window-id "$anchor"
+    aerospace join-with "$stack_side"
 
-    # Pull each remaining non-main window left into that container.
-    shift 2
-    while [ "$#" -gt 0 ]; do
-      aerospace focus --window-id "$1"
-      aerospace move left
-      shift
-    done
+    # Pull each remaining non-main window into that container from the main
+    # side — i.e., the opposite of the stack side.
+    if [ "$stack_side" = left ]; then
+      shift 2
+      pull_dir=left
+      while [ "$#" -gt 0 ]; do
+        aerospace focus --window-id "$1"
+        aerospace move "$pull_dir"
+        shift
+      done
+    else
+      pull_dir=right
+      # Drop the last two (already in the v_tiles container) and pull the
+      # remaining windows right-to-left so each one's neighbor is the
+      # container.
+      count=$(($# - 2))
+      i="$count"
+      while [ "$i" -ge 1 ]; do
+        eval "id=\${$i}"
+        aerospace focus --window-id "$id"
+        aerospace move "$pull_dir"
+        i=$((i - 1))
+      done
+    fi
   fi
 
   aerospace focus --window-id "$main_id"
