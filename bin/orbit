@@ -10,19 +10,22 @@ orbit — aerospace helper.
 Usage: orbit <command> [args...]
 
 Commands:
-  open [-a] <bundle-id>   Focus an app window in the focused aerospace
-                          workspace, or spawn a new window here. With -a,
-                          focus an existing window in any workspace.
+  open [-a|--all] <bundle-id>
+                          Focus an app window in the focused aerospace
+                          workspace, or spawn a new window here. With
+                          -a/--all, focus an existing window in any workspace.
   help                    Show this help.
 EOF
 }
 
 cmd_open() {
   any_workspace=0
-  if [ "${1:-}" = "-a" ]; then
-    any_workspace=1
-    shift
-  fi
+  case "${1:-}" in
+    -a | --all)
+      any_workspace=1
+      shift
+      ;;
+  esac
 
   bundle_id="$1"
 
