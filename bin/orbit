@@ -31,6 +31,10 @@ Commands:
            Swap the focused window with its neighbor; at the workspace edge,
            move the window to the adjacent workspace instead.
 
+  swap-workspace
+           Swap every window between the focused workspace and the given
+           one, then focus the given one.
+
   preset   Arrange the focused workspace into a predefined layout.
 
   move-workspace-to-secondary-monitor
@@ -114,6 +118,16 @@ Run `orbit swap` (without `--wrap-around`) with the given args. If the swap
 fails because the window is at the workspace boundary, fall back to
 `orbit move --boundaries-action sibling-workspace <direction>` so the window
 is sent to the adjacent workspace instead.
+EOF
+}
+
+cmd_swap_workspace_help() {
+  cat <<'EOF'
+Usage: orbit swap-workspace <target-workspace>
+
+Swap every window between the currently focused workspace and
+<target-workspace>, then focus <target-workspace>. No-op when the
+focused workspace is already <target-workspace>.
 EOF
 }
 
@@ -362,6 +376,37 @@ cmd_swap_or_move() {
   direction=""
   for arg in "$@"; do direction="$arg"; done
   cmd_move --boundaries-action sibling-workspace "$direction"
+}
+
+cmd_swap_workspace() {
+  case "${1:-}" in
+  help | -h | --help | "")
+    cmd_swap_workspace_help
+    return
+    ;;
+  esac
+
+  target="$1"
+  current=$(aerospace list-workspaces --focused)
+
+  if [ "$current" = "$target" ]; then
+    return 0
+  fi
+
+  # Capture both window-id lists up front so the two sets stay identifiable
+  # even after they temporarily pile up on the target — no scratch workspace
+  # needed (which would flash in the menu bar mid-swap).
+  source_wids=$(aerospace list-windows --workspace "$current" --format '%{window-id}')
+  target_wids=$(aerospace list-windows --workspace "$target" --format '%{window-id}')
+
+  for wid in $source_wids; do
+    aerospace move-node-to-workspace --window-id "$wid" "$target"
+  done
+  for wid in $target_wids; do
+    aerospace move-node-to-workspace --window-id "$wid" "$current"
+  done
+
+  aerospace workspace "$target"
 }
 
 cmd_preset() {
@@ -670,6 +715,10 @@ swap)
 swap-or-move-node-to-workspace)
   shift
   cmd_swap_or_move "$@"
+  ;;
+swap-workspace)
+  shift
+  cmd_swap_workspace "$@"
   ;;
 preset)
   shift
