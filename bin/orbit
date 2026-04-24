@@ -3,6 +3,14 @@
 
 set -eu
 
+# Detach stdin from whatever the caller inherited. Without this, aerospace
+# CLI subcommands read stdin by default to batch further commands — when
+# orbit is launched by something like vim's `jobstart` (stdin = open pipe,
+# never written), aerospace blocks forever. Symptom: dozens of stuck
+# `aerospace focus`/`workspace` processes piling up on repeated keypresses
+# until the GUI server chokes.
+exec </dev/null
+
 cmd_help() {
   cat <<'EOF'
 orbit — aerospace helper.

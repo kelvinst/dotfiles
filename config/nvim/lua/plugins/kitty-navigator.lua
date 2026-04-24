@@ -33,13 +33,17 @@ return {
         return
       end
 
+      -- `stdin = "null"` is critical: the default is an open pipe that nvim
+      -- never writes, and aerospace CLI subcommands read stdin by default to
+      -- batch more commands, blocking forever. Stacks up stuck processes on
+      -- repeated ctrl-hjkl and eventually wedges the aerospace GUI server.
       vim.fn.jobstart({
         orbit,
         "focus",
         "--boundaries-action",
         "sibling-workspace",
         aero_dir[direction],
-      })
+      }, { stdin = "null" })
     end
   end,
   keys = {

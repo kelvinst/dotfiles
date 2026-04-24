@@ -149,8 +149,14 @@ on-mode-changed = []
 
     # Reload stuff
     alt-b = 'balance-sizes'
-    alt-r = 'flatten-workspace-tree' # reset layout
-    alt-shift-r = ['reload-config', '''exec-and-forget osascript -e 'display notification "Config reloaded" with title "AeroSpace"' ''']
+    alt-x = 'flatten-workspace-tree' # reset layout
+    alt-r = [
+      'exec-and-forget orbit cleanup', 
+      'reload-config', 
+      '''exec-and-forget osascript -e '
+        display notification "Config reloaded" with title "AeroSpace"' 
+      '''
+    ]
 
     # See: https://nikitabobko.github.io/AeroSpace/commands#focus
     alt-h = 'exec-and-forget orbit focus --boundaries-action sibling-workspace left'
