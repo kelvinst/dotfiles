@@ -165,6 +165,10 @@ on-mode-changed = []
     alt-shift-j = 'exec-and-forget orbit swap-or-move-node-to-workspace down'
     alt-shift-k = 'exec-and-forget orbit swap-or-move-node-to-workspace up'
     alt-shift-l = 'exec-and-forget orbit swap-or-move-node-to-workspace right'
+    ctrl-shift-h = 'exec-and-forget orbit swap-or-move-node-to-workspace left'
+    ctrl-shift-j = 'exec-and-forget orbit swap-or-move-node-to-workspace down'
+    ctrl-shift-k = 'exec-and-forget orbit swap-or-move-node-to-workspace up'
+    ctrl-shift-l = 'exec-and-forget orbit swap-or-move-node-to-workspace right'
 
     alt-shift-ctrl-h = 'exec-and-forget orbit move --boundaries-action sibling-workspace left'
     alt-shift-ctrl-j = 'exec-and-forget orbit move --boundaries-action sibling-workspace down'
