@@ -193,24 +193,32 @@ Presets:
 EOF
 }
 
-# Serialize commands that mutate the aerospace workspace tree. Two such
-# commands running concurrently — say a `preset` rebuild overlapping a
-# `move-workspace` mid-swap — would interleave focus/move/join calls and
-# scramble the tree (or leave focus stuck on `splash`). `mkdir` is atomic
-# across processes so it doubles as a no-deps mutex. Callers acquire with
-# `acquire_workspace_mutation_lock` and pair it with a trap that calls
-# `release_workspace_mutation_lock` on EXIT/INT/TERM. If a run dies before
-# the trap fires (e.g. SIGKILL), `rmdir` the lock manually.
-workspace_mutation_lockdir() {
-  echo "/tmp/orbit-workspace-mutation.$(id -u).lock"
-}
-
-acquire_workspace_mutation_lock() {
-  mkdir "$(workspace_mutation_lockdir)" 2>/dev/null
-}
-
-release_workspace_mutation_lock() {
-  rmdir "$(workspace_mutation_lockdir)" 2>/dev/null || :
+# Run a function with the workspace-mutation lock held. Two commands that
+# mutate the aerospace tree concurrently — say a `preset` rebuild
+# overlapping a `move-workspace` mid-swap — would interleave focus/move/
+# join calls and scramble the tree (or leave focus stuck on `splash`).
+# `mkdir` is atomic across processes so it doubles as a no-deps mutex.
+#
+# Usage: with_workspace_mutation_lock <body-fn> [extra-cleanup-fn] [args...]
+#
+# If the lock is already held, returns 0 without invoking <body-fn>. The
+# lock is released on script EXIT/INT/TERM via a trap; pass an optional
+# extra-cleanup function name to run inside that trap before release
+# (useful for body-specific recovery like restoring focus). Pass an empty
+# string for no extra cleanup.
+#
+# If a run dies before the trap fires (e.g. SIGKILL), `rmdir` the lock
+# manually: `rmdir /tmp/orbit-workspace-mutation.$(id -u).lock`.
+with_workspace_mutation_lock() {
+  body="$1"
+  cleanup="$2"
+  shift 2
+  lockdir="/tmp/orbit-workspace-mutation.$(id -u).lock"
+  if ! mkdir "$lockdir" 2>/dev/null; then
+    return 0
+  fi
+  trap "${cleanup:+$cleanup; }rmdir '$lockdir' 2>/dev/null || :" EXIT INT TERM
+  "$body" "$@"
 }
 
 cmd_open() {
@@ -486,28 +494,29 @@ cmd_move_workspace() {
     esac
   done
 
-  if ! acquire_workspace_mutation_lock; then
-    return 0
-  fi
+  with_workspace_mutation_lock _cmd_move_workspace_locked _move_workspace_restore "$focus_follows" "$@"
+}
 
-  # `restore_on_exit` / `restore_window_on_exit` together with the trap
-  # guarantee focus never gets stuck on splash: even if `set -e` kills
-  # orbit mid-swap (e.g. a move targets a window that just closed), the
-  # trap still fires and sends focus somewhere real. Both start empty so
-  # the early-return paths below (before any splash focus) don't trigger
-  # an unnecessary workspace jump. For --focus-follows-workspace we set
-  # the window-id only — `aerospace focus --window-id` carries its
-  # workspace forward, no need to focus the workspace separately.
+# Restores focus on exit so it never gets stuck on splash, even if `set -e`
+# kills orbit mid-swap (e.g. a move targets a window that just closed).
+# `restore_*` are set by `_cmd_move_workspace_locked`; both start empty so
+# the early-return paths (before any splash focus) don't trigger an
+# unnecessary workspace jump. For --focus-follows-workspace we set the
+# window-id only — `aerospace focus --window-id` carries its workspace
+# forward, no need to focus the workspace separately.
+_move_workspace_restore() {
+  if [ -n "$restore_window_on_exit" ]; then
+    aerospace focus --window-id "$restore_window_on_exit" 2>/dev/null || :
+  elif [ -n "$restore_on_exit" ]; then
+    aerospace workspace "$restore_on_exit" 2>/dev/null || :
+  fi
+}
+
+_cmd_move_workspace_locked() {
+  focus_follows="$1"
+  shift
   restore_on_exit=""
   restore_window_on_exit=""
-  trap '
-    if [ -n "$restore_window_on_exit" ]; then
-      aerospace focus --window-id "$restore_window_on_exit" 2>/dev/null || :
-    elif [ -n "$restore_on_exit" ]; then
-      aerospace workspace "$restore_on_exit" 2>/dev/null || :
-    fi
-    release_workspace_mutation_lock
-  ' EXIT INT TERM
 
   target="$1"
   current=$(aerospace list-workspaces --focused)
@@ -633,11 +642,10 @@ cmd_preset() {
     esac
   done
 
-  if ! acquire_workspace_mutation_lock; then
-    return 0
-  fi
-  trap 'release_workspace_mutation_lock' EXIT INT TERM
+  with_workspace_mutation_lock _cmd_preset_locked "" "$@"
+}
 
+_cmd_preset_locked() {
   if [ "$#" -gt 1 ]; then
     target=$(preset_cycle_next "$@")
   else
