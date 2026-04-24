@@ -75,6 +75,32 @@
 #               an EOL character signifies the end of the bind.
 # }}}
 
+# NOTE: aerospace focus chain {{{
+
+# ctrl-hjkl focuses an aerospace neighbor — but inside kitty the `~` passes
+# the key through so kitty's own `pass_keys.py` mapping can run the vim
+# split → kitty pane → orbit chain. aerospace binds these globally would
+# consume the key before kitty sees it, so we route them through skhd
+# instead where per-app passthrough exists.
+ctrl - h [
+    "kitty" ~
+    *      : ~/.local/bin/orbit focus --boundaries-action sibling-workspace left
+]
+ctrl - j [
+    "kitty" ~
+    *      : ~/.local/bin/orbit focus down
+]
+ctrl - k [
+    "kitty" ~
+    *      : ~/.local/bin/orbit focus up
+]
+ctrl - l [
+    "kitty" ~
+    *      : ~/.local/bin/orbit focus --boundaries-action sibling-workspace right
+]
+
+# }}}
+
 # NOTE: kitty {{{
 
 # WARNING: Disabled quick access, I never used it anyway

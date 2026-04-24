@@ -157,6 +157,8 @@ on-mode-changed = []
     alt-j = 'exec-and-forget orbit focus --boundaries-action sibling-workspace down'
     alt-k = 'exec-and-forget orbit focus --boundaries-action sibling-workspace up'
     alt-l = 'exec-and-forget orbit focus --boundaries-action sibling-workspace right'
+    # ctrl-hjkl is handled by skhd so kitty can keep its own ctrl-hjkl
+    # bindings (vim split → kitty pane → orbit chain via pass_keys.py).
 
     # See: https://nikitabobko.github.io/AeroSpace/commands#move
     alt-shift-h = 'exec-and-forget orbit swap-or-move-node-to-workspace left'
