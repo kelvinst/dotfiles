@@ -11,17 +11,24 @@ Usage: orbit <command> [args...]
 
 Commands:
   open     Focus or spawn an app window by bundle-id.
+
   focus    A wrapper around `aerospace focus` that adds more options to it.
+
   move     A wrapper around `aerospace move` that adds more options to it.
+
   swap     A wrapper around `aerospace swap`: falls back to `move` in
            accordion layouts where swap is equivalent but buggier.
+
   swap-or-move-node-to-workspace
            Swap the focused window with its neighbor; at the workspace edge,
            move the window to the adjacent workspace instead.
+
   preset   Arrange the focused workspace into a predefined layout.
+
   move-workspace-to-secondary-monitor
            Pin the given workspaces to the secondary monitor, flatten them,
            and set them to accordion.
+
   help     Show this help.
 
 Run `orbit <command> help` for details on a command.

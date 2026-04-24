@@ -30,7 +30,7 @@ enable-normalization-opposite-orientation-for-nested-containers = true
 accordion-padding = 300
 
 # Possible values: tiles|accordion
-default-root-container-layout = 'accordion'
+default-root-container-layout = 'tiles'
 
 # Possible values: horizontal|vertical|auto
 # 'auto' means: wide monitor (anything wider than high) gets horizontal orientation,
@@ -262,6 +262,27 @@ on-mode-changed = []
     # sticky is not yet supported https://github.com/nikitabobko/AeroSpace/issues/2
     #s = ['layout sticky tiling', 'mode main']
 
+# Set the default layout as accordion for secondary monitor workspaces
+[[on-window-detected]]
+    if.workspace = '0'
+    check-further-callbacks = true
+    run = ['layout accordion']
+
+[[on-window-detected]]
+    if.workspace = 'M'
+    check-further-callbacks = true
+    run = ['layout accordion']
+
+[[on-window-detected]]
+    if.workspace = 'O'
+    check-further-callbacks = true
+    run = ['layout accordion']
+
+[[on-window-detected]]
+    if.workspace = 'P'
+    check-further-callbacks = true
+    run = ['layout accordion']
+
 # Redirect apps to their default workspaces when they are first opened
 [[on-window-detected]]
     if.app-id = 'com.apple.mail'
@@ -290,4 +311,3 @@ on-mode-changed = []
 [[on-window-detected]]
     if.app-id = 'com.apple.Notes'
     run = ['move-node-to-workspace P']
-
