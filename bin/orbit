@@ -61,10 +61,16 @@ EOF
 
 cmd_open_help() {
   cat <<'EOF'
-Usage: orbit open [-g|--global] <bundle-id>
+Usage: orbit open [-g|--global] [-p|--pull] <bundle-id>
 
-Focus an app window in the focused aerospace workspace, or spawn a new window
-here. With -g/--global, focus an existing window in any workspace.
+Focus an app window in the focused aerospace workspace, or spawn a new
+window here.
+
+Options:
+  -g, --global  Focus an existing window in any workspace.
+  -p, --pull    If an existing window lives in another workspace, move it
+                to the focused workspace before focusing. Implies --global
+                (a global search is needed either way).
 EOF
 }
 
@@ -189,12 +195,31 @@ cmd_open() {
   esac
 
   any_workspace=0
-  case "${1:-}" in
-  -g | --global)
-    any_workspace=1
-    shift
-    ;;
-  esac
+  pull=0
+  while [ "$#" -gt 0 ]; do
+    case "$1" in
+    -g | --global)
+      any_workspace=1
+      shift
+      ;;
+    -p | --pull)
+      pull=1
+      shift
+      ;;
+    -*)
+      echo "orbit open: unknown option '$1'" >&2
+      cmd_open_help >&2
+      return 2
+      ;;
+    *)
+      break
+      ;;
+    esac
+  done
+
+  # --pull implies global search: we have to find the window anywhere to
+  # decide whether it's worth pulling. Harmless if -g is already set.
+  [ "$pull" -eq 1 ] && any_workspace=1
 
   bundle_id="$1"
 
@@ -206,6 +231,17 @@ cmd_open() {
   fi
 
   if [ -n "$window_id" ]; then
+    if [ "$pull" -eq 1 ]; then
+      current_ws=$(aerospace list-workspaces --focused)
+      # Look up the window's workspace so we can skip a no-op move when
+      # it's already on the focused workspace — aerospace rejects moving
+      # a node to the workspace it already lives in.
+      window_ws=$(aerospace list-windows --all --format '%{window-id} %{workspace}' 2>/dev/null |
+        awk -v id="$window_id" '$1 == id {print $2; exit}')
+      if [ -n "$window_ws" ] && [ "$window_ws" != "$current_ws" ]; then
+        aerospace move-node-to-workspace --window-id "$window_id" "$current_ws" 2>/dev/null || :
+      fi
+    fi
     aerospace focus --window-id "$window_id"
   elif [ "$bundle_id" = "com.apple.finder" ]; then
     osascript -e 'tell application "Finder"
@@ -215,12 +251,10 @@ cmd_open() {
   elif [ "$bundle_id" = "net.kovidgoyal.kitty" ]; then
     socket=$(ls -t /tmp/kitty-* 2>/dev/null | head -n1)
     kitten @ --to "unix:$socket" launch --type=os-window >/dev/null
-  elif [ "$bundle_id" = "com.apple.Notes" ]; then
-    open -b com.apple.Notes
   elif osascript -e "tell application id \"$bundle_id\" to make new window" >/dev/null 2>&1; then
     osascript -e "tell application id \"$bundle_id\" to activate"
   else
-    open -b "$bundle_id"
+    open -nb "$bundle_id"
   fi
 }
 
