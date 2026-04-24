@@ -150,10 +150,17 @@ EOF
 
 cmd_preset_help() {
   cat <<'EOF'
-Usage: orbit preset [options] <preset-name>
+Usage: orbit preset [options] <preset-name> [preset-name...]
 
 Arrange the focused workspace into a predefined layout. The focused window
 becomes the "main" window of the preset.
+
+When given multiple preset names, cycles through them on repeated calls:
+each invocation applies the next preset after the one most recently used
+on the focused workspace, wrapping around. The last applied preset is
+tracked per-workspace under `$XDG_CACHE_HOME/orbit/preset` (or
+`~/.cache/orbit/preset`). A list that doesn't include the last applied
+preset starts from its first entry.
 
 Options:
   --main-size <delta>   Resize the main window by <delta> along the preset's
@@ -184,6 +191,26 @@ Presets:
   3-row-bottom  Main window on the bottom, remaining windows split between
                 two rows above, each tiled horizontally.
 EOF
+}
+
+# Serialize commands that mutate the aerospace workspace tree. Two such
+# commands running concurrently — say a `preset` rebuild overlapping a
+# `move-workspace` mid-swap — would interleave focus/move/join calls and
+# scramble the tree (or leave focus stuck on `splash`). `mkdir` is atomic
+# across processes so it doubles as a no-deps mutex. Callers acquire with
+# `acquire_workspace_mutation_lock` and pair it with a trap that calls
+# `release_workspace_mutation_lock` on EXIT/INT/TERM. If a run dies before
+# the trap fires (e.g. SIGKILL), `rmdir` the lock manually.
+workspace_mutation_lockdir() {
+  echo "/tmp/orbit-workspace-mutation.$(id -u).lock"
+}
+
+acquire_workspace_mutation_lock() {
+  mkdir "$(workspace_mutation_lockdir)" 2>/dev/null
+}
+
+release_workspace_mutation_lock() {
+  rmdir "$(workspace_mutation_lockdir)" 2>/dev/null || :
 }
 
 cmd_open() {
@@ -459,13 +486,7 @@ cmd_move_workspace() {
     esac
   done
 
-  # Serialize invocations: while a previous `move-workspace` is still in
-  # flight (splash focused, windows mid-hop), a second keypress would read
-  # `splash` as its source and scramble state. `mkdir` is atomic across
-  # processes, so it's a safe no-deps mutex. If a run dies before the
-  # trap releases the lock (e.g. SIGKILL), `rmdir` it manually.
-  lockdir="/tmp/orbit-move-workspace.$(id -u).lock"
-  if ! mkdir "$lockdir" 2>/dev/null; then
+  if ! acquire_workspace_mutation_lock; then
     return 0
   fi
 
@@ -485,7 +506,7 @@ cmd_move_workspace() {
     elif [ -n "$restore_on_exit" ]; then
       aerospace workspace "$restore_on_exit" 2>/dev/null || :
     fi
-    rmdir "$lockdir" 2>/dev/null || :
+    release_workspace_mutation_lock
   ' EXIT INT TERM
 
   target="$1"
@@ -594,11 +615,36 @@ cmd_preset() {
     esac
   done
 
-  case "${1:-}" in
-  "")
+  if [ "$#" -eq 0 ]; then
     cmd_preset_help
     return
-    ;;
+  fi
+
+  for name in "$@"; do
+    case "$name" in
+    2-col-left | 2-col-right | 2-row-top | 2-row-bottom | \
+      3-col-left | 3-col-middle | 3-col-right | \
+      3-row-top | 3-row-middle | 3-row-bottom) ;;
+    *)
+      echo "orbit preset: unknown preset '$name'" >&2
+      cmd_preset_help >&2
+      return 2
+      ;;
+    esac
+  done
+
+  if ! acquire_workspace_mutation_lock; then
+    return 0
+  fi
+  trap 'release_workspace_mutation_lock' EXIT INT TERM
+
+  if [ "$#" -gt 1 ]; then
+    target=$(preset_cycle_next "$@")
+  else
+    target="$1"
+  fi
+
+  case "$target" in
   2-col-left) cmd_preset_2 left ;;
   2-col-right) cmd_preset_2 right ;;
   2-row-top) cmd_preset_2 top ;;
@@ -609,12 +655,49 @@ cmd_preset() {
   3-row-top) cmd_preset_3 top ;;
   3-row-middle) cmd_preset_3_middle row ;;
   3-row-bottom) cmd_preset_3 bottom ;;
-  *)
-    echo "orbit preset: unknown preset '$1'" >&2
-    cmd_preset_help >&2
-    return 2
-    ;;
   esac
+
+  preset_state_save "$target"
+}
+
+preset_state_dir() {
+  echo "${XDG_CACHE_HOME:-$HOME/.cache}/orbit/preset"
+}
+
+preset_state_file() {
+  ws=$(aerospace list-workspaces --focused)
+  echo "$(preset_state_dir)/$ws"
+}
+
+preset_state_save() {
+  file=$(preset_state_file)
+  mkdir -p "$(dirname "$file")"
+  printf '%s\n' "$1" >"$file"
+}
+
+preset_cycle_next() {
+  # Pick the preset that follows the last-applied one in the given list.
+  # Falls back to the first entry when no state exists or the saved value
+  # isn't part of this cycle (so adding/removing presets to a cycle just
+  # restarts it instead of getting stuck).
+  file=$(preset_state_file)
+  last=""
+  if [ -f "$file" ]; then
+    last=$(cat "$file")
+  fi
+  first=""
+  take_next=0
+  for name in "$@"; do
+    [ -z "$first" ] && first="$name"
+    if [ "$take_next" -eq 1 ]; then
+      echo "$name"
+      return
+    fi
+    if [ "$name" = "$last" ]; then
+      take_next=1
+    fi
+  done
+  echo "$first"
 }
 
 cmd_preset_2() {

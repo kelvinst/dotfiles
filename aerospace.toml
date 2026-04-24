@@ -126,25 +126,16 @@ on-mode-changed = []
     cmd-h = [] # Disable "hide application"
     cmd-alt-h = [] # Disable "hide others"
 
-    # See: https://nikitabobko.github.io/AeroSpace/commands#layout
-    alt-slash = ['flatten-workspace-tree', 'layout tiles horizontal vertical']
-    alt-f = ['flatten-workspace-tree', 'layout accordion horizontal vertical']
+    alt-s = 'exec-and-forget orbit preset --main-size +150 2-col-left 2-col-right'
+    alt-shift-s = 'exec-and-forget orbit preset --main-size +50 2-row-top 2-row-bottom'
 
-    alt-q = 'exec-and-forget orbit preset --main-size +150 2-col-left'
-    alt-w = 'exec-and-forget orbit preset --main-size +150 2-col-right'
-    alt-shift-q = 'exec-and-forget orbit preset --main-size +50 2-row-top'
-    alt-shift-w = 'exec-and-forget orbit preset --main-size +50 2-row-bottom'
+    alt-d = 'exec-and-forget orbit preset --main-size +150 3-col-left 3-col-middle 3-col-right'
+    alt-shift-d = 'exec-and-forget orbit preset --main-size +50 3-row-top 3-row-middle 3-row-bottom'
 
-    alt-a = 'exec-and-forget orbit preset --main-size +150 3-col-left'
-    alt-s = 'exec-and-forget orbit preset --main-size +150 3-col-middle'
-    alt-d = 'exec-and-forget orbit preset --main-size +150 3-col-right'
-    alt-shift-a = 'exec-and-forget orbit preset --main-size +50 3-row-top'
-    alt-shift-s = 'exec-and-forget orbit preset --main-size +50 3-row-middle'
-    alt-shift-d = 'exec-and-forget orbit preset --main-size +50 3-row-bottom'
+    alt-f = 'layout floating tiling' # Toggle between floating and tiling layout
 
-    alt-t = 'layout floating tiling' # Toggle between floating and tiling layout
-
-    # Fullscreen
+    alt-a = ['flatten-workspace-tree', 'layout accordion tiles']
+    alt-shift-a = ['flatten-workspace-tree', 'layout horizontal vertical']
     alt-z = 'fullscreen'
 
     # Reload stuff
