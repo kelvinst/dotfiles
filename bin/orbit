@@ -31,9 +31,11 @@ Commands:
            Swap the focused window with its neighbor; at the workspace edge,
            move the window to the adjacent workspace instead.
 
-  swap-workspace
-           Swap every window between the focused workspace and the given
-           one, then focus the given one.
+  move-workspace
+           Move the focused workspace to another position. If the target
+           position is already occupied, the two workspaces swap places
+           (windows + root layout). Pass `--focus-follows-workspace` to
+           land focus on the target.
 
   preset   Arrange the focused workspace into a predefined layout.
 
@@ -121,13 +123,22 @@ is sent to the adjacent workspace instead.
 EOF
 }
 
-cmd_swap_workspace_help() {
+cmd_move_workspace_help() {
   cat <<'EOF'
-Usage: orbit swap-workspace <target-workspace>
+Usage: orbit move-workspace [--focus-follows-workspace] <target-workspace>
 
-Swap every window between the currently focused workspace and
-<target-workspace>, then focus <target-workspace>. No-op when the
-focused workspace is already <target-workspace>.
+Move the focused workspace to another position. If there's already a
+workspace at <target-workspace>, that workspace swaps positions with
+this one — windows and root layout cross over, so e.g. a `tiles`
+workspace traded with an `accordion` one keeps each layout traveling
+with its windows. No-op when the focused workspace is already
+<target-workspace>.
+
+Options:
+  --focus-follows-workspace
+        Focus <target-workspace> after the move. Without this flag focus
+        stays on the current workspace (which now holds the other
+        workspace's contents).
 EOF
 }
 
@@ -378,13 +389,31 @@ cmd_swap_or_move() {
   cmd_move --boundaries-action sibling-workspace "$direction"
 }
 
-cmd_swap_workspace() {
+cmd_move_workspace() {
   case "${1:-}" in
   help | -h | --help | "")
-    cmd_swap_workspace_help
+    cmd_move_workspace_help
     return
     ;;
   esac
+
+  focus_follows=0
+  while [ "$#" -gt 0 ]; do
+    case "$1" in
+    --focus-follows-workspace)
+      focus_follows=1
+      shift
+      ;;
+    -*)
+      echo "orbit move-workspace: unknown option '$1'" >&2
+      cmd_move_workspace_help >&2
+      return 2
+      ;;
+    *)
+      break
+      ;;
+    esac
+  done
 
   target="$1"
   current=$(aerospace list-workspaces --focused)
@@ -399,6 +428,13 @@ cmd_swap_workspace() {
   source_wids=$(aerospace list-windows --workspace "$current" --format '%{window-id}')
   target_wids=$(aerospace list-windows --workspace "$target" --format '%{window-id}')
 
+  # Snapshot each workspace's root layout before the moves so we can ship it
+  # along with the windows. `%{window-parent-container-layout}` on the first
+  # window of a flat workspace is the root layout — accurate for the common
+  # case; nested trees fall back to whatever their first window's parent is.
+  source_layout=$(aerospace list-windows --workspace "$current" --format '%{window-parent-container-layout}' | head -n1)
+  target_layout=$(aerospace list-windows --workspace "$target" --format '%{window-parent-container-layout}' | head -n1)
+
   for wid in $source_wids; do
     aerospace move-node-to-workspace --window-id "$wid" "$target"
   done
@@ -406,7 +442,21 @@ cmd_swap_workspace() {
     aerospace move-node-to-workspace --window-id "$wid" "$current"
   done
 
-  aerospace workspace "$target"
+  # Reapply layouts via any window that just landed on each workspace — the
+  # source's windows are now on target (so target adopts source's layout),
+  # and vice versa. Empty originals have no layout to restore.
+  if [ -n "$source_layout" ]; then
+    first_source=$(echo "$source_wids" | head -n1)
+    [ -n "$first_source" ] && aerospace layout --window-id "$first_source" "$source_layout"
+  fi
+  if [ -n "$target_layout" ]; then
+    first_target=$(echo "$target_wids" | head -n1)
+    [ -n "$first_target" ] && aerospace layout --window-id "$first_target" "$target_layout"
+  fi
+
+  if [ "$focus_follows" -eq 1 ]; then
+    aerospace workspace "$target"
+  fi
 }
 
 cmd_preset() {
@@ -716,9 +766,9 @@ swap-or-move-node-to-workspace)
   shift
   cmd_swap_or_move "$@"
   ;;
-swap-workspace)
+move-workspace)
   shift
-  cmd_swap_workspace "$@"
+  cmd_move_workspace "$@"
   ;;
 preset)
   shift
