@@ -244,13 +244,23 @@ cmd_open() {
     fi
     aerospace focus --window-id "$window_id"
   elif [ "$bundle_id" = "com.apple.finder" ]; then
+    # Finder new window command is different than the default "make new window"
     osascript -e 'tell application "Finder"
                       make new Finder window
                       activate
                   end tell'
+  elif [ "$bundle_id" = "com.apple.Notes" ]; then
+    # For some reason "make new window" in Notes doesn't fail, but also does
+    # not create a new window, so we bypass that
+    open -nb "$bundle_id"
   elif [ "$bundle_id" = "net.kovidgoyal.kitty" ]; then
+    # Kitty has no support for applescript, fallback to launching it manually
     socket=$(ls -t /tmp/kitty-* 2>/dev/null | head -n1)
-    kitten @ --to "unix:$socket" launch --type=os-window >/dev/null
+    if [ -n "$socket" ]; then
+      kitten @ --to "unix:$socket" launch --type=os-window >/dev/null
+    else
+      open -b "$bundle_id"
+    fi
   elif osascript -e "tell application id \"$bundle_id\" to make new window" >/dev/null 2>&1; then
     osascript -e "tell application id \"$bundle_id\" to activate"
   else
