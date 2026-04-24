@@ -61,10 +61,10 @@ EOF
 
 cmd_open_help() {
   cat <<'EOF'
-Usage: orbit open [-a|--all] <bundle-id>
+Usage: orbit open [-g|--global] <bundle-id>
 
 Focus an app window in the focused aerospace workspace, or spawn a new window
-here. With -a/--all, focus an existing window in any workspace.
+here. With -g/--global, focus an existing window in any workspace.
 EOF
 }
 
@@ -190,7 +190,7 @@ cmd_open() {
 
   any_workspace=0
   case "${1:-}" in
-  -a | --all)
+  -g | --global)
     any_workspace=1
     shift
     ;;
