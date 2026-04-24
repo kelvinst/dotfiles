@@ -12,6 +12,8 @@ install:
 	cp -r ./config/tms/* ~/.config/tms/
 	mkdir -p ~/.config/tidewave/
 	cp -r ./config/tidewave/* ~/.config/tidewave/
+	mkdir -p ~/.config/sketchybar/
+	cp -r ./config/sketchybar/* ~/.config/sketchybar/
 	mkdir -p ~/.hammerspoon/
 	cp -r ./hammerspoon/* ~/.hammerspoon/
 	mkdir -p ~/.local/bin/
@@ -39,6 +41,7 @@ clean:
 	rm -rf ~/.config/nvim/*
 	rm -rf ~/.config/tms/*
 	rm -rf ~/.config/tidewave/*
+	rm -rf ~/.config/sketchybar/*
 	rm -rf ~/.hammerspoon/*
 	for f in ./bin/*; do rm -rf ~/.local/bin/$$(basename $$f); done
 	rm -rf ~/.config/init_starship.sh
@@ -66,6 +69,8 @@ update:
 	cp -r ~/.config/tms/* ./config/tms/
 	mkdir -p ./config/tidewave/
 	cp -r ~/.config/tidewave/* ./config/tidewave/
+	mkdir -p ./config/sketchybar/
+	cp -r ~/.config/sketchybar/* ./config/sketchybar/
 	mkdir -p ./hammerspoon
 	mkdir -p ./zsh/completions/
 	cp -r ~/.zsh/completions/* ./zsh/completions/
