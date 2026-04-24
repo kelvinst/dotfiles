@@ -29,6 +29,10 @@ Commands:
            Pin the given workspaces to the secondary monitor, flatten them,
            and set them to accordion.
 
+  force-restart
+           Kill every aerospace process (GUI server + any stuck CLI calls)
+           and relaunch AeroSpace. Use when the server stops responding.
+
   help     Show this help.
 
 Run `orbit <command> help` for details on a command.
@@ -586,6 +590,34 @@ cmd_move_workspace_to_secondary() {
   done
 }
 
+cmd_force_restart_help() {
+  cat <<'EOF'
+Usage: orbit force-restart
+
+Kill every aerospace-related process — the GUI server and any stuck CLI
+invocations — then relaunch AeroSpace. Use when the server stops
+responding and dozens of `aerospace focus/workspace` CLI calls pile up
+blocked on IPC.
+EOF
+}
+
+cmd_force_restart() {
+  case "${1:-}" in
+  help | -h | --help)
+    cmd_force_restart_help
+    return
+    ;;
+  esac
+
+  # `-x` matches the exact command name (case-sensitive) so we only reach
+  # the GUI server (`AeroSpace`) and the CLI (`aerospace`) without touching
+  # unrelated processes like SwipeAeroSpace.
+  pkill -9 -x AeroSpace 2>/dev/null || :
+  pkill -9 -x aerospace 2>/dev/null || :
+  sleep 0.5
+  open -a AeroSpace
+}
+
 case "${1:-help}" in
 open)
   shift
@@ -614,6 +646,10 @@ preset)
 move-workspace-to-secondary-monitor)
   shift
   cmd_move_workspace_to_secondary "$@"
+  ;;
+force-restart)
+  shift
+  cmd_force_restart "$@"
   ;;
 help | -h | --help) cmd_help ;;
 *) exec aerospace "$@" ;;
