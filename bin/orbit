@@ -415,8 +415,40 @@ cmd_move_workspace() {
     esac
   done
 
+  # Serialize invocations: while a previous `move-workspace` is still in
+  # flight (splash focused, windows mid-hop), a second keypress would read
+  # `splash` as its source and scramble state. `mkdir` is atomic across
+  # processes, so it's a safe no-deps mutex. If a run dies before the
+  # trap releases the lock (e.g. SIGKILL), `rmdir` it manually.
+  lockdir="/tmp/orbit-move-workspace.$(id -u).lock"
+  if ! mkdir "$lockdir" 2>/dev/null; then
+    return 0
+  fi
+
+  # `restore_on_exit` and the trap together guarantee focus never gets
+  # stuck on splash: even if `set -e` kills orbit mid-swap (e.g. a move
+  # targets a window that just closed), the trap still fires and sends
+  # focus somewhere real. Starts empty so the early-return paths below
+  # (before any splash focus) don't trigger an unnecessary workspace jump.
+  restore_on_exit=""
+  trap '
+    if [ -n "$restore_on_exit" ]; then
+      aerospace workspace "$restore_on_exit" 2>/dev/null || :
+    fi
+    rmdir "$lockdir" 2>/dev/null || :
+  ' EXIT INT TERM
+
   target="$1"
   current=$(aerospace list-workspaces --focused)
+  splash="splash"
+
+  # Belt-and-suspenders: if splash is focused when we enter, a prior run
+  # ended mid-swap (e.g. SIGKILL between `aerospace workspace splash` and
+  # the final focus restore). Swapping against splash's (empty) contents
+  # would smear an unrelated workspace into emptiness. Bail instead.
+  if [ "$current" = "$splash" ]; then
+    return 0
+  fi
 
   if [ "$current" = "$target" ]; then
     return 0
@@ -435,11 +467,32 @@ cmd_move_workspace() {
   source_layout=$(aerospace list-windows --workspace "$current" --format '%{window-parent-container-layout}' | head -n1)
   target_layout=$(aerospace list-windows --workspace "$target" --format '%{window-parent-container-layout}' | head -n1)
 
+  # Arm the exit-trap with the final destination BEFORE any of the
+  # subsequent aerospace calls that could trip `set -e` (a move against a
+  # just-closed window, a layout call on a stale container, etc.). The trap
+  # is the only thing that restores focus, so if we set the target late and
+  # anything fails in between, focus would fall back to `current` and the
+  # --focus-follows-workspace contract breaks.
+  if [ "$focus_follows" -eq 1 ]; then
+    restore_on_exit="$target"
+  else
+    restore_on_exit="$current"
+  fi
+
+  # Hide the bulk moves behind an empty "splash" workspace: focus it before
+  # the moves so neither source nor target is on-screen while windows get
+  # shuffled around. `--window-id` on the move commands keeps them from
+  # stealing focus back. One focus change at the end lands on the final
+  # workspace instead of N flickering ones during the moves.
+  aerospace workspace "$splash"
+
+  # Individual aerospace calls are tolerated (`|| :`) so a stale window-id
+  # doesn't abort the whole swap and leave things half-moved.
   for wid in $source_wids; do
-    aerospace move-node-to-workspace --window-id "$wid" "$target"
+    aerospace move-node-to-workspace --window-id "$wid" "$target" 2>/dev/null || :
   done
   for wid in $target_wids; do
-    aerospace move-node-to-workspace --window-id "$wid" "$current"
+    aerospace move-node-to-workspace --window-id "$wid" "$current" 2>/dev/null || :
   done
 
   # Reapply layouts via any window that just landed on each workspace — the
@@ -447,15 +500,15 @@ cmd_move_workspace() {
   # and vice versa. Empty originals have no layout to restore.
   if [ -n "$source_layout" ]; then
     first_source=$(echo "$source_wids" | head -n1)
-    [ -n "$first_source" ] && aerospace layout --window-id "$first_source" "$source_layout"
+    if [ -n "$first_source" ]; then
+      aerospace layout --window-id "$first_source" "$source_layout" 2>/dev/null || :
+    fi
   fi
   if [ -n "$target_layout" ]; then
     first_target=$(echo "$target_wids" | head -n1)
-    [ -n "$first_target" ] && aerospace layout --window-id "$first_target" "$target_layout"
-  fi
-
-  if [ "$focus_follows" -eq 1 ]; then
-    aerospace workspace "$target"
+    if [ -n "$first_target" ]; then
+      aerospace layout --window-id "$first_target" "$target_layout" 2>/dev/null || :
+    fi
   fi
 }
 

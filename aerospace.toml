@@ -127,8 +127,8 @@ on-mode-changed = []
     cmd-alt-h = [] # Disable "hide others"
 
     # See: https://nikitabobko.github.io/AeroSpace/commands#layout
-    alt-slash = ['layout tiles horizontal vertical', 'flatten-workspace-tree']
-    alt-f = ['layout accordion horizontal vertical', 'flatten-workspace-tree']
+    alt-slash = ['flatten-workspace-tree', 'layout tiles horizontal vertical']
+    alt-f = ['flatten-workspace-tree', 'layout accordion horizontal vertical']
 
     alt-q = 'exec-and-forget orbit preset --main-size +150 2-col-left'
     alt-w = 'exec-and-forget orbit preset --main-size +150 2-col-right'
