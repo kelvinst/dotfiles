@@ -425,14 +425,20 @@ cmd_move_workspace() {
     return 0
   fi
 
-  # `restore_on_exit` and the trap together guarantee focus never gets
-  # stuck on splash: even if `set -e` kills orbit mid-swap (e.g. a move
-  # targets a window that just closed), the trap still fires and sends
-  # focus somewhere real. Starts empty so the early-return paths below
-  # (before any splash focus) don't trigger an unnecessary workspace jump.
+  # `restore_on_exit` / `restore_window_on_exit` together with the trap
+  # guarantee focus never gets stuck on splash: even if `set -e` kills
+  # orbit mid-swap (e.g. a move targets a window that just closed), the
+  # trap still fires and sends focus somewhere real. Both start empty so
+  # the early-return paths below (before any splash focus) don't trigger
+  # an unnecessary workspace jump. For --focus-follows-workspace we set
+  # the window-id only — `aerospace focus --window-id` carries its
+  # workspace forward, no need to focus the workspace separately.
   restore_on_exit=""
+  restore_window_on_exit=""
   trap '
-    if [ -n "$restore_on_exit" ]; then
+    if [ -n "$restore_window_on_exit" ]; then
+      aerospace focus --window-id "$restore_window_on_exit" 2>/dev/null || :
+    elif [ -n "$restore_on_exit" ]; then
       aerospace workspace "$restore_on_exit" 2>/dev/null || :
     fi
     rmdir "$lockdir" 2>/dev/null || :
@@ -473,8 +479,13 @@ cmd_move_workspace() {
   # is the only thing that restores focus, so if we set the target late and
   # anything fails in between, focus would fall back to `current` and the
   # --focus-follows-workspace contract breaks.
+  #
+  # With --focus-follows-workspace we snapshot the currently focused
+  # window-id and let the trap focus it directly — after the swap that
+  # window lives on target, and `aerospace focus --window-id` brings its
+  # workspace forward, so the user lands back on the exact same window.
   if [ "$focus_follows" -eq 1 ]; then
-    restore_on_exit="$target"
+    restore_window_on_exit=$(aerospace list-windows --focused --format '%{window-id}' 2>/dev/null || :)
   else
     restore_on_exit="$current"
   fi
