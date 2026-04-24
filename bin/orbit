@@ -33,6 +33,9 @@ Commands:
            Kill every aerospace process (GUI server + any stuck CLI calls)
            and relaunch AeroSpace. Use when the server stops responding.
 
+  cleanup  Kill stuck `aerospace` CLI processes while leaving the GUI
+           server running.
+
   help     Show this help.
 
 Run `orbit <command> help` for details on a command.
@@ -612,10 +615,31 @@ cmd_force_restart() {
   # `-x` matches the exact command name (case-sensitive) so we only reach
   # the GUI server (`AeroSpace`) and the CLI (`aerospace`) without touching
   # unrelated processes like SwipeAeroSpace.
+  cmd_cleanup
   pkill -9 -x AeroSpace 2>/dev/null || :
-  pkill -9 -x aerospace 2>/dev/null || :
   sleep 0.5
   open -a AeroSpace
+}
+
+cmd_cleanup_help() {
+  cat <<'EOF'
+Usage: orbit cleanup
+
+Kill every stuck `aerospace` CLI process. Leaves the `AeroSpace` GUI
+server running — use `orbit force-restart` if the server itself is
+wedged.
+EOF
+}
+
+cmd_cleanup() {
+  case "${1:-}" in
+  help | -h | --help)
+    cmd_cleanup_help
+    return
+    ;;
+  esac
+
+  pkill -9 -x aerospace 2>/dev/null || :
 }
 
 case "${1:-help}" in
@@ -650,6 +674,10 @@ move-workspace-to-secondary-monitor)
 force-restart)
   shift
   cmd_force_restart "$@"
+  ;;
+cleanup)
+  shift
+  cmd_cleanup "$@"
   ;;
 help | -h | --help) cmd_help ;;
 *) exec aerospace "$@" ;;
