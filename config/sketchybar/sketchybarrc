@@ -1,5 +1,8 @@
 #!/usr/bin/env lua
 
+-- Originally from: https://github.com/hajiboy95/dotfiles/tree/main/.config/sketchybar
+-- Found via: https://github.com/FelixKratz/SketchyBar/discussions/47#discussioncomment-15653490
+
 -- This is only needed once to install the sketchybar module
 -- (or for an update of the module). It automatically rebuilds SbarLua
 -- if the sketchybar binary is newer than the compiled module.
