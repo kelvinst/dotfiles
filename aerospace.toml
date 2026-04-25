@@ -58,7 +58,14 @@ persistent-workspaces = []
 # A callback that runs every time binding mode changes
 # See: https://nikitabobko.github.io/AeroSpace/guide#binding-modes
 # See: https://nikitabobko.github.io/AeroSpace/commands#mode
-on-mode-changed = []
+on-mode-changed = [
+  'exec-and-forget sketchybar --trigger aerospace_mode_change INFO=$AEROSPACE_MODE',
+]
+
+exec-on-workspace-change = [
+  '/bin/bash', '-c',
+  'sketchybar --trigger aerospace_workspace_change FOCUSED_WORKSPACE=$AEROSPACE_FOCUSED_WORKSPACE',
+]
 
 # Environment variables for exec-and-forget commands.
 # See: https://nikitabobko.github.io/AeroSpace/guide#exec-env-vars

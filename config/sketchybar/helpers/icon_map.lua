@@ -1,3 +1,5 @@
+-- Icon names (e.g. ":spotify:") are glyphs from sketchybar-app-font:
+-- https://github.com/kvndrsslr/sketchybar-app-font
 return {
 	[ [[Live]] ] = ":ableton:",
 	[ [[Acrobat]] ] = ":acrobat:",
