@@ -202,6 +202,12 @@ My new, simplified, dotfiles
     brew tap FelixKratz/formulae && brew install borders
     ```
 
+1. Install [SketchyBar](https://github.com/FelixKratz/SketchyBar)
+
+    ```shell
+    brew tap FelixKratz/formulae && brew install sketchybar
+    ```
+
 1. Install [ai-jail](https://github.com/akitaonrails/ai-jail)
 
     ```shell
