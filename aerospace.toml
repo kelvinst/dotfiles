@@ -58,9 +58,7 @@ persistent-workspaces = []
 # A callback that runs every time binding mode changes
 # See: https://nikitabobko.github.io/AeroSpace/guide#binding-modes
 # See: https://nikitabobko.github.io/AeroSpace/commands#mode
-on-mode-changed = [
-  'exec-and-forget sketchybar --trigger aerospace_mode_change INFO=$AEROSPACE_MODE',
-]
+on-mode-changed = []
 
 exec-on-workspace-change = [
   '/bin/bash', '-c',
@@ -270,20 +268,21 @@ exec-on-workspace-change = [
     cmd-ctrl-z = 'exec-and-forget orbit open -g us.zoom.xos'
 
     # See: https://nikitabobko.github.io/AeroSpace/commands#mode
-    alt-semicolon = 'mode service'
+    alt-semicolon = ['mode service', 'exec-and-forget sketchybar --trigger aerospace_mode_change INFO=service']
 
 # 'service' binding mode declaration.
 # See: https://nikitabobko.github.io/AeroSpace/guide#binding-modes
 [mode.service.binding]
-    esc = ['reload-config', 'mode main']
-    r = ['flatten-workspace-tree', 'mode main'] # reset layout
-    f = ['layout floating tiling', 'mode main'] # Toggle between floating and tiling layout
-    backspace = ['close-all-windows-but-current', 'mode main']
+    esc = ['reload-config', 'mode main', 'exec-and-forget sketchybar --trigger aerospace_mode_change']
+    r = ['flatten-workspace-tree', 'mode main', 'exec-and-forget sketchybar --trigger aerospace_mode_change'] # reset layout
+    f = ['layout floating tiling', 'mode main', 'exec-and-forget sketchybar --trigger aerospace_mode_change'] # Toggle between floating and tiling layout
+    backspace = ['close-all-windows-but-current', 'mode main', 'exec-and-forget sketchybar --trigger aerospace_mode_change']
     # Re-seed the secondary-monitor assignments. Mirrors `after-startup-command`
     # for when a monitor reconnect or config change drops the pinning.
     m = [
       'exec-and-forget orbit move-workspace-to-secondary-monitor 0 M O P',
       'mode main',
+      'exec-and-forget sketchybar --trigger aerospace_mode_change',
     ]
 
     # sticky is not yet supported https://github.com/nikitabobko/AeroSpace/issues/2
