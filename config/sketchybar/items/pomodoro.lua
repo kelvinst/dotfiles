@@ -1,3 +1,4 @@
+-- Source: https://github.com/hajiboy95/dotfiles/blob/main/.config/sketchybar/items/pomodoro.lua
 -- 1. CONFIGURATION
 local default_duration = 25 * 60
 local sound_path = "/System/Library/PrivateFrameworks/ScreenReader.framework/Versions/A/Resources/Sounds/"

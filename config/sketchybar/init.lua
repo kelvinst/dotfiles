@@ -1,3 +1,4 @@
+-- Source: https://github.com/hajiboy95/dotfiles/blob/main/.config/sketchybar/init.lua
 require("globals")
 -- 1. Setup Bar and Defaults
 SBAR.begin_config() -- Pauses redraw for faster loading

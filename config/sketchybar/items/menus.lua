@@ -1,3 +1,4 @@
+-- Source: https://github.com/hajiboy95/dotfiles/blob/main/.config/sketchybar/items/menus.lua
 -- CONFIGURATION
 local max_items = 15
 local animation_seconds = (APPLICATION_MENU_TRANSITION_FRAMES / 60)

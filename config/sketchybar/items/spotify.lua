@@ -1,3 +1,4 @@
+-- Source: https://github.com/hajiboy95/dotfiles/blob/main/.config/sketchybar/items/spotify.lua
 local max_length = 30
 local logo_color = 0xff1db954
 

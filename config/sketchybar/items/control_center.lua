@@ -1,3 +1,4 @@
+-- Source: https://github.com/hajiboy95/dotfiles/blob/main/.config/sketchybar/items/control_center.lua
 local config_dir = os.getenv("CONFIG_DIR")
 local menu_bin = config_dir .. "/helpers/menus/bin/menus"
 SBAR.add("item", "control_center", {

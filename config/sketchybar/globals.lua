@@ -1,3 +1,4 @@
+-- Source: https://github.com/hajiboy95/dotfiles/blob/main/.config/sketchybar/globals.lua
 SBAR = require("sketchybar")
 COLORS = require("colors")
 DEFAULT_ITEM = require("default")

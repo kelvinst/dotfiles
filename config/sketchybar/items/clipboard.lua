@@ -1,3 +1,4 @@
+-- Source: https://github.com/hajiboy95/dotfiles/blob/main/.config/sketchybar/items/clipboard.lua
 local max_items = 5
 local history = {}
 

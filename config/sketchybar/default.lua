@@ -1,3 +1,4 @@
+-- Source: https://github.com/hajiboy95/dotfiles/blob/main/.config/sketchybar/default.lua
 local border_width = 1
 local corner_raduis = 15
 local item_padding = 10

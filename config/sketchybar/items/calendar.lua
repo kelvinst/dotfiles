@@ -1,3 +1,4 @@
+-- Source: https://github.com/hajiboy95/dotfiles/blob/main/.config/sketchybar/items/calendar.lua
 -- 1. THE TIME (Top Line)
 local cal_time = SBAR.add("item", "cal.time", {
 	position = "right",

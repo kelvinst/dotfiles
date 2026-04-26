@@ -1,3 +1,4 @@
+-- Source: https://github.com/hajiboy95/dotfiles/blob/main/.config/sketchybar/items/separator.lua
 local M = {}
 
 function M.create(name, position)

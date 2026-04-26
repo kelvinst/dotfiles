@@ -1,3 +1,4 @@
+-- Source: https://github.com/hajiboy95/dotfiles/blob/main/.config/sketchybar/items/spaces.lua
 local icon_map = require("helpers.icon_map")
 
 -- ==========================================================
