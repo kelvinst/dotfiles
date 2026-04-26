@@ -14,6 +14,11 @@ install:
 	cp -r ./config/tidewave/* ~/.config/tidewave/
 	mkdir -p ~/.config/sketchybar/
 	cp -r ./config/sketchybar/* ~/.config/sketchybar/
+	mkdir -p ~/.config/sketchybar_bash/
+	cp -r ./config/sketchybar_bash/* ~/.config/sketchybar_bash/
+	cd ~/.config/sketchybar/helpers/menus && make
+	find ~/.config/sketchybar -type f -name "*.sh" -exec chmod +x {} \;
+	find ~/.config/sketchybar_bash -type f \( -name "*.sh" -o -name "sketchybarrc" \) -exec chmod +x {} \;
 	mkdir -p ~/.hammerspoon/
 	cp -r ./hammerspoon/* ~/.hammerspoon/
 	mkdir -p ~/.local/bin/
@@ -42,6 +47,7 @@ clean:
 	rm -rf ~/.config/tms/*
 	rm -rf ~/.config/tidewave/*
 	rm -rf ~/.config/sketchybar/*
+	rm -rf ~/.config/sketchybar_bash/*
 	rm -rf ~/.hammerspoon/*
 	for f in ./bin/*; do rm -rf ~/.local/bin/$$(basename $$f); done
 	rm -rf ~/.config/init_starship.sh

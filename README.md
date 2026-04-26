@@ -167,6 +167,7 @@ My new, simplified, dotfiles
     mise use -g yarn@latest
     mise use -g just@latest
     mise use -g zig@latest
+    mise use -g lua@latest
     ```
 
 
@@ -206,6 +207,29 @@ My new, simplified, dotfiles
 
     ```shell
     brew tap FelixKratz/formulae && brew install sketchybar
+    ```
+
+1. Install the SketchyBar runtime deps — `lua` (for the Lua-based config) and
+   `ifstat` (for the network speed indicator in `resources.lua`):
+
+    ```shell
+    brew install lua ifstat
+    ```
+
+1. Install the icon fonts SketchyBar uses — Apple's SF Symbols (battery,
+   volume, etc.) and [`sketchybar-app-font`](https://github.com/kvndrsslr/sketchybar-app-font)
+   (per-app icons in `spaces.lua`):
+
+    ```shell
+    brew install --cask sf-symbols font-sketchybar-app-font
+    ```
+
+1. Install the Lua bindings for SketchyBar: [`SbarLua`](https://github.com/FelixKratz/SbarLua)
+
+    ```shell
+    git clone https://github.com/FelixKratz/SbarLua.git /tmp/SbarLua \
+      && (cd /tmp/SbarLua && make install) \
+      && rm -rf /tmp/SbarLua
     ```
 
 1. Install [ai-jail](https://github.com/akitaonrails/ai-jail)

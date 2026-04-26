@@ -36,7 +36,7 @@ spaces_loader:subscribe("aerospace_is_ready", function()
 	require("items.resources")
 	SBAR.end_config()
 
-	spaces_loader:delete()
+	SBAR.remove(spaces_loader.name)
 end)
 
 -- 6. Run the wait loop in the BACKGROUND
