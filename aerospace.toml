@@ -53,7 +53,7 @@ automatically-unhide-macos-hidden-apps = true
 # even when they are invisible.
 # This config version is only available since 'config-version = 2'
 # Fallback value (if you omit the key): persistent-workspaces = []
-persistent-workspaces = []
+persistent-workspaces = ['0', '1']
 
 # A callback that runs every time binding mode changes
 # See: https://nikitabobko.github.io/AeroSpace/guide#binding-modes
@@ -111,15 +111,7 @@ on-mode-changed = []
 
     # All possible commands: https://nikitabobko.github.io/AeroSpace/commands
 
-    # See: https://nikitabobko.github.io/AeroSpace/commands#exec-and-forget
-    # You can uncomment the following lines to open up terminal with alt + enter shortcut
-    # (like in i3)
-    # alt-enter = '''exec-and-forget osascript -e '
-    # tell application "Terminal"
-    #     do script
-    #     activate
-    # end tell'
-    # '''
+    alt-enter = 'exec-and-forget orbit focus main'
 
     # Disabling macOS "Hide application" feature, because I don't use it
     # See: https://nikitabobko.github.io/AeroSpace/goodies#disable-hide-app
@@ -129,7 +121,7 @@ on-mode-changed = []
     alt-s = 'exec-and-forget orbit preset --main-size +150 2-col-left 2-col-right'
     alt-shift-s = 'exec-and-forget orbit preset --main-size +50 2-row-top 2-row-bottom'
 
-    alt-d = 'exec-and-forget orbit preset --main-size +150 3-col-left 3-col-middle 3-col-right'
+    alt-d = 'exec-and-forget orbit preset --main-size +500 3-col-left 3-col-middle 3-col-right'
     alt-shift-d = 'exec-and-forget orbit preset --main-size +50 3-row-top 3-row-middle 3-row-bottom'
 
     alt-f = 'layout floating tiling' # Toggle between floating and tiling layout
@@ -244,8 +236,10 @@ on-mode-changed = []
     alt-shift-period = 'move-node-to-workspace --wrap-around --focus-follows-window next'
     alt-shift-comma = 'move-node-to-workspace --wrap-around --focus-follows-window prev'
 
-    alt-tab = 'move-workspace-to-monitor --wrap-around next'
-    alt-shift-tab = 'move-workspace-to-monitor --wrap-around prev'
+    alt-rightSquareBracket = 'focus-monitor --wrap-around next'
+    alt-leftSquareBracket = 'focus-monitor --wrap-around prev'
+    alt-shift-rightSquareBracket = 'move-workspace-to-monitor --wrap-around next'
+    alt-shift-leftSquareBracket = 'move-workspace-to-monitor --wrap-around prev'
 
     # Opening applications
     cmd-ctrl-enter = 'exec-and-forget orbit open net.kovidgoyal.kitty'

@@ -78,6 +78,7 @@ cmd_focus_help() {
   cat <<'EOF'
 Usage: orbit focus dfs-first
        orbit focus dfs-last
+       orbit focus main
        orbit focus [args...]
 
 A wrapper around `aerospace focus` that adds more options to it.
@@ -91,6 +92,10 @@ Added options:
 Added subcommands:
   dfs-first   Focus the first window (`--dfs-index 0`).
   dfs-last    Focus the last window on the focused workspace.
+  main        Focus the main window of the preset most recently
+              applied to the focused workspace. No-op when no
+              preset has been applied here yet, or when the saved
+              main window has since closed.
 EOF
 }
 
@@ -316,6 +321,14 @@ cmd_focus() {
   dfs-last)
     last=$(($(aerospace list-windows --workspace focused --format '%{window-id}' | wc -l) - 1))
     aerospace focus --dfs-index "$last"
+    return
+    ;;
+  main)
+    main_id=$(preset_main_id)
+    if [ -z "$main_id" ]; then
+      return 0
+    fi
+    aerospace focus --window-id "$main_id" 2>/dev/null || :
     return
     ;;
   esac
@@ -665,7 +678,11 @@ _cmd_preset_locked() {
   3-row-bottom) cmd_preset_3 bottom ;;
   esac
 
-  preset_state_save "$target"
+  # `main_id` is set inside `cmd_preset_2`/`cmd_preset_3`/`cmd_preset_3_middle`
+  # — same shell, no subshell — so it leaks back here and powers `orbit focus
+  # main` later. Persist it alongside the preset name so a fresh shell can
+  # find it too.
+  preset_state_save "$target" "$main_id"
 }
 
 preset_state_dir() {
@@ -678,9 +695,17 @@ preset_state_file() {
 }
 
 preset_state_save() {
+  # Two-line format: line 1 is the preset name (read by `preset_cycle_next`),
+  # line 2 is the main window-id (read by `preset_main_id`).
   file=$(preset_state_file)
   mkdir -p "$(dirname "$file")"
-  printf '%s\n' "$1" >"$file"
+  printf '%s\n%s\n' "$1" "$2" >"$file"
+}
+
+preset_main_id() {
+  file=$(preset_state_file)
+  [ -f "$file" ] || return 0
+  sed -n '2p' "$file"
 }
 
 preset_cycle_next() {
@@ -691,7 +716,7 @@ preset_cycle_next() {
   file=$(preset_state_file)
   last=""
   if [ -f "$file" ]; then
-    last=$(cat "$file")
+    last=$(head -n1 "$file")
   fi
   first=""
   take_next=0
