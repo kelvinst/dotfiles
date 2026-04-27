@@ -133,7 +133,7 @@ on-mode-changed = []
 
     # Reload stuff
     alt-b = 'balance-sizes'
-    alt-x = 'flatten-workspace-tree' # reset layout
+    alt-x = 'exec-and-forget orbit preset refresh' # reset layout
     alt-r = [
       'exec-and-forget orbit cleanup', 
       'reload-config', 

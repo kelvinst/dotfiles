@@ -164,6 +164,7 @@ EOF
 cmd_preset_help() {
   cat <<'EOF'
 Usage: orbit preset [options] <preset-name> [preset-name...]
+       orbit preset refresh
 
 Arrange the focused workspace into a predefined layout. The focused window
 becomes the "main" window of the preset.
@@ -179,6 +180,12 @@ Options:
   --main-size <delta>   Resize the main window by <delta> along the preset's
                         main dimension — width for column presets, height
                         for row presets (e.g. `+150`, `-50`).
+
+Subcommands:
+  refresh   Reapply the preset most recently used on the focused workspace,
+            preserving its main window. Falls back to
+            `aerospace flatten-workspace-tree` when no preset has been
+            applied here yet.
 
 Presets:
   2-col-left    Main window on the left, remaining windows stacked
@@ -552,14 +559,15 @@ _cmd_swap_main_locked() {
     i=$((i + 1))
   done
 
-  # Record the new main while preserving the cycle position (line 1).
+  # Record the new main while preserving the cycle position (line 1) and
+  # the saved main-size delta (line 3).
   file=$(preset_state_file)
   preset_name=""
   if [ -f "$file" ]; then
     preset_name=$(head -n1 "$file")
   fi
   if [ -n "$preset_name" ]; then
-    preset_state_save "$preset_name" "$current_id"
+    preset_state_save "$preset_name" "$current_id" "$(preset_main_size)"
   fi
 }
 
@@ -709,6 +717,14 @@ _cmd_move_workspace_locked() {
 }
 
 cmd_preset() {
+  case "${1:-}" in
+  refresh)
+    shift
+    cmd_preset_refresh "$@"
+    return
+    ;;
+  esac
+
   main_size=""
   while [ "$#" -gt 0 ]; do
     case "$1" in
@@ -779,8 +795,49 @@ _cmd_preset_locked() {
   # `main_id` is set inside `cmd_preset_2`/`cmd_preset_3`/`cmd_preset_3_middle`
   # — same shell, no subshell — so it leaks back here and powers `orbit focus
   # main` later. Persist it alongside the preset name so a fresh shell can
-  # find it too.
-  preset_state_save "$target" "$main_id"
+  # find it too. `$main_size` rides along so `orbit preset refresh` can
+  # reapply the same resize delta.
+  preset_state_save "$target" "$main_id" "$main_size"
+}
+
+cmd_preset_refresh() {
+  case "${1:-}" in
+  help | -h | --help)
+    cmd_preset_help
+    return
+    ;;
+  "") ;;
+  *)
+    echo "orbit preset refresh: unexpected argument '$1'" >&2
+    cmd_preset_help >&2
+    return 2
+    ;;
+  esac
+
+  file=$(preset_state_file)
+  preset_name=""
+  if [ -f "$file" ]; then
+    preset_name=$(head -n1 "$file")
+  fi
+  if [ -z "$preset_name" ]; then
+    aerospace flatten-workspace-tree
+    return
+  fi
+
+  # Focus the saved main first so the preset rebuild keeps the same main
+  # (`cmd_preset_2`/`_3` grab `--focused` as `main_id`). If the saved window
+  # has since closed, `aerospace focus` no-ops and the rebuild falls back to
+  # whatever's currently focused.
+  main_id=$(preset_main_id)
+  if [ -n "$main_id" ]; then
+    aerospace focus --window-id "$main_id" 2>/dev/null || :
+  fi
+  saved_main_size=$(preset_main_size)
+  if [ -n "$saved_main_size" ]; then
+    cmd_preset --main-size "$saved_main_size" "$preset_name"
+  else
+    cmd_preset "$preset_name"
+  fi
 }
 
 preset_state_dir() {
@@ -793,17 +850,25 @@ preset_state_file() {
 }
 
 preset_state_save() {
-  # Two-line format: line 1 is the preset name (read by `preset_cycle_next`),
-  # line 2 is the main window-id (read by `preset_main_id`).
+  # Three-line format: line 1 is the preset name (read by
+  # `preset_cycle_next`), line 2 is the main window-id (read by
+  # `preset_main_id`), line 3 is the saved `--main-size` delta if any
+  # (read by `preset_main_size`).
   file=$(preset_state_file)
   mkdir -p "$(dirname "$file")"
-  printf '%s\n%s\n' "$1" "$2" >"$file"
+  printf '%s\n%s\n%s\n' "$1" "$2" "$3" >"$file"
 }
 
 preset_main_id() {
   file=$(preset_state_file)
   [ -f "$file" ] || return 0
   sed -n '2p' "$file"
+}
+
+preset_main_size() {
+  file=$(preset_state_file)
+  [ -f "$file" ] || return 0
+  sed -n '3p' "$file"
 }
 
 preset_cycle_next() {
