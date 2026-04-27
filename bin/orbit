@@ -115,11 +115,19 @@ EOF
 
 cmd_swap_help() {
   cat <<'EOF'
-Usage: orbit swap [args...]
+Usage: orbit swap main
+       orbit swap [args...]
 
 A wrapper around `aerospace swap`. In accordion layouts, `aerospace swap` is
 essentially the same as `aerospace move` but behaves strangely, so fall back
 to `aerospace move` in that case.
+
+Added subcommands:
+  main   Swap the focused window with the main window of the preset most
+         recently applied to this workspace, then update the preset state
+         file so the focused window is the new main. No-op when no preset
+         has been applied here yet, when the saved main has since closed,
+         or when the focused window is already main.
 EOF
 }
 
@@ -456,6 +464,11 @@ cmd_swap() {
     cmd_swap_help
     return
     ;;
+  main)
+    shift
+    cmd_swap_main "$@"
+    return
+    ;;
   esac
 
   layout=$(aerospace list-windows --focused --format '%{window-parent-container-layout}')
@@ -463,6 +476,91 @@ cmd_swap() {
   *accordion*) aerospace move "$@" ;;
   *) aerospace swap "$@" ;;
   esac
+}
+
+cmd_swap_main() {
+  current_id=$(aerospace list-windows --focused --format '%{window-id}')
+  main_id=$(preset_main_id)
+  if [ -z "$main_id" ] || [ "$current_id" = "$main_id" ]; then
+    return 0
+  fi
+  with_workspace_mutation_lock _cmd_swap_main_locked "" "$current_id" "$main_id"
+}
+
+_cmd_swap_main_locked() {
+  current_id="$1"
+  main_id="$2"
+
+  # We need the DFS distance and direction from current to main so we know
+  # how many `swap dfs-next/prev` hops to issue and which way. `list-windows`
+  # output is sorted by app-name + window-title, *not* DFS, and there's no
+  # DFS-index format key — so walk focus dfs-next/prev from current and
+  # count how many steps land on main. Try forward first; if main lives in
+  # the other direction, fall back to backward.
+  total=$(aerospace list-windows --workspace focused --count)
+  aerospace focus --window-id "$current_id"
+  fwd=""
+  bwd=""
+  distance=0
+  i=0
+  while [ "$i" -lt "$total" ]; do
+    aerospace focus --boundaries-action fail dfs-next 2>/dev/null || break
+    i=$((i + 1))
+    if [ "$(aerospace list-windows --focused --format '%{window-id}')" = "$main_id" ]; then
+      fwd=dfs-next
+      bwd=dfs-prev
+      distance=$i
+      break
+    fi
+  done
+  if [ -z "$fwd" ]; then
+    aerospace focus --window-id "$current_id"
+    i=0
+    while [ "$i" -lt "$total" ]; do
+      aerospace focus --boundaries-action fail dfs-prev 2>/dev/null || break
+      i=$((i + 1))
+      if [ "$(aerospace list-windows --focused --format '%{window-id}')" = "$main_id" ]; then
+        fwd=dfs-prev
+        bwd=dfs-next
+        distance=$i
+        break
+      fi
+    done
+  fi
+  # Restore focus regardless — swap targets windows by id, but keeping focus
+  # on current means it rides visually into the main slot at the end.
+  aerospace focus --window-id "$current_id" 2>/dev/null || :
+  if [ -z "$fwd" ] || [ "$distance" -eq 0 ]; then
+    return 0
+  fi
+
+  # Bubble-swap, preserving every other window's slot:
+  #   Phase 1 — `distance` swaps walk current across main, leaving current
+  #             in main's old slot and main one step short of current's.
+  #   Phase 2 — `distance - 1` reverse swaps walk main back to current's
+  #             original slot. Net effect: a positional swap of the two,
+  #             every other window untouched (it shifts toward current
+  #             during Phase 1 and back during Phase 2).
+  i=0
+  while [ "$i" -lt "$distance" ]; do
+    aerospace swap --window-id "$current_id" "$fwd" 2>/dev/null || break
+    i=$((i + 1))
+  done
+  i=0
+  while [ "$i" -lt $((distance - 1)) ]; do
+    aerospace swap --window-id "$main_id" "$bwd" 2>/dev/null || break
+    i=$((i + 1))
+  done
+
+  # Record the new main while preserving the cycle position (line 1).
+  file=$(preset_state_file)
+  preset_name=""
+  if [ -f "$file" ]; then
+    preset_name=$(head -n1 "$file")
+  fi
+  if [ -n "$preset_name" ]; then
+    preset_state_save "$preset_name" "$current_id"
+  fi
 }
 
 cmd_swap_or_move() {

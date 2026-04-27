@@ -112,6 +112,7 @@ on-mode-changed = []
     # All possible commands: https://nikitabobko.github.io/AeroSpace/commands
 
     alt-enter = 'exec-and-forget orbit focus main'
+    alt-shift-enter = 'exec-and-forget orbit swap main'
 
     # Disabling macOS "Hide application" feature, because I don't use it
     # See: https://nikitabobko.github.io/AeroSpace/goodies#disable-hide-app
