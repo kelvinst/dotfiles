@@ -189,9 +189,11 @@ Options:
                         for row presets (e.g. `+150`, `-50`).
 
 Subcommands:
-  refresh   Reapply the preset most recently used on the focused workspace,
-            preserving its main window. Exits non-zero when no preset has
-            been applied here yet, so callers can wire their own fallback.
+  refresh [--fail-if-noop]
+            Reapply the preset most recently used on the focused workspace,
+            preserving its main window. Silently does nothing when no preset
+            has been applied here yet; pass `--fail-if-noop` to exit non-zero
+            in that case so callers can wire their own fallback.
 
 Presets:
   2-col-left    Main window on the left, remaining windows stacked
@@ -872,18 +874,24 @@ _cmd_preset_locked() {
 PRESET_CYCLE_WINDOW_SECS=5
 
 cmd_preset_refresh() {
-  case "${1:-}" in
-  help | -h | --help)
-    cmd_preset_help
-    return
-    ;;
-  "") ;;
-  *)
-    echo "orbit preset refresh: unexpected argument '$1'" >&2
-    cmd_preset_help >&2
-    return 2
-    ;;
-  esac
+  fail_if_noop=0
+  while [ "$#" -gt 0 ]; do
+    case "$1" in
+    help | -h | --help)
+      cmd_preset_help
+      return
+      ;;
+    --fail-if-noop)
+      fail_if_noop=1
+      shift
+      ;;
+    *)
+      echo "orbit preset refresh: unexpected argument '$1'" >&2
+      cmd_preset_help >&2
+      return 2
+      ;;
+    esac
+  done
 
   file=$(preset_state_file)
   preset_name=""
@@ -891,7 +899,8 @@ cmd_preset_refresh() {
     preset_name=$(head -n1 "$file")
   fi
   if [ -z "$preset_name" ]; then
-    return 1
+    [ "$fail_if_noop" -eq 1 ] && return 1
+    return 0
   fi
 
   # Focus the saved main first so the preset rebuild keeps the same main
