@@ -169,12 +169,15 @@ Usage: orbit preset [options] <preset-name> [preset-name...]
 Arrange the focused workspace into a predefined layout. The focused window
 becomes the "main" window of the preset.
 
-When given multiple preset names, cycles through them on repeated calls:
-each invocation applies the next preset after the one most recently used
-on the focused workspace, wrapping around. The last applied preset is
-tracked per-workspace under `$XDG_CACHE_HOME/orbit/preset` (or
-`~/.cache/orbit/preset`). A list that doesn't include the last applied
-preset starts from its first entry.
+When given multiple preset names, cycles through them on rapid repeated
+calls. The first call after a pause — or after the workspace's window
+set has changed — re-applies the saved preset (snapping any drift back
+into shape and preserving the main window). A follow-up call within 5
+seconds, with the same window set, advances to the next entry, wrapping
+around. The last applied preset, its timestamp, and a hash of the
+workspace's window-id list are tracked per-workspace under
+`$XDG_CACHE_HOME/orbit/preset` (or `~/.cache/orbit/preset`). A list that
+doesn't include the last applied preset starts from its first entry.
 
 Options:
   --main-size <delta>   Resize the main window by <delta> along the preset's
@@ -559,15 +562,19 @@ _cmd_swap_main_locked() {
     i=$((i + 1))
   done
 
-  # Record the new main while preserving the cycle position (line 1) and
-  # the saved main-size delta (line 3).
+  # Record the new main while preserving the cycle position (line 1),
+  # the saved main-size delta (line 3), the cycle-debounce timestamp
+  # (line 4), and the saved window hash (line 5) — swap-main isn't a
+  # preset call, and it doesn't change the workspace's window set, so
+  # neither debounce field should be touched.
   file=$(preset_state_file)
   preset_name=""
   if [ -f "$file" ]; then
     preset_name=$(head -n1 "$file")
   fi
   if [ -n "$preset_name" ]; then
-    preset_state_save "$preset_name" "$current_id" "$(preset_main_size)"
+    preset_state_save "$preset_name" "$current_id" "$(preset_main_size)" \
+      "$(preset_last_ts)" "$(preset_saved_window_hash)"
   fi
 }
 
@@ -774,7 +781,49 @@ cmd_preset() {
 
 _cmd_preset_locked() {
   if [ "$#" -gt 1 ]; then
-    target=$(preset_cycle_next "$@")
+    # Debounce-style cycling: only advance when this call lands within
+    # `PRESET_CYCLE_WINDOW_SECS` of the previous preset call AND the saved
+    # preset is part of this cycle. Otherwise re-apply the saved preset
+    # (snap drift back into shape) and preserve its main window. First
+    # press after a pause therefore refreshes; a follow-up within the
+    # window advances. A cycle list that doesn't include the saved preset
+    # is treated as a fresh start — `preset_cycle_next` already returns
+    # the first entry in that case.
+    saved=""
+    file=$(preset_state_file)
+    [ -f "$file" ] && saved=$(head -n1 "$file")
+    in_cycle=0
+    for name in "$@"; do
+      if [ "$name" = "$saved" ]; then
+        in_cycle=1
+        break
+      fi
+    done
+    recent=0
+    windows_unchanged=0
+    if [ "$in_cycle" -eq 1 ]; then
+      last=$(preset_last_ts)
+      if [ -n "$last" ]; then
+        now=$(date +%s)
+        if [ "$((now - last))" -lt "$PRESET_CYCLE_WINDOW_SECS" ]; then
+          recent=1
+        fi
+      fi
+      if [ "$(preset_window_hash)" = "$(preset_saved_window_hash)" ]; then
+        windows_unchanged=1
+      fi
+    fi
+    if [ "$in_cycle" -eq 1 ] && [ "$recent" -eq 1 ] && [ "$windows_unchanged" -eq 1 ]; then
+      target=$(preset_cycle_next "$@")
+    elif [ "$in_cycle" -eq 1 ]; then
+      target="$saved"
+      saved_main=$(preset_main_id)
+      if [ -n "$saved_main" ]; then
+        aerospace focus --window-id "$saved_main" 2>/dev/null || :
+      fi
+    else
+      target=$(preset_cycle_next "$@")
+    fi
   else
     target="$1"
   fi
@@ -796,9 +845,13 @@ _cmd_preset_locked() {
   # — same shell, no subshell — so it leaks back here and powers `orbit focus
   # main` later. Persist it alongside the preset name so a fresh shell can
   # find it too. `$main_size` rides along so `orbit preset refresh` can
-  # reapply the same resize delta.
-  preset_state_save "$target" "$main_id" "$main_size"
+  # reapply the same resize delta. The timestamp + window hash drive the
+  # cycle debounce in subsequent calls — both must match for a press to
+  # advance instead of refresh.
+  preset_state_save "$target" "$main_id" "$main_size" "$(date +%s)" "$(preset_window_hash)"
 }
+
+PRESET_CYCLE_WINDOW_SECS=5
 
 cmd_preset_refresh() {
   case "${1:-}" in
@@ -850,13 +903,17 @@ preset_state_file() {
 }
 
 preset_state_save() {
-  # Three-line format: line 1 is the preset name (read by
+  # Five-line format: line 1 is the preset name (read by
   # `preset_cycle_next`), line 2 is the main window-id (read by
   # `preset_main_id`), line 3 is the saved `--main-size` delta if any
-  # (read by `preset_main_size`).
+  # (read by `preset_main_size`), line 4 is the epoch timestamp of the
+  # last preset call (read by `preset_last_ts`, drives cycle debounce),
+  # line 5 is a hash of the workspace's window-id list at save time
+  # (read by `preset_saved_window_hash`, also drives the debounce — when
+  # the set changes, refresh wins over advance regardless of timing).
   file=$(preset_state_file)
   mkdir -p "$(dirname "$file")"
-  printf '%s\n%s\n%s\n' "$1" "$2" "$3" >"$file"
+  printf '%s\n%s\n%s\n%s\n%s\n' "$1" "$2" "$3" "$4" "$5" >"$file"
 }
 
 preset_main_id() {
@@ -869,6 +926,26 @@ preset_main_size() {
   file=$(preset_state_file)
   [ -f "$file" ] || return 0
   sed -n '3p' "$file"
+}
+
+preset_last_ts() {
+  file=$(preset_state_file)
+  [ -f "$file" ] || return 0
+  sed -n '4p' "$file"
+}
+
+preset_saved_window_hash() {
+  file=$(preset_state_file)
+  [ -f "$file" ] || return 0
+  sed -n '5p' "$file"
+}
+
+preset_window_hash() {
+  # Sort to keep the hash stable across any ordering quirks in
+  # `list-windows` output — only the *set* of windows on the workspace
+  # should affect the hash, not the order they're reported.
+  aerospace list-windows --workspace focused --format '%{window-id}' 2>/dev/null |
+    sort | shasum | awk '{print $1}'
 }
 
 preset_cycle_next() {
