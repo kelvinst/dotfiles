@@ -119,6 +119,15 @@ on-mode-changed = []
     cmd-h = [] # Disable "hide application"
     cmd-alt-h = [] # Disable "hide others"
 
+    alt-a = [
+      'exec-and-forget orbit flatten-workspace-tree', 
+      'layout accordion tiles'
+    ]
+    alt-shift-a = [
+      'exec-and-forget orbit flatten-workspace-tree', 
+      'layout horizontal vertical'
+    ]
+
     alt-s = 'exec-and-forget orbit preset --main-size +150 2-col-left 2-col-right'
     alt-shift-s = 'exec-and-forget orbit preset --main-size +50 2-row-top 2-row-bottom'
 
@@ -126,14 +135,11 @@ on-mode-changed = []
     alt-shift-d = 'exec-and-forget orbit preset --main-size +50 3-row-top 3-row-middle 3-row-bottom'
 
     alt-f = 'layout floating tiling' # Toggle between floating and tiling layout
-
-    alt-a = ['flatten-workspace-tree', 'layout accordion tiles']
-    alt-shift-a = ['flatten-workspace-tree', 'layout horizontal vertical']
     alt-z = 'fullscreen'
 
     # Reload stuff
+    alt-x = 'exec-and-forget orbit preset refresh'
     alt-b = 'balance-sizes'
-    alt-x = 'exec-and-forget orbit preset refresh' # reset layout
     alt-r = [
       'exec-and-forget orbit cleanup', 
       'reload-config', 
@@ -264,7 +270,7 @@ on-mode-changed = []
 # See: https://nikitabobko.github.io/AeroSpace/guide#binding-modes
 [mode.service.binding]
     esc = ['reload-config', 'mode main']
-    r = ['flatten-workspace-tree', 'mode main'] # reset layout
+    r = ['exec-and-forget orbit flatten-workspace-tree', 'mode main'] # reset layout
     f = ['layout floating tiling', 'mode main'] # Toggle between floating and tiling layout
     backspace = ['close-all-windows-but-current', 'mode main']
     # Re-seed the secondary-monitor assignments. Mirrors `after-startup-command`
@@ -323,3 +329,5 @@ on-mode-changed = []
     if.app-id = 'com.apple.iCal'
     run = ['move-node-to-workspace P']
 
+# [[on-window-detected]]
+#     run = ['exec-and-forget orbit preset refresh']

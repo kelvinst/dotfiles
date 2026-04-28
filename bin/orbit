@@ -39,6 +39,10 @@ Commands:
 
   preset   Arrange the focused workspace into a predefined layout.
 
+  flatten-workspace-tree
+           A wrapper around `aerospace flatten-workspace-tree` that
+           clears the affected workspace's saved preset state.
+
   move-workspace-to-secondary-monitor
            Pin the given workspaces to the secondary monitor, flatten them,
            and set them to accordion.
@@ -213,6 +217,21 @@ Presets:
                 horizontally.
   3-row-bottom  Main window on the bottom, remaining windows split between
                 two rows above, each tiled horizontally.
+EOF
+}
+
+cmd_flatten_workspace_tree_help() {
+  cat <<'EOF'
+Usage: orbit flatten-workspace-tree [args...]
+
+A wrapper around `aerospace flatten-workspace-tree` that also clears the
+affected workspace's saved preset state — flattening means the preset
+is no longer authoritative, so `orbit preset refresh` should not snap
+the cached main/cycle position back into place.
+
+Forwards all arguments verbatim. With `--workspace <name>`, the preset
+state for that workspace is cleared; otherwise the focused workspace's
+state is cleared.
 EOF
 }
 
@@ -1125,6 +1144,36 @@ cmd_preset_3_middle() {
   fi
 }
 
+cmd_flatten_workspace_tree() {
+  case "${1:-}" in
+  help | -h | --help)
+    cmd_flatten_workspace_tree_help
+    return
+    ;;
+  esac
+
+  # Resolve the targeted workspace before calling aerospace so we can drop
+  # the matching preset state file. With `--workspace <name>`, the flatten
+  # targets that workspace; otherwise the focused workspace.
+  ws=""
+  prev=""
+  for arg in "$@"; do
+    if [ "$prev" = "--workspace" ]; then
+      ws="$arg"
+      break
+    fi
+    prev="$arg"
+  done
+  if [ -z "$ws" ]; then
+    ws=$(aerospace list-workspaces --focused)
+  fi
+  if [ -n "$ws" ]; then
+    rm -f "$(preset_state_dir)/$ws"
+  fi
+
+  exec aerospace flatten-workspace-tree "$@"
+}
+
 cmd_move_workspace_to_secondary_help() {
   cat <<'EOF'
 Usage: orbit move-workspace-to-secondary-monitor <workspace> [workspace...]
@@ -1237,6 +1286,10 @@ move-workspace)
 preset)
   shift
   cmd_preset "$@"
+  ;;
+flatten-workspace-tree)
+  shift
+  cmd_flatten_workspace_tree "$@"
   ;;
 move-workspace-to-secondary-monitor)
   shift
