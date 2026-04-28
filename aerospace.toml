@@ -53,7 +53,7 @@ automatically-unhide-macos-hidden-apps = true
 # even when they are invisible.
 # This config version is only available since 'config-version = 2'
 # Fallback value (if you omit the key): persistent-workspaces = []
-persistent-workspaces = ['0', '1']
+persistent-workspaces = []
 
 # A callback that runs every time binding mode changes
 # See: https://nikitabobko.github.io/AeroSpace/guide#binding-modes
