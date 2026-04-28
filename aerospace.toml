@@ -307,28 +307,31 @@ on-mode-changed = []
 # Redirect apps to their default workspaces when they are first opened
 [[on-window-detected]]
     if.app-id = 'com.apple.mail'
+    check-further-callbacks = true
     run = ['move-node-to-workspace M']
 
 [[on-window-detected]]
     if.app-id = 'net.whatsapp.WhatsApp'
+    check-further-callbacks = true
     run = ['move-node-to-workspace M']
 
 [[on-window-detected]]
     if.app-id = 'us.zoom.xos'
+    check-further-callbacks = true
     run = ['move-node-to-workspace M']
 
 [[on-window-detected]]
     if.app-id = 'io.zsa.keymapp'
+    check-further-callbacks = true
     run = ['move-node-to-workspace O']
 
 [[on-window-detected]]
     if.app-id = 'com.apple.Music'
+    check-further-callbacks = true
     run = ['move-node-to-workspace O', 'layout tiling']
 
 [[on-window-detected]]
     if.app-id = 'com.apple.iCal'
+    check-further-callbacks = true
     run = ['move-node-to-workspace P']
 
-# [[on-window-detected]]
-#     check-further-callbacks = true
-#     run = ['exec-and-forget orbit preset refresh']
