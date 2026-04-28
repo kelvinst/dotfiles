@@ -138,7 +138,7 @@ on-mode-changed = []
     alt-z = 'fullscreen'
 
     # Reload stuff
-    alt-x = 'exec-and-forget orbit preset refresh'
+    alt-x = 'exec-and-forget orbit preset refresh || orbit flatten-workspace-tree'
     alt-b = 'balance-sizes'
     alt-r = [
       'exec-and-forget orbit cleanup', 

@@ -190,9 +190,8 @@ Options:
 
 Subcommands:
   refresh   Reapply the preset most recently used on the focused workspace,
-            preserving its main window. Falls back to
-            `aerospace flatten-workspace-tree` when no preset has been
-            applied here yet.
+            preserving its main window. Exits non-zero when no preset has
+            been applied here yet, so callers can wire their own fallback.
 
 Presets:
   2-col-left    Main window on the left, remaining windows stacked
@@ -892,8 +891,7 @@ cmd_preset_refresh() {
     preset_name=$(head -n1 "$file")
   fi
   if [ -z "$preset_name" ]; then
-    aerospace flatten-workspace-tree
-    return
+    return 1
   fi
 
   # Focus the saved main first so the preset rebuild keeps the same main
