@@ -966,12 +966,24 @@ preset_saved_window_hash() {
   sed -n '5p' "$file"
 }
 
+preset_tiling_window_ids() {
+  # Window-ids of the tiling (non-floating) windows on the focused workspace.
+  # Floating windows live outside the tiling tree — they don't get hit by
+  # `flatten-workspace-tree`, focus dfs walks skip them, and `balance-sizes`
+  # doesn't touch them — so any preset calculation that counts them ends up
+  # off by however many floats are around.
+  aerospace list-windows --workspace focused \
+    --format '%{window-id} %{window-parent-container-layout}' 2>/dev/null |
+    awk '$2 != "floating" {print $1}'
+}
+
 preset_window_hash() {
   # Sort to keep the hash stable across any ordering quirks in
   # `list-windows` output — only the *set* of windows on the workspace
-  # should affect the hash, not the order they're reported.
-  aerospace list-windows --workspace focused --format '%{window-id}' 2>/dev/null |
-    sort | shasum | awk '{print $1}'
+  # should affect the hash, not the order they're reported. Floating
+  # windows are excluded so toggling a sidebar in/out of float doesn't
+  # reset the cycle.
+  preset_tiling_window_ids | sort | shasum | awk '{print $1}'
 }
 
 preset_cycle_next() {
@@ -1022,8 +1034,10 @@ cmd_preset_2() {
 
   # Build the nested stack container by navigating with focus/move rather than
   # trusting list-windows to return tree order. Skip if there are fewer than
-  # two non-main windows (nothing to stack).
-  total=$(aerospace list-windows --workspace focused --count)
+  # two non-main windows (nothing to stack). Floating windows are excluded
+  # from the count — they're not in the tiling tree, so they wouldn't be
+  # reachable by the focus/move walk below anyway.
+  total=$(preset_tiling_window_ids | awk 'END {print NR}')
   if [ "$total" -ge 3 ]; then
     # Focus the stack_side-most window (furthest from main).
     while aerospace focus --boundaries-action fail "$stack_side" 2>/dev/null; do :; done
@@ -1077,7 +1091,10 @@ cmd_preset_3() {
   # Push main to the chosen edge of the top-level container.
   while aerospace move --boundaries-action fail "$main_side" 2>/dev/null; do :; done
 
-  total=$(aerospace list-windows --workspace focused --count)
+  # Floating windows are excluded — they're not in the tiling tree, so
+  # counting them here would skew the outer/inner split below and leave
+  # the stack containers with the wrong number of slots.
+  total=$(preset_tiling_window_ids | awk 'END {print NR}')
   non_main=$((total - 1))
   # Split the non-main windows between two stack-side slots. The
   # stack_side-most (outer) slot gets ceil(non_main / 2); the inner slot
