@@ -1040,14 +1040,14 @@ cmd_preset_2() {
   total=$(preset_tiling_window_ids | awk 'END {print NR}')
   if [ "$total" -ge 3 ]; then
     # Focus the stack_side-most window (furthest from main).
-    while aerospace focus --boundaries-action fail "$stack_side" 2>/dev/null; do :; done
+    while aerospace focus --ignore-floating --boundaries-action fail "$stack_side" 2>/dev/null; do :; done
     # Wrap it with its main_side neighbor into a new container whose layout
     # is opposite to the top-level — i.e., the stack container.
     aerospace join-with "$main_side"
     # Pull each remaining non-main window into the container: step toward main
     # by focus, then push the window back toward stack_side. Stop once focus
     # reaches the main window.
-    while aerospace focus --boundaries-action fail "$main_side" 2>/dev/null; do
+    while aerospace focus --ignore-floating --boundaries-action fail "$main_side" 2>/dev/null; do
       current_id=$(aerospace list-windows --focused --format '%{window-id}')
       [ "$current_id" = "$main_id" ] && break
       aerospace move "$stack_side"
@@ -1106,11 +1106,11 @@ cmd_preset_3() {
   # one window. A single-window slot is already its own top-level entry, and
   # `join-with` would fold it into a neighbor — collapsing 3 slots into 2.
   if [ "$outer_count" -ge 2 ]; then
-    while aerospace focus --boundaries-action fail "$stack_side" 2>/dev/null; do :; done
+    while aerospace focus --ignore-floating --boundaries-action fail "$stack_side" 2>/dev/null; do :; done
     aerospace join-with "$main_side"
     pulled=2
     while [ "$pulled" -lt "$outer_count" ]; do
-      aerospace focus --boundaries-action fail "$main_side" 2>/dev/null || break
+      aerospace focus --ignore-floating --boundaries-action fail "$main_side" 2>/dev/null || break
       aerospace move "$stack_side"
       pulled=$((pulled + 1))
     done
@@ -1120,13 +1120,13 @@ cmd_preset_3() {
     aerospace focus --window-id "$main_id"
     i=0
     while [ "$i" -lt "$inner_count" ]; do
-      aerospace focus --boundaries-action fail "$stack_side" 2>/dev/null || break
+      aerospace focus --ignore-floating --boundaries-action fail "$stack_side" 2>/dev/null || break
       i=$((i + 1))
     done
     aerospace join-with "$main_side"
     pulled=2
     while [ "$pulled" -lt "$inner_count" ]; do
-      aerospace focus --boundaries-action fail "$main_side" 2>/dev/null || break
+      aerospace focus --ignore-floating --boundaries-action fail "$main_side" 2>/dev/null || break
       current_id=$(aerospace list-windows --focused --format '%{window-id}')
       [ "$current_id" = "$main_id" ] && break
       aerospace move "$stack_side"
