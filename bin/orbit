@@ -741,6 +741,27 @@ _cmd_move_workspace_locked() {
       aerospace layout --window-id "$first_target" "$target_layout" 2>/dev/null || :
     fi
   fi
+
+  # Preset state files are keyed by workspace name but reference the
+  # window-ids that lived on each workspace — those window-ids just got
+  # swapped between `current` and `target`, so the saved state for one
+  # now describes the other. Swap the files via a temp name so the case
+  # where both workspaces have saved state still works.
+  state_dir=$(preset_state_dir)
+  src_state="$state_dir/$current"
+  tgt_state="$state_dir/$target"
+  if [ -e "$src_state" ] || [ -e "$tgt_state" ]; then
+    tmp_state="$state_dir/.swap.$$"
+    if [ -e "$src_state" ]; then
+      mv "$src_state" "$tmp_state"
+    fi
+    if [ -e "$tgt_state" ]; then
+      mv "$tgt_state" "$src_state"
+    fi
+    if [ -e "$tmp_state" ]; then
+      mv "$tmp_state" "$tgt_state"
+    fi
+  fi
 }
 
 cmd_preset() {
