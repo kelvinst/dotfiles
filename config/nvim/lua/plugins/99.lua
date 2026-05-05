@@ -35,12 +35,6 @@ return {
     vim.keymap.set("n", "<leader>acc", OpenClaude, { desc = "Focus Claude" })
     vim.keymap.set("n", "<leader>axx", OpenCodex, { desc = "Focus Codex" })
     vim.keymap.set("n", "<leader>acn", NewClaude, { desc = "New Claude" })
-    vim.keymap.set(
-      "n",
-      "<leader>ac!",
-      NewDangerClaude,
-      { desc = "New Claude (danger)" }
-    )
     vim.keymap.set("n", "<leader>axn", NewCodex, { desc = "New Codex" })
     vim.keymap.set(
       "n",

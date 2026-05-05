@@ -160,11 +160,6 @@ end
 
 function NewClaude()
   -- use the alias, to make sure we start ti from ai-jail
-  return launch_ai("cl")
-end
-
-function NewDangerClaude()
-  -- use the alias, to make sure we start ti from ai-jail
   return launch_ai("cl!")
 end
 
@@ -194,7 +189,7 @@ function OpenClaude()
   end
 
   -- use the alias, to make sure we start ti from ai-jail
-  return launch_ai("cl")
+  return launch_ai("cl!")
 end
 
 function OpenCodex()
