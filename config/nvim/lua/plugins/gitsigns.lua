@@ -42,7 +42,10 @@ return {
         -- Actions
         -- visual mode
         map("v", "<leader>gs", function()
-          gitsigns.stage_hunk({ vim.fn.line("."), vim.fn.line("v") })
+          local cur = vim.fn.line(".")
+          local v = vim.fn.line("v")
+          gitsigns.stage_hunk({ cur, v })
+          vim.api.nvim_win_set_cursor(0, { math.max(cur, v), 0 })
         end, { desc = "stage git hunk" })
         map("v", "<leader>gr", function()
           gitsigns.reset_hunk({ vim.fn.line("."), vim.fn.line("v") })

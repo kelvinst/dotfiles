@@ -236,7 +236,7 @@ function GetVisualContext()
     .. filetype
     .. "\n"
     .. content
-    .. "\n```"
+    .. "\n```\n\n"
 end
 
 local function send_to_ai_window(window_id, text)
