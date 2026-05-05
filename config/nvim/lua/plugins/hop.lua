@@ -32,6 +32,7 @@ return { -- Easily jump around in your file
     {
       "<leader><space>",
       with_popup("Hop to char", vim.cmd.HopChar1),
+      mode = { "n", "v" },
       desc = "Hop to a char",
     },
     {
