@@ -138,7 +138,7 @@ on-mode-changed = []
     alt-z = 'fullscreen'
 
     # Reload stuff
-    alt-x = 'exec-and-forget orbit preset refresh --fail-if-noop || orbit flatten-workspace-tree'
+    alt-x = '''exec-and-forget id=$(aerospace list-windows --focused --format "%{window-id}"); { orbit preset refresh --fail-if-noop || orbit flatten-workspace-tree; }; aerospace focus --window-id "$id"'''
     alt-b = 'balance-sizes'
     alt-r = [
       'exec-and-forget orbit cleanup', 
