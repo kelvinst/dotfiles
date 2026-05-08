@@ -1,40 +1,78 @@
 # Agent Instructions
 
-This project uses **bd** (beads) for issue tracking. Run `bd prime` for full workflow context.
+This file provides instructions and context for AI coding agents working on
+this project.
 
-## Quick Reference
+## What this is
+
+Personal macOS dotfiles. Edits happen here, then `make install` copies
+everything into `$HOME` / `~/.config`. Targets are kelvin's machines only —
+there are no other users, no portability layer, no Linux fallback.
+
+## Layout
+
+| Repo path                | Installed to              |
+| ------------------------ | ------------------------- |
+| `zshrc`, `zshenv`        | `~/.zshrc`, `~/.zshenv`   |
+| `gitconfig`              | `~/.gitconfig`            |
+| `global_gitignore`       | `~/.global_gitignore`     |
+| `tmux.conf`              | `~/.tmux.conf`            |
+| `aerospace.toml`         | `~/.aerospace.toml`       |
+| `skhdrc`                 | `~/.skhdrc`               |
+| `paneru.toml`            | `~/.paneru.toml`          |
+| `ai-jail`                | `~/.ai-jail`              |
+| `default-gems`           | `~/.default-gems`         |
+| `config/<tool>/`         | `~/.config/<tool>/`       |
+| `hammerspoon/`           | `~/.hammerspoon/`         |
+| `bin/`                   | `~/.local/bin/` (chmod +x)|
+| `zsh/completions/`       | `~/.zsh/completions/`     |
+
+The exact mapping lives in the `Makefile` — treat it as the source of truth.
+
+## Workflow
 
 ```bash
-bd ready              # Find available work
-bd show <id>          # View issue details
-bd update <id> --claim  # Claim work atomically
-bd close <id>         # Complete work
-bd dolt push          # Push beads data to remote
+make install   # clean + copy everything into $HOME
+make clean     # remove the installed copies
+make update    # copy from $HOME back into the repo (reverse direction)
 ```
 
-## Non-Interactive Shell Commands
+`make update` pulls live config out of `$HOME` and overwrites the repo
+copies. Don't run it casually — it's for capturing changes you made directly
+in `$HOME`, and it will clobber uncommitted edits in the repo. Default
+direction is repo → `$HOME` via `make install`.
 
-**ALWAYS use non-interactive flags** with file operations to avoid hanging on confirmation prompts.
+After editing a file in the repo, run `make install` (or copy the single
+file) to see the change take effect; nothing is symlinked.
 
-Shell commands like `cp`, `mv`, and `rm` may be aliased to include `-i` (interactive) mode on some systems, causing the agent to hang indefinitely waiting for y/n input.
+## Conventions
 
-**Use these forms instead:**
+- **Formatters**: `prettier` for Markdown/JSON (`printWidth: 79`,
+  `proseWrap: always`), `stylua` for Lua (`column_width: 80`, 2-space
+  indent). Match these when editing.
+- **Shell**: zsh on macOS only. `#!/usr/bin/env bash` is fine for scripts in
+  `bin/`, but the interactive shell config (`zshrc`/`zshenv`) is zsh.
+- **Commit messages**: Conventional Commits with a scope tied to the file or
+  tool being touched — e.g. `feat(zshrc): ...`, `fix(aerospace): ...`,
+  `feat(nvim): ...`, `chore(beads): ...`. Wrap bodies at ~72 chars. No
+  `Co-Authored-By` trailer.
+- **macOS-specific tools** in play: kitty, aerospace, skhd, paneru,
+  hammerspoon, JankyBorders, ai-jail, worktrunk. Don't suggest Linux
+  equivalents unless asked.
+
+## Non-interactive shell commands
+
+Some commands (`cp`, `mv`, `rm`) may be aliased to `-i` and will hang
+waiting for confirmation. Use `-f` (and `-rf` for recursive) explicitly:
+
 ```bash
-# Force overwrite without prompting
-cp -f source dest           # NOT: cp source dest
-mv -f source dest           # NOT: mv source dest
-rm -f file                  # NOT: rm file
-
-# For recursive operations
-rm -rf directory            # NOT: rm -r directory
-cp -rf source dest          # NOT: cp -r source dest
+cp -f source dest      # not: cp source dest
+mv -f source dest      # not: mv source dest
+rm -rf directory       # not: rm -r directory
 ```
 
-**Other commands that may prompt:**
-- `scp` - use `-o BatchMode=yes` for non-interactive
-- `ssh` - use `-o BatchMode=yes` to fail instead of prompting
-- `apt-get` - use `-y` flag
-- `brew` - use `HOMEBREW_NO_AUTO_UPDATE=1` env var
+For `ssh`/`scp` use `-o BatchMode=yes`; for `apt-get` use `-y`; for `brew`
+use `HOMEBREW_NO_AUTO_UPDATE=1`.
 
 <!-- BEGIN BEADS INTEGRATION v:1 profile:minimal hash:ca08a54f -->
 ## Beads Issue Tracker
