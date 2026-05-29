@@ -1,0 +1,28 @@
+return {
+  "joeblubaugh/nvim-beads",
+  cmd = {
+    "Beads",
+    "BeadsCreate",
+    "BeadsCreateBug",
+    "BeadsCreateFeature",
+    "BeadsCreateDoc",
+    "BeadsCreateChore",
+    "BeadsShow",
+    "BeadsUpdate",
+    "BeadsClose",
+    "BeadsSync",
+    "BeadsFindTask",
+  },
+  keys = {
+    { "<leader>id", desc = "Beads: task list" },
+    { "<leader>ic", desc = "Beads: create task" },
+    { "<leader>is", desc = "Beads: sync" },
+    { "<leader>ir", desc = "Beads: refresh" },
+    { "<leader>it", desc = "Beads: find task" },
+    { "<leader>iS", desc = "Beads: find & set status" },
+    { "<leader>iP", desc = "Beads: find & set priority" },
+    { "<leader>if", desc = "Beads: filter" },
+    { "<leader>iF", desc = "Beads: clear filters" },
+  },
+  opts = {},
+}
