@@ -14,7 +14,10 @@ config-version = 2
 # reassign them freely at runtime.
 after-startup-command = [
   'exec-and-forget borders active_color=0xffe1e3e4 inactive_color=0xff494d64 width=5.0',
-  'exec-and-forget orbit move-workspace-to-secondary-monitor 0 M O P',
+  'move-workspace-to-monitor --workspace 0 secondary',
+  'move-workspace-to-monitor --workspace M secondary',
+  'move-workspace-to-monitor --workspace O secondary',
+  'move-workspace-to-monitor --workspace P secondary',
 ]
 
 # Start AeroSpace at login
@@ -276,7 +279,10 @@ on-mode-changed = []
     # Re-seed the secondary-monitor assignments. Mirrors `after-startup-command`
     # for when a monitor reconnect or config change drops the pinning.
     m = [
-      'exec-and-forget orbit move-workspace-to-secondary-monitor 0 M O P',
+      'move-workspace-to-monitor --workspace 0 secondary',
+      'move-workspace-to-monitor --workspace M secondary',
+      'move-workspace-to-monitor --workspace O secondary',
+      'move-workspace-to-monitor --workspace P secondary',
       'mode main',
     ]
 
