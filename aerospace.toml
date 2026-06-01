@@ -322,11 +322,6 @@ on-mode-changed = []
     run = ['move-node-to-workspace M']
 
 [[on-window-detected]]
-    if.app-id = 'us.zoom.xos'
-    check-further-callbacks = true
-    run = ['move-node-to-workspace M']
-
-[[on-window-detected]]
     if.app-id = 'io.zsa.keymapp'
     check-further-callbacks = true
     run = ['move-node-to-workspace O']
