@@ -313,7 +313,12 @@ on-mode-changed = []
     check-further-callbacks = true
     run = ['layout accordion']
 
-# Redirect apps to their default workspaces when they are first opened
+# Set default window workspaces and layouts
+[[on-window-detected]]
+    if.app-id = 'com.apple.systempreferences'
+    check-further-callbacks = true
+    run = ['layout floating']
+
 [[on-window-detected]]
     if.app-id = 'com.apple.mail'
     check-further-callbacks = true
@@ -352,5 +357,5 @@ on-mode-changed = []
 [[on-window-detected]]
     if.app-id = 'com.tiimo.app'
     check-further-callbacks = true
-    run = ['move-node-to-workspace P']
+    run = ['move-node-to-workspace P', 'layout floating']
 
