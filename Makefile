@@ -32,6 +32,7 @@ install:
 	cp ./tmux.conf ~/.tmux.conf
 	cp ./zshenv ~/.zshenv
 	cp ./zshrc ~/.zshrc
+	for s in /tmp/kitty-*; do [ -S "$$s" ] && kitty @ --to unix:$$s load-config || true; done
 
 clean:
 	rm -rf ~/.config/direnv/*
