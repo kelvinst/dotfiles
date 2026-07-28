@@ -33,7 +33,7 @@ enable-normalization-opposite-orientation-for-nested-containers = true
 accordion-padding = 300
 
 # Possible values: tiles|accordion
-default-root-container-layout = 'tiles'
+default-root-container-layout = 'accordion'
 
 # Possible values: horizontal|vertical|auto
 # 'auto' means: wide monitor (anything wider than high) gets horizontal orientation,
@@ -56,7 +56,7 @@ automatically-unhide-macos-hidden-apps = true
 # even when they are invisible.
 # This config version is only available since 'config-version = 2'
 # Fallback value (if you omit the key): persistent-workspaces = []
-persistent-workspaces = []
+persistent-workspaces = ['0', '1', 'M', 'O', 'P']
 
 # A callback that runs every time binding mode changes
 # See: https://nikitabobko.github.io/AeroSpace/guide#binding-modes
@@ -90,6 +90,9 @@ on-mode-changed = []
     outer.bottom =     12
     outer.top =        12
     outer.right =      12
+
+[workspace-to-monitor-force-assignment]
+    0 = 'secondary'
 
 # 'main' binding mode declaration
 # See: https://nikitabobko.github.io/AeroSpace/guide#binding-modes
@@ -329,10 +332,15 @@ on-mode-changed = []
 [[on-window-detected]]
     if.app-id = 'com.apple.Music'
     check-further-callbacks = true
-    run = ['move-node-to-workspace O', 'layout tiling']
+    run = ['move-node-to-workspace O']
 
 [[on-window-detected]]
     if.app-id = 'com.apple.iCal'
+    check-further-callbacks = true
+    run = ['move-node-to-workspace P']
+
+[[on-window-detected]]
+    if.app-id = 'com.tiimo.app'
     check-further-callbacks = true
     run = ['move-node-to-workspace P']
 
