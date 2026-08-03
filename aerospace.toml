@@ -292,27 +292,6 @@ on-mode-changed = []
     # sticky is not yet supported https://github.com/nikitabobko/AeroSpace/issues/2
     #s = ['layout sticky tiling', 'mode main']
 
-# Set the default layout as accordion for secondary monitor workspaces
-[[on-window-detected]]
-    if.workspace = '0'
-    check-further-callbacks = true
-    run = ['layout accordion']
-
-[[on-window-detected]]
-    if.workspace = 'M'
-    check-further-callbacks = true
-    run = ['layout accordion']
-
-[[on-window-detected]]
-    if.workspace = 'O'
-    check-further-callbacks = true
-    run = ['layout accordion']
-
-[[on-window-detected]]
-    if.workspace = 'P'
-    check-further-callbacks = true
-    run = ['layout accordion']
-
 # Set default window workspaces and layouts
 [[on-window-detected]]
     if.app-id = 'com.apple.systempreferences'
