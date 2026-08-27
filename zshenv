@@ -24,4 +24,7 @@ export PATH="$HOME/.opencode/bin:$PATH"
 # Add postgres bins to path
 export PATH="/opt/homebrew/opt/postgresql@18/bin:$PATH"
 
+# Add obsidian bin to path
+export PATH="$PATH:/Applications/Obsidian.app/Contents/MacOS"
+
 # }}}
