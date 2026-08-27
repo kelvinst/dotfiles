@@ -264,6 +264,7 @@ on-mode-changed = []
     cmd-ctrl-k = 'exec-and-forget orbit open -g io.zsa.keymapp'
     cmd-ctrl-m = 'exec-and-forget orbit open -g com.apple.mail'
     cmd-ctrl-n = 'exec-and-forget orbit open com.apple.Notes'
+    cmd-ctrl-o = 'exec-and-forget orbit open md.obsidian'
     cmd-ctrl-p = 'exec-and-forget orbit open -g com.apple.Music'
     cmd-ctrl-t = 'exec-and-forget orbit open -g com.tiimo.app'
     cmd-ctrl-w = 'exec-and-forget orbit open -g net.whatsapp.WhatsApp'
