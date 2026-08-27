@@ -338,7 +338,16 @@ cmd_open() {
   elif osascript -e "tell application id \"$bundle_id\" to make new window" >/dev/null 2>&1; then
     osascript -e "tell application id \"$bundle_id\" to activate"
   else
-    open -nb "$bundle_id"
+    # Apps that land here can't be told to make a window over AppleScript
+    # (Claude for Desktop answers that with -2710), so a second instance is
+    # the only way to get a second window out of them — hence `open -nb`.
+    # When the app isn't running at all, though, `-n` buys nothing: plain
+    # `open -b` launches it and the first window comes for free.
+    if [ -n "$(lsappinfo find "bundleid=$bundle_id")" ]; then
+      open -nb "$bundle_id"
+    else
+      open -b "$bundle_id"
+    fi
   fi
 }
 
