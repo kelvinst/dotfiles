@@ -9,14 +9,14 @@ config-version = 2
 # Available commands : https://nikitabobko.github.io/AeroSpace/commands
 #
 # `orbit move-workspace-to-secondary-monitor` seeds the initial monitor and
-# layout for 0/m/o/p. Unlike `[workspace-to-monitor-force-assignment]` this
+# layout for 0/g/m/p. Unlike `[workspace-to-monitor-force-assignment]` this
 # only runs once, so `move-workspace-to-monitor` (alt-tab) can still
 # reassign them freely at runtime.
 after-startup-command = [
   'exec-and-forget borders active_color=0xffe1e3e4 inactive_color=0xff494d64 width=5.0',
   'move-workspace-to-monitor --workspace 0 secondary',
+  'move-workspace-to-monitor --workspace G secondary',
   'move-workspace-to-monitor --workspace M secondary',
-  'move-workspace-to-monitor --workspace O secondary',
   'move-workspace-to-monitor --workspace P secondary',
 ]
 
@@ -56,7 +56,7 @@ automatically-unhide-macos-hidden-apps = true
 # even when they are invisible.
 # This config version is only available since 'config-version = 2'
 # Fallback value (if you omit the key): persistent-workspaces = []
-persistent-workspaces = ['0', '1', 'M', 'O', 'P']
+persistent-workspaces = ['0', '1', 'G', 'M', 'P']
 
 # A callback that runs every time binding mode changes
 # See: https://nikitabobko.github.io/AeroSpace/guide#binding-modes
@@ -125,11 +125,11 @@ on-mode-changed = []
     cmd-h = [] # Disable "hide application"
     cmd-alt-h = [] # Disable "hide others"
 
-    alt-a = [
+    alt-t = [
       'exec-and-forget orbit flatten-workspace-tree', 
       'layout accordion tiles'
     ]
-    alt-shift-a = [
+    alt-shift-t = [
       'exec-and-forget orbit flatten-workspace-tree', 
       'layout horizontal vertical'
     ]
@@ -197,8 +197,8 @@ on-mode-changed = []
     alt-7 = 'workspace 7'
     alt-8 = 'workspace 8'
     alt-9 = 'workspace 9'
+    alt-g = 'workspace G'
     alt-m = 'workspace M'
-    alt-o = 'workspace O'
     alt-p = 'workspace P'
 
     # See: https://nikitabobko.github.io/AeroSpace/commands#move-node-to-workspace
@@ -212,8 +212,8 @@ on-mode-changed = []
     alt-shift-7 = 'move-node-to-workspace 7 --focus-follows-window'
     alt-shift-8 = 'move-node-to-workspace 8 --focus-follows-window'
     alt-shift-9 = 'move-node-to-workspace 9 --focus-follows-window'
+    alt-shift-g = 'move-node-to-workspace G --focus-follows-window'
     alt-shift-m = 'move-node-to-workspace M --focus-follows-window'
-    alt-shift-o = 'move-node-to-workspace O --focus-follows-window'
     alt-shift-p = 'move-node-to-workspace P --focus-follows-window'
 
     alt-ctrl-0 = 'summon-workspace 0'
@@ -226,8 +226,8 @@ on-mode-changed = []
     alt-ctrl-7 = 'summon-workspace 7'
     alt-ctrl-8 = 'summon-workspace 8'
     alt-ctrl-9 = 'summon-workspace 9'
+    alt-ctrl-g = 'summon-workspace G'
     alt-ctrl-m = 'summon-workspace M'
-    alt-ctrl-o = 'summon-workspace O'
     alt-ctrl-p = 'summon-workspace P'
 
     alt-ctrl-shift-0 = 'exec-and-forget orbit move-workspace --focus-follows-workspace 0'
@@ -240,8 +240,8 @@ on-mode-changed = []
     alt-ctrl-shift-7 = 'exec-and-forget orbit move-workspace --focus-follows-workspace 7'
     alt-ctrl-shift-8 = 'exec-and-forget orbit move-workspace --focus-follows-workspace 8'
     alt-ctrl-shift-9 = 'exec-and-forget orbit move-workspace --focus-follows-workspace 9'
+    alt-ctrl-shift-g = 'exec-and-forget orbit move-workspace --focus-follows-workspace G'
     alt-ctrl-shift-m = 'exec-and-forget orbit move-workspace --focus-follows-workspace M'
-    alt-ctrl-shift-o = 'exec-and-forget orbit move-workspace --focus-follows-workspace O'
     alt-ctrl-shift-p = 'exec-and-forget orbit move-workspace --focus-follows-workspace P'
 
     alt-period = 'workspace --wrap-around next'
@@ -284,8 +284,8 @@ on-mode-changed = []
     # for when a monitor reconnect or config change drops the pinning.
     m = [
       'move-workspace-to-monitor --workspace 0 secondary',
+      'move-workspace-to-monitor --workspace G secondary',
       'move-workspace-to-monitor --workspace M secondary',
-      'move-workspace-to-monitor --workspace O secondary',
       'move-workspace-to-monitor --workspace P secondary',
       'mode main',
     ]
@@ -312,22 +312,22 @@ on-mode-changed = []
 [[on-window-detected]]
     if.app-id = 'io.zsa.keymapp'
     check-further-callbacks = true
-    run = ['move-node-to-workspace O']
+    run = ['move-node-to-workspace G']
 
 [[on-window-detected]]
     if.app-id = 'com.apple.Music'
     check-further-callbacks = true
-    run = ['move-node-to-workspace O']
+    run = ['move-node-to-workspace G']
 
 [[on-window-detected]]
     if.app-id = 'com.logi.optionsplus'
     check-further-callbacks = true
-    run = ['move-node-to-workspace O']
+    run = ['move-node-to-workspace G']
 
 [[on-window-detected]]
     if.app-id = 'com.macpaw.CleanMyMac4'
     check-further-callbacks = true
-    run = ['move-node-to-workspace O']
+    run = ['move-node-to-workspace G']
 
 [[on-window-detected]]
     if.app-id = 'com.apple.iCal'
