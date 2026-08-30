@@ -117,8 +117,14 @@ on-mode-changed = []
 
     # All possible commands: https://nikitabobko.github.io/AeroSpace/commands
 
+    # alt-w/alt-shift-w mirror alt-enter: enter needs a layer key on the left
+    # half, which is awkward to hold with alt (worse with alt-shift). g is
+    # left free for the G workspace, and alt-c/e/i/n stay free because they
+    # are the Portuguese dead keys on the US layout.
     alt-enter = 'exec-and-forget orbit focus main'
     alt-shift-enter = 'exec-and-forget orbit swap main'
+    alt-w = 'exec-and-forget orbit focus main'
+    alt-shift-w = 'exec-and-forget orbit swap main'
 
     # Disabling macOS "Hide application" feature, because I don't use it
     # See: https://nikitabobko.github.io/AeroSpace/goodies#disable-hide-app
