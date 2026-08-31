@@ -23,6 +23,7 @@ there are no other users, no portability layer, no Linux fallback.
 | `ai-jail`                | `~/.ai-jail`              |
 | `default-gems`           | `~/.default-gems`         |
 | `config/<tool>/`         | `~/.config/<tool>/`       |
+| `claude/`                | `~/.claude/`              |
 | `hammerspoon/`           | `~/.hammerspoon/`         |
 | `bin/`                   | `~/.local/bin/` (chmod +x)|
 | `zsh/completions/`       | `~/.zsh/completions/`     |
