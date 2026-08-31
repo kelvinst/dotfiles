@@ -1,7 +1,61 @@
-.PHONY: clean install
-all: clean install
+.PHONY: backup clean install update
+.DEFAULT_GOAL := install
 
-install:
+BACKUP_ROOT := $(HOME)/.dotfiles-backups
+
+# Every path install writes to, relative to $HOME. Directories listed here are
+# owned wholesale by this repo; individual files are listed one by one so we
+# never touch neighbouring state (e.g. the rest of ~/.claude, ~/.local/bin).
+HOME_TARGETS := \
+	.aerospace.toml \
+	.ai-jail \
+	.claude/settings.json \
+	.config/direnv \
+	.config/init_starship.sh \
+	.config/kitty \
+	.config/nvim \
+	.config/starship-full.toml \
+	.config/starship.toml \
+	.config/tidewave \
+	.config/tms \
+	.default-gems \
+	.gitconfig \
+	.global_gitignore \
+	.hammerspoon \
+	.paneru.toml \
+	.skhdrc \
+	.tmux.conf \
+	.zsh/completions \
+	.zshenv \
+	.zshrc
+
+BIN_TARGETS := $(patsubst bin/%,.local/bin/%,$(wildcard bin/*))
+HOOK_TARGETS := $(patsubst claude/hooks/%,.claude/hooks/%,$(wildcard claude/hooks/*))
+
+ALL_TARGETS := $(HOME_TARGETS) $(BIN_TARGETS) $(HOOK_TARGETS)
+
+# Move every installed path into a timestamped backup folder. This doubles as
+# the "remove the old copy" step, so install always lands on a clean slate
+# without silently destroying whatever was there.
+backup:
+	@stamp=$$(date +%Y%m%d-%H%M%S); \
+	dest="$(BACKUP_ROOT)/$$stamp"; \
+	saved=0; \
+	for p in $(ALL_TARGETS); do \
+		src="$(HOME)/$$p"; \
+		if [ -e "$$src" ] || [ -L "$$src" ]; then \
+			mkdir -p "$$dest/$$(dirname "$$p")" || exit 1; \
+			mv -f "$$src" "$$dest/$$p" || exit 1; \
+			saved=$$((saved + 1)); \
+		fi; \
+	done; \
+	if [ $$saved -gt 0 ]; then \
+		echo "backed up $$saved path(s) to $$dest"; \
+	else \
+		echo "nothing installed yet, skipping backup"; \
+	fi
+
+install: backup
 	mkdir -p ~/.config/direnv/
 	cp -r ./config/direnv/* ~/.config/direnv/
 	mkdir -p ~/.config/kitty/

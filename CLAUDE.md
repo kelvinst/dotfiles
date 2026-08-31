@@ -33,10 +33,20 @@ The exact mapping lives in the `Makefile` — treat it as the source of truth.
 ## Workflow
 
 ```bash
-make install   # clean + copy everything into $HOME
+make           # default target: same as `make install`
+make install   # back up the installed copies, then copy everything into $HOME
+make backup    # only move the installed copies into a timestamped backup
 make clean     # remove the installed copies
 make update    # copy from $HOME back into the repo (reverse direction)
 ```
+
+`make install` first moves every path it is about to write into
+`~/.dotfiles-backups/<YYYYmmdd-HHMMSS>/`, preserving the layout relative to
+`$HOME`. Moving doubles as the removal step, so each install lands on a
+clean slate without destroying whatever was there. The backed-up paths are
+listed explicitly in the `Makefile` (`HOME_TARGETS`, plus one entry per file
+in `bin/` and `claude/hooks/`) so neighbouring state — the rest of
+`~/.claude`, other scripts in `~/.local/bin` — is never touched.
 
 `make update` pulls live config out of `$HOME` and overwrites the repo
 copies. Don't run it casually — it's for capturing changes you made directly
