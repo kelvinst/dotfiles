@@ -17,6 +17,10 @@ install:
 	mkdir -p ~/.local/bin/
 	cp -r ./bin/* ~/.local/bin/
 	for f in ./bin/*; do chmod -R +x ~/.local/bin/$$(basename $$f); done
+	mkdir -p ~/.claude/hooks/
+	cp -f ./claude/hooks/* ~/.claude/hooks/
+	chmod +x ~/.claude/hooks/*
+	cp -f ./claude/settings.json ~/.claude/settings.json
 	mkdir -p ~/.zsh/completions/
 	cp -r ./zsh/completions/* ~/.zsh/completions/
 	cp -r ./config/init_starship.sh ~/.config/
@@ -42,6 +46,8 @@ clean:
 	rm -rf ~/.config/tidewave/*
 	rm -rf ~/.hammerspoon/*
 	for f in ./bin/*; do rm -rf ~/.local/bin/$$(basename $$f); done
+	for f in ./claude/hooks/*; do rm -f ~/.claude/hooks/$$(basename $$f); done
+	rm -f ~/.claude/settings.json
 	rm -rf ~/.config/init_starship.sh
 	rm -rf ~/.config/starship.toml
 	rm -rf ~/.config/starship-full.toml
@@ -76,6 +82,9 @@ update:
 	cp -r ~/.hammerspoon/* ./hammerspoon/
 	mkdir -p ./bin/
 	for f in ./bin/*; do cp -r ~/.local/bin/$$(basename $$f) ./bin/; done
+	mkdir -p ./claude/hooks/
+	cp -f ~/.claude/hooks/* ./claude/hooks/
+	cp -f ~/.claude/settings.json ./claude/settings.json
 	cp ~/.aerospace.toml ./aerospace.toml
 	cp ~/.ai-jail ./ai-jail
 	cp ~/.default-gems ./default-gems
