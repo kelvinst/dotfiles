@@ -1,5 +1,5 @@
 ---
-saved_at: 2026-08-31T18:31:33Z
+saved_at: 2026-08-31T20:12:29Z
 session_id: 5ad2abea-3d39-4ad0-8fe0-9a820b326fe3
 transcript: transcript.jsonl.gz
 ---
@@ -76,6 +76,55 @@ _Update sections below were written with `caveman:caveman` compression active._
   turn in every repo now ends in a commit — one-line Q&A included. A long
   session yields a string of `docs: update saved session` commits.
 
+## 2026-08-31T20:12:29Z — update (publishing the archive; branch stranding)
+
+- Exercised the new `archive` mode end to end: the Stop hook fired on a clean
+  tree, `kix:save-session --no-commit` staged the archive, committed as
+  `4417a1a`. Also created `.prettierignore` with `docs/sessions/` — the repo's
+  `.prettierrc` sets `proseWrap: always`, which would otherwise reflow the
+  archive.
+- User asked for a PR. Checked `gh repo view` first: `kelvinst/dotfiles` is
+  **PUBLIC**, and the branch carries `4417a1a` — so opening the PR publishes
+  the verbatim session transcript.
+- Scanned `transcript.jsonl.gz` before pushing. No credential patterns
+  (`sk-ant-`, `ghp_`, `gho_`, `github_pat_`, `AKIA`, PEM private keys,
+  `xoxb-`). It does carry the global `~/.claude/settings.json`, the MCP server
+  roster, memory-file contents, local paths, and private project names
+  (`Stingdom`, `ecto_libsql`, `kix-agents`).
+- Raised it before pushing rather than after: a pushed object on GitHub is
+  effectively permanent — unreferenced objects stay reachable by SHA even
+  after a force-push or branch delete. Offered three routes (push all three
+  commits / push only the two code commits / hold). First prompt dismissed;
+  nothing pushed. User then reaffirmed — "push and create the pr" — so the
+  full branch went out, archive commit included.
+- Generalisation: not specific to this repo. The global scheme now pushes
+  verbatim transcripts into whatever repo is open, public ones included.
+  Strengthens the case for the per-repo gate still open below.
+
+### Incident — commits stranded on detached HEAD
+
+- Mid-turn, `docs/sessions/` vanished and `git branch --show-current` came
+  back empty. Something in this worktree had detached HEAD **twice, right
+  after each of my commits** (`reflog HEAD@{6}`/`HEAD@{5}` after `4c3d75a`,
+  then `HEAD@{2}` moving to `code-review-suggest-fix-debug-b99c06`), finally
+  landing detached on `cfa74e8`.
+- Consequence: `auto-save-code-sessions-df6e61` was left pointing at
+  `4c3d75a` (first commit only). `d0a8716` and `4417a1a` had been committed
+  onto a **detached HEAD** and were reachable only through the reflog.
+- Recovery: confirmed `4c3d75a` is an ancestor of `4417a1a` (so re-pointing
+  is a fast-forward, not a rewrite) and that no worktree had the branch
+  checked out, then `git branch -f auto-save-code-sessions-df6e61 4417a1a`
+  and `git checkout`. Nothing was lost.
+- Deliberately did **not** thrash: gathered `reflog` + `worktree list` first
+  and reported before moving any ref.
+- Note: the installed copies (`~/.claude/settings.json`,
+  `~/.claude/hooks/autocommit.sh`) were written directly, so the feature kept
+  working throughout — only the repo commits were stranded.
+- Unexplained: what detached HEAD. It fired twice, immediately after a
+  commit, which is exactly the window the Stop hook runs in. Worth a look —
+  the hook itself only runs `git status` / `commit`, so the likelier suspect
+  is worktree tooling reacting to the commit.
+
 ## Open Questions
 
 - [x] Can the session archive be saved without opening a PR?
@@ -88,6 +137,10 @@ _Update sections below were written with `caveman:caveman` compression active._
       `origin` check in `kix:save-session` Step 1)? Raised, not decided.
 - [ ] Is a commit per turn acceptable long-term, or should the archive commit
       be squashed/deferred somehow?
+- [ ] Should `kix:save-session` refuse, or warn, when the target repo is
+      public? Distinct from the ownership gate — kelvin owns `dotfiles`
+      and it is public anyway.
+- [ ] What detached HEAD in this worktree twice, right after a commit?
 
 ## Action Items
 
@@ -96,3 +149,8 @@ _Update sections below were written with `caveman:caveman` compression active._
 - [ ] Restart Claude Code so `kix@kix-agents` installs at user scope
 - [ ] Decide on per-repo gating (would be a `kix-agents`
       `save-session` Step 1 change)
+- [x] Decide what to push on `auto-save-code-sessions-df6e61` — user chose
+      the full branch, archive commit included
+- [ ] Investigate the detached-HEAD stranding (see incident above); a
+      commit-per-turn hook plus worktree tooling that detaches on commit
+      will keep stranding work
