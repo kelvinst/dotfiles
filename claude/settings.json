@@ -21,10 +21,6 @@
           {
             "type": "command",
             "command": "bash \"$HOME/.claude/hooks/code-review-suggest-fix.sh\""
-          },
-          {
-            "type": "command",
-            "command": "bash \"$HOME/.claude/hooks/code-review-autocommit.sh\""
           }
         ]
       }
