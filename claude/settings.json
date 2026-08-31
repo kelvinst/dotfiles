@@ -41,7 +41,8 @@
     ]
   },
   "enabledPlugins": {
-    "caveman@caveman": true
+    "caveman@caveman": true,
+    "kix@kix-agents": true
   },
   "extraKnownMarketplaces": {
     "caveman": {
