@@ -509,11 +509,12 @@ toggle_starship_short_mode() {
 #
 # Built from prompt escapes rather than another starship call, so leaving a
 # line behind costs nothing.
-# The escape is written out rather than using %B%F{cyan}, which needs termcap
-# and silently renders unstyled without it. 1;36 is what starship emits for
-# the directory, so the two prompts match. %{ %} keeps zsh counting the width.
+# The escapes are written out rather than using %B%F{cyan}, which needs
+# termcap and silently renders unstyled without it. 1;36 and 1;32 are what
+# starship emits for the directory and the marker, so the two prompts match.
+# %{ %} keeps zsh counting the width.
 starship_transient_prompt() {
-  PROMPT=$'%{\e[1;36m%}%1~%{\e[0m%}> '
+  PROMPT=$'%{\e[1;36m%}%1~%{\e[1;32m%}>%{\e[0m%} '
   RPROMPT=''
   zle .reset-prompt
 }
