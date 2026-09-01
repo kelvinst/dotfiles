@@ -13,7 +13,7 @@ set -uo pipefail
 status=$(git status --porcelain=v2 --branch --show-stash --ignore-submodules 2>/dev/null) || exit 0
 
 printf '%s\n' "$status" | awk '
-function paint(colour, text) { return "\033[1;38;5;" colour "m" text }
+function paint(colour, text) { return "\033[1;38;" colour "m" text }
 
 /^# branch\.ab / { ahead = $3 + 0; behind = -($4 + 0) }
 /^# stash /      { stashed = $3 + 0 }
@@ -32,31 +32,32 @@ function paint(colour, text) { return "\033[1;38;5;" colour "m" text }
 }
 
 END {
+  PINK = "2;255;175;243"   # fg-pink from the starship palette
   # Order follows the git_status module this replaces. Every kind of
   # uncommitted work shares yellow; only what needs a decision stands out.
-  if (conflicted)  flags = flags paint(196, "!=" conflicted)
-  if (stashed)     flags = flags paint(4,   "$" stashed)
-  if (deleted)     flags = flags paint(3,   "x" deleted)
-  if (renamed)     flags = flags paint(3,   "r" renamed)
-  if (modified)    flags = flags paint(3,   "!" modified)
-  if (typechanged) flags = flags paint(3,   "t" typechanged)
-  if (staged)      flags = flags paint(3,   "+" staged)
-  if (untracked)   flags = flags paint(3,   "?" untracked)
+  if (conflicted)  flags = flags paint("5;196", "!=" conflicted)
+  if (stashed)     flags = flags paint("5;4",   "$" stashed)
+  if (deleted)     flags = flags paint("5;3",   "x" deleted)
+  if (renamed)     flags = flags paint("5;3",   "r" renamed)
+  if (modified)    flags = flags paint("5;3",   "!" modified)
+  if (typechanged) flags = flags paint("5;3",   "t" typechanged)
+  if (staged)      flags = flags paint("5;3",   "+" staged)
+  if (untracked)   flags = flags paint("5;3",   "?" untracked)
 
-  if (ahead)       flags = flags paint(6, ">" ahead)
-  if (behind)      flags = flags paint(6, "<" behind)
+  if (ahead)       flags = flags paint(PINK, ">" ahead)
+  if (behind)      flags = flags paint(PINK, "<" behind)
   # Only worth saying nothing is going on when nothing else is.
-  if (flags == "") flags = paint(2, "=")
+  if (flags == "") flags = paint("5;2", "=")
 
   # Worst state wins, and the brackets take the colour of that state.
   # Behind outranks local work so a needed pull is not buried under the
   # yellow that almost every working tree shows.
-  if (conflicted)  bracket = 196
-  else if (behind) bracket = 6
-  else if (modified || staged || untracked || renamed || typechanged || deleted) bracket = 3
-  else if (ahead)   bracket = 6
-  else if (stashed) bracket = 4
-  else              bracket = 2
+  if (conflicted)  bracket = "5;196"
+  else if (behind) bracket = PINK
+  else if (modified || staged || untracked || renamed || typechanged || deleted) bracket = "5;3"
+  else if (ahead)   bracket = PINK
+  else if (stashed) bracket = "5;4"
+  else              bracket = "5;2"
 
   printf "%s%s%s\033[0m", paint(bracket, "["), flags, paint(bracket, "]")
 }
