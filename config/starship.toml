@@ -5,7 +5,6 @@ $git_status\
 )\
 [>](fg-neon-black)\
 $character\
-$line_break\
 [> ](fg-neon-black)"""
 
 add_newline = false
