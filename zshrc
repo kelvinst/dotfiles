@@ -486,16 +486,17 @@ load_starship_prompt() {
 }
 load_starship_prompt
 
-# Toggle between short (default) and full starship prompt
+# Toggle between full (default) and short starship prompt. The default lives
+# at starship's own config path, so it needs no STARSHIP_CONFIG at all.
 toggle_starship_short_mode() {
   case "$1" in
-    full)  export STARSHIP_CONFIG="$HOME/.config/starship-full.toml" ;;
-    short) unset STARSHIP_CONFIG ;;
+    short) export STARSHIP_CONFIG="$HOME/.config/starship-short.toml" ;;
+    full)  unset STARSHIP_CONFIG ;;
     *)
-      if [[ "$STARSHIP_CONFIG" == "$HOME/.config/starship-full.toml" ]]; then
+      if [[ "$STARSHIP_CONFIG" == "$HOME/.config/starship-short.toml" ]]; then
         unset STARSHIP_CONFIG
       else
-        export STARSHIP_CONFIG="$HOME/.config/starship-full.toml"
+        export STARSHIP_CONFIG="$HOME/.config/starship-short.toml"
       fi
       ;;
   esac
