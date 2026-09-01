@@ -1,10 +1,8 @@
 #!/usr/bin/env bash
-# Bracketed git status segment for the starship prompt.
+# Git status segment for the starship prompt.
 #
-# Starship's own git_status module can only give the brackets one fixed
-# colour, so this renders the segment instead: the brackets take the colour
-# of the worst state inside them, which makes the segment readable without
-# parsing the individual flags.
+# Renders the flags itself rather than using starship's git_status module,
+# which cannot hide the in-sync marker when other flags are present.
 #
 # Prints nothing outside a work tree. Colours are emitted raw; starship
 # wraps custom output in %{ %} so zsh still counts the prompt width right.
@@ -49,16 +47,6 @@ END {
   # Only worth saying nothing is going on when nothing else is.
   if (flags == "") flags = paint("5;2", "=")
 
-  # Worst state wins, and the brackets take the colour of that state.
-  # Behind outranks local work so a needed pull is not buried under the
-  # yellow that almost every working tree shows.
-  if (conflicted)  bracket = "5;196"
-  else if (behind) bracket = PINK
-  else if (modified || staged || untracked || renamed || typechanged || deleted) bracket = "5;3"
-  else if (ahead)   bracket = PINK
-  else if (stashed) bracket = "5;4"
-  else              bracket = "5;2"
-
-  printf "%s%s%s\033[0m", paint(bracket, "["), flags, paint(bracket, "]")
+  printf "%s\033[0m", flags
 }
 '
