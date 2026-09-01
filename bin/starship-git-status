@@ -1,0 +1,60 @@
+#!/usr/bin/env bash
+# Bracketed git status segment for the starship prompt.
+#
+# Starship's own git_status module can only give the brackets one fixed
+# colour, so this renders the segment instead: the brackets take the colour
+# of the worst state inside them, which makes the segment readable without
+# parsing the individual flags.
+#
+# Prints nothing outside a work tree. Colours are emitted raw; starship
+# wraps custom output in %{ %} so zsh still counts the prompt width right.
+set -uo pipefail
+
+status=$(git status --porcelain=v2 --branch --show-stash --ignore-submodules 2>/dev/null) || exit 0
+
+printf '%s\n' "$status" | awk '
+function paint(colour, text) { return "\033[1;38;5;" colour "m" text }
+
+/^# branch\.ab / { ahead = $3 + 0; behind = -($4 + 0) }
+/^# stash /      { stashed = $3 + 0 }
+/^u /            { conflicted++ }
+/^\? /           { untracked++ }
+/^[12] / {
+  index_state = substr($2, 1, 1)
+  work_state  = substr($2, 2, 1)
+
+  if (index_state == "R")      renamed++
+  else if (index_state != ".") staged++
+
+  if (work_state == "M")      modified++
+  else if (work_state == "D") deleted++
+  else if (work_state == "T") typechanged++
+}
+
+END {
+  # Same order and colours as the git_status module this replaces.
+  if (conflicted)  flags = flags paint(201, "!=" conflicted)
+  if (stashed)     flags = flags paint(5,   "$" stashed)
+  if (deleted)     flags = flags paint(196, "x" deleted)
+  if (renamed)     flags = flags paint(6,   "r" renamed)
+  if (modified)    flags = flags paint(3,   "!" modified)
+  if (typechanged) flags = flags paint(39,  "t" typechanged)
+  if (staged)      flags = flags paint(46,  "+" staged)
+  if (untracked)   flags = flags paint(4,   "?" untracked)
+
+  if (ahead)       flags = flags paint(2, ">" ahead)
+  if (behind)      flags = flags paint(1, "<" behind)
+  if (!ahead && !behind) flags = flags paint(2, "=")
+
+  # Worst state wins, so a single deletion colours the whole segment red.
+  if (conflicted)                bracket = 201
+  else if (deleted || behind)    bracket = 196
+  else if (modified || typechanged) bracket = 3
+  else if (untracked)            bracket = 4
+  else if (stashed)              bracket = 5
+  else if (staged || renamed)    bracket = 46
+  else                           bracket = 2
+
+  printf "%s%s%s\033[0m", paint(bracket, "["), flags, paint(bracket, "]")
+}
+'
