@@ -1,11 +1,12 @@
 format = """\
 $directory\
-([ │ ](fg-neon-black)\
+([│](fg-neon-black)\
 $git_status\
 )\
-[ │ ](fg-neon-black)\
+[│](fg-neon-black)\
 $character\
-$line_break"""
+$line_break\
+[│ ](fg-neon-black)"""
 
 add_newline = false
 command_timeout = 3000
@@ -65,13 +66,13 @@ truncation_symbol = ''
 
 [git_status]
 disabled = false
-format = 'git ([$all_status$ahead_behind]($style))'
+format = '([$all_status$ahead_behind]($style))'
 style = 'bold'
 conflicted = '[!=${count}](bold fg-neon-purple)'
 ahead = '[>${count}](bold fg-green)'
 behind = '[<${count}](bold fg-red)'
 diverged = '[>${ahead_count}](bold fg-green)[<${behind_count}](bold fg-red)'
-up_to_date = '[ =](bold fg-green)'
+up_to_date = '[=](bold fg-green)'
 untracked = '[?${count}](bold fg-blue)'
 stashed = '[\$${count}](bold fg-purple)'
 modified = '[!${count}](bold fg-yellow)'
