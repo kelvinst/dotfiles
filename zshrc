@@ -502,6 +502,41 @@ toggle_starship_short_mode() {
   load_starship_prompt
 }
 
+# Redraw the prompt with the short config just before the line runs, so the
+# scrollback keeps the short prompt even in full mode: the extra segments are
+# worth their width while typing, not once the command has scrolled away.
+# Does nothing in short mode, where the prompt on screen is already the one
+# we want to leave behind.
+starship_transient_prompt() {
+  [[ -n "$STARSHIP_CONFIG" ]] || return 0
+
+  PROMPT=$(STARSHIP_CONFIG="$HOME/.config/starship.toml" starship prompt \
+    --terminal-width="$COLUMNS" \
+    --keymap="${KEYMAP:-}" \
+    --status="$STARSHIP_CMD_STATUS" \
+    --pipestatus="${STARSHIP_PIPE_STATUS[*]}" \
+    --cmd-duration="${STARSHIP_DURATION:-}" \
+    --jobs="$STARSHIP_JOBS_COUNT")
+  RPROMPT=''
+  zle .reset-prompt
+}
+
+# Wrap accept-line rather than replacing it, so whatever zsh-autosuggestions
+# and friends already bound to it still runs. The precmd hook re-sources
+# init_starship.sh, which puts the full PROMPT back for the next line.
+if [[ -z "$__starship_preserved_accept_line" ]]; then
+  case "${widgets[accept-line]}" in
+    user:*) __starship_preserved_accept_line="${widgets[accept-line]#user:}" ;;
+    *)      __starship_preserved_accept_line='.accept-line' ;;
+  esac
+
+  starship_accept_line() {
+    starship_transient_prompt
+    zle "$__starship_preserved_accept_line" -- "$@"
+  }
+  zle -N accept-line starship_accept_line
+fi
+
 # Print info after command execution
 print_info_after_cmd() {
   # Save the command status code
