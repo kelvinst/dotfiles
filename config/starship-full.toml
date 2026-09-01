@@ -1,6 +1,6 @@
 format = """\
 $character\
-([ \
+([ ](fg-neon-black)\
 $username\
 $hostname\
 $localip\
@@ -18,11 +18,11 @@ $git_status\
 $hg_branch\
 $pijul_channel\
 $docker_context\
-](bg:bg-border))\
-[ \
+)\
+[ ](fg-neon-black)\
 $directory\
- ](bg:bg-middle)\
-([ \
+[ ]()\
+([ ](fg-neon-black)\
 $package\
 $c\
 $cpp\
@@ -73,8 +73,8 @@ $vlang\
 $vagrant\
 $zig\
 $buf\
-](bg:bg-border))\
-([ \
+)\
+([ ](fg-neon-black)\
 $nix_shell\
 $conda\
 $meson\
@@ -99,7 +99,8 @@ $netns\
 $shell\
 $status\
 $time\
-](black bg:green)[](green))\
+)\
+[ ](fg-neon-black)\
 $line_break"""
 
 add_newline = false
@@ -152,77 +153,77 @@ min_time = 1
 [character]
 disabled = false
 format = '$symbol'
-success_symbol = '[ I ](bold black bg:green)'
-error_symbol = '[ I ](bold black bg:green)'
-vimcmd_symbol = '[ N ](bold black bg:blue)'
-vimcmd_replace_one_symbol = '[ R ](bold black bg:red)'
-vimcmd_replace_symbol = '[ R ](bold black bg:red)'
-vimcmd_visual_symbol = '[ V ](bold black bg:purple)'
+success_symbol = '[I ](bold green)'
+error_symbol = '[I ](bold green)'
+vimcmd_symbol = '[N ](bold blue)'
+vimcmd_replace_one_symbol = '[R ](bold red)'
+vimcmd_replace_symbol = '[R ](bold red)'
+vimcmd_visual_symbol = '[V ](bold purple)'
 
 [username]
 disabled = false
 format = '[👤$user ]($style)'
-style_root = 'bold red bg:bg-border'
-style_user = 'bold yellow bg:bg-border'
+style_root = 'bold red'
+style_user = 'bold yellow'
 
 [hostname]
 disabled = false
 format = '[$ssh_symbol$hostname ]($style)'
-style = 'bold dimmed green bg:bg-border'
+style = 'bold dimmed green'
 ssh_symbol = '🌐'
 
 [localip]
 disabled = false
-format = '[📡](bg:bg-border)[$localipv4 ]($style)'
-style = 'bold dimmed yellow bg:bg-border'
+format = '[📡]()[$localipv4 ]($style)'
+style = 'bold dimmed yellow'
 
 [shlvl]
 disabled = false
 format = '[$symbol$shlvl ]($style)'
-style = 'bold yellow bg:bg-border'
+style = 'bold yellow'
 symbol = '🔼'
 
 [singularity]
 disabled = false
-format = '[$symbol](bg:bg-border)[$env ]($style)'
-style = 'bold dimmed blue bg:bg-border'
+format = '[$symbol]()[$env ]($style)'
+style = 'bold dimmed blue'
 symbol = '🧪'
 
 [kubernetes]
 disabled = false
 format = '[$symbol$context( \($namespace\)) ]($style)'
-style = 'bold cyan bg:bg-border'
+style = 'bold cyan'
 symbol = '⛵'
 
 [vcsh]
 disabled = false
 format = '[$symbol$repo ]($style)'
-style = 'bold yellow bg:bg-border'
+style = 'bold yellow'
 symbol = '📇'
 
 [fossil_branch]
 disabled = false
 format = '[$symbol$branch ]($style)'
-style = 'bold purple bg:bg-border'
+style = 'bold purple'
 symbol = '🦎'
 
 [fossil_metrics]
 disabled = false
 format = '([+$added ]($added_style))([-$deleted ]($deleted_style))'
-added_style = 'bold green bg:bg-border'
-deleted_style = 'bold red bg:bg-border'
+added_style = 'bold green'
+deleted_style = 'bold red'
 
 [git_branch]
 disabled = false
 format = '[$symbol$branch(:$remote_branch) ]($style)'
-style = 'bold purple bg:bg-border'
+style = 'bold purple'
 symbol = '🌱'
 only_attached = true
 
 [git_commit]
 disabled = false
 format = '[🍃$hash( $tag) ]($style)'
-style = 'bold purple bg:bg-border'
+style = 'bold purple'
 only_detached = true
 tag_disabled = false
 tag_symbol = '🔖'
@@ -230,47 +231,47 @@ tag_symbol = '🔖'
 [git_state]
 disabled = false
 format = '[\($state( $progress_current/$progress_total)\) ]($style)'
-style = 'bold yellow bg:bg-border'
+style = 'bold yellow'
 
 [git_metrics]
 disabled = false
 format = '([+$added]($added_style))([-$deleted ]($deleted_style))'
-added_style = 'bold green bg:bg-border'
-deleted_style = 'bold red bg:bg-border'
+added_style = 'bold green'
+deleted_style = 'bold red'
 
 [git_status]
 disabled = false
 format = '([$all_status$ahead_behind ]($style))'
-style = 'bold bg:bg-border'
-conflicted = '[≠${count}](bold fg-neon-purple bg:bg-border)'
-ahead = '[⇡${count}](bold fg-green bg:bg-border)'
-behind = '[⇣${count}](bold fg-red bg:bg-border)'
-diverged = '[⇡${ahead_count}](bold fg-green bg:bg-border)[⇣${behind_count}(bold fg-red bg:bg-border)'
-up_to_date = '[✔︎](bold fg-green bg:bg-border)'
-untracked = '[?${count}](bold fg-blue bg:bg-border)'
-stashed = '[\$${count}](bold fg-purple bg:bg-border)'
-modified = '[!${count}](bold fg-yellow bg:bg-border)'
-staged = '[+${count}](bold fg-neon-green bg:bg-border)'
-renamed = '[»${count}](bold fg-cyan bg:bg-border)'
-deleted = '[x${count}](bold fg-neon-red bg:bg-border)'
-typechanged = '[±${count}](bold fg-neon-blue bg:bg-border)'
+style = 'bold'
+conflicted = '[≠${count}](bold fg-neon-purple)'
+ahead = '[⇡${count}](bold fg-green)'
+behind = '[⇣${count}](bold fg-red)'
+diverged = '[⇡${ahead_count}](bold fg-green)[⇣${behind_count}(bold fg-red)'
+up_to_date = '[✔︎](bold fg-green)'
+untracked = '[?${count}](bold fg-blue)'
+stashed = '[\$${count}](bold fg-purple)'
+modified = '[!${count}](bold fg-yellow)'
+staged = '[+${count}](bold fg-neon-green)'
+renamed = '[»${count}](bold fg-cyan)'
+deleted = '[x${count}](bold fg-neon-red)'
+typechanged = '[±${count}](bold fg-neon-blue)'
 
 [hg_branch]
 disabled = false
 format = '[$symbol$branch(:$topic) ]($style)'
-style = 'bold purple bg:bg-border'
+style = 'bold purple'
 symbol = '🪩'
 
 [pijul_channel]
 disabled = false
 format = '[$symbol$channel ]($style)'
-style = 'bold purple bg:bg-border'
+style = 'bold purple'
 symbol = '🐦'
 
 [docker_context]
 disabled = false
 format = '[$symbol$context ]($style)'
-style = 'bold blue bg:bg-border'
+style = 'bold blue'
 symbol = '🐳'
 
 [directory]
@@ -280,10 +281,10 @@ repo_root_format = """
 [$repo_root]($repo_root_style)\
 [$path]($style)\
 [$read_only]($read_only_style)"""
-before_repo_root_style = 'white bg:bg-middle'
-repo_root_style = 'bold cyan bg:bg-middle'
+before_repo_root_style = 'white'
+repo_root_style = 'bold cyan'
 format = '[$path]($style)'
-style = 'bold dimmed cyan bg:bg-middle'
+style = 'bold dimmed cyan'
 read_only = '🔒'
 truncate_to_repo = true
 truncation_symbol = ''
@@ -291,405 +292,405 @@ truncation_symbol = ''
 [package]
 disabled = false
 format = '[$symbol$version ]($style)'
-style = 'bold fg-orange bg:bg-border'
+style = 'bold fg-orange'
 symbol = '📦'
 version_format = '${raw}'
 
 [c]
 disabled = false
 format = '[$symbol($version(-$name)) ]($style)'
-style = 'bold fg-lime bg:bg-border'
+style = 'bold fg-lime'
 symbol = '🌊'
 version_format = '${raw}'
 
 [cpp]
 disabled = false
 format = '[$symbol($version(-$name)) ]($style)'
-style = 'bold fg-lime bg:bg-border'
+style = 'bold fg-lime'
 symbol = '✨'
 version_format = '${raw}'
 
 [cmake]
 disabled = false
 format = '[$symbol($version) ]($style)'
-style = 'bold blue bg:bg-border'
+style = 'bold blue'
 symbol = '📐'
 version_format = '${raw}'
 
 [cobol]
 disabled = false
 format = '[$symbol($version) ]($style)'
-style = 'bold blue bg:bg-border'
+style = 'bold blue'
 symbol = '🔩'
 version_format = '${raw}'
 
 [crystal]
 disabled = false
 format = '[$symbol($version) ]($style)'
-style = 'bold red bg:bg-border'
+style = 'bold red'
 symbol = '🥂'
 version_format = '${raw}'
 
 [daml]
 disabled = false
 format = '[$symbol($version) ]($style)'
-style = 'bold cyan bg:bg-border'
+style = 'bold cyan'
 symbol = '🔗'
 version_format = '${raw}'
 
 [dart]
 disabled = false
 format = '[$symbol($version) ]($style)'
-style = 'bold blue bg:bg-border'
+style = 'bold blue'
 symbol = '🎯'
 version_format = '${raw}'
 
 [deno]
 disabled = false
 format = '[$symbol($version) ]($style)'
-style = 'bold green bg:bg-border'
+style = 'bold green'
 symbol = '🦕'
 version_format = '${raw}'
 
 [dotnet]
 disabled = false
 format = '[$symbol($version)( 🎯$tfm) ]($style)'
-style = 'bold blue bg:bg-border'
+style = 'bold blue'
 symbol = '🧩'
 version_format = '${raw}'
 
 [elixir]
 disabled = false
 format = '[$symbol($version 🍷$otp_version) ]($style)'
-style = 'bold purple bg:bg-border'
+style = 'bold purple'
 symbol = '🔮'
 version_format = '${raw}'
 
 [elm]
 disabled = false
 format = '[$symbol($version) ]($style)'
-style = 'bold cyan bg:bg-border'
+style = 'bold cyan'
 symbol = '🌳'
 version_format = '${raw}'
 
 [erlang]
 disabled = false
 format = '[$symbol($version) ]($style)'
-style = 'bold red bg:bg-border'
+style = 'bold red'
 symbol = '🍷'
 version_format = '${raw}'
 
 [fennel]
 disabled = false
 format = '[$symbol($version) ]($style)'
-style = 'bold green bg:bg-border'
+style = 'bold green'
 symbol = '🧄'
 version_format = '${raw}'
 
 [gleam]
 disabled = false
 format = '[$symbol($version) ]($style)'
-style = 'bold fg-pink bg:bg-border'
+style = 'bold fg-pink'
 symbol = '⭐'
 version_format = '${raw}'
 
 [golang]
 disabled = false
 format = '[$symbol($version) ]($style)'
-style = 'bold cyan bg:bg-border'
-not_capable_style = 'bold red bg:bg-border'
+style = 'bold cyan'
+not_capable_style = 'bold red'
 symbol = '🐹'
 version_format = '${raw}'
 
 [guix_shell]
 disabled = false
 format = '[$symbol($version) ]($style)'
-style = 'bold yellow bg:bg-border'
+style = 'bold yellow'
 symbol = '🐃'
 
 [haskell]
 disabled = false
 format = '[$symbol($version) ]($style)'
-style = 'bold purple bg:bg-border'
+style = 'bold purple'
 symbol = '🧬'
 version_format = '${raw}'
 
 [haxe]
 disabled = false
 format = '[$symbol($version) ]($style)'
-style = 'bold fg-vermilion bg:bg-border'
+style = 'bold fg-vermilion'
 symbol = '🔶'
 version_format = '${raw}'
 
 [helm]
 disabled = false
 format = '[$symbol($version) ]($style)'
-style = 'bold white bg:bg-border'
+style = 'bold white'
 symbol = '🪖'
 version_format = '${raw}'
 
 [java]
 disabled = false
 format = '[$symbol($version) ]($style)'
-style = 'bold dimmed red bg:bg-border'
+style = 'bold dimmed red'
 symbol = '☕'
 version_format = '${raw}'
 
 [julia]
 disabled = false
 format = '[$symbol($version) ]($style)'
-style = 'bold purple bg:bg-border'
+style = 'bold purple'
 symbol = '💎'
 version_format = '${raw}'
 
 [kotlin]
 disabled = false
 format = '[$symbol($version) ]($style)'
-style = 'bold blue bg:bg-border'
+style = 'bold blue'
 symbol = '🪶'
 version_format = '${raw}'
 
 [gradle]
 disabled = false
 format = '[$symbol($version) ]($style)'
-style = 'bold bright-cyan bg:bg-border'
+style = 'bold bright-cyan'
 symbol = '🔧'
 version_format = '${raw}'
 
 [lua]
 disabled = false
 format = '[$symbol($version) ]($style)'
-style = 'bold blue bg:bg-border'
+style = 'bold blue'
 symbol = '🌙'
 version_format = '${raw}'
 
 [mojo]
 disabled = false
 format = '[$symbol($version) ]($style)'
-style = 'bold fg-orange bg:bg-border'
+style = 'bold fg-orange'
 symbol = '🔥'
 
 [nim]
 disabled = false
 format = '[$symbol($version) ]($style)'
-style = 'bold yellow bg:bg-border'
+style = 'bold yellow'
 symbol = '👑'
 version_format = '${raw}'
 
 [nodejs]
 disabled = false
-format = '[$symbol($version) ](bold green bg:bg-border)'
-style = 'bold green bg:bg-border'
+format = '[$symbol($version) ](bold green)'
+style = 'bold green'
 symbol = '🤢'
 version_format = '${raw}'
 
 [ocaml]
 disabled = false
 format = '[$symbol($version)( \($switch_indicator$switch_name\)) ]($style)'
-style = 'bold yellow bg:bg-border'
+style = 'bold yellow'
 symbol = '🐫'
 version_format = '${raw}'
 
 [odin]
 disabled = false
 format = '[$symbol($version) ]($style)'
-style = 'bold cyan bg:bg-border'
+style = 'bold cyan'
 symbol = '🪓'
 
 [opa]
 disabled = false
 format = '[$symbol($version) ]($style)'
-style = 'bold blue bg:bg-border'
+style = 'bold blue'
 symbol = '🔰'
 version_format = '${raw}'
 
 [perl]
 disabled = false
 format = '[$symbol($version) ]($style)'
-style = 'bold fg-lime bg:bg-border'
+style = 'bold fg-lime'
 symbol = '🦪'
 version_format = '${raw}'
 
 [php]
 disabled = false
 format = '[$symbol($version) ]($style)'
-style = 'bold fg-lavender bg:bg-border'
+style = 'bold fg-lavender'
 symbol = '🐘'
 version_format = '${raw}'
 
 [purescript]
 disabled = false
 format = '[$symbol($version) ]($style)'
-style = 'bold white bg:bg-border'
+style = 'bold white'
 symbol = '📜'
 
 [python]
 disabled = false
 format = '[${symbol}${pyenv_prefix}(${version})( \($virtualenv\)) ]($style)'
-style = 'bold yellow bg:bg-border'
+style = 'bold yellow'
 symbol = '🐍'
 
 [quarto]
 disabled = false
 format = '[$symbol($version) ]($style)'
-style = 'bold fg-sky bg:bg-border'
+style = 'bold fg-sky'
 symbol = '🛌'
 
 [raku]
 disabled = false
 format = '[$symbol($version-$vm_version) ]($style)'
-style = 'bold fg-lime bg:bg-border'
+style = 'bold fg-lime'
 symbol = '🦋'
 
 [rlang]
 disabled = false
 format = '[$symbol($version) ]($style)'
-style = 'bold blue bg:bg-border'
+style = 'bold blue'
 symbol = '📉'
 
 [red]
 disabled = false
 format = '[$symbol($version) ]($style)'
-style = 'bold red bg:bg-border'
+style = 'bold red'
 symbol = '🟥'
 
 [ruby]
 disabled = false
 format = '[$symbol($version) ]($style)'
-style = 'bold red bg:bg-border'
+style = 'bold red'
 symbol = '🛑'
 
 [rust]
 disabled = false
 format = '[$symbol($version) ]($style)'
-style = 'bold red bg:bg-border'
+style = 'bold red'
 symbol = '🦀'
 
 [scala]
 disabled = false
 format = '[$symbol($version) ]($style)'
-style = 'bold dimmed red bg:bg-border'
+style = 'bold dimmed red'
 symbol = '🪜'
 
 [solidity]
 disabled = false
 format = '[$symbol($version) ]($style)'
-style = 'bold blue bg:bg-border'
+style = 'bold blue'
 symbol = '🪨'
 
 [swift]
 disabled = false
 format = '[$symbol($version) ]($style)'
-style = 'bold fg-vermilion bg:bg-border'
+style = 'bold fg-vermilion'
 symbol = '🪽'
 
 [terraform]
 disabled = false
 format = '[$symbol$workspace ]($style)'
-style = 'bold fg-periwinkle bg:bg-border'
+style = 'bold fg-periwinkle'
 symbol = '💠'
 
 [typst]
 disabled = false
 format = '[$symbol($version) ]($style)'
-style = 'bold fg-teal bg:bg-border'
+style = 'bold fg-teal'
 symbol = '🎹'
 
 [vlang]
 disabled = false
 format = '[$symbol($version) ]($style)'
-style = 'bold blue bg:bg-border'
+style = 'bold blue'
 symbol = '🖖'
 
 [vagrant]
 disabled = false
 format = '[$symbol($version) ]($style)'
-style = 'bold cyan bg:bg-border'
+style = 'bold cyan'
 symbol = '🚶'
 
 [zig]
 disabled = false
 format = '[$symbol($version) ]($style)'
-style = 'bold yellow bg:bg-border'
+style = 'bold yellow'
 symbol = '🧟'
 
 [buf]
 disabled = false
 format = '[$symbol($version) ]($style)'
-style = 'bold black bg:green'
+style = 'bold green'
 symbol = '🪄'
 
 [nix_shell]
 disabled = false
 format = '[$symbol$state( \($name\)) ]($style)'
-style = 'bold black bg:green'
+style = 'bold green'
 symbol = '⛄'
 
 [conda]
 disabled = false
 format = '[$symbol$environment ]($style)'
-style = 'bold black bg:green'
+style = 'bold green'
 symbol = '🆑'
 
 [meson]
 disabled = false
 format = '[$symbol$project ]($style)'
-style = 'bold black bg:green'
+style = 'bold green'
 symbol = '🟣'
 
 [spack]
 disabled = false
 format = '[$symbol$environment ]($style)'
-style = 'bold black bg:green'
+style = 'bold green'
 symbol = '🧳'
 
 [memory_usage]
 disabled = true
 format = '[$symbol${ram}(|${swap}) ]($style)'
-style = 'bold black bg:green'
+style = 'bold green'
 symbol = '🐏'
 threshold = 85
 
 [aws]
 disabled = false
 format = '[$symbol($profile)(\($region\))(\[$duration\]) ]($style)'
-style = 'bold black bg:green'
+style = 'bold green'
 symbol = '⛅'
 
 [gcloud]
 disabled = false
 format = '[$symbol$account(@$domain)(\($region\)) ]($style)'
-style = 'bold black bg:green'
+style = 'bold green'
 symbol = '⛅'
 
 [openstack]
 disabled = false
 format = '[$symbol$cloud(\($project\)) ]($style)'
-style = 'bold black bg:green'
+style = 'bold green'
 symbol = '⛅'
 
 [azure]
 disabled = false
 format = '[$symbol($subscription) ]($style)'
-style = 'bold black bg:green'
+style = 'bold green'
 symbol = '⛅'
 
 [pulumi]
 disabled = false
 format = '[$symbol($username@)$stack ]($style)'
-style = 'bold magenta bg:bg-border'
+style = 'bold magenta'
 symbol = '⛅'
 
 [nats]
 disabled = false
 format = '[$symbol$name ]($style)'
-style = 'bold black bg:green'
+style = 'bold green'
 symbol = '💌'
 
 [direnv]
 disabled = false
 format = '[$symbol$allowed$loaded ]($style)'
-style = 'bold black bg:green'
+style = 'bold green'
 symbol = '📂'
 detect_files = ['.envrc', '.env']
 allowed_msg = '😀'
@@ -701,13 +702,13 @@ unloaded_msg = '🔽'
 [env_var]
 disabled = false
 format = '[$symbol$env_value ]($style)'
-style = 'bold black bg:green'
+style = 'bold green'
 symbol = '❓'
 
 [mise]
 disabled = false
 format = '[$symbol$health ]($style)'
-style = 'bold black bg:green'
+style = 'bold green'
 symbol = '🍳'
 healthy_symbol = '✅'
 unhealthy_symbol = '❌'
@@ -715,25 +716,25 @@ unhealthy_symbol = '❌'
 [pixi]
 disabled = false
 format = '[$symbol($version)(\($environment\)) ]($style)'
-style = 'bold black bg:green'
+style = 'bold green'
 symbol = '🧚'
 
 [sudo]
 disabled = false
 format = '[$symbol ]($style)'
-style = 'bold black bg:green'
+style = 'bold green'
 symbol = '🧙'
 
 [jobs]
 disabled = false
 format = '[$symbol$number ]($style)'
-style = 'bold black bg:green'
+style = 'bold green'
 symbol = '👷'
 
 [battery]
 disabled = true
 format = '[$symbol$percentage ]($style)'
-style = 'bold black bg:green'
+style = 'bold green'
 full_symbol = '🔋'
 charging_symbol = '🔌'
 discharging_symbol = '⚡'
@@ -742,12 +743,12 @@ empty_symbol = '🪫'
 
 [[battery.display]]
 threshold = 100
-style = 'bold black bg:green'
+style = 'bold green'
 
 [os]
 disabled = true
 format = '[$symbol ]($style)'
-style = 'bold black bg:green'
+style = 'bold green'
 
 [os.symbols]
 AIX = "➿"
@@ -805,26 +806,26 @@ Windows = "🪟"
 [container]
 disabled = false
 format = '[$symbol$name ]($style)'
-style = 'bold black bg:green'
+style = 'bold green'
 symbol = '🐋'
 
 [netns]
 disabled = false
 format = '[$symbol$name ]($style)'
-style = 'bold black bg:green'
+style = 'bold green'
 symbol = '🛜'
 
 [shell]
 disabled = true
 format = '[🐢$indicator ]($style)'
-style = 'bold black bg:green'
+style = 'bold green'
 
 [status]
 disabled = false
 format = '[$symbol$status ]($style)'
 symbol = '❗'
-failure_style = 'bold black bg:green'
-success_style = 'bold black bg:green'
+failure_style = 'bold green'
+success_style = 'bold green'
 success_symbol = '✅'
 not_executable_symbol = '🚫'
 not_found_symbol = '❓'
@@ -833,7 +834,7 @@ signal_symbol = '💥'
 [time]
 disabled = true
 format = '[🕒$time ]($style)'
-style = 'bold black bg:green'
+style = 'bold green'
 time_format = '%H:%M:%S'
 
 [line_break]

@@ -1,14 +1,14 @@
 format = """\
 $character\
-([ \
+([  ](fg-neon-black)\
 $git_status\
-](bg:bg-border))\
-[ \
+)\
+[  ](fg-neon-black)\
 $directory\
- ](bg:bg-middle)\
-([ \
+([  ](fg-neon-black)\
 $status\
-](black bg:green)[](green))\
+)\
+[  ](fg-neon-black)\
 $line_break"""
 
 add_newline = false
@@ -45,12 +45,12 @@ fg-periwinkle = '105'
 [character]
 disabled = false
 format = '$symbol'
-success_symbol = '[ I ](bold black bg:green)'
-error_symbol = '[ I ](bold black bg:green)'
-vimcmd_symbol = '[ N ](bold black bg:blue)'
-vimcmd_replace_one_symbol = '[ R ](bold black bg:red)'
-vimcmd_replace_symbol = '[ R ](bold black bg:red)'
-vimcmd_visual_symbol = '[ V ](bold black bg:purple)'
+success_symbol = '[I](bold green)'
+error_symbol = '[I](bold green)'
+vimcmd_symbol = '[N](bold blue)'
+vimcmd_replace_one_symbol = '[R](bold red)'
+vimcmd_replace_symbol = '[R](bold red)'
+vimcmd_visual_symbol = '[V](bold purple)'
 
 [directory]
 disabled = false
@@ -59,37 +59,37 @@ repo_root_format = """
 [$repo_root]($repo_root_style)\
 [$path]($style)\
 [$read_only]($read_only_style)"""
-before_repo_root_style = 'white bg:bg-middle'
-repo_root_style = 'bold cyan bg:bg-middle'
+before_repo_root_style = 'white'
+repo_root_style = 'bold cyan'
 format = '[$path]($style)'
-style = 'bold dimmed cyan bg:bg-middle'
+style = 'bold dimmed cyan'
 read_only = '🔒'
 truncate_to_repo = true
 truncation_symbol = ''
 
 [git_status]
 disabled = false
-format = '🌱([$all_status$ahead_behind ]($style))'
-style = 'bold bg:bg-border'
-conflicted = '[≠${count}](bold fg-neon-purple bg:bg-border)'
-ahead = '[⇡${count}](bold fg-green bg:bg-border)'
-behind = '[⇣${count}](bold fg-red bg:bg-border)'
-diverged = '[⇡${ahead_count}](bold fg-green bg:bg-border)[⇣${behind_count}(bold fg-red bg:bg-border)'
-up_to_date = '[✔︎](bold fg-green bg:bg-border)'
-untracked = '[?${count}](bold fg-blue bg:bg-border)'
-stashed = '[\$${count}](bold fg-purple bg:bg-border)'
-modified = '[!${count}](bold fg-yellow bg:bg-border)'
-staged = '[+${count}](bold fg-neon-green bg:bg-border)'
-renamed = '[»${count}](bold fg-cyan bg:bg-border)'
-deleted = '[x${count}](bold fg-neon-red bg:bg-border)'
-typechanged = '[±${count}](bold fg-neon-blue bg:bg-border)'
+format = '🌱([$all_status$ahead_behind]($style))'
+style = 'bold'
+conflicted = '[≠${count}](bold fg-neon-purple)'
+ahead = '[⇡${count}](bold fg-green)'
+behind = '[⇣${count}](bold fg-red)'
+diverged = '[⇡${ahead_count}](bold fg-green)[⇣${behind_count}(bold fg-red)'
+up_to_date = '[✔︎](bold fg-green)'
+untracked = '[?${count}](bold fg-blue)'
+stashed = '[\$${count}](bold fg-purple)'
+modified = '[!${count}](bold fg-yellow)'
+staged = '[+${count}](bold fg-neon-green)'
+renamed = '[»${count}](bold fg-cyan)'
+deleted = '[x${count}](bold fg-neon-red)'
+typechanged = '[±${count}](bold fg-neon-blue)'
 
 [status]
 disabled = false
-format = '[$symbol$status ]($style)'
+format = '[$symbol$status]($style)'
 symbol = '❗'
-failure_style = 'bold black bg:green'
-success_style = 'bold black bg:green'
+failure_style = 'bold green'
+success_style = 'bold green'
 success_symbol = '✅'
 not_executable_symbol = '🚫'
 not_found_symbol = '❓'
