@@ -48,15 +48,15 @@ END {
   # Only worth saying nothing is going on when nothing else is.
   if (flags == "") flags = paint(2, "=")
 
-  # Worst state wins, and brackets sit on the neon shade of whatever won.
+  # Worst state wins, and the brackets take the colour of that state.
   # Behind outranks local work so a needed pull is not buried under the
   # yellow that almost every working tree shows.
   if (conflicted)  bracket = 196
-  else if (behind) bracket = 49
-  else if (modified || staged || untracked || renamed || typechanged || deleted) bracket = 226
-  else if (ahead)   bracket = 49
-  else if (stashed) bracket = 39
-  else              bracket = 46
+  else if (behind) bracket = 6
+  else if (modified || staged || untracked || renamed || typechanged || deleted) bracket = 3
+  else if (ahead)   bracket = 6
+  else if (stashed) bracket = 4
+  else              bracket = 2
 
   printf "%s%s%s\033[0m", paint(bracket, "["), flags, paint(bracket, "]")
 }
