@@ -211,14 +211,14 @@ deleted_style = 'bold red'
 
 [git_branch]
 disabled = false
-format = '[$branch(:$remote_branch):]($style)'
+format = '[$branch(:$remote_branch)]($style)'
 style = 'bold blue'
 symbol = "git:"
 only_attached = true
 
 [git_commit]
 disabled = false
-format = '[$hash( $tag):]($style)'
+format = '[:$hash( $tag)]($style)'
 style = 'bold purple'
 only_detached = true
 tag_disabled = false
@@ -226,18 +226,18 @@ tag_symbol = " tag:"
 
 [git_state]
 disabled = false
-format = '[\($state( $progress_current/$progress_total)\):]($style)'
+format = '[:\($state( $progress_current/$progress_total)\)]($style)'
 style = 'bold yellow'
 
 [git_metrics]
 disabled = false
-format = '([+$added]($added_style))([-$deleted]($deleted_style)):'
+format = '(:([+$added]($added_style))([-$deleted]($deleted_style)))'
 added_style = 'bold green'
 deleted_style = 'bold red'
 
 [git_status]
 disabled = false
-format = '([$all_status$ahead_behind ]($style))'
+format = '(:[$all_status$ahead_behind]($style) )'
 style = 'bold'
 conflicted = '[!=${count}](bold fg-neon-purple)'
 ahead = '[>${count}](bold fg-green)'
