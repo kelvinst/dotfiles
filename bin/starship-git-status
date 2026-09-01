@@ -44,7 +44,8 @@ END {
 
   if (ahead)       flags = flags paint(2, ">" ahead)
   if (behind)      flags = flags paint(1, "<" behind)
-  if (!ahead && !behind) flags = flags paint(2, "=")
+  # Only worth saying nothing is going on when nothing else is.
+  if (flags == "") flags = paint(2, "=")
 
   # Worst state wins, so a single deletion colours the whole segment red.
   # Brackets stay on the neon end of the palette so they read as one band
