@@ -1,7 +1,7 @@
 format = """\
 $directory\
 [ ]()\
-$git_status\
+${custom.git}\
 $character\
 [> ](fg-neon-black)"""
 
@@ -61,6 +61,16 @@ read_only = ' ro'
 truncate_to_repo = true
 truncation_symbol = ''
 
+[custom.git]
+disabled = false
+description = 'git status, bracketed by the colour of its worst state'
+command = '$HOME/.local/bin/starship-git-status'
+shell = ['bash', '--noprofile', '--norc']
+when = true
+format = '$output'
+
+# Superseded by [custom.git] above, which can colour the brackets by
+# content; kept configured so it can be dropped back into the format.
 [git_status]
 disabled = false
 format = '([\[]($style)[$all_status$ahead_behind]()[\]]($style))'
