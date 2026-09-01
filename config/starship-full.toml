@@ -99,7 +99,6 @@ $time\
 )\
 [> ](fg-neon-black)\
 $character\
-$line_break\
 [> ](fg-neon-black)"""
 
 add_newline = false
