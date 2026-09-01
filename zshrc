@@ -502,21 +502,18 @@ toggle_starship_short_mode() {
   load_starship_prompt
 }
 
-# Redraw the prompt with the short config just before the line runs, so the
-# scrollback keeps the short prompt even in full mode: the extra segments are
-# worth their width while typing, not once the command has scrolled away.
-# Does nothing in short mode, where the prompt on screen is already the one
-# we want to leave behind.
+# Redraw the prompt down to the folder name just before the line runs. Git
+# state, versions and the vim mode are worth their width while typing; in the
+# scrollback they describe a moment that has passed, and only the directory
+# still says anything about the command sitting under it.
+#
+# Built from prompt escapes rather than another starship call, so leaving a
+# line behind costs nothing.
+# The escape is written out rather than using %B%F{cyan}, which needs termcap
+# and silently renders unstyled without it. 1;36 is what starship emits for
+# the directory, so the two prompts match. %{ %} keeps zsh counting the width.
 starship_transient_prompt() {
-  [[ -n "$STARSHIP_CONFIG" ]] || return 0
-
-  PROMPT=$(STARSHIP_CONFIG="$HOME/.config/starship.toml" starship prompt \
-    --terminal-width="$COLUMNS" \
-    --keymap="${KEYMAP:-}" \
-    --status="$STARSHIP_CMD_STATUS" \
-    --pipestatus="${STARSHIP_PIPE_STATUS[*]}" \
-    --cmd-duration="${STARSHIP_DURATION:-}" \
-    --jobs="$STARSHIP_JOBS_COUNT")
+  PROMPT=$'%{\e[1;36m%}%1~%{\e[0m%}> '
   RPROMPT=''
   zle .reset-prompt
 }
