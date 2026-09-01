@@ -47,10 +47,13 @@ END {
   if (!ahead && !behind) flags = flags paint(2, "=")
 
   # Worst state wins, so a single deletion colours the whole segment red.
+  # Brackets stay on the neon end of the palette so they read as one band
+  # regardless of which state won; stashed has no neon shade of its own
+  # that neon purple has not already taken.
   if (conflicted)                bracket = 201
   else if (deleted || behind)    bracket = 196
-  else if (modified || typechanged) bracket = 3
-  else if (untracked)            bracket = 4
+  else if (modified || typechanged) bracket = 226
+  else if (untracked)            bracket = 39
   else if (stashed)              bracket = 5
   else                           bracket = 46
 
