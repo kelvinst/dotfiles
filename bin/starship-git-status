@@ -32,14 +32,14 @@ function paint(colour, text) { return "\033[1;38;5;" colour "m" text }
 }
 
 END {
-  # Order follows the git_status module this replaces. Staged, unstaged
-  # and untracked share yellow: all three are just work in progress.
+  # Order follows the git_status module this replaces. Every kind of
+  # uncommitted work shares yellow; only what needs a decision stands out.
   if (conflicted)  flags = flags paint(201, "!=" conflicted)
   if (stashed)     flags = flags paint(5,   "$" stashed)
   if (deleted)     flags = flags paint(196, "x" deleted)
-  if (renamed)     flags = flags paint(6,   "r" renamed)
+  if (renamed)     flags = flags paint(3,   "r" renamed)
   if (modified)    flags = flags paint(3,   "!" modified)
-  if (typechanged) flags = flags paint(39,  "t" typechanged)
+  if (typechanged) flags = flags paint(3,   "t" typechanged)
   if (staged)      flags = flags paint(3,   "+" staged)
   if (untracked)   flags = flags paint(3,   "?" untracked)
 
@@ -54,7 +54,7 @@ END {
   # that neon purple has not already taken.
   if (conflicted)                bracket = 201
   else if (deleted || behind)    bracket = 196
-  else if (modified || staged || untracked || typechanged) bracket = 226
+  else if (modified || staged || untracked || renamed || typechanged) bracket = 226
   else if (stashed)              bracket = 5
   else                           bracket = 46
 
