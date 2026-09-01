@@ -52,8 +52,7 @@ END {
   else if (modified || typechanged) bracket = 3
   else if (untracked)            bracket = 4
   else if (stashed)              bracket = 5
-  else if (staged || renamed)    bracket = 46
-  else                           bracket = 2
+  else                           bracket = 46
 
   printf "%s%s%s\033[0m", paint(bracket, "["), flags, paint(bracket, "]")
 }
