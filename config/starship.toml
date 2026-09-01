@@ -5,11 +5,10 @@ $git_status\
 ](bg:bg-border))\
 [ \
 $directory\
-$fill\
-](bg:bg-middle)\
+ ](bg:bg-middle)\
 ([ \
 $status\
-](black bg:green))\
+](black bg:green)[](green))\
 $line_break"""
 
 add_newline = false
@@ -52,11 +51,6 @@ vimcmd_symbol = '[ N ](bold black bg:blue)'
 vimcmd_replace_one_symbol = '[ R ](bold black bg:red)'
 vimcmd_replace_symbol = '[ R ](bold black bg:red)'
 vimcmd_visual_symbol = '[ V ](bold black bg:purple)'
-
-[fill]
-disabled = false
-style = 'bg:bg-middle'
-symbol = ' '
 
 [directory]
 disabled = false
