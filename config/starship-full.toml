@@ -1,7 +1,7 @@
 format = """\
 $directory\
 [ ]()\
-([\\[](fg-neon-black)\
+(\
 $username\
 $hostname\
 $localip\
@@ -19,8 +19,8 @@ $git_status\
 $hg_branch\
 $pijul_channel\
 $docker_context\
-[\\]](fg-neon-black))\
-([\\[](fg-neon-black)\
+)\
+(\
 $package\
 $c\
 $cpp\
@@ -71,8 +71,8 @@ $vlang\
 $vagrant\
 $zig\
 $buf\
-[\\]](fg-neon-black))\
-([\\[](fg-neon-black)\
+)\
+(\
 $nix_shell\
 $conda\
 $meson\
@@ -96,7 +96,7 @@ $container\
 $netns\
 $shell\
 $time\
-[\\]](fg-neon-black))\
+)\
 $character"""
 
 add_newline = false
@@ -149,12 +149,12 @@ min_time = 1
 [character]
 disabled = false
 format = '$symbol'
-success_symbol = '[ I>](bold green) '
-error_symbol = '[ I>](bold red) '
-vimcmd_symbol = '[ N>](bold blue) '
-vimcmd_replace_one_symbol = '[ R>](bold fg-pink) '
-vimcmd_replace_symbol = '[ R>](bold fg-pink) '
-vimcmd_visual_symbol = '[ V>](bold purple) '
+success_symbol = '[I>](bold green) '
+error_symbol = '[I>](bold red) '
+vimcmd_symbol = '[N>](bold blue) '
+vimcmd_replace_one_symbol = '[R>](bold fg-pink) '
+vimcmd_replace_symbol = '[R>](bold fg-pink) '
+vimcmd_visual_symbol = '[V>](bold purple) '
 
 [username]
 disabled = false
@@ -211,14 +211,14 @@ deleted_style = 'bold red'
 
 [git_branch]
 disabled = false
-format = '[$branch(:$remote_branch) ]($style)'
+format = '[$branch(:$remote_branch):]($style)'
 style = 'bold blue'
 symbol = "git:"
 only_attached = true
 
 [git_commit]
 disabled = false
-format = '[$hash( $tag) ]($style)'
+format = '[$hash( $tag):]($style)'
 style = 'bold purple'
 only_detached = true
 tag_disabled = false
@@ -226,12 +226,12 @@ tag_symbol = " tag:"
 
 [git_state]
 disabled = false
-format = '[\($state( $progress_current/$progress_total)\) ]($style)'
+format = '[\($state( $progress_current/$progress_total)\):]($style)'
 style = 'bold yellow'
 
 [git_metrics]
 disabled = false
-format = '([+$added]($added_style))([-$deleted ]($deleted_style))'
+format = '([+$added]($added_style))([-$deleted]($deleted_style)):'
 added_style = 'bold green'
 deleted_style = 'bold red'
 

@@ -39,12 +39,12 @@ fg-periwinkle = '105'
 [character]
 disabled = false
 format = '$symbol'
-success_symbol = '[ I>](bold green) '
-error_symbol = '[ I>](bold red) '
-vimcmd_symbol = '[ N>](bold blue) '
-vimcmd_replace_one_symbol = '[ R>](bold fg-pink) '
-vimcmd_replace_symbol = '[ R>](bold fg-pink) '
-vimcmd_visual_symbol = '[ V>](bold purple) '
+success_symbol = '[I>](bold green) '
+error_symbol = '[I>](bold red) '
+vimcmd_symbol = '[N>](bold blue) '
+vimcmd_replace_one_symbol = '[R>](bold fg-pink) '
+vimcmd_replace_symbol = '[R>](bold fg-pink) '
+vimcmd_visual_symbol = '[V>](bold purple) '
 
 [directory]
 disabled = false
@@ -67,7 +67,7 @@ description = 'git status flags, with the in-sync marker hidden when redundant'
 command = '$HOME/.local/bin/starship-git-status'
 shell = ['bash', '--noprofile', '--norc']
 when = true
-format = '$output'
+format = '($output )'
 
 # Superseded by [custom.git] above, which can colour the brackets by
 # content; kept configured so it can be dropped back into the format.
