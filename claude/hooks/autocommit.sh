@@ -23,6 +23,18 @@ for op in rebase-merge rebase-apply MERGE_HEAD CHERRY_PICK_HEAD REVERT_HEAD BISE
   [ -e "$(git -C "$repo" rev-parse --git-path "$op" 2>/dev/null)" ] && exit 0
 done
 
+# Main branch is scratch space: work there gets rolled back or moved onto a
+# branch before it is committed. Never auto-commit onto the default branch.
+branch=$(git -C "$repo" symbolic-ref --quiet --short HEAD 2>/dev/null)
+if [ -n "$branch" ]; then
+  default=$(git -C "$repo" symbolic-ref --quiet --short refs/remotes/origin/HEAD 2>/dev/null)
+  default="${default#origin/}"
+  [ -n "$default" ] || default=main
+  case "$branch" in
+  "$default" | main | master) exit 0 ;;
+  esac
+fi
+
 dirty=$(git -C "$repo" status --porcelain)
 
 # Nothing dirty, or beads churn alone: no code progress, nothing to commit.
