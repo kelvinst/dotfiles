@@ -3,7 +3,7 @@ $directory\
 [ ]()\
 ${custom.git}\
 $character\
-[> ](fg-neon-black)"""
+$status"""
 
 add_newline = false
 command_timeout = 3000
@@ -90,14 +90,16 @@ typechanged = '[t${count}](bold fg-neon-blue)'
 
 [status]
 disabled = false
-format = '[$symbol$status]($style)'
-symbol = 'err '
+# Carries the exit code as colour alone: the prompt marker is green
+# after a success and red after a failure.
+format = '[$symbol]($style) '
+symbol = '>'
+success_symbol = '>'
+not_executable_symbol = '>'
+not_found_symbol = '>'
+signal_symbol = '>'
 failure_style = 'bold red'
 success_style = 'bold green'
-success_symbol = 'ok '
-not_executable_symbol = 'noexe '
-not_found_symbol = 'notfound '
-signal_symbol = 'sig '
 
 [line_break]
 disabled = false
