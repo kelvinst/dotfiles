@@ -63,7 +63,7 @@ truncation_symbol = ''
 
 [custom.git]
 disabled = false
-description = 'git status, bracketed by the colour of its worst state'
+description = 'git status flags, with the in-sync marker hidden when redundant'
 command = '$HOME/.local/bin/starship-git-status'
 shell = ['bash', '--noprofile', '--norc']
 when = true
@@ -73,7 +73,7 @@ format = '$output'
 # content; kept configured so it can be dropped back into the format.
 [git_status]
 disabled = false
-format = '([\[]($style)[$all_status$ahead_behind]()[\]]($style))'
+format = '([$all_status$ahead_behind]($style))'
 style = 'bold fg-neon-purple'
 conflicted = '[!=${count}](bold fg-neon-purple)'
 ahead = '[>${count}](bold fg-green)'
