@@ -150,12 +150,12 @@ min_time = 1
 [character]
 disabled = false
 format = '$symbol'
-success_symbol = '[\[I\]](bold green)'
-error_symbol = '[\[I\]](bold green)'
-vimcmd_symbol = '[\[N\]](bold blue)'
-vimcmd_replace_one_symbol = '[\[R\]](bold red)'
-vimcmd_replace_symbol = '[\[R\]](bold red)'
-vimcmd_visual_symbol = '[\[V\]](bold purple)'
+success_symbol = '[ I](bold green)'
+error_symbol = '[ I](bold green)'
+vimcmd_symbol = '[ N](bold blue)'
+vimcmd_replace_one_symbol = '[ R](bold red)'
+vimcmd_replace_symbol = '[ R](bold red)'
+vimcmd_visual_symbol = '[ V](bold purple)'
 
 [username]
 disabled = false
