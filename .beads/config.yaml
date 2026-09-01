@@ -54,3 +54,5 @@
 # - github.repo
 
 sync.remote: "https://doltremoteapi.dolthub.com/kelvinst/dotfiles"
+
+export.git-add: false
