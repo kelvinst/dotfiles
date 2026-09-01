@@ -34,29 +34,29 @@ function paint(colour, text) { return "\033[1;38;5;" colour "m" text }
 END {
   # Order follows the git_status module this replaces. Every kind of
   # uncommitted work shares yellow; only what needs a decision stands out.
-  if (conflicted)  flags = flags paint(201, "!=" conflicted)
-  if (stashed)     flags = flags paint(5,   "$" stashed)
-  if (deleted)     flags = flags paint(196, "x" deleted)
+  if (conflicted)  flags = flags paint(196, "!=" conflicted)
+  if (stashed)     flags = flags paint(4,   "$" stashed)
+  if (deleted)     flags = flags paint(3,   "x" deleted)
   if (renamed)     flags = flags paint(3,   "r" renamed)
   if (modified)    flags = flags paint(3,   "!" modified)
   if (typechanged) flags = flags paint(3,   "t" typechanged)
   if (staged)      flags = flags paint(3,   "+" staged)
   if (untracked)   flags = flags paint(3,   "?" untracked)
 
-  if (ahead)       flags = flags paint(2, ">" ahead)
-  if (behind)      flags = flags paint(1, "<" behind)
+  if (ahead)       flags = flags paint(6, ">" ahead)
+  if (behind)      flags = flags paint(6, "<" behind)
   # Only worth saying nothing is going on when nothing else is.
   if (flags == "") flags = paint(2, "=")
 
-  # Worst state wins, so a single deletion colours the whole segment red.
-  # Brackets stay on the neon end of the palette so they read as one band
-  # regardless of which state won; stashed has no neon shade of its own
-  # that neon purple has not already taken.
-  if (conflicted)                bracket = 201
-  else if (deleted || behind)    bracket = 196
-  else if (modified || staged || untracked || renamed || typechanged) bracket = 226
-  else if (stashed)              bracket = 5
-  else                           bracket = 46
+  # Worst state wins, and brackets sit on the neon shade of whatever won.
+  # Behind outranks local work so a needed pull is not buried under the
+  # yellow that almost every working tree shows.
+  if (conflicted)  bracket = 196
+  else if (behind) bracket = 49
+  else if (modified || staged || untracked || renamed || typechanged || deleted) bracket = 226
+  else if (ahead)   bracket = 49
+  else if (stashed) bracket = 39
+  else              bracket = 46
 
   printf "%s%s%s\033[0m", paint(bracket, "["), flags, paint(bracket, "]")
 }
