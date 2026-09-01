@@ -1,7 +1,7 @@
 #!/bin/bash
-# Stop hook: land the turn's work in a commit, one commit per prompt. Turns
-# that changed no code end the turn as-is - session archives are not worth the
-# tokens they cost to render.
+# Stop hook: land the turn's work in a commit, one commit per prompt, via
+# /kix:commit - the project's commit procedure owns staging, message style and
+# pre-commit hook auto-fix, so this hook does not restate any of it.
 # Guards first so we never burn a turn when there is nothing safe to commit.
 
 input=$(cat)
@@ -34,23 +34,10 @@ import json
 
 CODE = """You left uncommitted work in the tree. Commit it now - do not ask first.
 
-Do NOT archive the session as part of this. That means: do not invoke
-`kix:commit` (its staging step always calls `kix:save-session`), and do not
-invoke `kix:save-session` or `anthropic-skills:save-session` directly.
-Rendering the transcript every turn is not worth its cost.
-
-Pick the commit procedure, in this order:
-
-1. `caveman:caveman-commit` - preferred. Use it for the message, `git add` ONLY
-   the files you edited this turn (never `git add -A` or `git add .`), then
-   commit.
-2. No commit skill available - write the message yourself: Conventional
-   Commits, `<type>(<scope>): <subject>`, scope tied to the file or tool
-   touched, subject imperative and <= 50 chars, body only when the why is not
-   obvious and wrapped at ~72 chars, no Co-Authored-By trailer. Stage only what
-   you edited.
-
-Stage any `.beads/` churn alongside your own edits so the tree comes out clean.
+Run `/kix:commit !` and follow that skill exactly. The leading `!` puts it in
+auto-fix mode so pre-commit hook failures get diagnosed and retried instead of
+aborting the turn. Do not hand-roll the staging, the message, or the fix loop -
+the skill owns all three.
 
 Then report the short SHA in one line.
 
