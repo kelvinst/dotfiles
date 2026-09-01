@@ -521,20 +521,20 @@ starship_transient_prompt() {
   zle .reset-prompt
 }
 
-# Wrap accept-line rather than replacing it, so whatever zsh-autosuggestions
-# and friends already bound to it still runs. The precmd hook re-sources
-# init_starship.sh, which puts the full PROMPT back for the next line.
-if [[ -z "$__starship_preserved_accept_line" ]]; then
-  case "${widgets[accept-line]}" in
-    user:*) __starship_preserved_accept_line="${widgets[accept-line]#user:}" ;;
-    *)      __starship_preserved_accept_line='.accept-line' ;;
-  esac
-
-  starship_accept_line() {
-    starship_transient_prompt
-    zle "$__starship_preserved_accept_line" -- "$@"
-  }
-  zle -N accept-line starship_accept_line
+# line-finish runs after the line is edited and before it executes, which is
+# where the redraw belongs. add-zle-hook-widget stacks onto the hook instead
+# of taking it over, so fast-syntax-highlighting keeps its own handler. Do
+# not hand-wrap a widget here: a wrapper has to call whatever it displaced by
+# name, and fast-syntax-highlighting rebuilds its widget names every session,
+# so the captured name is already gone by the time we would use it.
+#
+# The precmd hook re-sources init_starship.sh, which puts the full PROMPT
+# back for the next line.
+if [[ -z "$__starship_transient_installed" ]]; then
+  __starship_transient_installed=1
+  autoload -Uz add-zle-hook-widget
+  zle -N starship_transient_prompt
+  add-zle-hook-widget line-finish starship_transient_prompt
 fi
 
 # Print info after command execution
