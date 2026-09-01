@@ -145,7 +145,7 @@ format = '[$output]($style)'
 
 [cmd_duration]
 disabled = false
-format = "[🕘$duration]($style)"
+format = "[took $duration]($style)"
 style = 'bold yellow'
 show_milliseconds = true
 min_time = 1
@@ -162,7 +162,7 @@ vimcmd_visual_symbol = '[V ](bold purple)'
 
 [username]
 disabled = false
-format = '[👤$user ]($style)'
+format = '[$user ]($style)'
 style_root = 'bold red'
 style_user = 'bold yellow'
 
@@ -170,42 +170,42 @@ style_user = 'bold yellow'
 disabled = false
 format = '[$ssh_symbol$hostname ]($style)'
 style = 'bold dimmed green'
-ssh_symbol = '🌐'
+ssh_symbol = 'ssh '
 
 [localip]
 disabled = false
-format = '[📡]()[$localipv4 ]($style)'
+format = '[ip ]()[$localipv4 ]($style)'
 style = 'bold dimmed yellow'
 
 [shlvl]
 disabled = false
 format = '[$symbol$shlvl ]($style)'
 style = 'bold yellow'
-symbol = '🔼'
+symbol = 'lvl '
 
 [singularity]
 disabled = false
 format = '[$symbol]()[$env ]($style)'
 style = 'bold dimmed blue'
-symbol = '🧪'
+symbol = 'sing '
 
 [kubernetes]
 disabled = false
 format = '[$symbol$context( \($namespace\)) ]($style)'
 style = 'bold cyan'
-symbol = '⛵'
+symbol = 'k8s '
 
 [vcsh]
 disabled = false
 format = '[$symbol$repo ]($style)'
 style = 'bold yellow'
-symbol = '📇'
+symbol = 'vcsh '
 
 [fossil_branch]
 disabled = false
 format = '[$symbol$branch ]($style)'
 style = 'bold purple'
-symbol = '🦎'
+symbol = "fossil "
 
 [fossil_metrics]
 disabled = false
@@ -217,16 +217,16 @@ deleted_style = 'bold red'
 disabled = false
 format = '[$symbol$branch(:$remote_branch) ]($style)'
 style = 'bold purple'
-symbol = '🌱'
+symbol = "git "
 only_attached = true
 
 [git_commit]
 disabled = false
-format = '[🍃$hash( $tag) ]($style)'
+format = '[$hash( $tag) ]($style)'
 style = 'bold purple'
 only_detached = true
 tag_disabled = false
-tag_symbol = '🔖'
+tag_symbol = " tag "
 
 [git_state]
 disabled = false
@@ -243,36 +243,36 @@ deleted_style = 'bold red'
 disabled = false
 format = '([$all_status$ahead_behind ]($style))'
 style = 'bold'
-conflicted = '[≠${count}](bold fg-neon-purple)'
-ahead = '[⇡${count}](bold fg-green)'
-behind = '[⇣${count}](bold fg-red)'
-diverged = '[⇡${ahead_count}](bold fg-green)[⇣${behind_count}(bold fg-red)'
-up_to_date = '[✔︎](bold fg-green)'
+conflicted = '[!=${count}](bold fg-neon-purple)'
+ahead = '[>${count}](bold fg-green)'
+behind = '[<${count}](bold fg-red)'
+diverged = '[>${ahead_count}](bold fg-green)[<${behind_count}](bold fg-red)'
+up_to_date = '[ =](bold fg-green)'
 untracked = '[?${count}](bold fg-blue)'
 stashed = '[\$${count}](bold fg-purple)'
 modified = '[!${count}](bold fg-yellow)'
 staged = '[+${count}](bold fg-neon-green)'
-renamed = '[»${count}](bold fg-cyan)'
+renamed = '[r${count}](bold fg-cyan)'
 deleted = '[x${count}](bold fg-neon-red)'
-typechanged = '[±${count}](bold fg-neon-blue)'
+typechanged = '[t${count}](bold fg-neon-blue)'
 
 [hg_branch]
 disabled = false
 format = '[$symbol$branch(:$topic) ]($style)'
 style = 'bold purple'
-symbol = '🪩'
+symbol = "hg "
 
 [pijul_channel]
 disabled = false
 format = '[$symbol$channel ]($style)'
 style = 'bold purple'
-symbol = '🐦'
+symbol = "pijul "
 
 [docker_context]
 disabled = false
 format = '[$symbol$context ]($style)'
 style = 'bold blue'
-symbol = '🐳'
+symbol = "docker "
 
 [directory]
 disabled = false
@@ -285,7 +285,7 @@ before_repo_root_style = 'white'
 repo_root_style = 'bold cyan'
 format = '[$path]($style)'
 style = 'bold dimmed cyan'
-read_only = '🔒'
+read_only = " ro"
 truncate_to_repo = true
 truncation_symbol = ''
 
@@ -293,105 +293,105 @@ truncation_symbol = ''
 disabled = false
 format = '[$symbol$version ]($style)'
 style = 'bold fg-orange'
-symbol = '📦'
+symbol = "pkg "
 version_format = '${raw}'
 
 [c]
 disabled = false
 format = '[$symbol($version(-$name)) ]($style)'
 style = 'bold fg-lime'
-symbol = '🌊'
+symbol = "C "
 version_format = '${raw}'
 
 [cpp]
 disabled = false
 format = '[$symbol($version(-$name)) ]($style)'
 style = 'bold fg-lime'
-symbol = '✨'
+symbol = "C++ "
 version_format = '${raw}'
 
 [cmake]
 disabled = false
 format = '[$symbol($version) ]($style)'
 style = 'bold blue'
-symbol = '📐'
+symbol = "cmake "
 version_format = '${raw}'
 
 [cobol]
 disabled = false
 format = '[$symbol($version) ]($style)'
 style = 'bold blue'
-symbol = '🔩'
+symbol = "cobol "
 version_format = '${raw}'
 
 [crystal]
 disabled = false
 format = '[$symbol($version) ]($style)'
 style = 'bold red'
-symbol = '🥂'
+symbol = "cr "
 version_format = '${raw}'
 
 [daml]
 disabled = false
 format = '[$symbol($version) ]($style)'
 style = 'bold cyan'
-symbol = '🔗'
+symbol = "daml "
 version_format = '${raw}'
 
 [dart]
 disabled = false
 format = '[$symbol($version) ]($style)'
 style = 'bold blue'
-symbol = '🎯'
+symbol = "dart "
 version_format = '${raw}'
 
 [deno]
 disabled = false
 format = '[$symbol($version) ]($style)'
 style = 'bold green'
-symbol = '🦕'
+symbol = "deno "
 version_format = '${raw}'
 
 [dotnet]
 disabled = false
-format = '[$symbol($version)( 🎯$tfm) ]($style)'
+format = '[$symbol($version)( $tfm) ]($style)'
 style = 'bold blue'
-symbol = '🧩'
+symbol = ".NET "
 version_format = '${raw}'
 
 [elixir]
 disabled = false
-format = '[$symbol($version 🍷$otp_version) ]($style)'
+format = '[$symbol($version otp:$otp_version) ]($style)'
 style = 'bold purple'
-symbol = '🔮'
+symbol = "exs "
 version_format = '${raw}'
 
 [elm]
 disabled = false
 format = '[$symbol($version) ]($style)'
 style = 'bold cyan'
-symbol = '🌳'
+symbol = "elm "
 version_format = '${raw}'
 
 [erlang]
 disabled = false
 format = '[$symbol($version) ]($style)'
 style = 'bold red'
-symbol = '🍷'
+symbol = 'erl '
 version_format = '${raw}'
 
 [fennel]
 disabled = false
 format = '[$symbol($version) ]($style)'
 style = 'bold green'
-symbol = '🧄'
+symbol = "fnl "
 version_format = '${raw}'
 
 [gleam]
 disabled = false
 format = '[$symbol($version) ]($style)'
 style = 'bold fg-pink'
-symbol = '⭐'
+symbol = "gleam "
 version_format = '${raw}'
 
 [golang]
@@ -399,347 +399,347 @@ disabled = false
 format = '[$symbol($version) ]($style)'
 style = 'bold cyan'
 not_capable_style = 'bold red'
-symbol = '🐹'
+symbol = "go "
 version_format = '${raw}'
 
 [guix_shell]
 disabled = false
 format = '[$symbol($version) ]($style)'
 style = 'bold yellow'
-symbol = '🐃'
+symbol = "guix "
 
 [haskell]
 disabled = false
 format = '[$symbol($version) ]($style)'
 style = 'bold purple'
-symbol = '🧬'
+symbol = "haskell "
 version_format = '${raw}'
 
 [haxe]
 disabled = false
 format = '[$symbol($version) ]($style)'
 style = 'bold fg-vermilion'
-symbol = '🔶'
+symbol = 'haxe '
 version_format = '${raw}'
 
 [helm]
 disabled = false
 format = '[$symbol($version) ]($style)'
 style = 'bold white'
-symbol = '🪖'
+symbol = "helm "
 version_format = '${raw}'
 
 [java]
 disabled = false
 format = '[$symbol($version) ]($style)'
 style = 'bold dimmed red'
-symbol = '☕'
+symbol = "java "
 version_format = '${raw}'
 
 [julia]
 disabled = false
 format = '[$symbol($version) ]($style)'
 style = 'bold purple'
-symbol = '💎'
+symbol = "jl "
 version_format = '${raw}'
 
 [kotlin]
 disabled = false
 format = '[$symbol($version) ]($style)'
 style = 'bold blue'
-symbol = '🪶'
+symbol = "kt "
 version_format = '${raw}'
 
 [gradle]
 disabled = false
 format = '[$symbol($version) ]($style)'
 style = 'bold bright-cyan'
-symbol = '🔧'
+symbol = "gradle "
 version_format = '${raw}'
 
 [lua]
 disabled = false
 format = '[$symbol($version) ]($style)'
 style = 'bold blue'
-symbol = '🌙'
+symbol = "lua "
 version_format = '${raw}'
 
 [mojo]
 disabled = false
 format = '[$symbol($version) ]($style)'
 style = 'bold fg-orange'
-symbol = '🔥'
+symbol = 'mojo '
 
 [nim]
 disabled = false
 format = '[$symbol($version) ]($style)'
 style = 'bold yellow'
-symbol = '👑'
+symbol = "nim "
 version_format = '${raw}'
 
 [nodejs]
 disabled = false
 format = '[$symbol($version) ](bold green)'
 style = 'bold green'
-symbol = '🤢'
+symbol = "nodejs "
 version_format = '${raw}'
 
 [ocaml]
 disabled = false
 format = '[$symbol($version)( \($switch_indicator$switch_name\)) ]($style)'
 style = 'bold yellow'
-symbol = '🐫'
+symbol = "ml "
 version_format = '${raw}'
 
 [odin]
 disabled = false
 format = '[$symbol($version) ]($style)'
 style = 'bold cyan'
-symbol = '🪓'
+symbol = 'odin '
 
 [opa]
 disabled = false
 format = '[$symbol($version) ]($style)'
 style = 'bold blue'
-symbol = '🔰'
+symbol = "opa "
 version_format = '${raw}'
 
 [perl]
 disabled = false
 format = '[$symbol($version) ]($style)'
 style = 'bold fg-lime'
-symbol = '🦪'
+symbol = "pl "
 version_format = '${raw}'
 
 [php]
 disabled = false
 format = '[$symbol($version) ]($style)'
 style = 'bold fg-lavender'
-symbol = '🐘'
+symbol = "php "
 version_format = '${raw}'
 
 [purescript]
 disabled = false
 format = '[$symbol($version) ]($style)'
 style = 'bold white'
-symbol = '📜'
+symbol = "purs "
 
 [python]
 disabled = false
 format = '[${symbol}${pyenv_prefix}(${version})( \($virtualenv\)) ]($style)'
 style = 'bold yellow'
-symbol = '🐍'
+symbol = "py "
 
 [quarto]
 disabled = false
 format = '[$symbol($version) ]($style)'
 style = 'bold fg-sky'
-symbol = '🛌'
+symbol = "quarto "
 
 [raku]
 disabled = false
 format = '[$symbol($version-$vm_version) ]($style)'
 style = 'bold fg-lime'
-symbol = '🦋'
+symbol = "raku "
 
 [rlang]
 disabled = false
 format = '[$symbol($version) ]($style)'
 style = 'bold blue'
-symbol = '📉'
+symbol = "r "
 
 [red]
 disabled = false
 format = '[$symbol($version) ]($style)'
 style = 'bold red'
-symbol = '🟥'
+symbol = 'red '
 
 [ruby]
 disabled = false
 format = '[$symbol($version) ]($style)'
 style = 'bold red'
-symbol = '🛑'
+symbol = "rb "
 
 [rust]
 disabled = false
 format = '[$symbol($version) ]($style)'
 style = 'bold red'
-symbol = '🦀'
+symbol = "rs "
 
 [scala]
 disabled = false
 format = '[$symbol($version) ]($style)'
 style = 'bold dimmed red'
-symbol = '🪜'
+symbol = "scala "
 
 [solidity]
 disabled = false
 format = '[$symbol($version) ]($style)'
 style = 'bold blue'
-symbol = '🪨'
+symbol = "solidity "
 
 [swift]
 disabled = false
 format = '[$symbol($version) ]($style)'
 style = 'bold fg-vermilion'
-symbol = '🪽'
+symbol = "swift "
 
 [terraform]
 disabled = false
 format = '[$symbol$workspace ]($style)'
 style = 'bold fg-periwinkle'
-symbol = '💠'
+symbol = "terraform "
 
 [typst]
 disabled = false
 format = '[$symbol($version) ]($style)'
 style = 'bold fg-teal'
-symbol = '🎹'
+symbol = "typst "
 
 [vlang]
 disabled = false
 format = '[$symbol($version) ]($style)'
 style = 'bold blue'
-symbol = '🖖'
+symbol = 'v '
 
 [vagrant]
 disabled = false
 format = '[$symbol($version) ]($style)'
 style = 'bold cyan'
-symbol = '🚶'
+symbol = 'vagrant '
 
 [zig]
 disabled = false
 format = '[$symbol($version) ]($style)'
 style = 'bold yellow'
-symbol = '🧟'
+symbol = "zig "
 
 [buf]
 disabled = false
 format = '[$symbol($version) ]($style)'
 style = 'bold green'
-symbol = '🪄'
+symbol = "buf "
 
 [nix_shell]
 disabled = false
 format = '[$symbol$state( \($name\)) ]($style)'
 style = 'bold green'
-symbol = '⛄'
+symbol = "nix "
 
 [conda]
 disabled = false
 format = '[$symbol$environment ]($style)'
 style = 'bold green'
-symbol = '🆑'
+symbol = "conda "
 
 [meson]
 disabled = false
 format = '[$symbol$project ]($style)'
 style = 'bold green'
-symbol = '🟣'
+symbol = "meson "
 
 [spack]
 disabled = false
 format = '[$symbol$environment ]($style)'
 style = 'bold green'
-symbol = '🧳'
+symbol = "spack "
 
 [memory_usage]
 disabled = true
 format = '[$symbol${ram}(|${swap}) ]($style)'
 style = 'bold green'
-symbol = '🐏'
+symbol = "memory "
 threshold = 85
 
 [aws]
 disabled = false
 format = '[$symbol($profile)(\($region\))(\[$duration\]) ]($style)'
 style = 'bold green'
-symbol = '⛅'
+symbol = "aws "
 
 [gcloud]
 disabled = false
 format = '[$symbol$account(@$domain)(\($region\)) ]($style)'
 style = 'bold green'
-symbol = '⛅'
+symbol = "gcp "
 
 [openstack]
 disabled = false
 format = '[$symbol$cloud(\($project\)) ]($style)'
 style = 'bold green'
-symbol = '⛅'
+symbol = 'ostack '
 
 [azure]
 disabled = false
 format = '[$symbol($subscription) ]($style)'
 style = 'bold green'
-symbol = '⛅'
+symbol = "az "
 
 [pulumi]
 disabled = false
 format = '[$symbol($username@)$stack ]($style)'
 style = 'bold magenta'
-symbol = '⛅'
+symbol = "pulumi "
 
 [nats]
 disabled = false
 format = '[$symbol$name ]($style)'
 style = 'bold green'
-symbol = '💌'
+symbol = "nats "
 
 [direnv]
 disabled = false
 format = '[$symbol$allowed$loaded ]($style)'
 style = 'bold green'
-symbol = '📂'
+symbol = 'direnv '
 detect_files = ['.envrc', '.env']
-allowed_msg = '😀'
-not_allowed_msg = '☹️'
-denied_msg = '😡'
-loaded_msg = '🔼'
-unloaded_msg = '🔽'
+allowed_msg = 'ok'
+not_allowed_msg = '!ok'
+denied_msg = 'denied'
+loaded_msg = 'loaded'
+unloaded_msg = 'unloaded'
 
 [env_var]
 disabled = false
 format = '[$symbol$env_value ]($style)'
 style = 'bold green'
-symbol = '❓'
+symbol = ''
 
 [mise]
 disabled = false
 format = '[$symbol$health ]($style)'
 style = 'bold green'
-symbol = '🍳'
-healthy_symbol = '✅'
-unhealthy_symbol = '❌'
+symbol = 'mise '
+healthy_symbol = 'ok'
+unhealthy_symbol = 'x'
 
 [pixi]
 disabled = false
 format = '[$symbol($version)(\($environment\)) ]($style)'
 style = 'bold green'
-symbol = '🧚'
+symbol = 'pixi '
 
 [sudo]
 disabled = false
 format = '[$symbol ]($style)'
 style = 'bold green'
-symbol = '🧙'
+symbol = "sudo "
 
 [jobs]
 disabled = false
 format = '[$symbol$number ]($style)'
 style = 'bold green'
-symbol = '👷'
+symbol = 'jobs '
 
 [battery]
 disabled = true
 format = '[$symbol$percentage ]($style)'
 style = 'bold green'
-full_symbol = '🔋'
-charging_symbol = '🔌'
-discharging_symbol = '⚡'
-unknown_symbol = '❓'
-empty_symbol = '🪫'
+full_symbol = 'bat '
+charging_symbol = 'chg '
+discharging_symbol = 'dis '
+unknown_symbol = 'bat? '
+empty_symbol = 'low '
 
 [[battery.display]]
 threshold = 100
@@ -751,89 +751,89 @@ format = '[$symbol ]($style)'
 style = 'bold green'
 
 [os.symbols]
-AIX = "➿"
-Alpaquita = "🔔"
-AlmaLinux = "💠"
-Alpine = "🗻"
-Amazon = "🙂"
-Android = "🤖"
-Arch = "🎗️"
-Artix = "🎗️"
-Bluefin = "🐟"
-CachyOS = "🎗️"
-CentOS = "💠"
-Debian = "🌀"
-DragonFly = "🐉"
-Emscripten = "🔗"
-EndeavourOS = "🚀"
-Fedora = "🎩"
-FreeBSD = "😈"
-Garuda = "🦅"
-Gentoo = "🗜️"
-HardenedBSD = "🛡️"
-Illumos = "🐦"
-Kali = "🐉"
-Linux = "🐧"
-Mabox = "📦"
-Macos = "🍎"
-Manjaro = "🥭"
-Mariner = "🌊"
-MidnightBSD = "🌘"
-Mint = "🌿"
-NetBSD = "🚩"
-NixOS = "❄️"
-Nobara = "🎩"
-OpenBSD = "🐡"
-OpenCloudOS = "☁️"
-openEuler = "🦉"
-openSUSE = "🦎"
-OracleLinux = "🦴"
-Pop = "🍭"
-Raspbian = "🍓"
-Redhat = "🎩"
-RedHatEnterprise = "🎩"
-RockyLinux = "💠"
-Redox = "🧪"
-Solus = "⛵"
-SUSE = "🦎"
-Ubuntu = "🎯"
-Ultramarine = "🔷"
-Unknown = "❓"
-Uos = "🐲"
-Void = "🌌"
-Windows = "🪟"
+AIX = "aix "
+Alpaquita = "alq "
+AlmaLinux = "alma "
+Alpine = "alp "
+Amazon = "amz "
+Android = "andr "
+Arch = "rch "
+Artix = "atx "
+Bluefin = "blfn "
+CachyOS = "cach "
+CentOS = "cent "
+Debian = "deb "
+DragonFly = "dfbsd "
+Emscripten = "emsc "
+EndeavourOS = "ndev "
+Fedora = "fed "
+FreeBSD = "fbsd "
+Garuda = "garu "
+Gentoo = "gent "
+HardenedBSD = "hbsd "
+Illumos = "lum "
+Kali = "kali "
+Linux = "lnx "
+Mabox = "mbox "
+Macos = "mac "
+Manjaro = "mjo "
+Mariner = "mrn "
+MidnightBSD = "mid "
+Mint = "mint "
+NetBSD = "nbsd "
+NixOS = "nix "
+Nobara = "nbra "
+OpenBSD = "obsd "
+OpenCloudOS = "ocos "
+openEuler = "oeul "
+openSUSE = "osuse "
+OracleLinux = "orac "
+Pop = "pop "
+Raspbian = "rasp "
+Redhat = "rhl "
+RedHatEnterprise = "rhel "
+RockyLinux = "rky "
+Redox = "redox "
+Solus = "sol "
+SUSE = "suse "
+Ubuntu = "ubnt "
+Ultramarine = "ultm "
+Unknown = "unk "
+Uos = "uos "
+Void = "void "
+Windows = "win "
 
 [container]
 disabled = false
 format = '[$symbol$name ]($style)'
 style = 'bold green'
-symbol = '🐋'
+symbol = "container "
 
 [netns]
 disabled = false
 format = '[$symbol$name ]($style)'
 style = 'bold green'
-symbol = '🛜'
+symbol = 'netns '
 
 [shell]
 disabled = true
-format = '[🐢$indicator ]($style)'
+format = '[$indicator ]($style)'
 style = 'bold green'
 
 [status]
 disabled = false
 format = '[$symbol$status ]($style)'
-symbol = '❗'
+symbol = 'err '
 failure_style = 'bold green'
 success_style = 'bold green'
-success_symbol = '✅'
-not_executable_symbol = '🚫'
-not_found_symbol = '❓'
-signal_symbol = '💥'
+success_symbol = 'ok '
+not_executable_symbol = 'noexe '
+not_found_symbol = 'notfound '
+signal_symbol = 'sig '
 
 [time]
 disabled = true
-format = '[🕒$time ]($style)'
+format = '[$time ]($style)'
 style = 'bold green'
 time_format = '%H:%M:%S'
 

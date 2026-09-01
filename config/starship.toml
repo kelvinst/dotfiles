@@ -63,37 +63,37 @@ before_repo_root_style = 'white'
 repo_root_style = 'bold cyan'
 format = '[$path]($style)'
 style = 'bold dimmed cyan'
-read_only = '🔒'
+read_only = ' ro'
 truncate_to_repo = true
 truncation_symbol = ''
 
 [git_status]
 disabled = false
-format = '🌱([$all_status$ahead_behind]($style))'
+format = 'git ([$all_status$ahead_behind]($style))'
 style = 'bold'
-conflicted = '[≠${count}](bold fg-neon-purple)'
-ahead = '[⇡${count}](bold fg-green)'
-behind = '[⇣${count}](bold fg-red)'
-diverged = '[⇡${ahead_count}](bold fg-green)[⇣${behind_count}(bold fg-red)'
-up_to_date = '[✔︎](bold fg-green)'
+conflicted = '[!=${count}](bold fg-neon-purple)'
+ahead = '[>${count}](bold fg-green)'
+behind = '[<${count}](bold fg-red)'
+diverged = '[>${ahead_count}](bold fg-green)[<${behind_count}](bold fg-red)'
+up_to_date = '[ =](bold fg-green)'
 untracked = '[?${count}](bold fg-blue)'
 stashed = '[\$${count}](bold fg-purple)'
 modified = '[!${count}](bold fg-yellow)'
 staged = '[+${count}](bold fg-neon-green)'
-renamed = '[»${count}](bold fg-cyan)'
+renamed = '[r${count}](bold fg-cyan)'
 deleted = '[x${count}](bold fg-neon-red)'
-typechanged = '[±${count}](bold fg-neon-blue)'
+typechanged = '[t${count}](bold fg-neon-blue)'
 
 [status]
 disabled = false
 format = '[$symbol$status]($style)'
-symbol = '❗'
+symbol = 'err '
 failure_style = 'bold green'
 success_style = 'bold green'
-success_symbol = '✅'
-not_executable_symbol = '🚫'
-not_found_symbol = '❓'
-signal_symbol = '💥'
+success_symbol = 'ok '
+not_executable_symbol = 'noexe '
+not_found_symbol = 'notfound '
+signal_symbol = 'sig '
 
 [line_break]
 disabled = false
