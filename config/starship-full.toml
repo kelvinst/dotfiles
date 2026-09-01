@@ -1,0 +1,839 @@
+format = """\
+$directory\
+[ ]()\
+(\
+$username\
+$hostname\
+$localip\
+$shlvl\
+$singularity\
+$kubernetes\
+$vcsh\
+$fossil_branch\
+$fossil_metrics\
+$git_branch\
+$git_commit\
+$git_state\
+$git_metrics\
+$git_status\
+$hg_branch\
+$pijul_channel\
+$docker_context\
+)\
+(\
+$package\
+$c\
+$cpp\
+$cmake\
+$cobol\
+$crystal\
+$daml\
+$dart\
+$deno\
+$dotnet\
+$elixir\
+$elm\
+$erlang\
+$fennel\
+$gleam\
+$golang\
+$guix_shell\
+$haskell\
+$haxe\
+$helm\
+$java\
+$julia\
+$kotlin\
+$gradle\
+$lua\
+$mojo\
+$nim\
+$nodejs\
+$ocaml\
+$odin\
+$opa\
+$perl\
+$php\
+$purescript\
+$python\
+$quarto\
+$raku\
+$rlang\
+$red\
+$ruby\
+$rust\
+$scala\
+$solidity\
+$swift\
+$terraform\
+$typst\
+$vlang\
+$vagrant\
+$zig\
+$buf\
+)\
+(\
+$nix_shell\
+$conda\
+$meson\
+$spack\
+$memory_usage\
+$aws\
+$gcloud\
+$openstack\
+$azure\
+$pulumi\
+$nats\
+$direnv\
+$env_var\
+$mise\
+$pixi\
+$sudo\
+$jobs\
+$battery\
+$os\
+$container\
+$netns\
+$shell\
+$time\
+)\
+$character"""
+
+add_newline = false
+command_timeout = 3000
+
+palette = 'tokyo-night-moon'
+
+[palettes.tokyo-night-moon]
+bg-border = '#3b4261'
+bg-middle = '#2f334d'
+bg-inactive = '0'
+fg-black = '0'
+fg-red = '1'
+fg-green = '2'
+fg-yellow = '3'
+fg-blue = '4'
+fg-purple = '5'
+fg-cyan = '6'
+fg-white = '7'
+fg-neon-black = '240'
+fg-neon-red = '196'
+fg-neon-green = '46'
+fg-neon-yellow = '226'
+fg-neon-blue = '39'
+fg-neon-purple = '201'
+fg-neon-cyan = '49'
+fg-neon-white = '231'
+fg-orange = '208'
+fg-vermilion = '202'
+fg-lime = '149'
+fg-lavender = '147'
+fg-periwinkle = '105'
+fg-pink = '#FFAFF3'
+fg-sky = '#75AADB'
+fg-teal = '#0093A7'
+
+[custom.last_cmd]
+command = 'echo $LAST_CMD'
+when = '[[ -n "$LAST_CMD" ]]'
+style = 'bold bright-white'
+format = '[$output]($style)'
+
+[cmd_duration]
+disabled = false
+format = "[took:$duration]($style)"
+style = 'bold yellow'
+show_milliseconds = true
+min_time = 1
+
+[character]
+disabled = false
+format = '$symbol'
+success_symbol = '[I>](bold green) '
+error_symbol = '[I>](bold red) '
+vimcmd_symbol = '[N>](bold blue) '
+vimcmd_replace_one_symbol = '[R>](bold fg-pink) '
+vimcmd_replace_symbol = '[R>](bold fg-pink) '
+vimcmd_visual_symbol = '[V>](bold purple) '
+
+[username]
+disabled = false
+format = '[$user ]($style)'
+style_root = 'bold red'
+style_user = 'bold yellow'
+
+[hostname]
+disabled = false
+format = '[$ssh_symbol$hostname ]($style)'
+style = 'bold dimmed green'
+ssh_symbol = 'ssh:'
+
+[localip]
+disabled = false
+format = '[ip:]()[$localipv4 ]($style)'
+style = 'bold dimmed yellow'
+
+[shlvl]
+disabled = false
+format = '[$symbol$shlvl ]($style)'
+style = 'bold yellow'
+symbol = 'lvl:'
+
+[singularity]
+disabled = false
+format = '[$symbol]()[$env ]($style)'
+style = 'bold dimmed blue'
+symbol = 'sing:'
+
+[kubernetes]
+disabled = false
+format = '[$symbol$context( \($namespace\)) ]($style)'
+style = 'bold cyan'
+symbol = 'k8s:'
+
+[vcsh]
+disabled = false
+format = '[$symbol$repo ]($style)'
+style = 'bold yellow'
+symbol = 'vcsh:'
+
+[fossil_branch]
+disabled = false
+format = '[$symbol$branch ]($style)'
+style = 'bold purple'
+symbol = "fossil:"
+
+[fossil_metrics]
+disabled = false
+format = '([+$added ]($added_style))([-$deleted ]($deleted_style))'
+added_style = 'bold green'
+deleted_style = 'bold red'
+
+[git_branch]
+disabled = false
+format = '[$branch(:$remote_branch)]($style)'
+style = 'bold blue'
+symbol = "git:"
+only_attached = true
+
+[git_commit]
+disabled = false
+format = '[:$hash( $tag)]($style)'
+style = 'bold purple'
+only_detached = true
+tag_disabled = false
+tag_symbol = " tag:"
+
+[git_state]
+disabled = false
+format = '[:\($state( $progress_current/$progress_total)\)]($style)'
+style = 'bold yellow'
+
+[git_metrics]
+disabled = false
+format = '(:([+$added]($added_style))([-$deleted]($deleted_style)))'
+added_style = 'bold green'
+deleted_style = 'bold red'
+
+[git_status]
+disabled = false
+format = '(:[$all_status$ahead_behind]($style) )'
+style = 'bold'
+conflicted = '[!=${count}](bold fg-neon-red)'
+ahead = '[>${count}](bold fg-pink)'
+behind = '[<${count}](bold fg-pink)'
+diverged = '[>${ahead_count}](bold fg-pink)[<${behind_count}](bold fg-pink)'
+up_to_date = '[=](bold fg-green)'
+untracked = '[?${count}](bold fg-yellow)'
+stashed = '[\$${count}](bold fg-blue)'
+modified = '[!${count}](bold fg-yellow)'
+staged = '[+${count}](bold fg-yellow)'
+renamed = '[r${count}](bold fg-yellow)'
+deleted = '[x${count}](bold fg-yellow)'
+typechanged = '[t${count}](bold fg-yellow)'
+
+[hg_branch]
+disabled = false
+format = '[$symbol$branch(:$topic) ]($style)'
+style = 'bold purple'
+symbol = "hg:"
+
+[pijul_channel]
+disabled = false
+format = '[$symbol$channel ]($style)'
+style = 'bold purple'
+symbol = "pijul:"
+
+[docker_context]
+disabled = false
+format = '[$symbol$context ]($style)'
+style = 'bold blue'
+symbol = "docker:"
+
+[directory]
+disabled = false
+repo_root_format = """
+[$before_root_path]($before_repo_root_style)\
+[$repo_root]($repo_root_style)\
+[$path]($style)\
+[$read_only]($read_only_style)"""
+before_repo_root_style = 'white'
+repo_root_style = 'bold cyan'
+format = '[$path]($style)'
+style = 'bold dimmed cyan'
+read_only = " ro"
+truncate_to_repo = true
+truncation_symbol = ''
+
+[package]
+disabled = false
+format = '[$symbol$version ]($style)'
+style = 'bold fg-orange'
+symbol = "pkg:"
+version_format = '${raw}'
+
+[c]
+disabled = false
+format = '[$symbol($version(-$name)) ]($style)'
+style = 'bold fg-lime'
+symbol = "C:"
+version_format = '${raw}'
+
+[cpp]
+disabled = false
+format = '[$symbol($version(-$name)) ]($style)'
+style = 'bold fg-lime'
+symbol = "C++:"
+version_format = '${raw}'
+
+[cmake]
+disabled = false
+format = '[$symbol($version) ]($style)'
+style = 'bold blue'
+symbol = "cmake:"
+version_format = '${raw}'
+
+[cobol]
+disabled = false
+format = '[$symbol($version) ]($style)'
+style = 'bold blue'
+symbol = "cobol:"
+version_format = '${raw}'
+
+[crystal]
+disabled = false
+format = '[$symbol($version) ]($style)'
+style = 'bold red'
+symbol = "cr:"
+version_format = '${raw}'
+
+[daml]
+disabled = false
+format = '[$symbol($version) ]($style)'
+style = 'bold cyan'
+symbol = "daml:"
+version_format = '${raw}'
+
+[dart]
+disabled = false
+format = '[$symbol($version) ]($style)'
+style = 'bold blue'
+symbol = "dart:"
+version_format = '${raw}'
+
+[deno]
+disabled = false
+format = '[$symbol($version) ]($style)'
+style = 'bold green'
+symbol = "deno:"
+version_format = '${raw}'
+
+[dotnet]
+disabled = false
+format = '[$symbol($version)( $tfm) ]($style)'
+style = 'bold blue'
+symbol = ".NET:"
+version_format = '${raw}'
+
+[elixir]
+disabled = false
+format = '[$symbol($version otp:$otp_version) ]($style)'
+style = 'bold purple'
+symbol = "exs:"
+version_format = '${raw}'
+
+[elm]
+disabled = false
+format = '[$symbol($version) ]($style)'
+style = 'bold cyan'
+symbol = "elm:"
+version_format = '${raw}'
+
+[erlang]
+disabled = false
+format = '[$symbol($version) ]($style)'
+style = 'bold red'
+symbol = 'erl:'
+version_format = '${raw}'
+
+[fennel]
+disabled = false
+format = '[$symbol($version) ]($style)'
+style = 'bold green'
+symbol = "fnl:"
+version_format = '${raw}'
+
+[gleam]
+disabled = false
+format = '[$symbol($version) ]($style)'
+style = 'bold fg-pink'
+symbol = "gleam:"
+version_format = '${raw}'
+
+[golang]
+disabled = false
+format = '[$symbol($version) ]($style)'
+style = 'bold cyan'
+not_capable_style = 'bold red'
+symbol = "go:"
+version_format = '${raw}'
+
+[guix_shell]
+disabled = false
+format = '[$symbol($version) ]($style)'
+style = 'bold yellow'
+symbol = "guix:"
+
+[haskell]
+disabled = false
+format = '[$symbol($version) ]($style)'
+style = 'bold purple'
+symbol = "haskell:"
+version_format = '${raw}'
+
+[haxe]
+disabled = false
+format = '[$symbol($version) ]($style)'
+style = 'bold fg-vermilion'
+symbol = 'haxe:'
+version_format = '${raw}'
+
+[helm]
+disabled = false
+format = '[$symbol($version) ]($style)'
+style = 'bold white'
+symbol = "helm:"
+version_format = '${raw}'
+
+[java]
+disabled = false
+format = '[$symbol($version) ]($style)'
+style = 'bold dimmed red'
+symbol = "java:"
+version_format = '${raw}'
+
+[julia]
+disabled = false
+format = '[$symbol($version) ]($style)'
+style = 'bold purple'
+symbol = "jl:"
+version_format = '${raw}'
+
+[kotlin]
+disabled = false
+format = '[$symbol($version) ]($style)'
+style = 'bold blue'
+symbol = "kt:"
+version_format = '${raw}'
+
+[gradle]
+disabled = false
+format = '[$symbol($version) ]($style)'
+style = 'bold bright-cyan'
+symbol = "gradle:"
+version_format = '${raw}'
+
+[lua]
+disabled = false
+format = '[$symbol($version) ]($style)'
+style = 'bold blue'
+symbol = "lua:"
+version_format = '${raw}'
+
+[mojo]
+disabled = false
+format = '[$symbol($version) ]($style)'
+style = 'bold fg-orange'
+symbol = 'mojo:'
+
+[nim]
+disabled = false
+format = '[$symbol($version) ]($style)'
+style = 'bold yellow'
+symbol = "nim:"
+version_format = '${raw}'
+
+[nodejs]
+disabled = false
+format = '[$symbol($version) ](bold green)'
+style = 'bold green'
+symbol = "nodejs:"
+version_format = '${raw}'
+
+[ocaml]
+disabled = false
+format = '[$symbol($version)( \($switch_indicator$switch_name\)) ]($style)'
+style = 'bold yellow'
+symbol = "ml:"
+version_format = '${raw}'
+
+[odin]
+disabled = false
+format = '[$symbol($version) ]($style)'
+style = 'bold cyan'
+symbol = 'odin:'
+
+[opa]
+disabled = false
+format = '[$symbol($version) ]($style)'
+style = 'bold blue'
+symbol = "opa:"
+version_format = '${raw}'
+
+[perl]
+disabled = false
+format = '[$symbol($version) ]($style)'
+style = 'bold fg-lime'
+symbol = "pl:"
+version_format = '${raw}'
+
+[php]
+disabled = false
+format = '[$symbol($version) ]($style)'
+style = 'bold fg-lavender'
+symbol = "php:"
+version_format = '${raw}'
+
+[purescript]
+disabled = false
+format = '[$symbol($version) ]($style)'
+style = 'bold white'
+symbol = "purs:"
+
+[python]
+disabled = false
+format = '[${symbol}${pyenv_prefix}(${version})( \($virtualenv\)) ]($style)'
+style = 'bold yellow'
+symbol = "py:"
+
+[quarto]
+disabled = false
+format = '[$symbol($version) ]($style)'
+style = 'bold fg-sky'
+symbol = "quarto:"
+
+[raku]
+disabled = false
+format = '[$symbol($version-$vm_version) ]($style)'
+style = 'bold fg-lime'
+symbol = "raku:"
+
+[rlang]
+disabled = false
+format = '[$symbol($version) ]($style)'
+style = 'bold blue'
+symbol = "r:"
+
+[red]
+disabled = false
+format = '[$symbol($version) ]($style)'
+style = 'bold red'
+symbol = 'red:'
+
+[ruby]
+disabled = false
+format = '[$symbol($version) ]($style)'
+style = 'bold red'
+symbol = "rb:"
+
+[rust]
+disabled = false
+format = '[$symbol($version) ]($style)'
+style = 'bold red'
+symbol = "rs:"
+
+[scala]
+disabled = false
+format = '[$symbol($version) ]($style)'
+style = 'bold dimmed red'
+symbol = "scala:"
+
+[solidity]
+disabled = false
+format = '[$symbol($version) ]($style)'
+style = 'bold blue'
+symbol = "solidity:"
+
+[swift]
+disabled = false
+format = '[$symbol($version) ]($style)'
+style = 'bold fg-vermilion'
+symbol = "swift:"
+
+[terraform]
+disabled = false
+format = '[$symbol$workspace ]($style)'
+style = 'bold fg-periwinkle'
+symbol = "terraform:"
+
+[typst]
+disabled = false
+format = '[$symbol($version) ]($style)'
+style = 'bold fg-teal'
+symbol = "typst:"
+
+[vlang]
+disabled = false
+format = '[$symbol($version) ]($style)'
+style = 'bold blue'
+symbol = 'v:'
+
+[vagrant]
+disabled = false
+format = '[$symbol($version) ]($style)'
+style = 'bold cyan'
+symbol = 'vagrant:'
+
+[zig]
+disabled = false
+format = '[$symbol($version) ]($style)'
+style = 'bold yellow'
+symbol = "zig:"
+
+[buf]
+disabled = false
+format = '[$symbol($version) ]($style)'
+style = 'bold green'
+symbol = "buf:"
+
+[nix_shell]
+disabled = false
+format = '[$symbol$state( \($name\)) ]($style)'
+style = 'bold green'
+symbol = "nix:"
+
+[conda]
+disabled = false
+format = '[$symbol$environment ]($style)'
+style = 'bold green'
+symbol = "conda:"
+
+[meson]
+disabled = false
+format = '[$symbol$project ]($style)'
+style = 'bold green'
+symbol = "meson:"
+
+[spack]
+disabled = false
+format = '[$symbol$environment ]($style)'
+style = 'bold green'
+symbol = "spack:"
+
+[memory_usage]
+disabled = true
+format = '[$symbol${ram}(|${swap}) ]($style)'
+style = 'bold green'
+symbol = "memory:"
+threshold = 85
+
+[aws]
+disabled = false
+format = '[$symbol($profile)(\($region\))(\[$duration\]) ]($style)'
+style = 'bold green'
+symbol = "aws:"
+
+[gcloud]
+disabled = false
+format = '[$symbol$account(@$domain)(\($region\)) ]($style)'
+style = 'bold green'
+symbol = "gcp:"
+
+[openstack]
+disabled = false
+format = '[$symbol$cloud(\($project\)) ]($style)'
+style = 'bold green'
+symbol = 'ostack:'
+
+[azure]
+disabled = false
+format = '[$symbol($subscription) ]($style)'
+style = 'bold green'
+symbol = "az:"
+
+[pulumi]
+disabled = false
+format = '[$symbol($username@)$stack ]($style)'
+style = 'bold magenta'
+symbol = "pulumi:"
+
+[nats]
+disabled = false
+format = '[$symbol$name ]($style)'
+style = 'bold green'
+symbol = "nats:"
+
+[direnv]
+disabled = false
+format = '[$symbol$allowed$loaded ]($style)'
+style = 'bold green'
+symbol = 'direnv:'
+detect_files = ['.envrc', '.env']
+allowed_msg = 'ok'
+not_allowed_msg = '!ok'
+denied_msg = 'denied'
+loaded_msg = 'loaded'
+unloaded_msg = 'unloaded'
+
+[env_var]
+disabled = false
+format = '[$symbol$env_value ]($style)'
+style = 'bold green'
+symbol = ''
+
+[mise]
+disabled = false
+format = '[$symbol$health ]($style)'
+style = 'bold green'
+symbol = 'mise:'
+healthy_symbol = 'ok'
+unhealthy_symbol = 'x'
+
+[pixi]
+disabled = false
+format = '[$symbol($version)(\($environment\)) ]($style)'
+style = 'bold green'
+symbol = 'pixi:'
+
+[sudo]
+disabled = false
+format = '[$symbol ]($style)'
+style = 'bold green'
+symbol = "sudo:"
+
+[jobs]
+disabled = false
+format = '[$symbol$number ]($style)'
+style = 'bold green'
+symbol = 'jobs:'
+
+[battery]
+disabled = true
+format = '[$symbol$percentage ]($style)'
+style = 'bold green'
+full_symbol = 'bat:'
+charging_symbol = 'chg:'
+discharging_symbol = 'dis:'
+unknown_symbol = 'bat?:'
+empty_symbol = 'low:'
+
+[[battery.display]]
+threshold = 100
+style = 'bold green'
+
+[os]
+disabled = true
+format = '[$symbol ]($style)'
+style = 'bold green'
+
+[os.symbols]
+AIX = "aix "
+Alpaquita = "alq "
+AlmaLinux = "alma "
+Alpine = "alp "
+Amazon = "amz "
+Android = "andr "
+Arch = "rch "
+Artix = "atx "
+Bluefin = "blfn "
+CachyOS = "cach "
+CentOS = "cent "
+Debian = "deb "
+DragonFly = "dfbsd "
+Emscripten = "emsc "
+EndeavourOS = "ndev "
+Fedora = "fed "
+FreeBSD = "fbsd "
+Garuda = "garu "
+Gentoo = "gent "
+HardenedBSD = "hbsd "
+Illumos = "lum "
+Kali = "kali "
+Linux = "lnx "
+Mabox = "mbox "
+Macos = "mac "
+Manjaro = "mjo "
+Mariner = "mrn "
+MidnightBSD = "mid "
+Mint = "mint "
+NetBSD = "nbsd "
+NixOS = "nix "
+Nobara = "nbra "
+OpenBSD = "obsd "
+OpenCloudOS = "ocos "
+openEuler = "oeul "
+openSUSE = "osuse "
+OracleLinux = "orac "
+Pop = "pop "
+Raspbian = "rasp "
+Redhat = "rhl "
+RedHatEnterprise = "rhel "
+RockyLinux = "rky "
+Redox = "redox "
+Solus = "sol "
+SUSE = "suse "
+Ubuntu = "ubnt "
+Ultramarine = "ultm "
+Unknown = "unk "
+Uos = "uos "
+Void = "void "
+Windows = "win "
+
+[container]
+disabled = false
+format = '[$symbol$name ]($style)'
+style = 'bold green'
+symbol = "container:"
+
+[netns]
+disabled = false
+format = '[$symbol$name ]($style)'
+style = 'bold green'
+symbol = 'netns:'
+
+[shell]
+disabled = true
+format = '[$indicator ]($style)'
+style = 'bold green'
+
+[status]
+disabled = false
+# Carries the exit code as colour alone: the prompt marker is green
+# after a success and red after a failure.
+format = '[$symbol]($style) '
+symbol = '>'
+success_symbol = '>'
+not_executable_symbol = '>'
+not_found_symbol = '>'
+signal_symbol = '>'
+failure_style = 'bold red'
+success_style = 'bold green'
+
+[time]
+disabled = true
+format = '[$time ]($style)'
+style = 'bold green'
+time_format = '%H:%M:%S'
+
+[line_break]
+disabled = false
