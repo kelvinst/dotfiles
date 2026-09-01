@@ -1,12 +1,12 @@
 format = """\
 $directory\
-([│](fg-neon-black)\
+([>](fg-neon-black)\
 $git_status\
 )\
-[│](fg-neon-black)\
+[>](fg-neon-black)\
 $character\
 $line_break\
-[│ ](fg-neon-black)"""
+[> ](fg-neon-black)"""
 
 add_newline = false
 command_timeout = 3000

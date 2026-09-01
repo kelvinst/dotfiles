@@ -1,7 +1,7 @@
 format = """\
 $directory\
 [ ]()\
-([│ ](fg-neon-black)\
+([> ](fg-neon-black)\
 $username\
 $hostname\
 $localip\
@@ -20,7 +20,7 @@ $hg_branch\
 $pijul_channel\
 $docker_context\
 )\
-([│ ](fg-neon-black)\
+([> ](fg-neon-black)\
 $package\
 $c\
 $cpp\
@@ -72,7 +72,7 @@ $vagrant\
 $zig\
 $buf\
 )\
-([│ ](fg-neon-black)\
+([> ](fg-neon-black)\
 $nix_shell\
 $conda\
 $meson\
@@ -97,10 +97,10 @@ $netns\
 $shell\
 $time\
 )\
-[│ ](fg-neon-black)\
+[> ](fg-neon-black)\
 $character\
 $line_break\
-[│ ](fg-neon-black)"""
+[> ](fg-neon-black)"""
 
 add_newline = false
 command_timeout = 3000
