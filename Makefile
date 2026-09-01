@@ -14,7 +14,7 @@ HOME_TARGETS := \
 	.config/init_starship.sh \
 	.config/kitty \
 	.config/nvim \
-	.config/starship-short.toml \
+	.config/starship-full.toml \
 	.config/starship.toml \
 	.config/tidewave \
 	.config/tms \
@@ -79,7 +79,7 @@ install: backup
 	cp -r ./zsh/completions/* ~/.zsh/completions/
 	cp -r ./config/init_starship.sh ~/.config/
 	cp -r ./config/starship.toml ~/.config/
-	cp -r ./config/starship-short.toml ~/.config/
+	cp -r ./config/starship-full.toml ~/.config/
 	cp ./aerospace.toml ~/.aerospace.toml
 	cp ./ai-jail ~/.ai-jail
 	cp ./default-gems ~/.default-gems
@@ -104,7 +104,7 @@ clean:
 	rm -f ~/.claude/settings.json
 	rm -rf ~/.config/init_starship.sh
 	rm -rf ~/.config/starship.toml
-	rm -rf ~/.config/starship-short.toml
+	rm -rf ~/.config/starship-full.toml
 	rm -rf ~/.aerospace.toml
 	rm -rf ~/.ai-jail
 	rm -rf ~/.default-gems
@@ -132,7 +132,7 @@ update:
 	cp -r ~/.zsh/completions/* ./zsh/completions/
 	cp -r ~/.config/init_starship.sh ./config/
 	cp -r ~/.config/starship.toml ./config/
-	cp -r ~/.config/starship-short.toml ./config/
+	cp -r ~/.config/starship-full.toml ./config/
 	cp -r ~/.hammerspoon/* ./hammerspoon/
 	mkdir -p ./bin/
 	for f in ./bin/*; do cp -r ~/.local/bin/$$(basename $$f) ./bin/; done
