@@ -46,18 +46,14 @@ END {
   if (behind)      flags = flags paint(1, "<" behind)
   if (!ahead && !behind) flags = flags paint(2, "=")
 
-  # Worst state wins, and the brackets reuse the exact colour that state
-  # uses above, so the segment never mixes two shades of the same hue.
-  if (conflicted)       bracket = 201
-  else if (deleted)     bracket = 196
-  else if (behind)      bracket = 1
-  else if (modified)    bracket = 3
-  else if (typechanged) bracket = 39
-  else if (untracked)   bracket = 4
-  else if (stashed)     bracket = 5
-  else if (staged)      bracket = 46
-  else if (renamed)     bracket = 6
-  else                  bracket = 2
+  # Worst state wins, so a single deletion colours the whole segment red.
+  if (conflicted)                bracket = 201
+  else if (deleted || behind)    bracket = 196
+  else if (modified || typechanged) bracket = 3
+  else if (untracked)            bracket = 4
+  else if (stashed)              bracket = 5
+  else if (staged || renamed)    bracket = 46
+  else                           bracket = 2
 
   printf "%s%s%s\033[0m", paint(bracket, "["), flags, paint(bracket, "]")
 }
