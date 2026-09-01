@@ -1,5 +1,6 @@
 format = """\
 $directory\
+[ ]()\
 ([\\[](fg-neon-black)\
 $username\
 $hostname\
@@ -272,10 +273,14 @@ symbol = "docker "
 
 [directory]
 disabled = false
-repo_root_format = '''[\[]($repo_root_style)[$before_root_path]($before_repo_root_style)[$repo_root]($repo_root_style)[$path]($style)[$read_only]($read_only_style)[\]]($repo_root_style)'''
+repo_root_format = """
+[$before_root_path]($before_repo_root_style)\
+[$repo_root]($repo_root_style)\
+[$path]($style)\
+[$read_only]($read_only_style)"""
 before_repo_root_style = 'white'
 repo_root_style = 'bold cyan'
-format = '[\[$path\]]($style)'
+format = '[$path]($style)'
 style = 'bold dimmed cyan'
 read_only = " ro"
 truncate_to_repo = true
