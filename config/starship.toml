@@ -1,14 +1,10 @@
 format = """\
-$character\
-([  ](fg-neon-black)\
+$directory\
+([ │ ](fg-neon-black)\
 $git_status\
 )\
-[  ](fg-neon-black)\
-$directory\
-([  ](fg-neon-black)\
-$status\
-)\
-[  ](fg-neon-black)\
+[ │ ](fg-neon-black)\
+$character\
 $line_break"""
 
 add_newline = false
