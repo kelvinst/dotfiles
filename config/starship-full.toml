@@ -21,8 +21,7 @@ $docker_context\
 ](bg:bg-border))\
 [ \
 $directory\
-$fill\
-](bg:bg-middle)\
+ ](bg:bg-middle)\
 ([ \
 $package\
 $c\
@@ -100,7 +99,7 @@ $netns\
 $shell\
 $status\
 $time\
-](black bg:green))\
+](black bg:green)[](green))\
 $line_break"""
 
 add_newline = false
@@ -273,11 +272,6 @@ disabled = false
 format = '[$symbol$context ]($style)'
 style = 'bold blue bg:bg-border'
 symbol = '🐳'
-
-[fill]
-disabled = false
-style = 'bg:bg-middle'
-symbol = ' '
 
 [directory]
 disabled = false
