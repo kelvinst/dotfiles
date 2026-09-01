@@ -143,7 +143,7 @@ on-mode-changed = []
     alt-s = 'exec-and-forget orbit preset --main-size +150 2-col-left 2-col-right'
     alt-shift-s = 'exec-and-forget orbit preset --main-size +50 2-row-top 2-row-bottom'
 
-    alt-d = 'exec-and-forget orbit preset --main-size +500 3-col-left 3-col-middle 3-col-right'
+    alt-d = 'exec-and-forget orbit preset --main-size +500 3-col-middle 3-col-left 3-col-right'
     alt-shift-d = 'exec-and-forget orbit preset --main-size +50 3-row-top 3-row-middle 3-row-bottom'
 
     alt-f = 'layout floating tiling' # Toggle between floating and tiling layout
