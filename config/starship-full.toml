@@ -219,11 +219,11 @@ only_attached = true
 
 [git_commit]
 disabled = false
-format = '[$hash($tag)]($style)'
+format = '[$hash(\($tag\))]($style)'
 style = 'bold purple'
 only_detached = true
 tag_disabled = false
-tag_symbol = ":tag:"
+tag_symbol = "tag:"
 
 [git_state]
 disabled = false
