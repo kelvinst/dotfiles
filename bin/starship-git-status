@@ -49,7 +49,7 @@ END {
   # stand on their own: what is committed or parked somewhere you cannot
   # see, then what the files in front of you are doing.
   if (conflicted)  files = files paint("5;196", "!" conflicted)
-  if (deleted)     files = files paint("5;201", "x" deleted)
+  if (deleted)     files = files paint("5;208", "x" deleted)
   if (renamed)     files = files paint("5;6", "r" renamed)
   if (modified)    files = files paint("5;3", "m" modified)
   if (typechanged) files = files paint("5;5", "t" typechanged)
