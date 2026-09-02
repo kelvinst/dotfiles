@@ -9,10 +9,26 @@
 set -uo pipefail
 
 status=$(git status --porcelain=v2 --branch --show-stash --ignore-submodules 2>/dev/null) || exit 0
+gitdir=$(git rev-parse --git-dir 2>/dev/null)
 
-printf '%s\n' "$status" | awk '
+# Git records a half-finished operation as files in the git dir, not in the
+# status output. Tokens match the ones [git_state] uses in the full prompt.
+state=''
+if [[ -d $gitdir/rebase-merge ]]; then
+  state="r$(cat "$gitdir/rebase-merge/msgnum" 2>/dev/null)/$(cat "$gitdir/rebase-merge/end" 2>/dev/null)"
+elif [[ -d $gitdir/rebase-apply ]]; then
+  state="r$(cat "$gitdir/rebase-apply/next" 2>/dev/null)/$(cat "$gitdir/rebase-apply/last" 2>/dev/null)"
+elif [[ -f $gitdir/MERGE_HEAD ]]; then       state=mg
+elif [[ -f $gitdir/CHERRY_PICK_HEAD ]]; then state=cp
+elif [[ -f $gitdir/REVERT_HEAD ]]; then      state=rv
+elif [[ -f $gitdir/BISECT_LOG ]]; then       state=bs
+fi
+
+printf '%s\n' "$status" | awk -v state="$state" '
 function paint(colour, text) { return "\033[1;38;" colour "m" text }
 
+/^# branch\.oid /  { if ($3 != "(initial)") oid = substr($3, 1, 7) }
+/^# branch\.head / { detached = ($3 == "(detached)") }
 /^# branch\.ab / { ahead = $3 + 0; behind = -($4 + 0) }
 /^# stash /      { stashed = $3 + 0 }
 /^u /            { conflicted++ }
@@ -46,8 +62,15 @@ END {
   if (ahead)       elsewhere = elsewhere paint(PINK, ">" ahead)
   if (behind)      elsewhere = elsewhere paint(PINK, "<" behind)
 
-  out = elsewhere
-  if (files != "") out = (out == "") ? files : out "\033[0m:" files
+  # Where you are, but only when it is not the ordinary case: on a branch
+  # with nothing half-finished there is nothing here worth the width.
+  if (detached && oid != "") where = paint("5;5", oid)
+  if (state != "")
+    where = (where == "") ? paint("5;3", state) : where paint("5;3", "(" state ")")
+
+  out = where
+  if (elsewhere != "") out = (out == "") ? elsewhere : out "\033[0m:" elsewhere
+  if (files != "")     out = (out == "") ? files     : out "\033[0m:" files
 
   # Nothing to report is worth no characters at all.
   if (out == "") exit

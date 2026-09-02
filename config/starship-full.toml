@@ -227,8 +227,16 @@ tag_symbol = "tag:"
 
 [git_state]
 disabled = false
-format = '[\($state( $progress_current/$progress_total)\)]($style)'
+# Short tokens, and the progress counter only where there is one to show.
+format = '[\($state($progress_current/$progress_total)\)]($style)'
 style = 'bold yellow'
+rebase = 'r'
+merge = 'mg'
+revert = 'rv'
+cherry_pick = 'cp'
+bisect = 'bs'
+am = 'am'
+am_or_rebase = 'am/r'
 
 [git_metrics]
 disabled = false
