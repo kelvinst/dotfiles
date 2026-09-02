@@ -238,7 +238,7 @@ deleted_style = 'bold red'
 
 [git_status]
 disabled = false
-format = '(:[$all_status$ahead_behind]($style))'
+format = '(:[$conflicted$deleted$renamed$modified$typechanged$staged$untracked]($style))(:[$stashed]($style))(:[$ahead_behind]($style))'
 style = 'bold'
 conflicted = '[!${count}](bold fg-neon-red)'
 ahead = '[>${count}](bold fg-pink)'
