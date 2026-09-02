@@ -82,13 +82,13 @@ branch=$(git -C "$repo" symbolic-ref --quiet --short HEAD 2>/dev/null)
 if [ -n "$branch" ]; then
   # Cached in the repo config for a day: this runs at the end of every turn.
   now=$(date +%s)
-  stamp=$(git -C "$repo" config --get "autocommit.checkedAt.$branch" 2>/dev/null)
+  stamp=$(git -C "$repo" config --get "autocommit.$branch.checkedAt" 2>/dev/null)
   if [ -n "$stamp" ] && [ $((now - stamp)) -lt 86400 ]; then
-    blocked=$(git -C "$repo" config --get "autocommit.blocked.$branch" 2>/dev/null)
+    blocked=$(git -C "$repo" config --get "autocommit.$branch.blocked" 2>/dev/null)
   else
     blocked=$(push_blocked "$branch")
-    git -C "$repo" config "autocommit.blocked.$branch" "$blocked"
-    git -C "$repo" config "autocommit.checkedAt.$branch" "$now"
+    git -C "$repo" config "autocommit.$branch.blocked" "$blocked"
+    git -C "$repo" config "autocommit.$branch.checkedAt" "$now"
   fi
 
   # Blocked: say so rather than committing something that cannot be pushed.
