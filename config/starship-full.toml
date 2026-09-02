@@ -14,8 +14,8 @@ $fossil_metrics\
 ($git_branch\
 $git_commit\
 $git_state\
-$git_metrics\
 $git_status\
+$git_metrics\
 [ ]())\
 $hg_branch\
 $pijul_channel\
@@ -227,7 +227,7 @@ tag_symbol = "tag:"
 
 [git_state]
 disabled = false
-format = '[:$state( $progress_current/$progress_total)]($style)'
+format = '[:\($state( $progress_current/$progress_total)\)]($style)'
 style = 'bold yellow'
 
 [git_metrics]
