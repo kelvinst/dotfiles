@@ -23,15 +23,44 @@ for op in rebase-merge rebase-apply MERGE_HEAD CHERRY_PICK_HEAD REVERT_HEAD BISE
   [ -e "$(git -C "$repo" rev-parse --git-path "$op" 2>/dev/null)" ] && exit 0
 done
 
-# Main branch is scratch space: work there gets rolled back or moved onto a
-# branch before it is committed. Never auto-commit onto the default branch.
+# Ask the forge whether a branch is blocked. GitHub reports both classic branch
+# protection and rulesets in one read-only field, so one call settles it. The
+# answer is cached in the repo config for a day - this runs on every turn.
+# Unknown counts as unprotected (no gh, no GitHub remote, offline): the hook
+# only commits locally, so guessing wrong is a rollback, not a lost push.
+branch_protected() {
+  local branch=$1 now cached stamp answer=false
+  now=$(date +%s)
+  cached=$(git -C "$repo" config --get "autocommit.protected.$branch" 2>/dev/null)
+  stamp=$(git -C "$repo" config --get "autocommit.protectedAt.$branch" 2>/dev/null)
+  if [ -n "$cached" ] && [ -n "$stamp" ] && [ $((now - stamp)) -lt 86400 ]; then
+    [ "$cached" = true ]
+    return
+  fi
+
+  case "$(git -C "$repo" remote get-url origin 2>/dev/null)" in
+  *github.com*)
+    command -v gh >/dev/null 2>&1 &&
+      [ "$(cd "$repo" && gh api "repos/{owner}/{repo}/branches/$branch" \
+        --jq .protected 2>/dev/null)" = true ] && answer=true
+    ;;
+  esac
+
+  git -C "$repo" config "autocommit.protected.$branch" "$answer"
+  git -C "$repo" config "autocommit.protectedAt.$branch" "$now"
+  [ "$answer" = true ]
+}
+
+# Where main is blocked it is scratch space: work there gets rolled back or
+# moved onto a branch before it is committed, so never auto-commit onto it.
+# Where main takes commits directly, it is the working branch like any other.
 branch=$(git -C "$repo" symbolic-ref --quiet --short HEAD 2>/dev/null)
 if [ -n "$branch" ]; then
   default=$(git -C "$repo" symbolic-ref --quiet --short refs/remotes/origin/HEAD 2>/dev/null)
   default="${default#origin/}"
   [ -n "$default" ] || default=main
   case "$branch" in
-  "$default" | main | master) exit 0 ;;
+  "$default" | main | master) branch_protected "$branch" && exit 0 ;;
   esac
 fi
 
