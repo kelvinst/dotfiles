@@ -514,7 +514,7 @@ toggle_starship_short_mode() {
 # starship emits for the directory and the marker, so the two prompts match.
 # %{ %} keeps zsh counting the width.
 starship_transient_prompt() {
-  PROMPT=$'%{\e[1;36m%}%1~%{\e[1;32m%}>%{\e[0m%} '
+  PROMPT=$'%{\e[1;36m%}%1~%{\e[1;32m%} >%{\e[0m%} '
   RPROMPT=''
   zle .reset-prompt
 }
