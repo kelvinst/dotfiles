@@ -449,22 +449,22 @@ print_info_before_cmd() {
         cmd_desc="${bold_red}not found"
       elif [[ $cmd_desc =~ "^is an alias for (.+)$" ]]; then
         local alias_target=$(highlight_command ${match[1]})
-        cmd_desc="$cmd is an ${blue}alias$nc$gray for $alias_target"
+        cmd_desc="aka ${blue}alias$nc$gray for $alias_target"
       elif [[ $cmd_desc =~ "^is a shell (builtin|function)$" ]]; then
-        cmd_desc="$cmd is a shell ${blue}${match[1]}"
+        cmd_desc="aka ${blue}${match[1]}$nc$gray $cmd"
       elif [[ $cmd_desc =~ "^is an autoload shell function$" ]]; then
-        cmd_desc="$cmd is an ${blue}autoload$nc$gray shell ${blue}function"
+        cmd_desc="aka ${blue}autoload function$nc$gray $cmd"
       elif [[ $cmd_desc =~ "^is an autoload shell function from (.+)$" ]]; then
         local path="$purple${match[1]}"
-        cmd_desc="$cmd is an ${blue}autoload$nc$gray shell ${blue}function$nc$gray from $path"
+        cmd_desc="aka ${blue}autoload function$nc$gray from $path"
       elif [[ $cmd_desc =~ "^is a shell function from (.+)$" ]]; then
         local path="$purple${match[1]}"
-        cmd_desc="$cmd is a shell ${blue}function$nc$gray from $path"
+        cmd_desc="aka ${blue}function$nc$gray from $path"
       elif [[ $cmd_desc =~ "^is a reserved word$" ]]; then
-        cmd_desc="$cmd is a ${blue}reserved$nc$gray word"
+        cmd_desc="aka ${blue}reserved word$nc$gray $cmd"
       elif [[ $cmd_desc =~ "^is (.+)$" ]]; then
         local executable=$(highlight_command ${match[1]})
-        cmd_desc="$cmd is $executable"
+        cmd_desc="aka ${blue}executable$nc$gray $executable"
       fi
 
       # Wrap entire description in gray
