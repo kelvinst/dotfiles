@@ -258,7 +258,7 @@ stashed = '[\$${count}](bold fg-blue)'
 modified = '[m${count}](bold fg-yellow)'
 staged = '[+${count}](bold fg-green)'
 renamed = '[r${count}](bold fg-cyan)'
-deleted = '[x${count}](bold fg-neon-purple)'
+deleted = '[x${count}](bold fg-orange)'
 typechanged = '[t${count}](bold fg-purple)'
 
 [hg_branch]
