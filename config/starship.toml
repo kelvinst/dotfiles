@@ -73,7 +73,7 @@ format = '($output )'
 # content; kept configured so it can be dropped back into the format.
 [git_status]
 disabled = false
-format = '([$conflicted$deleted$renamed$modified$typechanged$staged$untracked]($style))(:[$stashed$ahead_behind]($style))'
+format = '([$stashed$ahead_behind]($style))(:[$conflicted$deleted$renamed$modified$typechanged$staged$untracked]($style))'
 style = 'bold fg-neon-purple'
 conflicted = '[!${count}](bold fg-neon-purple)'
 ahead = '[>${count}](bold fg-green)'
