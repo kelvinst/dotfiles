@@ -44,9 +44,8 @@ END {
 
   if (ahead)       flags = flags paint(PINK, ">" ahead)
   if (behind)      flags = flags paint(PINK, "<" behind)
-  # Only worth saying nothing is going on when nothing else is.
-  if (flags == "") flags = paint("5;2", "=")
-
+  # Nothing to report is worth no characters at all.
+  if (flags == "") exit
   printf "%s\033[0m", flags
 }
 '
