@@ -551,18 +551,23 @@ print_info_after_cmd() {
       ${~patterns}) ;;  # Match any pattern, do nothing
       *) 
         local last_cmd=$(highlight_command "$LAST_CMD")
-        # Label glued to value, as the prompt does it: in:46ms, not in 46ms.
-        local duration="$bold_yellow${STARSHIP_DURATION}ms$gray"
+
+        # The line reads as a sentence: every word sits in the same plain
+        # grey as "finished", and only the values are bold and coloured.
+        # $gray sets a colour without clearing bold, so anything bold has
+        # to be reset first or the words after it inherit the weight.
+        local plain="$nc$gray"
+        local duration="$bold_yellow${STARSHIP_DURATION}ms$plain"
 
         # The exit code carries its own meaning; colour says whether it is
         # the good one, so the emoji that used to label it are redundant.
         if [[ $last_status -eq 0 ]]; then
-          last_status="$bold_green$last_status$gray"
+          last_status="$bold_green$last_status$plain"
         else
-          last_status="$bold_red$last_status$gray"
+          last_status="$bold_red$last_status$plain"
         fi
 
-        echo "$gray┗ finished $last_cmd in:$duration with:$last_status$nc"
+        echo "$gray┗ finished $last_cmd$plain in $duration with exit code $last_status$nc"
     esac
 
     echo
