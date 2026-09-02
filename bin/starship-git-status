@@ -33,11 +33,11 @@ END {
   PINK = "2;255;175;243"   # fg-pink from the starship palette
   # Order follows the git_status module this replaces. Every kind of
   # uncommitted work shares yellow; only what needs a decision stands out.
-  if (conflicted)  flags = flags paint("5;196", "!=" conflicted)
+  if (conflicted)  flags = flags paint("5;196", "!" conflicted)
   if (stashed)     flags = flags paint("5;4",   "$" stashed)
   if (deleted)     flags = flags paint("5;3",   "x" deleted)
   if (renamed)     flags = flags paint("5;3",   "r" renamed)
-  if (modified)    flags = flags paint("5;3",   "!" modified)
+  if (modified)    flags = flags paint("5;3",   "m" modified)
   if (typechanged) flags = flags paint("5;3",   "t" typechanged)
   if (staged)      flags = flags paint("5;3",   "+" staged)
   if (untracked)   flags = flags paint("5;3",   "?" untracked)
