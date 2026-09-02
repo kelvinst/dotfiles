@@ -551,25 +551,18 @@ print_info_after_cmd() {
       ${~patterns}) ;;  # Match any pattern, do nothing
       *) 
         local last_cmd=$(highlight_command "$LAST_CMD")
-        local duration="🕘$bold_yellow ${STARSHIP_DURATION}ms$gray"
+        # Label glued to value, as the prompt does it: in:46ms, not in 46ms.
+        local duration="$bold_yellow${STARSHIP_DURATION}ms$gray"
 
+        # The exit code carries its own meaning; colour says whether it is
+        # the good one, so the emoji that used to label it are redundant.
         if [[ $last_status -eq 0 ]]; then
-          last_status="✅$bold_green $last_status$gray"
-        elif [[ $last_status -eq 126 ]]; then
-          # Not executable
-          last_status="🚫$bold_red $last_status$gray"
-        elif [[ $last_status -eq 127 ]]; then
-          # Not found
-          last_status="❓$bold_red $last_status$gray"
-        elif [[ $last_status -ge 128 ]] && [[ $last_status -le 165 ]]; then
-          # Signal
-          last_status="💥$bold_red $last_status$gray"
+          last_status="$bold_green$last_status$gray"
         else
-          # General failure
-         last_status="❗$bold_red $last_status$gray"
+          last_status="$bold_red$last_status$gray"
         fi
 
-        echo "$gray┗ finished $last_cmd in $duration with $last_status$nc"
+        echo "$gray┗ finished $last_cmd in:$duration with:$last_status$nc"
     esac
 
     echo
