@@ -54,7 +54,7 @@ END {
   if (modified)    files = files paint("5;3", "m" modified)
   if (typechanged) files = files paint("5;5", "t" typechanged)
   if (staged)      files = files paint("5;2", "+" staged)
-  if (untracked)   files = files paint("5;250", "?" untracked)
+  if (untracked)   files = files paint("5;7", "?" untracked)
 
   if (stashed)     elsewhere = paint("5;4", "$" stashed)
   if (ahead)       elsewhere = elsewhere paint("5;2", ">" ahead)
