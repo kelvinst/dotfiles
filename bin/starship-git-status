@@ -64,7 +64,7 @@ END {
   # Where you are, but only when it is not the ordinary case: on a branch
   # with nothing half-finished there is nothing here worth the width.
   if (state != "")                where = paint("5;3", state)
-  else if (detached)              where = paint("5;5", "†")
+  else if (detached)              where = paint("5;5", "@")
 
   out = where
   if (elsewhere != "") out = (out == "") ? elsewhere : out "\033[0m:" elsewhere
