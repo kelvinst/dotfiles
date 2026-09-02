@@ -230,13 +230,13 @@ disabled = false
 # Short tokens, and the progress counter only where there is one to show.
 format = '[\($state($progress_current/$progress_total)\)]($style)'
 style = 'bold yellow'
-rebase = 'r'
+rebase = 'rb'
 merge = 'mg'
 revert = 'rv'
 cherry_pick = 'cp'
 bisect = 'bs'
 am = 'am'
-am_or_rebase = 'am/r'
+am_or_rebase = 'am/rb'
 
 [git_metrics]
 disabled = false
@@ -253,13 +253,13 @@ ahead = '[>${count}](bold fg-pink)'
 behind = '[<${count}](bold fg-pink)'
 diverged = '[>${ahead_count}](bold fg-pink)[<${behind_count}](bold fg-pink)'
 up_to_date = ''
-untracked = '[?${count}](bold fg-yellow)'
+untracked = '[?${count}](bold fg-neon-black)'
 stashed = '[\$${count}](bold fg-blue)'
 modified = '[m${count}](bold fg-yellow)'
-staged = '[+${count}](bold fg-yellow)'
-renamed = '[r${count}](bold fg-yellow)'
-deleted = '[x${count}](bold fg-yellow)'
-typechanged = '[t${count}](bold fg-yellow)'
+staged = '[+${count}](bold fg-neon-green)'
+renamed = '[r${count}](bold fg-cyan)'
+deleted = '[x${count}](bold fg-red)'
+typechanged = '[t${count}](bold fg-purple)'
 
 [hg_branch]
 disabled = false

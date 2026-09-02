@@ -75,18 +75,18 @@ format = '($output )'
 disabled = false
 format = '([$stashed$ahead_behind]($style))(:[$conflicted$deleted$renamed$modified$typechanged$staged$untracked]($style))'
 style = 'bold fg-neon-purple'
-conflicted = '[!${count}](bold fg-neon-purple)'
+conflicted = '[!${count}](bold fg-neon-red)'
 ahead = '[>${count}](bold fg-green)'
 behind = '[<${count}](bold fg-red)'
 diverged = '[>${ahead_count}](bold fg-green)[<${behind_count}](bold fg-red)'
 up_to_date = ''
-untracked = '[?${count}](bold fg-blue)'
+untracked = '[?${count}](bold fg-neon-black)'
 stashed = '[\$${count}](bold fg-purple)'
 modified = '[m${count}](bold fg-yellow)'
 staged = '[+${count}](bold fg-neon-green)'
 renamed = '[r${count}](bold fg-cyan)'
-deleted = '[x${count}](bold fg-neon-red)'
-typechanged = '[t${count}](bold fg-neon-blue)'
+deleted = '[x${count}](bold fg-red)'
+typechanged = '[t${count}](bold fg-purple)'
 
 [status]
 disabled = false

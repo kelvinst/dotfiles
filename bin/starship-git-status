@@ -15,9 +15,9 @@ gitdir=$(git rev-parse --git-dir 2>/dev/null)
 # status output. Tokens match the ones [git_state] uses in the full prompt.
 state=''
 if [[ -d $gitdir/rebase-merge ]]; then
-  state="r$(cat "$gitdir/rebase-merge/msgnum" 2>/dev/null)/$(cat "$gitdir/rebase-merge/end" 2>/dev/null)"
+  state="rb$(cat "$gitdir/rebase-merge/msgnum" 2>/dev/null)/$(cat "$gitdir/rebase-merge/end" 2>/dev/null)"
 elif [[ -d $gitdir/rebase-apply ]]; then
-  state="r$(cat "$gitdir/rebase-apply/next" 2>/dev/null)/$(cat "$gitdir/rebase-apply/last" 2>/dev/null)"
+  state="rb$(cat "$gitdir/rebase-apply/next" 2>/dev/null)/$(cat "$gitdir/rebase-apply/last" 2>/dev/null)"
 elif [[ -f $gitdir/MERGE_HEAD ]]; then       state=mg
 elif [[ -f $gitdir/CHERRY_PICK_HEAD ]]; then state=cp
 elif [[ -f $gitdir/REVERT_HEAD ]]; then      state=rv
@@ -51,12 +51,12 @@ END {
   # stand on their own: what is committed or parked somewhere you cannot
   # see, then what the files in front of you are doing.
   if (conflicted)  files = files paint("5;196", "!" conflicted)
-  if (deleted)     files = files paint("5;3",   "x" deleted)
-  if (renamed)     files = files paint("5;3",   "r" renamed)
-  if (modified)    files = files paint("5;3",   "m" modified)
-  if (typechanged) files = files paint("5;3",   "t" typechanged)
-  if (staged)      files = files paint("5;3",   "+" staged)
-  if (untracked)   files = files paint("5;3",   "?" untracked)
+  if (deleted)     files = files paint("5;1", "x" deleted)
+  if (renamed)     files = files paint("5;6", "r" renamed)
+  if (modified)    files = files paint("5;3", "m" modified)
+  if (typechanged) files = files paint("5;5", "t" typechanged)
+  if (staged)      files = files paint("5;46", "+" staged)
+  if (untracked)   files = files paint("5;240", "?" untracked)
 
   if (stashed)     elsewhere = paint("5;4", "$" stashed)
   if (ahead)       elsewhere = elsewhere paint(PINK, ">" ahead)
@@ -64,9 +64,8 @@ END {
 
   # Where you are, but only when it is not the ordinary case: on a branch
   # with nothing half-finished there is nothing here worth the width.
-  if (detached && oid != "") where = paint("5;5", oid)
-  if (state != "")
-    where = (where == "") ? paint("5;3", state) : where paint("5;3", "(" state ")")
+  if (state != "")                where = paint("5;3", state)
+  else if (detached && oid != "") where = paint("5;5", oid)
 
   out = where
   if (elsewhere != "") out = (out == "") ? elsewhere : out "\033[0m:" elsewhere
