@@ -63,8 +63,9 @@ push_blocked() {
   out=$(cd "$repo" && gh api "repos/{owner}/{repo}/branches/$branch" \
     --jq .protected 2>&1) ||
     case "$out" in
-    # Not on the remote yet: there is no classic protection to find.
-    *"(HTTP 404)"*) return 1 ;;
+    # Not on the remote yet: there is no classic protection to find. Only
+    # this exact 404 says so - a missing repo answers "Not Found" instead.
+    *"Branch not found"*) return 1 ;;
     *) return 2 ;;
     esac
   [ "$out" = true ] || return 1
