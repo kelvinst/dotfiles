@@ -219,7 +219,7 @@ only_attached = true
 
 [git_commit]
 disabled = false
-format = '[$hash(\($tag\))]($style)'
+format = '[†(\($tag\))]($style)'
 style = 'bold purple'
 only_detached = true
 tag_disabled = false
@@ -250,8 +250,8 @@ format = '(:[$stashed$ahead_behind]($style))(:[$conflicted$deleted$renamed$modif
 style = 'bold'
 conflicted = '[!${count}](bold fg-neon-red)'
 ahead = '[>${count}](bold fg-pink)'
-behind = '[<${count}](bold fg-pink)'
-diverged = '[>${ahead_count}](bold fg-pink)[<${behind_count}](bold fg-pink)'
+behind = '[<${count}](bold fg-orange)'
+diverged = '[>${ahead_count}](bold fg-pink)[<${behind_count}](bold fg-orange)'
 up_to_date = ''
 untracked = '[?${count}](bold fg-neon-black)'
 stashed = '[\$${count}](bold fg-blue)'
