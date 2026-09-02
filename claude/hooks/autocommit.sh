@@ -44,22 +44,42 @@ push_blocked() {
   command -v gh >/dev/null 2>&1 || return 1
 
   # Rulesets. Name-based, so they answer even for a branch not yet pushed.
+  # Each row is the ruleset that carries the rule and what it forbids.
   out=$(cd "$repo" && gh api "repos/{owner}/{repo}/rules/branches/$branch" --jq '
-    [.[].type] | unique | map(
-      if . == "pull_request" then "pull requests required"
-      elif . == "required_status_checks" then "status checks required"
-      elif . == "required_signatures" then "signed commits required"
-      elif . == "update" then "updates restricted"
+    [.[] | {id: .ruleset_id, reason: (
+      if .type == "pull_request" then "pull requests required"
+      elif .type == "required_status_checks" then "status checks required"
+      elif .type == "required_signatures" then "signed commits required"
+      elif .type == "update" then "updates restricted"
       else empty end
-    ) | join(", ")' 2>&1) || return 2
-  [ -n "$out" ] && {
-    printf '%s' "$out"
+    )}] | unique | .[] | "\(.id)|\(.reason)"' 2>&1) || return 2
+
+  # A rule you are allowed to bypass does not stop your push. The listing
+  # does not say who may bypass, so each ruleset behind a rule is asked.
+  local id reason bypass reasons=
+  while IFS='|' read -r id reason; do
+    [ -n "$reason" ] || continue
+    bypass=$(cd "$repo" && gh api "repos/{owner}/{repo}/rulesets/$id" \
+      --jq .current_user_can_bypass 2>/dev/null)
+    [ "$bypass" = always ] && continue
+    case ",$reasons," in
+    *",$reason,"*) ;;
+    ,,) reasons=$reason ;;
+    *) reasons="$reasons,$reason" ;;
+    esac
+  done <<EOF
+$out
+EOF
+
+  [ -n "$reasons" ] && {
+    printf '%s' "${reasons//,/, }"
     return 0
   }
 
   # Classic protection. The branch object only says that some exists; the
   # details need admin, so an unreadable one counts as blocked - a repo whose
-  # protection you cannot read is not one to commit to unasked.
+  # protection you cannot read is not one to commit to unasked. Reading them
+  # at all means you are an admin, so admins being exempt settles it.
   out=$(cd "$repo" && gh api "repos/{owner}/{repo}/branches/$branch" \
     --jq .protected 2>&1) ||
     case "$out" in
@@ -71,12 +91,13 @@ push_blocked() {
   [ "$out" = true ] || return 1
 
   out=$(cd "$repo" && gh api "repos/{owner}/{repo}/branches/$branch/protection" --jq '
+    if .enforce_admins.enabled == false then "" else
     [ (if .required_pull_request_reviews then "pull request reviews required" else empty end),
       (if .restrictions then "pushes restricted to selected actors" else empty end),
       (if .lock_branch.enabled then "branch locked" else empty end),
       (if .required_signatures.enabled then "signed commits required" else empty end),
       (if ((.required_status_checks.checks // []) | length) > 0 then "status checks required" else empty end)
-    ] | join(", ")' 2>&1) ||
+    ] | join(", ") end' 2>&1) ||
     case "$out" in
     # GitHub answered and refused - the detail is admin-only.
     *"(HTTP "*)
