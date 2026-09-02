@@ -31,9 +31,9 @@ function paint(colour, text) { return "\033[1;38;" colour "m" text }
 
 END {
   PINK = "2;255;175;243"   # fg-pink from the starship palette
-  # Three separate things, joined the way the rest of the prompt joins
-  # parts that stand on their own: what the files are doing, what is
-  # stashed, and how far the branch has drifted from its upstream.
+  # Two things, joined the way the rest of the prompt joins parts that
+  # stand on their own: what the files in front of you are doing, and
+  # what is committed or parked somewhere you cannot see.
   if (conflicted)  files = files paint("5;196", "!" conflicted)
   if (deleted)     files = files paint("5;3",   "x" deleted)
   if (renamed)     files = files paint("5;3",   "r" renamed)
@@ -42,14 +42,12 @@ END {
   if (staged)      files = files paint("5;3",   "+" staged)
   if (untracked)   files = files paint("5;3",   "?" untracked)
 
-  if (stashed)     stash = paint("5;4", "$" stashed)
-
-  if (ahead)       upstream = upstream paint(PINK, ">" ahead)
-  if (behind)      upstream = upstream paint(PINK, "<" behind)
+  if (stashed)     elsewhere = paint("5;4", "$" stashed)
+  if (ahead)       elsewhere = elsewhere paint(PINK, ">" ahead)
+  if (behind)      elsewhere = elsewhere paint(PINK, "<" behind)
 
   out = files
-  if (stash != "")    out = (out == "") ? stash    : out "\033[0m:" stash
-  if (upstream != "") out = (out == "") ? upstream : out "\033[0m:" upstream
+  if (elsewhere != "") out = (out == "") ? elsewhere : out "\033[0m:" elsewhere
 
   # Nothing to report is worth no characters at all.
   if (out == "") exit
