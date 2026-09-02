@@ -32,8 +32,8 @@ function paint(colour, text) { return "\033[1;38;" colour "m" text }
 END {
   PINK = "2;255;175;243"   # fg-pink from the starship palette
   # Two things, joined the way the rest of the prompt joins parts that
-  # stand on their own: what the files in front of you are doing, and
-  # what is committed or parked somewhere you cannot see.
+  # stand on their own: what is committed or parked somewhere you cannot
+  # see, then what the files in front of you are doing.
   if (conflicted)  files = files paint("5;196", "!" conflicted)
   if (deleted)     files = files paint("5;3",   "x" deleted)
   if (renamed)     files = files paint("5;3",   "r" renamed)
@@ -46,8 +46,8 @@ END {
   if (ahead)       elsewhere = elsewhere paint(PINK, ">" ahead)
   if (behind)      elsewhere = elsewhere paint(PINK, "<" behind)
 
-  out = files
-  if (elsewhere != "") out = (out == "") ? elsewhere : out "\033[0m:" elsewhere
+  out = elsewhere
+  if (files != "") out = (out == "") ? files : out "\033[0m:" files
 
   # Nothing to report is worth no characters at all.
   if (out == "") exit
