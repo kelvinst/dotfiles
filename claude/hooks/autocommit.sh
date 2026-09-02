@@ -35,7 +35,7 @@ dirty=$(git -C "$repo" status --porcelain)
 # land. A rule that only forbids force pushes or deletions still lets this
 # commit through.
 push_blocked() {
-  local branch=$1 reason
+  local branch=$1 out
 
   case "$(git -C "$repo" remote get-url origin 2>/dev/null)" in
   *github.com*) ;;
@@ -44,38 +44,49 @@ push_blocked() {
   command -v gh >/dev/null 2>&1 || return 1
 
   # Rulesets. Name-based, so they answer even for a branch not yet pushed.
-  reason=$(cd "$repo" && gh api "repos/{owner}/{repo}/rules/branches/$branch" --jq '
+  out=$(cd "$repo" && gh api "repos/{owner}/{repo}/rules/branches/$branch" --jq '
     [.[].type] | unique | map(
       if . == "pull_request" then "pull requests required"
       elif . == "required_status_checks" then "status checks required"
       elif . == "required_signatures" then "signed commits required"
       elif . == "update" then "updates restricted"
       else empty end
-    ) | join(", ")' 2>/dev/null)
-  [ -n "$reason" ] && {
-    printf '%s' "$reason"
+    ) | join(", ")' 2>&1) || return 2
+  [ -n "$out" ] && {
+    printf '%s' "$out"
     return 0
   }
 
   # Classic protection. The branch object only says that some exists; the
   # details need admin, so an unreadable one counts as blocked - a repo whose
   # protection you cannot read is not one to commit to unasked.
-  [ "$(cd "$repo" && gh api "repos/{owner}/{repo}/branches/$branch" \
-    --jq .protected 2>/dev/null)" = true ] || return 1
+  out=$(cd "$repo" && gh api "repos/{owner}/{repo}/branches/$branch" \
+    --jq .protected 2>&1) ||
+    case "$out" in
+    # Not on the remote yet: there is no classic protection to find.
+    *"(HTTP 404)"*) return 1 ;;
+    *) return 2 ;;
+    esac
+  [ "$out" = true ] || return 1
 
-  reason=$(cd "$repo" && gh api "repos/{owner}/{repo}/branches/$branch/protection" --jq '
+  out=$(cd "$repo" && gh api "repos/{owner}/{repo}/branches/$branch/protection" --jq '
     [ (if .required_pull_request_reviews then "pull request reviews required" else empty end),
       (if .restrictions then "pushes restricted to selected actors" else empty end),
       (if .lock_branch.enabled then "branch locked" else empty end),
       (if .required_signatures.enabled then "signed commits required" else empty end),
       (if ((.required_status_checks.checks // []) | length) > 0 then "status checks required" else empty end)
-    ] | join(", ")' 2>/dev/null) || {
-    printf 'branch protection, details not readable'
-    return 0
-  }
+    ] | join(", ")' 2>&1) ||
+    case "$out" in
+    # GitHub answered and refused - the detail is admin-only.
+    *"(HTTP "*)
+      printf 'branch protection, details not readable'
+      return 0
+      ;;
+    *) return 2 ;;
+    esac
 
-  [ -n "$reason" ] || return 1
-  printf '%s' "$reason"
+  [ -n "$out" ] || return 1
+  printf '%s' "$out"
 }
 
 branch=$(git -C "$repo" symbolic-ref --quiet --short HEAD 2>/dev/null)
@@ -87,8 +98,12 @@ if [ -n "$branch" ]; then
     blocked=$(git -C "$repo" config --get "autocommit.$branch.blocked" 2>/dev/null)
   else
     blocked=$(push_blocked "$branch")
-    git -C "$repo" config "autocommit.$branch.blocked" "$blocked"
-    git -C "$repo" config "autocommit.$branch.checkedAt" "$now"
+    # Status 2 is "could not ask" - an unreachable API is not an answer worth
+    # keeping for a day, so leave it uncached and let the next turn retry.
+    if [ $? -ne 2 ]; then
+      git -C "$repo" config "autocommit.$branch.blocked" "$blocked"
+      git -C "$repo" config "autocommit.$branch.checkedAt" "$now"
+    fi
   fi
 
   # Blocked: say so rather than committing something that cannot be pushed.
