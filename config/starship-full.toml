@@ -219,7 +219,7 @@ only_attached = true
 
 [git_commit]
 disabled = false
-format = '[†(\($tag\))]($style)'
+format = '[@(\($tag\))]($style)'
 style = 'bold purple'
 only_detached = true
 tag_disabled = false
