@@ -31,21 +31,28 @@ function paint(colour, text) { return "\033[1;38;" colour "m" text }
 
 END {
   PINK = "2;255;175;243"   # fg-pink from the starship palette
-  # Order follows the git_status module this replaces. Every kind of
-  # uncommitted work shares yellow; only what needs a decision stands out.
-  if (conflicted)  flags = flags paint("5;196", "!" conflicted)
-  if (stashed)     flags = flags paint("5;4",   "$" stashed)
-  if (deleted)     flags = flags paint("5;3",   "x" deleted)
-  if (renamed)     flags = flags paint("5;3",   "r" renamed)
-  if (modified)    flags = flags paint("5;3",   "m" modified)
-  if (typechanged) flags = flags paint("5;3",   "t" typechanged)
-  if (staged)      flags = flags paint("5;3",   "+" staged)
-  if (untracked)   flags = flags paint("5;3",   "?" untracked)
+  # Three separate things, joined the way the rest of the prompt joins
+  # parts that stand on their own: what the files are doing, what is
+  # stashed, and how far the branch has drifted from its upstream.
+  if (conflicted)  files = files paint("5;196", "!" conflicted)
+  if (deleted)     files = files paint("5;3",   "x" deleted)
+  if (renamed)     files = files paint("5;3",   "r" renamed)
+  if (modified)    files = files paint("5;3",   "m" modified)
+  if (typechanged) files = files paint("5;3",   "t" typechanged)
+  if (staged)      files = files paint("5;3",   "+" staged)
+  if (untracked)   files = files paint("5;3",   "?" untracked)
 
-  if (ahead)       flags = flags paint(PINK, ">" ahead)
-  if (behind)      flags = flags paint(PINK, "<" behind)
+  if (stashed)     stash = paint("5;4", "$" stashed)
+
+  if (ahead)       upstream = upstream paint(PINK, ">" ahead)
+  if (behind)      upstream = upstream paint(PINK, "<" behind)
+
+  out = files
+  if (stash != "")    out = (out == "") ? stash    : out "\033[0m:" stash
+  if (upstream != "") out = (out == "") ? upstream : out "\033[0m:" upstream
+
   # Nothing to report is worth no characters at all.
-  if (flags == "") exit
-  printf "%s\033[0m", flags
+  if (out == "") exit
+  printf "%s\033[0m", out
 }
 '
