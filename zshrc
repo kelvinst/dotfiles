@@ -464,7 +464,7 @@ print_info_before_cmd() {
         cmd_desc="aka ${blue}reserved word$nc$gray $cmd"
       elif [[ $cmd_desc =~ "^is (.+)$" ]]; then
         local executable=$(highlight_command ${match[1]})
-        cmd_desc="aka ${blue}executable$nc$gray $executable"
+        cmd_desc="aka $executable"
       fi
 
       # Wrap entire description in gray
