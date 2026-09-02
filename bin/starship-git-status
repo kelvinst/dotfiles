@@ -27,7 +27,6 @@ fi
 printf '%s\n' "$status" | awk -v state="$state" '
 function paint(colour, text) { return "\033[1;38;" colour "m" text }
 
-/^# branch\.oid /  { if ($3 != "(initial)") oid = substr($3, 1, 7) }
 /^# branch\.head / { detached = ($3 == "(detached)") }
 /^# branch\.ab / { ahead = $3 + 0; behind = -($4 + 0) }
 /^# stash /      { stashed = $3 + 0 }
@@ -60,12 +59,12 @@ END {
 
   if (stashed)     elsewhere = paint("5;4", "$" stashed)
   if (ahead)       elsewhere = elsewhere paint(PINK, ">" ahead)
-  if (behind)      elsewhere = elsewhere paint(PINK, "<" behind)
+  if (behind)      elsewhere = elsewhere paint("5;208", "<" behind)
 
   # Where you are, but only when it is not the ordinary case: on a branch
   # with nothing half-finished there is nothing here worth the width.
   if (state != "")                where = paint("5;3", state)
-  else if (detached && oid != "") where = paint("5;5", oid)
+  else if (detached)              where = paint("5;5", "†")
 
   out = where
   if (elsewhere != "") out = (out == "") ? elsewhere : out "\033[0m:" elsewhere
