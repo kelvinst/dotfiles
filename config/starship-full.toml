@@ -227,12 +227,12 @@ tag_symbol = "tag:"
 
 [git_state]
 disabled = false
-format = '[:\($state( $progress_current/$progress_total)\)]($style)'
+format = '[:$state( $progress_current/$progress_total)]($style)'
 style = 'bold yellow'
 
 [git_metrics]
 disabled = false
-format = '(:([+$added]($added_style))([-$deleted]($deleted_style)))'
+format = '(\(([+$added]($added_style))([-$deleted]($deleted_style))\))'
 added_style = 'bold green'
 deleted_style = 'bold red'
 
