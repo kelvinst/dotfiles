@@ -1293,15 +1293,14 @@ With an external monitor attached:
     left alone.
 
 With only the built-in display:
-  - the workspaces the last external run tiled go back to `accordion`.
-    Workspaces it never touched keep their layout.
+  - every populated workspace goes back to `accordion`, which is the only
+    layout that small a screen is worth.
 
 The last mode applied is remembered under `$XDG_CACHE_HOME/orbit/monitors`
-(or `~/.cache/orbit/monitors`), along with the workspaces tiled, and a run
-that would repeat the mode exits without touching anything — the
-resolution and display-sleep events that also reach the watcher must not
-stomp a layout picked by hand since. Pass `--force` to re-apply
-regardless.
+(or `~/.cache/orbit/monitors`) and a run that would repeat the mode exits
+without touching anything — the resolution and display-sleep events that
+also reach the watcher must not stomp a layout picked by hand since. Pass
+`--force` to re-apply regardless.
 
 Options:
   --force  Apply the layouts even when the mode is unchanged.
@@ -1319,6 +1318,10 @@ sync_monitors_tiling_ids() {
   aerospace list-windows --workspace "$1" \
     --format '%{window-id} %{window-parent-container-layout}' 2>/dev/null |
     awk '$2 != "floating" {print $1}'
+}
+
+sync_monitors_populated_workspaces() {
+  aerospace list-workspaces --monitor all --empty no 2>/dev/null
 }
 
 sync_monitors_main_workspaces() {
@@ -1383,14 +1386,12 @@ cmd_sync_monitors() {
     mode=solo
   fi
 
-  # Two-line state: line 1 is the mode last applied, line 2 the workspaces
-  # the last external run tiled, which is what a later solo run undoes.
+  # The mode last applied, so the resolution and display-sleep events that
+  # also reach the watcher don't re-run the whole thing.
   file=$(sync_monitors_state_file)
   last_mode=""
-  tiled=""
   if [ -f "$file" ]; then
     last_mode=$(sed -n '1p' "$file")
-    tiled=$(sed -n '2p' "$file")
   fi
   if [ "$force" -eq 0 ] && [ "$last_mode" = "$mode" ]; then
     return 0
@@ -1403,18 +1404,17 @@ cmd_sync_monitors() {
     for ws in 0 G M P; do
       aerospace move-workspace-to-monitor --workspace "$ws" secondary || :
     done
-    tiled=$(sync_monitors_main_workspaces | tr '\n' ' ')
-    sync_monitors_set_layout tiles $tiled
+    sync_monitors_set_layout tiles $(sync_monitors_main_workspaces)
   else
-    # Only what the last external run rearranged, so a workspace shaped by
-    # hand since — or one that never left the small screen — is not
-    # flattened out from under the user.
-    sync_monitors_set_layout accordion $tiled
-    tiled=""
+    # Every populated workspace, not just the ones tiled on the way in.
+    # There is one screen left and accordion is what it is worth, and the
+    # workspaces that need it are not always the ones a previous run
+    # touched — the layouts don't survive a reboot the state file does.
+    sync_monitors_set_layout accordion $(sync_monitors_populated_workspaces)
   fi
 
   mkdir -p "$(dirname "$file")"
-  printf '%s\n%s\n' "$mode" "$tiled" >"$file"
+  printf '%s\n' "$mode" >"$file"
 }
 
 case "${1:-help}" in
