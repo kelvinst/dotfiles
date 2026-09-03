@@ -1,8 +1,8 @@
 -- Aerospace has no monitor-connect callback of its own (0.20.3 only offers
 -- `after-startup-command` and the focus/mode callbacks), so the display
 -- watcher lives here. Every screen change re-runs `orbit sync-monitors`,
--- which pins workspaces 0/G/M/P to the external monitor and swaps the
--- workspace layouts between `3-col-middle` and `accordion`.
+-- which pins workspaces 0/G/M/P to the secondary monitor and swaps the
+-- main-monitor layouts between `tiles` and `accordion`.
 
 -- Hammerspoon is a GUI app, so `hs.task` inherits the bare launchd PATH —
 -- neither `orbit` nor the `aerospace` CLI it shells out to is on it. The
