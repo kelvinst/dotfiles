@@ -51,8 +51,8 @@ Commands:
            server running.
 
   sync-monitors
-           Re-seed the secondary-monitor workspaces and switch every
-           workspace layout to suit the monitors currently attached.
+           Re-seed the secondary-monitor workspaces and switch the
+           main-monitor layouts to suit the monitors currently attached.
 
   help     Show this help.
 
@@ -1288,17 +1288,17 @@ With an external monitor attached:
   - workspaces 0, G, M and P are pushed to the secondary monitor, the same
     seeding `after-startup-command` and the `alt-semicolon` service-mode
     `m` binding do;
-  - every main-monitor workspace holding three or more tiling windows is
-    arranged with the `3-col-middle` preset, which only earns its keep on
-    a wide screen. Secondary-monitor workspaces are left alone.
+  - every populated main-monitor workspace is flattened into `tiles`,
+    which is what a wide screen is for. Secondary-monitor workspaces are
+    left alone.
 
 With only the built-in display:
-  - the workspaces the last external run presetted are flattened back to
-    `accordion`. Workspaces it never touched keep their layout.
+  - the workspaces the last external run tiled go back to `accordion`.
+    Workspaces it never touched keep their layout.
 
 The last mode applied is remembered under `$XDG_CACHE_HOME/orbit/monitors`
-(or `~/.cache/orbit/monitors`), along with the workspaces presetted, and a
-run that would repeat the mode exits without touching anything — the
+(or `~/.cache/orbit/monitors`), along with the workspaces tiled, and a run
+that would repeat the mode exits without touching anything — the
 resolution and display-sleep events that also reach the watcher must not
 stomp a layout picked by hand since. Pass `--force` to re-apply
 regardless.
@@ -1316,70 +1316,41 @@ sync_monitors_tiling_ids() {
   # Window-ids of the tiling (non-floating) windows on workspace $1. Same
   # exclusion as `preset_tiling_window_ids`, but for an arbitrary
   # workspace rather than the focused one.
-  aerospace list-windows --workspace "$1"     --format '%{window-id} %{window-parent-container-layout}' 2>/dev/null |
+  aerospace list-windows --workspace "$1" \
+    --format '%{window-id} %{window-parent-container-layout}' 2>/dev/null |
     awk '$2 != "floating" {print $1}'
 }
 
-sync_monitors_monitor_of() {
-  # The monitor-id workspace $1 currently sits on, empty or not.
-  aerospace list-workspaces --monitor all \
-    --format '%{workspace} %{monitor-id}' 2>/dev/null |
-    awk -v ws="$1" '$1 == ws {print $2; exit}'
-}
-
-sync_monitors_apply_presets() {
-  # Only the main monitor gets rearranged. `list-workspaces` takes a
-  # monitor-id but no `main` keyword, and there's no query for which id
+sync_monitors_main_workspaces() {
+  # Populated workspaces on the main monitor. `list-workspaces` takes a
+  # monitor-id but has no `main` keyword, and nothing reports which id
   # that is — the seeding just put workspace 0 on the secondary, though,
-  # so its id names the monitor to skip. That covers 0/G/M/P and anything
-  # else alt-tabbed over to the small screen.
-  secondary=$(sync_monitors_monitor_of 0)
+  # so its id names the one monitor to skip. That covers 0/G/M/P and
+  # anything else alt-tabbed over to the small screen since.
+  secondary=$(aerospace list-workspaces --monitor all \
+    --format '%{workspace} %{monitor-id}' 2>/dev/null |
+    awk '$1 == "0" {print $2; exit}')
 
-  # `orbit preset` only ever targets the focused workspace, so each
-  # workspace has to be visited in turn. Focus is put back where it
-  # started — down to the window, not just the workspace.
-  saved_ws=$(aerospace list-workspaces --focused)
-  saved_win=$(aerospace list-windows --focused --format '%{window-id}' 2>/dev/null || :)
-
-  presetted=""
-  for entry in $(aerospace list-workspaces --monitor all --empty no \
-    --format '%{workspace}:%{monitor-id}' 2>/dev/null); do
-    ws=${entry%:*}
-    [ "${entry#*:}" != "$secondary" ] || continue
-    # Below three windows `3-col-middle` degenerates into a main column
-    # with one or two empty flanks, which is worse than what was there.
-    count=$(sync_monitors_tiling_ids "$ws" | awk 'END {print NR}')
-    [ "$count" -ge 3 ] || continue
-    aerospace workspace "$ws" || continue
-    # A subshell per call: `cmd_preset` takes the workspace-mutation lock
-    # and only drops it when the process exits, so a second call from the
-    # same process would find the lock held and quietly do nothing.
-    (cmd_preset 3-col-middle) || :
-    presetted="${presetted:+$presetted }$ws"
-  done
-
-  aerospace workspace "$saved_ws" || :
-  if [ -n "$saved_win" ]; then
-    aerospace focus --window-id "$saved_win" || :
-  fi
-
-  echo "$presetted"
+  aerospace list-workspaces --monitor all --empty no \
+    --format '%{workspace} %{monitor-id}' 2>/dev/null |
+    awk -v skip="$secondary" '$2 != skip {print $1}'
 }
 
-sync_monitors_apply_accordion() {
-  # Only what the last external run rearranged, so a workspace left in
-  # accordion on the small screen — or shaped by hand since — is not
-  # flattened out from under the user.
+sync_monitors_set_layout() {
+  # Flatten each of the workspaces in $2.. and give it the $1 root layout.
+  # `aerospace layout` has no `--workspace` flag, but the flatten has just
+  # reparented every window onto the workspace root, so setting the layout
+  # through any one of them sets the root layout.
+  layout=$1
+  shift
+
   for ws in "$@"; do
     # A subshell because `cmd_flatten_workspace_tree` ends in `exec` —
     # called directly it would take the loop with it.
     (cmd_flatten_workspace_tree --workspace "$ws") || continue
-    # `aerospace layout` has no `--workspace` flag, but the flatten just
-    # reparented every window onto the workspace root, so setting the
-    # layout through any one of them sets the root layout.
     wid=$(sync_monitors_tiling_ids "$ws" | head -n1)
     [ -n "$wid" ] || continue
-    aerospace layout --window-id "$wid" accordion || :
+    aerospace layout --window-id "$wid" "$layout" || :
   done
 }
 
@@ -1413,13 +1384,13 @@ cmd_sync_monitors() {
   fi
 
   # Two-line state: line 1 is the mode last applied, line 2 the workspaces
-  # the last external run presetted, which is what a later solo run undoes.
+  # the last external run tiled, which is what a later solo run undoes.
   file=$(sync_monitors_state_file)
   last_mode=""
-  presetted=""
+  tiled=""
   if [ -f "$file" ]; then
     last_mode=$(sed -n '1p' "$file")
-    presetted=$(sed -n '2p' "$file")
+    tiled=$(sed -n '2p' "$file")
   fi
   if [ "$force" -eq 0 ] && [ "$last_mode" = "$mode" ]; then
     return 0
@@ -1432,14 +1403,18 @@ cmd_sync_monitors() {
     for ws in 0 G M P; do
       aerospace move-workspace-to-monitor --workspace "$ws" secondary || :
     done
-    presetted=$(sync_monitors_apply_presets)
+    tiled=$(sync_monitors_main_workspaces | tr '\n' ' ')
+    sync_monitors_set_layout tiles $tiled
   else
-    sync_monitors_apply_accordion $presetted
-    presetted=""
+    # Only what the last external run rearranged, so a workspace shaped by
+    # hand since — or one that never left the small screen — is not
+    # flattened out from under the user.
+    sync_monitors_set_layout accordion $tiled
+    tiled=""
   fi
 
   mkdir -p "$(dirname "$file")"
-  printf '%s\n%s\n' "$mode" "$presetted" >"$file"
+  printf '%s\n%s\n' "$mode" "$tiled" >"$file"
 }
 
 case "${1:-help}" in
