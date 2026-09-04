@@ -38,6 +38,17 @@ local task = nil
 
 local function syncMonitors()
   pending = nil
+
+  -- Never two at once. `orbit sync-monitors` takes the workspace-mutation
+  -- lock, so a second one launched over a running first would lose it and
+  -- fail for no reason but the collision — and reassigning `task` below
+  -- would drop the reference holding the first one alive. Wait it out; the
+  -- attempt counter is untouched, because nothing was attempted.
+  if task and task:isRunning() then
+    pending = hs.timer.doAfter(SETTLE_SECONDS, syncMonitors)
+    return
+  end
+
   attempts = attempts + 1
 
   local function done(code, _, stderr)
