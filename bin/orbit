@@ -1315,9 +1315,15 @@ sync_monitors_tiling_ids() {
   # Window-ids of the tiling (non-floating) windows on workspace $1. Same
   # exclusion as `preset_tiling_window_ids`, but for an arbitrary
   # workspace rather than the focused one.
-  aerospace list-windows --workspace "$1" \
-    --format '%{window-id} %{window-parent-container-layout}' 2>/dev/null |
-    awk '$2 != "floating" {print $1}'
+  #
+  # Captured before awk sees it, as in `sync_monitors_main_workspaces`: a
+  # failed `aerospace` piped straight in reads as "nothing tiling here",
+  # which is also what a workspace of pure floats looks like, and the two
+  # want telling apart.
+  rows=$(aerospace list-windows --workspace "$1" \
+    --format '%{window-id} %{window-parent-container-layout}' 2>/dev/null) || return 1
+
+  printf '%s\n' "$rows" | awk '$2 != "floating" {print $1}'
 }
 
 sync_monitors_populated_workspaces() {
@@ -1351,17 +1357,55 @@ sync_monitors_set_layout() {
   # `aerospace layout` has no `--workspace` flag, but the flatten has just
   # reparented every window onto the workspace root, so setting the layout
   # through any one of them sets the root layout.
+  #
+  # A workspace that fails part-way is left flattened but not re-laid-out,
+  # which the caller must not record as a mode applied — so the loop runs
+  # to the end for the workspaces that can be done and then reports.
   layout=$1
   shift
 
+  failed=0
   for ws in "$@"; do
     # A subshell because `cmd_flatten_workspace_tree` ends in `exec` —
     # called directly it would take the loop with it.
-    (cmd_flatten_workspace_tree --workspace "$ws") || continue
-    wid=$(sync_monitors_tiling_ids "$ws" | head -n1)
+    if ! (cmd_flatten_workspace_tree --workspace "$ws"); then
+      failed=1
+      continue
+    fi
+
+    ids=$(sync_monitors_tiling_ids "$ws") || {
+      failed=1
+      continue
+    }
+
+    # Nothing tiling to hang the layout off — a workspace of pure floats.
+    # Nothing to do, and nothing wrong either.
+    wid=$(printf '%s\n' "$ids" | head -n1)
     [ -n "$wid" ] || continue
-    aerospace layout --window-id "$wid" "$layout" || :
+
+    aerospace layout --window-id "$wid" "$layout" || failed=1
   done
+
+  [ "$failed" -eq 0 ]
+}
+
+sync_monitors_apply_layout() {
+  # `sync_monitors_set_layout` under the workspace-mutation lock, so a
+  # sync can't interleave its flatten/layout calls with a `preset` or
+  # `move-workspace` fired from a keybinding mid-run.
+  #
+  # `with_workspace_mutation_lock` returns 0 without running the body when
+  # the lock is already held, which would read as a clean pass and record
+  # a mode that was never applied. The body raises this flag so the two
+  # can be told apart.
+  sync_monitors_applied=0
+  with_workspace_mutation_lock _sync_monitors_apply_layout_locked "" "$@" || return 1
+  [ "$sync_monitors_applied" -eq 1 ]
+}
+
+_sync_monitors_apply_layout_locked() {
+  sync_monitors_applied=1
+  sync_monitors_set_layout "$@"
 }
 
 cmd_sync_monitors() {
@@ -1433,20 +1477,21 @@ cmd_sync_monitors() {
       return 1
     fi
     workspaces=$(sync_monitors_main_workspaces "$secondary") || return 1
-    sync_monitors_set_layout tiles $workspaces
+    sync_monitors_apply_layout tiles $workspaces || return 1
   else
     # Every populated workspace, not just the ones tiled on the way in.
     # There is one screen left and accordion is what it is worth, and the
     # workspaces that need it are not always the ones a previous run
     # touched — the layouts don't survive a reboot the state file does.
     workspaces=$(sync_monitors_populated_workspaces) || return 1
-    sync_monitors_set_layout accordion $workspaces
+    sync_monitors_apply_layout accordion $workspaces || return 1
   fi
 
-  # Only now, with the listing read and the layouts applied. Recording a
-  # mode that was never actually applied would send every later run into
-  # the early return above, leaving the screens as they are until the
-  # monitor is replugged or someone finds `--force`.
+  # Only now, with the listing read and every workspace laid out.
+  # Recording a mode that was never applied — or applied to only some of
+  # them — would send every later run into the early return above, leaving
+  # the screens as they are until the monitor is replugged or someone
+  # finds `--force`.
   mkdir -p "$(dirname "$file")"
   printf '%s\n' "$mode" >"$file"
 }
