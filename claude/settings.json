@@ -31,9 +31,14 @@
       }
     ]
   },
+  "statusLine": {
+    "type": "command",
+    "command": "bash \"$HOME\"/.claude/plugins/cache/caveman/caveman/*/src/hooks/caveman-statusline.sh"
+  },
   "enabledPlugins": {
     "caveman@caveman": true,
-    "kix@kix-agents": true
+    "kix@kix-agents": true,
+    "superpowers@claude-plugins-official": true
   },
   "extraKnownMarketplaces": {
     "caveman": {
@@ -54,10 +59,6 @@
         "repo": "0k-software/kix-agents"
       }
     }
-  },
-  "statusLine": {
-    "type": "command",
-    "command": "bash \"$HOME\"/.claude/plugins/cache/caveman/caveman/*/src/hooks/caveman-statusline.sh"
   },
   "tui": "fullscreen",
   "skipDangerousModePermissionPrompt": true,
