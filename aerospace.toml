@@ -189,10 +189,18 @@ on-mode-changed = []
     alt-ctrl-l = 'join-with right'
 
     # See: https://nikitabobko.github.io/AeroSpace/commands#resize
+    # ctrl mirrors alt here, the same way ctrl-shift-hjkl mirrors
+    # alt-shift-hjkl above. ctrl-shift-equal/minus are kitty's default
+    # font-size keys, but kitty keeps cmd-equal/cmd-minus for that, so
+    # nothing is lost by claiming them globally.
     alt-minus = 'resize width -50'
     alt-equal = 'resize width +50'
     alt-shift-minus = 'resize height -50'
     alt-shift-equal = 'resize height +50'
+    ctrl-minus = 'resize width -50'
+    ctrl-equal = 'resize width +50'
+    ctrl-shift-minus = 'resize height -50'
+    ctrl-shift-equal = 'resize height +50'
 
     # See: https://nikitabobko.github.io/AeroSpace/commands#workspace
     alt-0 = 'workspace 0'
