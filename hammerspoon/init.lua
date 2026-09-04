@@ -16,11 +16,48 @@ local SYNC_MONITORS =
 -- are worth touching.
 local SETTLE_SECONDS = 2
 
+-- `orbit sync-monitors` exits non-zero and records nothing when aerospace
+-- isn't in a state worth reading — a monitor count that won't parse, a
+-- seeding that didn't land — on the understanding that the run comes back.
+-- It has to come back from here: a dock is one burst of screen changes
+-- collapsed into a single debounced run, so there is no later event to
+-- wait for.
+local MAX_ATTEMPTS = 3
+
 local pending = nil
+local attempts = 0
+
+-- Held for the same reason as the watcher below: a task that gets
+-- collected mid-run never calls back, and the retry goes with it.
+local task = nil
 
 local function syncMonitors()
   pending = nil
-  hs.task.new("/bin/sh", nil, { "-c", SYNC_MONITORS }):start()
+  attempts = attempts + 1
+
+  local function done(code, _, stderr)
+    if code == 0 then
+      attempts = 0
+      return
+    end
+
+    hs.printf(
+      "orbit sync-monitors exited %d (attempt %d/%d) %s",
+      code,
+      attempts,
+      MAX_ATTEMPTS,
+      stderr or ""
+    )
+
+    if attempts < MAX_ATTEMPTS then
+      pending = hs.timer.doAfter(SETTLE_SECONDS, syncMonitors)
+    else
+      attempts = 0
+    end
+  end
+
+  task = hs.task.new("/bin/sh", done, { "-c", SYNC_MONITORS })
+  task:start()
 end
 
 -- Global on purpose: a local would go out of scope when this chunk
@@ -32,6 +69,9 @@ screenWatcher = hs.screen.watcher.new(function()
   if pending then
     pending:stop()
   end
+  -- A fresh screen change is a fresh situation, whatever the last one's
+  -- retries were up to.
+  attempts = 0
   pending = hs.timer.doAfter(SETTLE_SECONDS, syncMonitors)
 end)
 
