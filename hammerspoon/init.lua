@@ -29,8 +29,15 @@ local MAX_ATTEMPTS = 3
 -- burst of screen changes a dock produces is spent by then.
 local SLOW_RETRY_SECONDS = 60
 
+-- How many settle intervals a sync may overrun before it is killed rather
+-- than waited on. `orbit sync-monitors` can block on a wedged aerospace,
+-- and deferring to it forever is the one failure this whole chain can't
+-- see or report.
+local MAX_DEFERRALS = 10
+
 local pending = nil
 local attempts = 0
+local deferrals = 0
 
 -- Held for the same reason as the watcher below: a task that gets
 -- collected mid-run never calls back, and the retry goes with it.
@@ -45,10 +52,28 @@ local function syncMonitors()
   -- would drop the reference holding the first one alive. Wait it out; the
   -- attempt counter is untouched, because nothing was attempted.
   if task and task:isRunning() then
+    deferrals = deferrals + 1
+
+    if deferrals <= MAX_DEFERRALS then
+      pending = hs.timer.doAfter(SETTLE_SECONDS, syncMonitors)
+      return
+    end
+
+    -- Past that it isn't slow, it's stuck, and waiting on it silently is
+    -- worse than killing it: the run that replaces it either works or
+    -- fails somewhere this can say so.
+    hs.printf(
+      "orbit sync-monitors overran %ds, killing it",
+      SETTLE_SECONDS * MAX_DEFERRALS
+    )
+    task:terminate()
+    task = nil
+    deferrals = 0
     pending = hs.timer.doAfter(SETTLE_SECONDS, syncMonitors)
     return
   end
 
+  deferrals = 0
   attempts = attempts + 1
 
   local function done(code, _, stderr)
