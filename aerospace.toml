@@ -272,7 +272,6 @@ on-mode-changed = []
     cmd-ctrl-n = 'exec-and-forget orbit open com.apple.Notes'
     cmd-ctrl-o = 'exec-and-forget orbit open md.obsidian'
     cmd-ctrl-p = 'exec-and-forget orbit open -g com.apple.Music'
-    cmd-ctrl-t = 'exec-and-forget orbit open -g com.tiimo.app'
     cmd-ctrl-w = 'exec-and-forget orbit open -g net.whatsapp.WhatsApp'
     cmd-ctrl-z = 'exec-and-forget orbit open -g us.zoom.xos'
 
@@ -344,9 +343,4 @@ on-mode-changed = []
     if.app-id = 'com.apple.reminders'
     check-further-callbacks = true
     run = ['move-node-to-workspace P']
-
-[[on-window-detected]]
-    if.app-id = 'com.tiimo.app'
-    check-further-callbacks = true
-    run = ['move-node-to-workspace P', 'layout floating']
 
