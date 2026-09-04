@@ -207,6 +207,21 @@ on-mode-changed = []
     alt-m = 'workspace M'
     alt-p = 'workspace P'
 
+    # Same jumps under ctrl, for the muscle memory carried over from other
+    # window managers. Digits only: ctrl-g/m/p are load-bearing in the
+    # terminal (bell, Return, previous) and aerospace grabs bindings
+    # globally, so they stay unbound.
+    ctrl-0 = 'workspace 0'
+    ctrl-1 = 'workspace 1'
+    ctrl-2 = 'workspace 2'
+    ctrl-3 = 'workspace 3'
+    ctrl-4 = 'workspace 4'
+    ctrl-5 = 'workspace 5'
+    ctrl-6 = 'workspace 6'
+    ctrl-7 = 'workspace 7'
+    ctrl-8 = 'workspace 8'
+    ctrl-9 = 'workspace 9'
+
     # See: https://nikitabobko.github.io/AeroSpace/commands#move-node-to-workspace
     alt-shift-0 = 'move-node-to-workspace 0 --focus-follows-window'
     alt-shift-1 = 'move-node-to-workspace 1 --focus-follows-window'
