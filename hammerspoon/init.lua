@@ -133,3 +133,43 @@ screenWatcher = hs.screen.watcher.new(function()
 end)
 
 screenWatcher:start()
+
+-- Link routing. macOS hands a clicked link to Chrome, and Chrome drops the
+-- new tab into whichever of its windows it focused last. That window is
+-- often on another aerospace workspace — or another monitor — so clicking a
+-- link in kitty/Claude yanks the whole desktop somewhere else. Route
+-- http(s) through here instead: focus the Chrome window that lives on the
+-- *focused* workspace first, so Chrome's "last focused window" is the one
+-- in front of us when the URL lands. With no Chrome window on this
+-- workspace, nothing is focused and the stock behaviour takes over.
+--
+-- Only fires while Hammerspoon is the registered http/https handler:
+--   hs -c 'hs.urlevent.setDefaultHandler("http")'
+
+local BROWSER_BUNDLE_ID = "com.google.Chrome"
+
+-- $0 is a throwaway shell name, $1 the bundle id, $2 the URL — passed as
+-- argv rather than interpolated so URLs never reach the shell as code.
+-- Same launchd-PATH problem as above: `aerospace` is not on Hammerspoon's
+-- inherited PATH.
+local OPEN_LINK = [[
+export PATH="$HOME/.local/bin:/opt/homebrew/bin:/opt/homebrew/sbin:$PATH"
+window_id=$(aerospace list-windows --workspace focused --app-bundle-id "$1" \
+  --format '%{window-id}' 2>/dev/null | head -n1)
+if [ -n "$window_id" ]; then
+  aerospace focus --window-id "$window_id" 2>/dev/null || :
+fi
+open -b "$1" "$2"
+]]
+
+function hs.urlevent.httpCallback(_scheme, _host, _params, fullURL)
+  hs.task
+    .new("/bin/sh", nil, {
+      "-c",
+      OPEN_LINK,
+      "sh",
+      BROWSER_BUNDLE_ID,
+      fullURL,
+    })
+    :start()
+end
