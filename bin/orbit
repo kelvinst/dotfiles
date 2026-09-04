@@ -1336,9 +1336,14 @@ sync_monitors_main_workspaces() {
   # `list-workspaces` takes a monitor-id but has no `main` keyword, and
   # nothing reports which id that is, so the caller works it out from
   # where the seeding left workspace 0 and passes it in.
-  aerospace list-workspaces --monitor all --empty no \
-    --format '%{workspace} %{monitor-id}' 2>/dev/null |
-    awk -v skip="$1" '$2 != skip {print $1}'
+  #
+  # The listing is captured before awk sees it: piped straight in, a
+  # failed `aerospace` would be masked by awk's own exit status and read
+  # here as "no workspaces on the main monitor".
+  rows=$(aerospace list-workspaces --monitor all --empty no \
+    --format '%{workspace} %{monitor-id}' 2>/dev/null) || return 1
+
+  printf '%s\n' "$rows" | awk -v skip="$1" '$2 != skip {print $1}'
 }
 
 sync_monitors_set_layout() {
@@ -1427,15 +1432,21 @@ cmd_sync_monitors() {
     if [ "$seeded" -eq 0 ] || [ -z "$secondary" ]; then
       return 1
     fi
-    sync_monitors_set_layout tiles $(sync_monitors_main_workspaces "$secondary")
+    workspaces=$(sync_monitors_main_workspaces "$secondary") || return 1
+    sync_monitors_set_layout tiles $workspaces
   else
     # Every populated workspace, not just the ones tiled on the way in.
     # There is one screen left and accordion is what it is worth, and the
     # workspaces that need it are not always the ones a previous run
     # touched — the layouts don't survive a reboot the state file does.
-    sync_monitors_set_layout accordion $(sync_monitors_populated_workspaces)
+    workspaces=$(sync_monitors_populated_workspaces) || return 1
+    sync_monitors_set_layout accordion $workspaces
   fi
 
+  # Only now, with the listing read and the layouts applied. Recording a
+  # mode that was never actually applied would send every later run into
+  # the early return above, leaving the screens as they are until the
+  # monitor is replugged or someone finds `--force`.
   mkdir -p "$(dirname "$file")"
   printf '%s\n' "$mode" >"$file"
 }
