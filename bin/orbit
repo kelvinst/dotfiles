@@ -1380,7 +1380,16 @@ cmd_sync_monitors() {
   # Monitor count, not monitor size: every external display these machines
   # meet is the big one, and the built-in is the only display that is ever
   # alone.
-  if [ "$(aerospace list-monitors --count)" -gt 1 ]; then
+
+  # An unreadable count aborts the run rather than falling through to the
+  # else branch: empty is not "one monitor", it's aerospace wedged or
+  # mid-restart, and reading it as solo accordions both screens while the
+  # external monitor is still plugged in.
+  count=$(aerospace list-monitors --count 2>/dev/null || :)
+  case $count in
+  '' | *[!0-9]*) return 1 ;;
+  esac
+  if [ "$count" -gt 1 ]; then
     mode=external
   else
     mode=solo
