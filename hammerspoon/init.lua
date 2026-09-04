@@ -23,7 +23,12 @@ local function syncMonitors()
   hs.task.new("/bin/sh", nil, { "-c", SYNC_MONITORS }):start()
 end
 
-local screenWatcher = hs.screen.watcher.new(function()
+-- Global on purpose: a local would go out of scope when this chunk
+-- returns, and nothing else holds the watcher — the callback closure
+-- captures `pending` and `syncMonitors`, not the watcher itself. The next
+-- collection would finalize it and screen changes would stop arriving,
+-- silently and with nothing logged.
+screenWatcher = hs.screen.watcher.new(function()
   if pending then
     pending:stop()
   end
