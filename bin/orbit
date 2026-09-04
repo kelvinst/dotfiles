@@ -250,15 +250,27 @@ EOF
 # (useful for body-specific recovery like restoring focus). Pass an empty
 # string for no extra cleanup.
 #
-# If a run dies before the trap fires (e.g. SIGKILL), `rmdir` the lock
-# manually: `rmdir /tmp/orbit-workspace-mutation.$(id -u).lock`.
+# A run that dies before the trap fires (e.g. SIGKILL, or a logout) leaves
+# the lock behind, and nothing else would ever clear it — which used to
+# mean `preset`, `swap main` and `move-workspace` quietly doing nothing
+# until it was removed by hand. `sync-monitors` runs off a display watcher
+# with nobody watching, so the lock ages out instead: a real run holds it
+# for seconds, and anything older than `stale_after` is a corpse.
 with_workspace_mutation_lock() {
   body="$1"
   cleanup="$2"
   shift 2
+  stale_after=60
   lockdir="/tmp/orbit-workspace-mutation.$(id -u).lock"
   if ! mkdir "$lockdir" 2>/dev/null; then
-    return 0
+    # A lock that has since vanished stats as epoch 0, which reads as
+    # ancient — the retry below is what settles it either way.
+    age=$(($(date +%s) - $(stat -f %m "$lockdir" 2>/dev/null || echo 0)))
+    if [ "$age" -lt "$stale_after" ]; then
+      return 0
+    fi
+    rmdir "$lockdir" 2>/dev/null || :
+    mkdir "$lockdir" 2>/dev/null || return 0
   fi
   trap "${cleanup:+$cleanup; }rmdir '$lockdir' 2>/dev/null || :" EXIT INT TERM
   "$body" "$@"
