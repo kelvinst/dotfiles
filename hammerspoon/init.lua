@@ -1,3 +1,9 @@
+-- Loading `hs.ipc` is what makes the `hs` command-line tool able to talk to
+-- the running Hammerspoon — without it `hs -c ...` just times out. The CLI
+-- itself is a symlink into the app bundle; see README for how it is
+-- installed.
+require("hs.ipc")
+
 -- Aerospace has no monitor-connect callback of its own (0.20.3 only offers
 -- `after-startup-command` and the focus/mode callbacks), so the display
 -- watcher lives here. Every screen change re-runs `orbit sync-monitors`,
