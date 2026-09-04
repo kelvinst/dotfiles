@@ -151,6 +151,7 @@ screenWatcher:start()
 --
 -- Only fires while Hammerspoon is the registered http/https handler:
 --   hs -c 'hs.urlevent.setDefaultHandler("http")'
+--   hs -c 'hs.urlevent.setDefaultHandler("https")'
 
 local BROWSER_BUNDLE_ID = "com.google.Chrome"
 
@@ -159,18 +160,57 @@ local BROWSER_BUNDLE_ID = "com.google.Chrome"
 -- Same launchd-PATH problem as above: `aerospace` is not on Hammerspoon's
 -- inherited PATH.
 local OPEN_LINK = [[
+# `hs.task` hands the child an open stdin pipe nothing ever writes to, and
+# the aerospace CLI reads stdin by default to batch further commands — it
+# would block forever on it. Same guard `orbit` opens with.
+exec </dev/null
+
 export PATH="$HOME/.local/bin:/opt/homebrew/bin:/opt/homebrew/sbin:$PATH"
-window_id=$(aerospace list-windows --workspace focused --app-bundle-id "$1" \
-  --format '%{window-id}' 2>/dev/null | head -n1)
+
+# Prefer the window we are actually looking at. Picking the first browser
+# window on the workspace would yank focus off the one in front of us when
+# two of them are tiled side by side — the same annoyance across two
+# windows instead of two workspaces.
+focused=$(aerospace list-windows --focused \
+  --format '%{window-id} %{app-bundle-id}' 2>/dev/null)
+case "$focused" in
+*" $1") window_id=${focused%% *} ;;
+*)
+  window_id=$(aerospace list-windows --workspace focused --app-bundle-id "$1" \
+    --format '%{window-id}' 2>/dev/null | head -n1)
+  ;;
+esac
+
 if [ -n "$window_id" ]; then
   aerospace focus --window-id "$window_id" 2>/dev/null || :
+  # `focus` returns once the aerospace server accepts the request, not once
+  # macOS has raised the window. Handing the URL over early lands the tab in
+  # whichever window the browser still thinks it focused last — the very
+  # window we are steering away from. Wait for the raise, up to half a
+  # second, then go anyway.
+  for _ in 1 2 3 4 5 6 7 8 9 10; do
+    [ "$(aerospace list-windows --focused --format '%{window-id}' \
+      2>/dev/null)" = "$window_id" ] && break
+    sleep 0.05
+  done
 fi
+
 open -b "$1" "$2"
 ]]
 
 function hs.urlevent.httpCallback(_scheme, _host, _params, fullURL)
   hs.task
-    .new("/bin/sh", nil, {
+    .new("/bin/sh", function(exitCode, _stdout, stderr)
+      -- Nothing else surfaces a failure here: once Hammerspoon is the
+      -- registered handler, a browser that moved or was uninstalled turns
+      -- every link click in every app into a silent no-op.
+      if exitCode ~= 0 then
+        hs.alert.show(
+          "Link open failed: "
+            .. ((stderr and stderr ~= "") and stderr or exitCode)
+        )
+      end
+    end, {
       "-c",
       OPEN_LINK,
       "sh",
