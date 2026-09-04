@@ -24,6 +24,11 @@ local SETTLE_SECONDS = 2
 -- wait for.
 local MAX_ATTEMPTS = 3
 
+-- What the chain falls back to once those are spent, rather than stopping
+-- dead. A wedged aerospace outlasts a handful of seconds easily, and the
+-- burst of screen changes a dock produces is spent by then.
+local SLOW_RETRY_SECONDS = 60
+
 local pending = nil
 local attempts = 0
 
@@ -49,10 +54,26 @@ local function syncMonitors()
       stderr or ""
     )
 
+    -- A screen change during the run may already have armed a timer, and
+    -- it is stale the moment this one goes on.
+    if pending then
+      pending:stop()
+    end
+
     if attempts < MAX_ATTEMPTS then
-      pending = hs.timer.doAfter(SETTLE_SECONDS, syncMonitors)
+      -- Backing off: three tries crammed into one settle interval all
+      -- land while whatever went wrong is still going wrong. Clamped
+      -- because a screen change during the run resets the counter, and a
+      -- negative exponent would come back under the settle interval.
+      local delay = SETTLE_SECONDS * 2 ^ math.max(attempts - 1, 0)
+      pending = hs.timer.doAfter(delay, syncMonitors)
     else
+      -- Dropping the chain here would leave the screens as they are until
+      -- the user replugs, which is what the retry exists to avoid. A slow
+      -- one keeps going instead; a success or a fresh screen change ends
+      -- it.
       attempts = 0
+      pending = hs.timer.doAfter(SLOW_RETRY_SECONDS, syncMonitors)
     end
   end
 
