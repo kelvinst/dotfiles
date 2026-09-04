@@ -256,6 +256,13 @@ EOF
 # until it was removed by hand. `sync-monitors` runs off a display watcher
 # with nobody watching, so the holder's pid goes in the lock and a lock
 # whose holder is gone gets reclaimed.
+# When a process with pid $1 started, whitespace-normalised so the value
+# written into the lock and the value read back compare as strings — `ps`
+# pads the column, and the padding is not stable.
+process_started() {
+  ps -p "$1" -o lstart= 2>/dev/null | tr -s ' ' ' ' | sed 's/^ *//;s/ *$//'
+}
+
 with_workspace_mutation_lock() {
   body="$1"
   cleanup="$2"
@@ -264,18 +271,30 @@ with_workspace_mutation_lock() {
   lockdir="/tmp/orbit-workspace-mutation.$(id -u).lock"
   if ! mkdir "$lockdir" 2>/dev/null; then
     holder=$(cat "$lockdir/pid" 2>/dev/null || :)
-    if [ -n "$holder" ]; then
+    holder_pid=${holder%% *}
+    holder_started=${holder#"$holder_pid"}
+    holder_started=${holder_started# }
+
+    if [ -n "$holder_pid" ] && [ -n "$holder_started" ]; then
       # Whether to reclaim is about whether the holder still exists, not
       # how long it has been at it. A run blocked on a wedged aerospace
       # is alive and mid-mutation, and taking the lock off it is exactly
       # the interleaving the lock is here to prevent.
-      if kill -0 "$holder" 2>/dev/null; then
+      #
+      # The start time is what makes the pid mean one particular process.
+      # A bare number is recycled sooner or later — and a lock outlives a
+      # reboot, `/private/tmp` being swept by age rather than emptied at
+      # boot — after which whatever inherited the number would keep the
+      # lock alive forever, with the age check below out of reach because
+      # a pid is present.
+      if kill -0 "$holder_pid" 2>/dev/null &&
+        [ "$(process_started "$holder_pid")" = "$holder_started" ]; then
         return 0
       fi
     else
-      # The pid lands a syscall after the `mkdir`, so a lock without one
-      # is either a holder caught in that instant or a run killed inside
-      # it. Age tells those apart — nothing real stays pidless a minute.
+      # No pid, the pid landing a syscall after the `mkdir` — or no start
+      # time, from a lock an older orbit wrote. Age tells a holder caught
+      # in that instant from a run killed inside it.
       age=$(($(date +%s) - $(stat -f %m "$lockdir" 2>/dev/null || echo 0)))
       if [ "$age" -lt "$stale_after" ]; then
         return 0
@@ -289,7 +308,7 @@ with_workspace_mutation_lock() {
     rm -rf "$lockdir.stale.$$" 2>/dev/null || :
     mkdir "$lockdir" 2>/dev/null || return 0
   fi
-  echo "$$" >"$lockdir/pid"
+  printf '%s %s\n' "$$" "$(process_started $$)" >"$lockdir/pid"
   # `rm -rf` rather than `rmdir`: the lock holds the pid file now.
   trap "${cleanup:+$cleanup; }rm -rf '$lockdir' 2>/dev/null || :" EXIT INT TERM
   "$body" "$@"
