@@ -149,9 +149,14 @@ screenWatcher:start()
 -- in front of us when the URL lands. With no Chrome window on this
 -- workspace, nothing is focused and the stock behaviour takes over.
 --
--- Only fires while Hammerspoon is the registered http/https handler:
+-- Only fires while Hammerspoon is the registered http/https handler. One
+-- call covers both schemes:
 --   hs -c 'hs.urlevent.setDefaultHandler("http")'
---   hs -c 'hs.urlevent.setDefaultHandler("https")'
+--
+-- Deliberately not paired with `hs.urlevent.setRestoreHandler`: that hands
+-- the schemes back to the browser on every *config reload*, not just on
+-- exit, so link routing would switch itself off the first time this file
+-- is edited.
 
 local BROWSER_BUNDLE_ID = "com.google.Chrome"
 
@@ -205,14 +210,6 @@ fi
 
 open -b "$1" "$2"
 ]]
-
--- Hand the schemes back when Hammerspoon stops being the handler. Without
--- this, uninstalling Hammerspoon — or any error above this line, which
--- leaves `httpCallback` unassigned — points LaunchServices at a handler
--- that answers nothing, and every link click everywhere silently dies with
--- no way to tell why.
-hs.urlevent.setRestoreHandler("http", BROWSER_BUNDLE_ID)
-hs.urlevent.setRestoreHandler("https", BROWSER_BUNDLE_ID)
 
 function hs.urlevent.httpCallback(_scheme, _host, _params, fullURL)
   hs.task

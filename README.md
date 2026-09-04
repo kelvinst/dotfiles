@@ -284,12 +284,11 @@ My new, simplified, dotfiles
 
    ```shell
    hs -c 'hs.urlevent.setDefaultHandler("http")'
-   hs -c 'hs.urlevent.setDefaultHandler("https")'
    ```
 
-   Both schemes, because LaunchServices keeps a separate handler entry for each
-   — registering only `http` leaves every `https` link going straight to
-   Chrome, which looks like the routing works only some of the time.
+   The one call covers `https` too — Hammerspoon changes both schemes together,
+   so a second command for `https` would only prompt you again for a change
+   already made.
 
    This routes every app's links through Hammerspoon, not just one. Undo it in
    System Settings → Desktop & Dock → Default web browser.
