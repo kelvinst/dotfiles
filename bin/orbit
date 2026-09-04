@@ -1324,19 +1324,21 @@ sync_monitors_populated_workspaces() {
   aerospace list-workspaces --monitor all --empty no 2>/dev/null
 }
 
-sync_monitors_main_workspaces() {
-  # Populated workspaces on the main monitor. `list-workspaces` takes a
-  # monitor-id but has no `main` keyword, and nothing reports which id
-  # that is — the seeding just put workspace 0 on the secondary, though,
-  # so its id names the one monitor to skip. That covers 0/G/M/P and
-  # anything else alt-tabbed over to the small screen since.
-  secondary=$(aerospace list-workspaces --monitor all \
+sync_monitors_monitor_of() {
+  # The monitor-id workspace $1 currently sits on, empty or not.
+  aerospace list-workspaces --monitor all \
     --format '%{workspace} %{monitor-id}' 2>/dev/null |
-    awk '$1 == "0" {print $2; exit}')
+    awk -v ws="$1" '$1 == ws {print $2; exit}'
+}
 
+sync_monitors_main_workspaces() {
+  # Populated workspaces on every monitor except $1, the secondary.
+  # `list-workspaces` takes a monitor-id but has no `main` keyword, and
+  # nothing reports which id that is, so the caller works it out from
+  # where the seeding left workspace 0 and passes it in.
   aerospace list-workspaces --monitor all --empty no \
     --format '%{workspace} %{monitor-id}' 2>/dev/null |
-    awk -v skip="$secondary" '$2 != skip {print $1}'
+    awk -v skip="$1" '$2 != skip {print $1}'
 }
 
 sync_monitors_set_layout() {
@@ -1410,10 +1412,22 @@ cmd_sync_monitors() {
     # Mirrors `after-startup-command` and the service-mode `m` binding in
     # `~/.aerospace.toml`. `move-workspace-to-monitor` is a one-shot, so
     # alt-tabbing a workspace elsewhere afterwards still sticks.
+    seeded=1
     for ws in 0 G M P; do
-      aerospace move-workspace-to-monitor --workspace "$ws" secondary || :
+      aerospace move-workspace-to-monitor --workspace "$ws" secondary || seeded=0
     done
-    sync_monitors_set_layout tiles $(sync_monitors_main_workspaces)
+
+    # Workspace 0 doubles as the marker for which monitor is the secondary
+    # one, there being no query for that. Tiling on a guessed id is worse
+    # than not tiling at all: get it wrong and the filter inverts, taking
+    # the small screen apart and leaving the wide one in accordion. So a
+    # seeding that didn't land, or an id that doesn't read back, aborts
+    # the run — nothing applied, nothing recorded, next event retries.
+    secondary=$(sync_monitors_monitor_of 0)
+    if [ "$seeded" -eq 0 ] || [ -z "$secondary" ]; then
+      return 1
+    fi
+    sync_monitors_set_layout tiles $(sync_monitors_main_workspaces "$secondary")
   else
     # Every populated workspace, not just the ones tiled on the way in.
     # There is one screen left and accordion is what it is worth, and the
