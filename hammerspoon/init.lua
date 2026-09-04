@@ -188,15 +188,31 @@ if [ -n "$window_id" ]; then
   # whichever window the browser still thinks it focused last — the very
   # window we are steering away from. Wait for the raise, up to half a
   # second, then go anyway.
+  #
+  # Asking aerospace which window it considers focused would be useless
+  # here: it answers from the model it just updated, so the wait would
+  # always end on the first pass while the raise is still in flight.
+  # `lsappinfo front` is macOS' own answer, and only flips once the
+  # activation has actually landed.
   for _ in 1 2 3 4 5 6 7 8 9 10; do
-    [ "$(aerospace list-windows --focused --format '%{window-id}' \
-      2>/dev/null)" = "$window_id" ] && break
+    front=$(lsappinfo info -only bundleid "$(lsappinfo front)" 2>/dev/null)
+    case "$front" in
+    *"\"$1\"") break ;;
+    esac
     sleep 0.05
   done
 fi
 
 open -b "$1" "$2"
 ]]
+
+-- Hand the schemes back when Hammerspoon stops being the handler. Without
+-- this, uninstalling Hammerspoon — or any error above this line, which
+-- leaves `httpCallback` unassigned — points LaunchServices at a handler
+-- that answers nothing, and every link click everywhere silently dies with
+-- no way to tell why.
+hs.urlevent.setRestoreHandler("http", BROWSER_BUNDLE_ID)
+hs.urlevent.setRestoreHandler("https", BROWSER_BUNDLE_ID)
 
 function hs.urlevent.httpCallback(_scheme, _host, _params, fullURL)
   hs.task
