@@ -254,8 +254,8 @@ EOF
 # the lock behind, and nothing else would ever clear it — which used to
 # mean `preset`, `swap main` and `move-workspace` quietly doing nothing
 # until it was removed by hand. `sync-monitors` runs off a display watcher
-# with nobody watching, so the lock ages out instead: a real run holds it
-# for seconds, and anything older than `stale_after` is a corpse.
+# with nobody watching, so the holder's pid goes in the lock and a lock
+# whose holder is gone gets reclaimed.
 with_workspace_mutation_lock() {
   body="$1"
   cleanup="$2"
@@ -263,16 +263,35 @@ with_workspace_mutation_lock() {
   stale_after=60
   lockdir="/tmp/orbit-workspace-mutation.$(id -u).lock"
   if ! mkdir "$lockdir" 2>/dev/null; then
-    # A lock that has since vanished stats as epoch 0, which reads as
-    # ancient — the retry below is what settles it either way.
-    age=$(($(date +%s) - $(stat -f %m "$lockdir" 2>/dev/null || echo 0)))
-    if [ "$age" -lt "$stale_after" ]; then
-      return 0
+    holder=$(cat "$lockdir/pid" 2>/dev/null || :)
+    if [ -n "$holder" ]; then
+      # Whether to reclaim is about whether the holder still exists, not
+      # how long it has been at it. A run blocked on a wedged aerospace
+      # is alive and mid-mutation, and taking the lock off it is exactly
+      # the interleaving the lock is here to prevent.
+      if kill -0 "$holder" 2>/dev/null; then
+        return 0
+      fi
+    else
+      # The pid lands a syscall after the `mkdir`, so a lock without one
+      # is either a holder caught in that instant or a run killed inside
+      # it. Age tells those apart — nothing real stays pidless a minute.
+      age=$(($(date +%s) - $(stat -f %m "$lockdir" 2>/dev/null || echo 0)))
+      if [ "$age" -lt "$stale_after" ]; then
+        return 0
+      fi
     fi
-    rmdir "$lockdir" 2>/dev/null || :
+
+    # `mv` is the claim, not `rmdir` then `mkdir`: two processes that both
+    # judged the lock dead would remove each other's fresh lock and both
+    # walk on holding it. Only one rename off a given source can win.
+    mv "$lockdir" "$lockdir.stale.$$" 2>/dev/null || return 0
+    rm -rf "$lockdir.stale.$$" 2>/dev/null || :
     mkdir "$lockdir" 2>/dev/null || return 0
   fi
-  trap "${cleanup:+$cleanup; }rmdir '$lockdir' 2>/dev/null || :" EXIT INT TERM
+  echo "$$" >"$lockdir/pid"
+  # `rm -rf` rather than `rmdir`: the lock holds the pid file now.
+  trap "${cleanup:+$cleanup; }rm -rf '$lockdir' 2>/dev/null || :" EXIT INT TERM
   "$body" "$@"
 }
 
