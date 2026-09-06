@@ -147,7 +147,8 @@ screenWatcher:start()
 -- http(s) through here instead: focus the Chrome window that lives on the
 -- *focused* workspace first, so Chrome's "last focused window" is the one
 -- in front of us when the URL lands. With no Chrome window on this
--- workspace, nothing is focused and the stock behaviour takes over.
+-- workspace at all, open a new one here rather than letting Chrome pull us
+-- over to wherever its last window lives.
 --
 -- Only fires while Hammerspoon is the registered http/https handler. One
 -- call covers both schemes:
@@ -206,9 +207,20 @@ if [ -n "$window_id" ]; then
     esac
     sleep 0.05
   done
-fi
 
-open -b "$1" "$2"
+  open -b "$1" "$2"
+else
+  # Nothing of the browser's on this workspace. Plain `open -b` would hand
+  # the URL to the browser's last-focused window — on whatever workspace or
+  # monitor that happens to be — and drag us there. Ask for a brand new
+  # window instead: aerospace puts newly opened windows on the focused
+  # workspace, so the tab lands where we are looking.
+  #
+  # `-n` starts a fresh instance; a browser already running takes the
+  # command line off it and opens the window itself, so this is one new
+  # window either way, not a second copy of the app.
+  open -n -b "$1" --args --new-window "$2"
+fi
 ]]
 
 function hs.urlevent.httpCallback(_scheme, _host, _params, fullURL)
