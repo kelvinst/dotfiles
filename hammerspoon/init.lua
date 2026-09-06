@@ -232,3 +232,9 @@ function hs.urlevent.httpCallback(_scheme, _host, _params, fullURL)
     })
     :start()
 end
+
+-- Clickable slivers in aerospace's accordion gutter — one per window
+-- hidden behind the focused one, click to focus it. See accordion.lua for
+-- why this is drawn rather than built out of the real windows.
+accordion = require("accordion")
+accordion.start()
