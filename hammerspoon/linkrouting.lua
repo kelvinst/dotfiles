@@ -81,26 +81,38 @@ else
 fi
 ]]
 
+-- Held for the same reason `monitors` holds its sync task: a task that gets
+-- collected mid-run never calls back, so the link would never open and the
+-- alert below would never fire — a click that leaves no trace at all. The
+-- `open` above waits up to half a second for the raise, which is plenty of
+-- room for a collection to land. A table rather than a single slot,
+-- because clicks overlap and one slot would drop the run still going.
+local running = {}
+
 function hs.urlevent.httpCallback(_scheme, _host, _params, fullURL)
-  hs.task
-    .new("/bin/sh", function(exitCode, _stdout, stderr)
-      -- Nothing else surfaces a failure here: once Hammerspoon is the
-      -- registered handler, a browser that moved or was uninstalled turns
-      -- every link click in every app into a silent no-op.
-      if exitCode ~= 0 then
-        hs.alert.show(
-          "Link open failed: "
-            .. ((stderr and stderr ~= "") and stderr or exitCode)
-        )
-      end
-    end, {
-      "-c",
-      OPEN_LINK,
-      "sh",
-      BROWSER_BUNDLE_ID,
-      fullURL,
-    })
-    :start()
+  local task
+  task = hs.task.new("/bin/sh", function(exitCode, _stdout, stderr)
+    -- Nothing else surfaces a failure here: once Hammerspoon is the
+    -- registered handler, a browser that moved or was uninstalled turns
+    -- every link click in every app into a silent no-op.
+    if exitCode ~= 0 then
+      hs.alert.show(
+        "Link open failed: "
+          .. ((stderr and stderr ~= "") and stderr or exitCode)
+      )
+    end
+
+    running[task] = nil
+  end, {
+    "-c",
+    OPEN_LINK,
+    "sh",
+    BROWSER_BUNDLE_ID,
+    fullURL,
+  })
+
+  running[task] = true
+  task:start()
 end
 
-return {}
+return { running = running }
