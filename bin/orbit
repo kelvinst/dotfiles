@@ -1361,10 +1361,12 @@ sync_monitors_state_file() {
   echo "${XDG_CACHE_HOME:-$HOME/.cache}/orbit/monitors"
 }
 
-sync_monitors_tiling_ids() {
-  # Window-ids of the tiling (non-floating) windows on workspace $1. Same
-  # exclusion as `preset_tiling_window_ids`, but for an arbitrary
-  # workspace rather than the focused one.
+sync_monitors_tiling_windows() {
+  # `<window-id> <layout>` for each tiling (non-floating) window on
+  # workspace $1. Same exclusion as `preset_tiling_window_ids`, but for an
+  # arbitrary workspace rather than the focused one. The layout comes back
+  # with the id because the caller has to know what is already in force
+  # before it asks for anything — see `sync_monitors_set_layout`.
   #
   # Captured before awk sees it, as in `sync_monitors_main_workspaces`: a
   # failed `aerospace` piped straight in reads as "nothing tiling here",
@@ -1373,7 +1375,7 @@ sync_monitors_tiling_ids() {
   rows=$(aerospace list-windows --workspace "$1" \
     --format '%{window-id} %{window-parent-container-layout}' 2>/dev/null) || return 1
 
-  printf '%s\n' "$rows" | awk '$2 != "floating" {print $1}'
+  printf '%s\n' "$rows" | awk '$2 != "floating" {print $1, $2}'
 }
 
 sync_monitors_populated_workspaces() {
@@ -1423,15 +1425,32 @@ sync_monitors_set_layout() {
       continue
     fi
 
-    ids=$(sync_monitors_tiling_ids "$ws") || {
+    rows=$(sync_monitors_tiling_windows "$ws") || {
       failed=1
       continue
     }
 
     # Nothing tiling to hang the layout off — a workspace of pure floats.
     # Nothing to do, and nothing wrong either.
-    wid=$(printf '%s\n' "$ids" | head -n1)
+    row=$(printf '%s\n' "$rows" | head -n1)
+    wid=${row%% *}
     [ -n "$wid" ] || continue
+
+    # `aerospace layout` exits 1, with nothing on stderr, when the layout
+    # asked for is already the one in force — indistinguishable by exit
+    # code from a real failure. Left to the `||` below that reads as a
+    # workspace that couldn't be laid out, and on an undock *every*
+    # workspace is already accordion, so the whole run reports failure and
+    # the mode is never recorded. That leaves the state file behind,
+    # which sends the next dock into the early return that skips the
+    # work entirely.
+    #
+    # The layout in force is oriented (`h_accordion`), the one asked for
+    # is not (`accordion`), so the two compare on the suffix.
+    current=${row#"$wid" }
+    case $current in
+    "$layout" | *_"$layout") continue ;;
+    esac
 
     aerospace layout --window-id "$wid" "$layout" || failed=1
   done
