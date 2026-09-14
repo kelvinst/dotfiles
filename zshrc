@@ -158,6 +158,7 @@ alias gsp='git stash pop'
 alias gsk='git stash --include-untracked --keep-index'
 alias gsa='git stash --include-untracked'
 alias gu='git pull'
+alias gusup="git pull --set-upstream origin \$(git_current_branch)"
 
 # gigalixir
 alias gx='gigalixir'
