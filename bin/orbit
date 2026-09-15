@@ -1332,7 +1332,7 @@ cmd_sync_monitors_help() {
 Usage: orbit sync-monitors [--force]
 
 Adapt aerospace to the monitors currently attached. Meant to be driven by
-a display watcher (see `~/.hammerspoon/init.lua`) but safe to run by hand.
+a display watcher (see `~/.hammerspoon/monitors.lua`) but safe to run by hand.
 
 With an external monitor attached:
   - workspaces 0, G, M and P are pushed to the secondary monitor, the same
