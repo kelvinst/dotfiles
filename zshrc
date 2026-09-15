@@ -237,9 +237,11 @@ main_worktree_branch() {
   command git -C "$main_path" branch --show-current
 }
 
-# Prune remote-tracking branches and delete local branches that tracked them
+# Prune remote-tracking branches, stale worktree metadata, and delete local
+# branches that tracked them
 git_prune() {
   git remote prune origin
+  git worktree prune
   git branch -vv | awk '/: gone]/{print ($1 == "*" || $1 == "+") ? $2 : $1}' | while read branch; do
     local wtpath=$(git worktree list --porcelain | awk -v b="$branch" '/^worktree /{p=$2} /^branch refs\/heads\//{if ($2 == "refs/heads/"b) print p}')
     [[ -n "$wtpath" ]] && git worktree remove "$wtpath"
