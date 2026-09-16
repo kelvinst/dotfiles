@@ -1,4 +1,4 @@
-.PHONY: backup clean install update
+.PHONY: backup clean install test update
 .DEFAULT_GOAL := install
 
 BACKUP_ROOT := $(HOME)/.dotfiles-backups
@@ -155,3 +155,12 @@ update:
 	cp ~/.tmux.conf ./tmux.conf
 	cp ~/.zshenv ./zshenv
 	cp ~/.zshrc ./zshrc
+
+# Runs the repo's scripts against stubbed tools in a temp dir — nothing here
+# touches $HOME, the live aerospace, or the installed copies, so it is safe
+# to run at any time without installing first.
+test:
+	@for t in ./test/*.sh; do \
+		echo "==> $$t"; \
+		"$$t" || exit 1; \
+	done

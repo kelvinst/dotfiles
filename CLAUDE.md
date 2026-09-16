@@ -38,7 +38,13 @@ make install   # back up the installed copies, then copy everything into $HOME
 make backup    # only move the installed copies into a timestamped backup
 make clean     # remove the installed copies
 make update    # copy from $HOME back into the repo (reverse direction)
+make test      # run ./test/*.sh against stubbed tools in a temp dir
 ```
+
+`make test` needs nothing installed and touches nothing outside a temp
+dir — the scripts under `test/` stub the tools they drive (`aerospace`,
+say) and point `XDG_CACHE_HOME` at a sandbox, so a run never reaches the
+live window manager or `$HOME`. Run it after editing anything in `bin/`.
 
 `make install` first moves every path it is about to write into
 `~/.dotfiles-backups/<YYYYmmdd-HHMMSS>/`, preserving the layout relative to
