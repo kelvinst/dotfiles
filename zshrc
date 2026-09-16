@@ -158,7 +158,14 @@ alias gsp='git stash pop'
 alias gsk='git stash --include-untracked --keep-index'
 alias gsa='git stash --include-untracked'
 alias gu='git pull'
-alias gusup="git pull --set-upstream origin \$(git_current_branch)"
+gusup() {
+  local branch
+  branch=$(git symbolic-ref --short -q HEAD) || {
+    echo "gusup: detached HEAD" >&2
+    return 1
+  }
+  git pull --set-upstream origin "$branch"
+}
 
 # gigalixir
 alias gx='gigalixir'
