@@ -216,13 +216,62 @@ aliases() {
 }
 
 # Shows `git status -sb` if no arguments are given, otherwise runs `git` with
-# the provided arguments
+# the provided arguments.
+#
+# On `commit`, reports the real SHA when a post-commit hook amended the commit
+# (Stingdom's changelog hook): git prints the pre-amend SHA, so the hook
+# leaves "<old> <new>" in $GIT_DIR/CHANGELOG_AMENDED for us to print.
 git() {
   if [[ $# -eq 0 ]]; then
     command git status -sb
-  else
-    command git "$@"
+    return
   fi
+
+  # Skip global options to find the subcommand, keeping the ones that decide
+  # which repository we're in so rev-parse resolves the same git dir
+  local -a repo_opts
+  local i=1 subcmd
+  while (( i <= $# )); do
+    case ${argv[i]} in
+      -C|--git-dir|--work-tree)
+        repo_opts+=(${argv[i]} ${argv[i+1]}); (( i += 2 )) ;;
+      --git-dir=*|--work-tree=*)
+        repo_opts+=(${argv[i]}); (( i++ )) ;;
+      -c|--namespace|--super-prefix|--attr-source)
+        (( i += 2 )) ;;
+      -h|--help|-v|--version|--exec-path|--html-path|--man-path|--info-path)
+        break ;;
+      -*)
+        (( i++ )) ;;
+      *)
+        subcmd=${argv[i]}; break ;;
+    esac
+  done
+
+  if [[ $subcmd != commit ]]; then
+    command git "$@"
+    return
+  fi
+
+  local git_dir marker
+  git_dir=$(command git "${repo_opts[@]}" rev-parse --absolute-git-dir \
+    2>/dev/null)
+  if [[ -n $git_dir ]]; then
+    marker=$git_dir/CHANGELOG_AMENDED
+    command rm -f -- $marker
+  fi
+
+  command git "$@"
+  local rc=$?
+
+  if (( rc == 0 )) && [[ -n $marker && -f $marker ]]; then
+    local old new
+    read -r old new < $marker
+    print -r -- "changelog: amended $old → $new"
+    command rm -f -- $marker
+  fi
+
+  return rc
 }
 
 
