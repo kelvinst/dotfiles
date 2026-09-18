@@ -268,7 +268,11 @@ with_workspace_mutation_lock() {
   cleanup="$2"
   shift 2
   stale_after=60
-  lockdir="/tmp/orbit-workspace-mutation.$(id -u).lock"
+  # Overridable so tests can take a lock of their own instead of the live
+  # one. A dedicated variable, not $TMPDIR: Hammerspoon's tasks and an
+  # interactive shell see different $TMPDIR values, and keying the real
+  # lock off it would split it in two.
+  lockdir="${ORBIT_LOCK_DIR:-/tmp/orbit-workspace-mutation.$(id -u).lock}"
   if ! mkdir "$lockdir" 2>/dev/null; then
     holder=$(cat "$lockdir/pid" 2>/dev/null || :)
     holder_pid=${holder%% *}
