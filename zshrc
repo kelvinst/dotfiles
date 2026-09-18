@@ -164,7 +164,7 @@ gusup() {
     echo "gusup: detached HEAD" >&2
     return 1
   }
-  git pull --set-upstream origin "$branch"
+  git pull --set-upstream origin "$branch" "$@"
 }
 
 # gigalixir
