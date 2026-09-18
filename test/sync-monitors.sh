@@ -16,6 +16,7 @@ failures=0
 setup() {
   work=$(mktemp -d)
   export XDG_CACHE_HOME="$work/cache"
+  export ORBIT_LOCK_DIR="$work/lock"
   export STUB_LOG="$work/calls"
   : >"$STUB_LOG"
 
