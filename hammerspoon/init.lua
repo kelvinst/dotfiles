@@ -9,5 +9,7 @@ require("hs.ipc")
 -- references them, and a collected watcher or timer stops firing silently.
 -- A `local` here goes out of scope when this chunk returns; a global
 -- outlives it.
-monitors = require("monitors")
+-- Monitor switching is off for now: it isn't working well, and it'll be
+-- revisited later (dot-nhy). Uncomment to turn it back on.
+-- monitors = require("monitors")
 linkrouting = require("linkrouting")
