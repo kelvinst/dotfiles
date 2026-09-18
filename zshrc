@@ -223,12 +223,77 @@ aliases() {
   fi
 }
 
+# Succeeds when `git commit <args>` won't open an editor: a message comes
+# from -m/-F/-C (or --no-edit) and -e/--edit doesn't force one back. When in
+# doubt it fails, so the caller leaves stdout alone for the editor
+_git_commit_skips_editor() {
+  local arg rest has_msg=0 edit=
+  while (( $# )); do
+    arg=$1; shift
+    case $arg in
+      --) break ;;
+      --message|--file|--reuse-message)
+        has_msg=1; (( $# )) && shift ;;
+      --message=*|--file=*|--reuse-message=*)
+        has_msg=1 ;;
+      --edit) edit=1 ;;
+      --no-edit) edit=0 ;;
+      --author|--date|--template|--reedit-message|--fixup|--squash|\
+      --cleanup|--trailer|--pathspec-from-file)
+        (( $# )) && shift ;;
+      --*) ;;
+      -?*)
+        # Bundled short flags, e.g. -am "msg" or -mmsg
+        rest=${arg#-}
+        while [[ -n $rest ]]; do
+          case ${rest[1]} in
+            m|F|C)
+              has_msg=1; [[ -z ${rest[2,-1]} ]] && (( $# )) && shift; break ;;
+            c|t)
+              [[ -z ${rest[2,-1]} ]] && (( $# )) && shift; break ;;
+            S|u) break ;;
+            e) edit=1 ;;
+          esac
+          rest=${rest[2,-1]}
+        done
+        ;;
+    esac
+  done
+  [[ $edit == 0 ]] || (( has_msg && ! edit ))
+}
+
+# Filters `git commit` stdout: when a post-commit hook amended the commit and
+# left "<old> <new>" in <marker>, rewrites the "[branch sha] subject" line to
+# the new SHA and appends "(amended, was <old>)", dimmed when <color> is 1
+_git_changelog_filter() {
+  local marker=$1 color=$2 line old new rest
+  while IFS= read -r line || [[ -n $line ]]; do
+    if [[ -f $marker && $line =~ '^\[(.*) ([0-9a-f]+)\]' ]]; then
+      read -r old new < $marker
+      if [[ -n $old && -n $new && \
+        ( ${match[2]} == $old* || $old == ${match[2]}* ) ]]; then
+        rest=${line[MEND+1,-1]}
+        line="[${match[1]} $new]$rest"
+        if (( color )); then
+          line+=$' \e[2m'"(amended, was $old)"$'\e[0m'
+        else
+          line+=" (amended, was $old)"
+        fi
+        command rm -f -- $marker
+      fi
+    fi
+    print -r -- "$line"
+  done
+}
+
 # Shows `git status -sb` if no arguments are given, otherwise runs `git` with
 # the provided arguments.
 #
 # On `commit`, reports the real SHA when a post-commit hook amended the commit
 # (Stingdom's changelog hook): git prints the pre-amend SHA, so the hook
-# leaves "<old> <new>" in $GIT_DIR/CHANGELOG_AMENDED for us to print.
+# leaves "<old> <new>" in $GIT_DIR/CHANGELOG_AMENDED. Without an editor the
+# summary line is rewritten in place; otherwise stdout must stay the
+# terminal, so an extra "changelog: amended" line is printed after git.
 git() {
   if [[ $# -eq 0 ]]; then
     command git status -sb
@@ -269,9 +334,19 @@ git() {
     command rm -f -- $marker
   fi
 
-  command git "$@"
-  local rc=$?
+  local rc
+  if [[ -n $marker ]] && { [[ ! -t 0 ]] || \
+    _git_commit_skips_editor "${(@)argv[i+1,-1]}"; }; then
+    local color=0
+    [[ -t 1 ]] && color=1
+    command git "$@" | _git_changelog_filter $marker $color
+    rc=${pipestatus[1]}
+  else
+    command git "$@"
+    rc=$?
+  fi
 
+  # Editor path, or the summary line never matched: report it separately
   if (( rc == 0 )) && [[ -n $marker && -f $marker ]]; then
     local old new
     read -r old new < $marker
