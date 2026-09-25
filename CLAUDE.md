@@ -51,8 +51,9 @@ live window manager or `$HOME`. Run it after editing anything in `bin/`.
 `$HOME`. Moving doubles as the removal step, so each install lands on a
 clean slate without destroying whatever was there. The backed-up paths are
 listed explicitly in the `Makefile` (`HOME_TARGETS`, plus one entry per file
-in `bin/` and `claude/hooks/`) so neighbouring state — the rest of
-`~/.claude`, other scripts in `~/.local/bin` — is never touched.
+in `bin/` and `claude/hooks/` and one per skill directory in `claude/skills/`)
+so neighbouring state — the rest of `~/.claude`, synced or plugin skills in
+`~/.claude/skills`, other scripts in `~/.local/bin` — is never touched.
 
 `make update` pulls live config out of `$HOME` and overwrites the repo
 copies. Don't run it casually — it's for capturing changes you made directly

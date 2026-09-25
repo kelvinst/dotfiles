@@ -32,8 +32,11 @@ HOME_TARGETS := \
 
 BIN_TARGETS := $(patsubst bin/%,.local/bin/%,$(wildcard bin/*))
 HOOK_TARGETS := $(patsubst claude/hooks/%,.claude/hooks/%,$(wildcard claude/hooks/*))
+# One entry per skill directory: ~/.claude/skills also holds skills synced
+# from claude.ai and plugins, which must survive an install.
+SKILL_TARGETS := $(patsubst claude/skills/%,.claude/skills/%,$(wildcard claude/skills/*))
 
-ALL_TARGETS := $(HOME_TARGETS) $(BIN_TARGETS) $(HOOK_TARGETS)
+ALL_TARGETS := $(HOME_TARGETS) $(BIN_TARGETS) $(HOOK_TARGETS) $(SKILL_TARGETS)
 
 # Move every installed path into a timestamped backup folder. This doubles as
 # the "remove the old copy" step, so install always lands on a clean slate
@@ -77,6 +80,8 @@ install: backup
 	mkdir -p ~/.claude/hooks/
 	cp -f ./claude/hooks/* ~/.claude/hooks/
 	chmod +x ~/.claude/hooks/*
+	mkdir -p ~/.claude/skills/
+	cp -Rf ./claude/skills/* ~/.claude/skills/
 	cp -f ./claude/settings.json ~/.claude/settings.json
 	mkdir -p ~/.zsh/completions/
 	cp -r ./zsh/completions/* ~/.zsh/completions/
@@ -105,6 +110,7 @@ clean:
 	rm -rf ~/.hammerspoon/*
 	for f in ./bin/*; do rm -rf ~/.local/bin/$$(basename $$f); done
 	for f in ./claude/hooks/*; do rm -f ~/.claude/hooks/$$(basename $$f); done
+	for d in ./claude/skills/*; do rm -rf ~/.claude/skills/$$(basename $$d); done
 	rm -f ~/.claude/settings.json
 	rm -rf ~/.config/init_starship.sh
 	rm -rf ~/.config/starship.toml
@@ -144,6 +150,7 @@ update:
 	for f in ./bin/*; do cp -r ~/.local/bin/$$(basename $$f) ./bin/; done
 	mkdir -p ./claude/hooks/
 	cp -f ~/.claude/hooks/* ./claude/hooks/
+	for d in ./claude/skills/*; do cp -Rf ~/.claude/skills/$$(basename $$d)/. $$d/; done
 	cp -f ~/.claude/settings.json ./claude/settings.json
 	cp ~/.aerospace.toml ./aerospace.toml
 	cp ~/.ai-jail ./ai-jail
