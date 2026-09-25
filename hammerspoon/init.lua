@@ -13,3 +13,4 @@ require("hs.ipc")
 -- revisited later (dot-nhy). Uncomment to turn it back on.
 -- monitors = require("monitors")
 linkrouting = require("linkrouting")
+windowhints = require("windowhints")
