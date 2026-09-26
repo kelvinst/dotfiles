@@ -9,6 +9,7 @@ BACKUP_ROOT := $(HOME)/.dotfiles-backups
 HOME_TARGETS := \
 	.aerospace.toml \
 	.ai-jail \
+	.claude/CLAUDE.md \
 	.claude/settings.json \
 	.config/caveman \
 	.config/direnv \
@@ -82,6 +83,7 @@ install: backup
 	chmod +x ~/.claude/hooks/*
 	mkdir -p ~/.claude/skills/
 	cp -Rf ./claude/skills/* ~/.claude/skills/
+	cp -f ./claude/CLAUDE.md ~/.claude/CLAUDE.md
 	cp -f ./claude/settings.json ~/.claude/settings.json
 	mkdir -p ~/.zsh/completions/
 	cp -r ./zsh/completions/* ~/.zsh/completions/
@@ -111,6 +113,7 @@ clean:
 	for f in ./bin/*; do rm -rf ~/.local/bin/$$(basename $$f); done
 	for f in ./claude/hooks/*; do rm -f ~/.claude/hooks/$$(basename $$f); done
 	for d in ./claude/skills/*; do rm -rf ~/.claude/skills/$$(basename $$d); done
+	rm -f ~/.claude/CLAUDE.md
 	rm -f ~/.claude/settings.json
 	rm -rf ~/.config/init_starship.sh
 	rm -rf ~/.config/starship.toml
@@ -151,6 +154,7 @@ update:
 	mkdir -p ./claude/hooks/
 	cp -f ~/.claude/hooks/* ./claude/hooks/
 	for d in ./claude/skills/*; do cp -Rf ~/.claude/skills/$$(basename $$d)/. $$d/; done
+	cp -f ~/.claude/CLAUDE.md ./claude/CLAUDE.md
 	cp -f ~/.claude/settings.json ./claude/settings.json
 	cp ~/.aerospace.toml ./aerospace.toml
 	cp ~/.ai-jail ./ai-jail
