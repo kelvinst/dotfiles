@@ -259,8 +259,10 @@ arrival or task. A finding left for later gets no outcome: it stays open.
 ## 5. Ship
 
 Shipping is always the **last** thing a session does: nothing — no fix, no
-arrival, no task, no other work — runs after it. Before offering it, make sure
-nothing else is pending in the session.
+arrival, no task, no other work — runs after it. The only exceptions are the
+tracker bookkeeping of step 6 (closing the shipped issue on the user's yes) and
+the archive. Before offering it, make sure nothing else is pending in the
+session.
 
 - **Anything committed during this `/close`** (fixes, arrivals, checklist
   edits) → do not offer the ship. Say: "There were changes. Review them
@@ -284,9 +286,21 @@ nothing else is pending in the session.
 
 Tell the user what was done: fixes with their commits, what was deferred, what
 was left or discarded, what was inferred and from where. Every arrival you
-mention is a link to its note; every bd task is named by its id. Only after a
-successful ship, ask with AskUserQuestion: "Archive this session now?" —
-"Archive" (Recommended) · "Leave it open". On "Archive", call
+mention is a link to its note; every bd task and every closed issue is named by
+its id.
+
+_(Beads)_ Only after a successful ship, and before the archive question, handle
+the issue(s) the branch was about — found the same way the Create task job
+finds the current work: an id in the branch name, the issue claimed or worked
+on in this session, or one the conversation names. If none is identifiable, say
+so and ask nothing. Otherwise ask with AskUserQuestion whether to close them,
+naming each id and title: "Close <id>" (Recommended) — "Closes the issue as
+shipped: its work is now on `<default>`." · "Leave it open". Only on the user's
+yes, run `bd close <id> --reason="shipped to <default>"`, then `bd dolt push`
+when the repo has a Dolt remote. Never close an issue without that answer.
+
+Only after a successful ship, ask with AskUserQuestion: "Archive this session
+now?" — "Archive" (Recommended) · "Leave it open". On "Archive", call
 `mcp__ccd_session_mgmt__archive_session` with `session_id: "self"`. Never
 archive without that answer, or while the work is not in `<base>`.
 
@@ -299,6 +313,7 @@ archive without that answer, or while the work is not in `<base>`.
   later.
 - Offering the ship while any finding has no outcome.
 - Doing any work after the ship.
+- Closing a bd issue without asking, or before the ship.
 - Treating "Leave for later" as a discard.
 - Reviewing before the rebase, or rebasing with `notes.rewriteRef` still
   carrying review marks.
