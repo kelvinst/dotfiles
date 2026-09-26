@@ -276,18 +276,26 @@ tracker bookkeeping of step 6 (closing the shipped issue on the user's yes) and
 the archive. Before offering it, make sure nothing else is pending in the
 session.
 
+**Showing the diff.** Never tell the user a keyboard shortcut — on mobile
+(Remote Control) there is none. Instead, open the diff for them: call
+`mcp__ccd_view__show_pane` with `pane: "diff"` (`diff_scope: "all"`, or a
+commit SHA for the commits this `/close` made). Also give the compare link when
+the remote is on GitHub —
+`https://github.com/<owner>/<repo>/compare/<from sha>...<HEAD sha>` — which
+opens anywhere, phone included. If the pane call says the session is not open
+in any window, the link is all there is; say so.
+
 - **Anything committed during this `/close`** (fixes, arrivals, checklist
-  edits) → do not offer the ship. Say: "There were changes. Review them
-  yourself — open the diff (Cmd+Shift+D) and skim it — and if they look like
-  what you expect, run `/close` again."
+  edits) → do not offer the ship. Show the diff of those commits (above), then
+  say: "There were changes. Review them yourself — skim the diff — and if they
+  look like what you expect, run `/close` again."
 - **Any finding in the latest ReportFindings without an `outcome`** (left for
   later) → do not offer the ship. List what is still open.
 - **HEAD carries `reviewed`, no finding in the latest ReportFindings is left
-  without an `outcome`, and nothing was committed during this `/close`** → ask
-  with AskUserQuestion: "Did you review the changes? Can I ship?" — with the
-  compare link when the remote is on GitHub
-  (`https://github.com/<owner>/<repo>/compare/<base sha>...<HEAD sha>`) and the
-  hint to open the diff with Cmd+Shift+D. Options:
+  without an `outcome`, and nothing was committed during this `/close`** → show
+  the branch diff (above, from `<base>`), then ask with AskUserQuestion: "Did
+  you review the changes? Can I ship?", with the compare link in the question
+  text. Options:
   - "Ship" — "Not a merge: no merge commit. The branch was already rebased onto
     `<default>`, so its commits land on top of it as they are — flat history.";
   - "Not yet" — "I still have other things to do in this session."
@@ -327,6 +335,8 @@ archive without that answer, or while the work is not in `<base>`.
   later.
 - Offering the ship while any finding has no outcome.
 - Doing any work after the ship.
+- Telling the user a keyboard shortcut to open the diff instead of opening it
+  (and linking it) for them.
 - Closing a bd issue without asking, or before the ship.
 - Treating "Leave for later" as a discard.
 - Reviewing before the rebase, or rebasing with `notes.rewriteRef` still
