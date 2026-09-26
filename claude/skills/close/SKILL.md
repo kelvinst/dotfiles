@@ -156,8 +156,15 @@ review first. It replaces any call the code-review skill made. Per finding:
   `… |—| SUGGESTED FIX: <fix> |—|`;
 - `failure_scenario`: what is lost or goes wrong if the session closes now.
 
-Then print the same list in chat, short and plain, one line per finding:
-`N. <problem> → <suggested fix>`.
+Then print the same list in chat, complete: the ReportFindings card renders
+poorly on mobile (Remote Control), so the chat list must stand on its own —
+nothing only the card shows. Per finding:
+
+```
+N. `<file>:<line>` — <problem>
+   Fix: <suggested fix>
+   If left: <failure scenario>
+```
 
 Zero findings → go to step 5.
 
@@ -170,7 +177,10 @@ First AskUserQuestion, a single question: "Apply all suggested fixes"
 - **One by one:** walk **every** finding from the report — code review,
   conversation and checklist alike — one AskUserQuestion per finding, one
   question per call, so each answer is queued (step 4) before the next
-  question. Options, in this order, each with its description:
+  question. The question text carries the finding itself — its number,
+  `file:line`, the problem and the suggested fix — never just "Finding N", so
+  it reads on its own on mobile. Options, in this order, each with its
+  description:
   - the suggested fix (Recommended);
   - each other real fix, when there is more than one — list them, keep your
     pick first;
@@ -255,6 +265,8 @@ the repo type, the language to write in, and these rules:
 When the queue is empty, call ReportFindings again with each decided finding's
 `outcome`: `fixed` for an applied fix, `skipped` for a discard and for an
 arrival or task. A finding left for later gets no outcome: it stays open.
+Reprint the chat list with each finding's result — fixed (with its commit),
+deferred (arrival link or task id), discarded, or still open.
 
 ## 5. Ship
 
@@ -307,6 +319,8 @@ archive without that answer, or while the work is not in `<base>`.
 ## Common mistakes
 
 - Two ReportFindings lists (one from code-review, one of yours) instead of one.
+- A chat list that leaves out what the ReportFindings card shows, or a
+  one-by-one question that names a finding without saying what it is.
 - One-by-one that skips the code-review findings.
 - Running two queue jobs at once, or bundling several fixes in one commit.
 - Offering the ship after anything was committed, or while anything is left for
