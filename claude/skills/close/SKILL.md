@@ -101,8 +101,10 @@ git log --notes=review --format='%H %N' <base>..HEAD | grep -m1 -E '^[0-9a-f]{40
 
 Run the `code-review` skill at level `medium` on everything after it — or on
 the whole branch against `<base>` when there is none — plus any uncommitted
-change. Skip this check when HEAD itself is reviewed and the tree is clean.
-Keep its findings for the combined report below.
+change. Skip this check when HEAD itself is reviewed and the tree is clean;
+then carry over every finding from this session's latest ReportFindings call
+that has no `outcome` — they are still open and go into the new report as they
+were. Keep its findings for the combined report below.
 
 **b. Conversation.** Read the whole session and list:
 
@@ -180,8 +182,9 @@ First AskUserQuestion, a single question: "Apply all suggested fixes"
     - _(Neither)_ no defer option;
   - "Discard" — "ATTENTION: DISMISSES THE FINDING FOR GOOD AND RELEASES THE
     SHIP. It does not matter; ship anyway.";
-  - "Leave for later" — "Not now, no decision yet. Does not release the ship;
-    it comes back on the next `/close`."
+  - "Leave for later" — "Not now, no decision yet. Keeps the finding open (no
+    outcome) in ReportFindings, which blocks the ship until a later `/close`
+    resolves it."
 
   AskUserQuestion takes at most four options: when the fixes, the defer option,
   "Discard" and "Leave for later" do not fit, drop the least likely extra fix
@@ -263,10 +266,12 @@ nothing else is pending in the session.
   edits) → do not offer the ship. Say: "There were changes. Review them
   yourself — open the diff (Cmd+Shift+D) and skim it — and if they look like
   what you expect, run `/close` again."
-- **Anything left for later** → do not offer the ship. List what is still open.
-- **Zero findings, or every finding discarded or deferred, and nothing
-  committed** → ask with AskUserQuestion: "Did you review the changes? Can I
-  ship?" — with the compare link when the remote is on GitHub
+- **Any finding in the latest ReportFindings without an `outcome`** (left for
+  later) → do not offer the ship. List what is still open.
+- **HEAD carries `reviewed`, no finding in the latest ReportFindings is left
+  without an `outcome`, and nothing was committed during this `/close`** → ask
+  with AskUserQuestion: "Did you review the changes? Can I ship?" — with the
+  compare link when the remote is on GitHub
   (`https://github.com/<owner>/<repo>/compare/<base sha>...<HEAD sha>`) and the
   hint to open the diff with Cmd+Shift+D. Options:
   - "Ship" — "Not a merge: no merge commit. The branch was already rebased onto
@@ -292,6 +297,7 @@ archive without that answer, or while the work is not in `<base>`.
 - Running two queue jobs at once, or bundling several fixes in one commit.
 - Offering the ship after anything was committed, or while anything is left for
   later.
+- Offering the ship while any finding has no outcome.
 - Doing any work after the ship.
 - Treating "Leave for later" as a discard.
 - Reviewing before the rebase, or rebasing with `notes.rewriteRef` still

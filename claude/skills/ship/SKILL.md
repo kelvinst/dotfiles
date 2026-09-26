@@ -62,6 +62,10 @@ git fetch origin refs/notes/review:refs/notes/review 2>/dev/null || true
    Anything but `reviewed` → stop: "The last commit has not been reviewed. Run
    `/close`." Do not review here.
 
+   Then, if this session's latest ReportFindings call still has any finding
+   without an `outcome`, stop: "There are findings still open. Run `/close` to
+   resolve or dismiss them." Ship still never reviews.
+
 4. **Push the default branch, the branch and the notes.**
 
    ```bash
@@ -93,5 +97,6 @@ git fetch origin refs/notes/review:refs/notes/review 2>/dev/null || true
   instead.
 - Running a review from here.
 - Shipping a HEAD without a `reviewed` note.
+- Shipping while the session has open findings.
 - Hardcoding `main` instead of the detected default branch.
 - Force-pushing the default branch — never.
