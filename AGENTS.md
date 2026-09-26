@@ -54,8 +54,7 @@ file) to see the change take effect; nothing is symlinked.
   `bin/`, but the interactive shell config (`zshrc`/`zshenv`) is zsh.
 - **Commit messages**: Conventional Commits with a scope tied to the file or
   tool being touched — e.g. `feat(zshrc): ...`, `fix(aerospace): ...`,
-  `feat(nvim): ...`, `chore(beads): ...`. Wrap bodies at ~72 chars. No
-  `Co-Authored-By` trailer.
+  `feat(nvim): ...`, `chore(beads): ...`. Wrap bodies at ~72 chars.
 - **macOS-specific tools** in play: kitty, aerospace, skhd, paneru,
   hammerspoon, JankyBorders, ai-jail, worktrunk. Don't suggest Linux
   equivalents unless asked.
