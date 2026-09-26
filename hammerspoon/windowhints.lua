@@ -8,7 +8,7 @@ local M = {}
 -- it.
 local ALPHABET = "asdfghjklqwertyuiopzxcvbnm"
 
-local HOTKEY_MODS = { "alt" }
+local HOTKEY_MODS = { alt = true }
 local HOTKEY_KEY = "f3"
 
 local LABEL_W = 220
@@ -255,6 +255,29 @@ end
 -- Bound here rather than in aerospace.toml: aerospace would only turn
 -- around and shell out to `hs -c`, adding a round trip before the labels
 -- show. Keep alt-f3 unbound in aerospace so it reaches Hammerspoon.
-M.hotkey = hs.hotkey.bind(HOTKEY_MODS, HOTKEY_KEY, M.show)
+--
+-- An event tap rather than hs.hotkey: hs.hotkey goes through
+-- RegisterEventHotKey, which refuses a chord someone else already holds,
+-- and something on this Mac still holds alt-f3 even with the Mission
+-- Control shortcut turned off. A tap sees the key before any of that, the
+-- way skhd does.
+local function onTrigger(event)
+  if hs.keycodes.map[event:getKeyCode()] ~= HOTKEY_KEY then
+    return false
+  end
+  -- F-keys carry the fn flag on a Mac keyboard; only the modifiers named
+  -- in HOTKEY_MODS count.
+  local flags = event:getFlags()
+  for _, mod in ipairs({ "cmd", "alt", "shift", "ctrl" }) do
+    if (flags[mod] or false) ~= (HOTKEY_MODS[mod] or false) then
+      return false
+    end
+  end
+  M.show()
+  return true
+end
+
+M.trigger = hs.eventtap.new({ hs.eventtap.event.types.keyDown }, onTrigger)
+M.trigger:start()
 
 return M
