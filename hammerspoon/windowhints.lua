@@ -11,7 +11,7 @@ local ALPHABET = "asdfghjklqwertyuiopzxcvbnm"
 local HOTKEY_MODS = { alt = true }
 local HOTKEY_KEY = "f3"
 
-local LABEL_W = 220
+local LABEL_W = 200
 local LABEL_H = 64
 
 -- Same bare-launchd-PATH problem as monitors.lua: `aerospace` isn't on it.
@@ -98,25 +98,89 @@ local function makeLabels(n)
   return labels
 end
 
--- Centre of the window, nudged down past any label already placed there.
--- Accordion stacks put their windows a few pixels apart, which would
--- otherwise pile every label onto the same spot.
-local function placeLabel(frame, placed)
-  local x = frame.x + (frame.w - LABEL_W) / 2
-  local y = frame.y + (frame.h - LABEL_H) / 2
-  local moved = true
-  while moved do
-    moved = false
-    for _, p in ipairs(placed) do
-      if math.abs(p.x - x) < LABEL_W and math.abs(p.y - y) < LABEL_H then
-        y = p.y + LABEL_H + 6
-        moved = true
+local LABEL_GAP = 8
+
+-- Windows whose centred labels would land on top of each other: an
+-- accordion stack puts its windows a few pixels apart, so every label
+-- would pile onto the same spot in the middle of the screen.
+local function clusterWindows(windows)
+  local clusters = {}
+  for i, w in ipairs(windows) do
+    local cx = w.frame.x + w.frame.w / 2
+    local cy = w.frame.y + w.frame.h / 2
+    local home = nil
+    for _, c in ipairs(clusters) do
+      if math.abs(c.cx - cx) < LABEL_W and math.abs(c.cy - cy) < LABEL_H then
+        home = c
+        break
       end
     end
+    if not home then
+      home = { cx = cx, cy = cy, width = w.frame.w, members = {} }
+      table.insert(clusters, home)
+    end
+    home.width = math.max(home.width, w.frame.w)
+    table.insert(home.members, i)
   end
-  local rect = { x = x, y = y, w = LABEL_W, h = LABEL_H }
-  table.insert(placed, rect)
-  return rect
+  return clusters
+end
+
+-- One rect per window, in the same order. A lone window gets its label
+-- centred on it; a stack gets its labels side by side in a row centred on
+-- the stack, wrapping onto more rows when the row would outgrow the widest
+-- window in it — a floating window centred over the stack joins it too.
+local function layoutLabels(windows)
+  local rects = {}
+  local placed = {}
+
+  -- Biggest stacks first, so their rows stay put and it is a lone floating
+  -- window's label that moves out of the way, not a whole row.
+  local clusters = clusterWindows(windows)
+  table.sort(clusters, function(a, b)
+    return #a.members > #b.members
+  end)
+
+  for _, c in ipairs(clusters) do
+    local n = #c.members
+    local fit = math.floor((c.width + LABEL_GAP) / (LABEL_W + LABEL_GAP))
+    local cols = math.max(1, math.min(n, fit))
+    local rows = math.ceil(n / cols)
+    local top = c.cy - (rows * LABEL_H + (rows - 1) * LABEL_GAP) / 2
+
+    for k, idx in ipairs(c.members) do
+      local row = (k - 1) // cols
+      local col = (k - 1) % cols
+      local inRow = math.min(cols, n - row * cols)
+      local left = c.cx
+        - (inRow * LABEL_W + (inRow - 1) * LABEL_GAP) / 2
+      local rect = {
+        x = left + col * (LABEL_W + LABEL_GAP),
+        y = top + row * (LABEL_H + LABEL_GAP),
+        w = LABEL_W,
+        h = LABEL_H,
+      }
+
+      -- A floating window centred near a stack, but not near enough to
+      -- join it, can still land on the stack's row: drop it below.
+      local moved = true
+      while moved do
+        moved = false
+        for _, p in ipairs(placed) do
+          if
+            math.abs(p.x - rect.x) < LABEL_W
+            and math.abs(p.y - rect.y) < LABEL_H
+          then
+            rect.y = p.y + LABEL_H + LABEL_GAP
+            moved = true
+          end
+        end
+      end
+
+      table.insert(placed, rect)
+      rects[idx] = rect
+    end
+  end
+  return rects
 end
 
 local function drawLabel(hint)
@@ -236,13 +300,13 @@ function M.show()
   end)
 
   local labels = makeLabels(#windows)
-  local placed = {}
+  local rects = layoutLabels(windows)
   for i, w in ipairs(windows) do
     local hint = {
       id = w.id,
       app = w.app,
       label = labels[i],
-      rect = placeLabel(w.frame, placed),
+      rect = rects[i],
     }
     table.insert(hints, hint)
     table.insert(canvases, drawLabel(hint))
