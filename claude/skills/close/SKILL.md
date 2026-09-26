@@ -272,9 +272,8 @@ deferred (arrival link or task id), discarded, or still open.
 
 Shipping is always the **last** thing a session does: nothing — no fix, no
 arrival, no task, no other work — runs after it. The only exceptions are the
-tracker bookkeeping of step 6 (closing the shipped issue on the user's yes) and
-the archive. Before offering it, make sure nothing else is pending in the
-session.
+bookkeeping of step 6 (marking the shipped task done on the user's yes) and the
+archive. Before offering it, make sure nothing else is pending in the session.
 
 **Showing the diff.** Never tell the user a keyboard shortcut — on mobile
 (Remote Control) there is none. Instead, open the diff for them: call
@@ -311,20 +310,45 @@ was left or discarded, what was inferred and from where. Every arrival you
 mention is a link to its note; every bd task and every closed issue is named by
 its id.
 
-_(Beads)_ Only after a successful ship, and before the archive question, handle
-the issue(s) the branch was about — found the same way the Create task job
-finds the current work: an id in the branch name, the issue claimed or worked
-on in this session, or one the conversation names. If none is identifiable, say
-so and ask nothing. Otherwise ask with AskUserQuestion whether to close them,
-naming each id and title: "Close <id>" (Recommended) — "Closes the issue as
-shipped: its work is now on `<default>`." · "Leave it open". Only on the user's
-yes, run `bd close <id> --reason="shipped to <default>"`, then `bd dolt push`
-when the repo has a Dolt remote. Never close an issue without that answer.
+Everything below runs **only after a successful ship**, in this order.
 
-Only after a successful ship, ask with AskUserQuestion: "Archive this session
-now?" — "Archive" (Recommended) · "Leave it open". On "Archive", call
-`mcp__ccd_session_mgmt__archive_session` with `session_id: "self"`. Never
-archive without that answer, or while the work is not in `<base>`.
+**a. Mark the task done.** Find the task the session was about, the same way
+the Create task job finds the current work: an id in the branch name, the task
+claimed or worked on in this session, or one the conversation names. If none is
+identifiable, say so and ask nothing. Otherwise ask with AskUserQuestion,
+naming each task: "Mark <task> done" (Recommended) — "Its work is now on
+`<default>`." · "Leave it open". Never mark a task done without that yes.
+
+- _(Beads)_ The task is a bd issue. On yes:
+  `bd close <id> --reason="shipped to <default>"`, then `bd dolt push` when the
+  repo has a Dolt remote.
+- _(Kingdone)_ The task is a quest (`qst-<id> <title>`, a note or a folder), in
+  progress in `Satchel/Quest Pocket/` or planned in
+  `Observatory/Drawer/Quests/Planned/`. On yes: stamp its note's frontmatter
+  with `completed: YYYY-MM-DD` (today), move it to
+  `Observatory/Drawer/Quests/Completed/` through the Obsidian CLI so links
+  follow, commit (`docs(observatory): <qst-id> is completed`, `Urgency: fyi`),
+  and push it straight to `<default>` as a fast-forward
+  (`git push origin HEAD:<default>`, then the branch). This status-only commit
+  is the one commit allowed after the ship.
+- _(Neither)_ No tracker: skip this.
+
+**b. Archive.** Ask with AskUserQuestion: "Archive this session now?" —
+"Archive" (Recommended) · "Leave it open". On "Archive", get this session's
+state with `mcp__ccd_session_mgmt__get_session` (`"self"`), then, before
+archiving:
+
+- **Remote Control.** When `remoteControlState` is `on` or `connecting`, turn
+  it off with `mcp__ccd_session_mgmt__set_remote_control`
+  (`session_id: "self"`, `enabled: false`) — the app asks the user to approve —
+  so no phone or claude.ai link stays open on an archived session. When
+  `startedViaRemoteControl` is true the switch is locked: say so and go on.
+- **Pin.** When `pinned` is true, unpin it with `mcp__ccd_sidebar__set_pinned`
+  (`session_id: "self"`, `pinned: false`), so the sidebar's Pinned list only
+  holds live work.
+
+Then call `mcp__ccd_session_mgmt__archive_session` with `session_id: "self"`.
+Never archive without that answer, or while the work is not in `<base>`.
 
 ## Common mistakes
 
@@ -339,7 +363,8 @@ archive without that answer, or while the work is not in `<base>`.
 - Doing any work after the ship.
 - Telling the user a keyboard shortcut to open the diff instead of opening it
   (and linking it) for them.
-- Closing a bd issue without asking, or before the ship.
+- Marking a bd issue or a quest done without asking, or before the ship.
+- Archiving with Remote Control still on, or the session still pinned.
 - Treating "Leave for later" as a discard.
 - Reviewing before the rebase, or rebasing with `notes.rewriteRef` still
   carrying review marks.
