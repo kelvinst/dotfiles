@@ -253,6 +253,19 @@ My new, simplified, dotfiles
    brew install --cask hammerspoon
    ```
 
+1. Install the keyboard remapper:
+   [Karabiner-Elements](https://karabiner-elements.pqrs.org)
+
+   ```shell
+   brew install --cask karabiner-elements
+   ```
+
+   Open it once and approve what macOS asks for: the driver extension (System
+   Settings → General → Login Items & Extensions) and Input Monitoring for
+   `karabiner_grabber` and `karabiner_observer`. Karabiner owns the Caps Lock →
+   Control remap, so leave Caps Lock unmapped in System Settings → Keyboard →
+   Keyboard Shortcuts → Modifier Keys.
+
 1. Clone this repo and run `make` to install:
 
    ```shell
