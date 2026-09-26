@@ -29,6 +29,17 @@
           }
         ]
       }
+    ],
+    "PreToolUse": [
+      {
+        "matcher": "mcp__ccd_session_mgmt__set_remote_control",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "bash \"$HOME/.claude/hooks/allow-remote-control-off.sh\""
+          }
+        ]
+      }
     ]
   },
   "statusLine": {
