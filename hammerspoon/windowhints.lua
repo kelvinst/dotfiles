@@ -1,4 +1,4 @@
--- Vimium-style window hints. alt-o drops a letter label on every window of
+-- Vimium-style window hints. alt-f3 drops a letter label on every window of
 -- the visible aerospace workspaces — both monitors at once — and typing a
 -- label focuses that window. Escape, or any key that matches no label,
 -- dismisses the overlay.
@@ -9,7 +9,7 @@ local M = {}
 local ALPHABET = "asdfghjklqwertyuiopzxcvbnm"
 
 local HOTKEY_MODS = { "alt" }
-local HOTKEY_KEY = "o"
+local HOTKEY_KEY = "f3"
 
 local LABEL_W = 220
 local LABEL_H = 64
@@ -173,8 +173,8 @@ function M.hide()
 end
 
 local function onKey(event)
-  -- Holding alt-o a beat too long would otherwise feed repeats of "o" in
-  -- as a typed label.
+  -- Holding alt-f3 a beat too long would otherwise feed its repeats in
+  -- as keystrokes.
   local props = hs.eventtap.event.properties
   if event:getProperty(props.keyboardEventAutorepeat) ~= 0 then
     return true
@@ -254,7 +254,7 @@ end
 
 -- Bound here rather than in aerospace.toml: aerospace would only turn
 -- around and shell out to `hs -c`, adding a round trip before the labels
--- show. Keep alt-o unbound in aerospace so it reaches Hammerspoon.
+-- show. Keep alt-f3 unbound in aerospace so it reaches Hammerspoon.
 M.hotkey = hs.hotkey.bind(HOTKEY_MODS, HOTKEY_KEY, M.show)
 
 return M

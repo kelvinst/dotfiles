@@ -121,13 +121,14 @@ on-mode-changed = []
     # half, which is awkward to hold with alt (worse with alt-shift). g is
     # left free for the G workspace, and alt-c/e/i/n stay free because they
     # are the Portuguese dead keys on the US layout.
-    # alt-o is left unbound on purpose: Hammerspoon's windowhints.lua owns
-    # it (letter hints on every visible window), and a binding here would
-    # swallow the key before it got there.
     alt-enter = 'exec-and-forget orbit focus main'
     alt-shift-enter = 'exec-and-forget orbit swap main'
     alt-w = 'exec-and-forget orbit focus main'
     alt-shift-w = 'exec-and-forget orbit swap main'
+
+    # alt-f3 is left unbound on purpose: Hammerspoon's windowhints.lua owns
+    # it (letter hints on every visible window, next to Homerow's f3), and
+    # a binding here would swallow the key before it got there.
 
     # Disabling macOS "Hide application" feature, because I don't use it
     # See: https://nikitabobko.github.io/AeroSpace/goodies#disable-hide-app
