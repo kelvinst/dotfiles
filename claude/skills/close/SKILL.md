@@ -278,9 +278,11 @@ session.
 
 **Showing the diff.** Never tell the user a keyboard shortcut — on mobile
 (Remote Control) there is none. Instead, open the diff for them: call
-`mcp__ccd_view__show_pane` with `pane: "diff"` (`diff_scope: "all"`, or a
-commit SHA for the commits this `/close` made). Also give the compare link when
-the remote is on GitHub —
+`mcp__ccd_view__show_pane` with `pane: "diff"`. For the branch diff, pass
+`diff_scope: "all"`. For the commits this `/close` made, `diff_scope` takes a
+single commit SHA, so pass the **first** commit of the batch and tell the user
+to move forward from there, commit by commit, up to HEAD. Also give the compare
+link when the remote is on GitHub —
 `https://github.com/<owner>/<repo>/compare/<from sha>...<HEAD sha>` — which
 opens anywhere, phone included. If the pane call says the session is not open
 in any window, the link is all there is; say so.
