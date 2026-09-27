@@ -207,7 +207,7 @@ First AskUserQuestion, a single question: "Apply all suggested fixes"
       lets this session close.";
     - _(Neither)_ no defer option;
   - "Discard" — "ATTENTION: DISMISSES THE FINDING FOR GOOD AND RELEASES THE
-    SHIP. It does not matter; ship anyway.";
+    SHIP. It does not matter; ship anyway. Asks for the reason.";
   - "Leave for later" — "Not now, no decision yet. Keeps the finding open (no
     outcome) in ReportFindings, which blocks the ship until a later `/close`
     resolves it."
@@ -216,6 +216,14 @@ First AskUserQuestion, a single question: "Apply all suggested fixes"
   "Discard" and "Leave for later" do not fit, drop the least likely extra fix
   and mention it in the question text. "Other" is always there; follow whatever
   the user types.
+
+  When the user picks "Discard", ask right away, in its own AskUserQuestion,
+  why — the reason is required. Offer 2–3 likely reasons for this specific
+  finding as options (e.g. "Not a real problem", "Intended behavior", "Not
+  worth the cost"); "Other" takes free text. Only a discard with a reason
+  counts: a skipped or empty answer leaves the finding undecided — ask again,
+  or treat it as "Leave for later". Under "Apply all" nothing is discarded, so
+  no reason is needed.
 
 ## 4. Run the queue
 
@@ -280,9 +288,11 @@ the repo type, the language to write in, and these rules:
 
 When the queue is empty, call ReportFindings again with each decided finding's
 `outcome`: `fixed` for an applied fix, `skipped` for a discard and for an
-arrival or task. A finding left for later gets no outcome: it stays open.
-Reprint the chat list with each finding's result — fixed (with its commit),
-deferred (arrival link or task id), discarded, or still open.
+arrival or task. A discarded finding's `summary` ends with
+`|—| DISCARDED: <reason> |—|`. A finding left for later gets no outcome: it
+stays open. Reprint the chat list with each finding's result — fixed (with its
+commit), deferred (arrival link or task id), discarded — <reason>, or still
+open.
 
 ## 5. Ship
 
@@ -322,9 +332,9 @@ in any window, the link is all there is; say so.
 ## 6. Archive
 
 Tell the user what was done: fixes with their commits, what was deferred, what
-was left or discarded, what was inferred and from where. Every arrival you
-mention is a link to its note; every bd task and every closed issue is named by
-its id.
+was left or discarded (each discard with its reason), what was inferred and
+from where. Every arrival you mention is a link to its note; every bd task and
+every closed issue is named by its id.
 
 Everything below runs **only after a successful ship**, in this order.
 
@@ -387,6 +397,7 @@ Never archive without that answer, or while the work is not in `<base>`.
 - Marking a bd issue or a quest done without asking, or before the ship.
 - Archiving with Remote Control still on, or the session still pinned.
 - Treating "Leave for later" as a discard.
+- Discarding without a reason, or inventing one for the user.
 - Reviewing before the rebase, or rebasing with `notes.rewriteRef` still
   carrying check marks.
 - Hardcoding `main` instead of the detected default branch.
