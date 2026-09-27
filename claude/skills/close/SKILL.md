@@ -90,7 +90,7 @@ Resolving the conflict is the user's call.
 
 ## 1. Collect findings
 
-Run all three checks, in this order, before asking anything.
+Run all four checks, in this order, before asking anything.
 
 **a. Code review.** Find the newest checked commit (see the `ship` skill,
 _Check marks_):
@@ -127,7 +127,21 @@ quest or plan, a closed status, a "done" heading) or the item is pending work
 the session left behind. Usual causes: it was cancelled, it was deferred
 somewhere nobody linked, or it was done and not ticked.
 
-**Mark the checks.** As soon as the three checks have run, mark the commit they
+**d. Look ahead.** From the work done — the diff, the conversation, the touched
+files — list:
+
+- related things the change touches or should touch but nobody mentioned (other
+  callers, sibling configs, docs, other repos or branches that depend on it);
+- ideas the work suggests — improvements worth having, not needed now;
+- next steps — the natural follow-up work;
+- possible pitfalls — how it could break, be misused or surprise later (edge
+  cases, environments, concurrency with other sessions or branches, upgrades).
+
+Each is a finding like any other, with a concrete suggested fix: usually the
+defer option (a task or an arrival), or doing it now when it is small. Only
+real, specific items — no generic advice; say what triggered each.
+
+**Mark the checks.** As soon as the four checks have run, mark the commit they
 looked at — HEAD — as checked. The mark says only that: the checks ran on this
 commit. It is not an approval; the approval is the user's "Ship" answer in
 step 5. Any later commit (a fix, an arrival) is not checked, and the next
@@ -145,13 +159,14 @@ again.
 
 ## 2. Report
 
-Make **one** ReportFindings call with every finding from the three checks, code
+Make **one** ReportFindings call with every finding from the four checks, code
 review first. It replaces any call the code-review skill made. Per finding:
 
 - `file` / `line`: where it lives — the code, the file with the checklist, or
   the file the conversation item is about;
 - `category`: for code-review findings, the category the code review gave;
-  otherwise `conversation` or `checklist`;
+  otherwise `conversation` or `checklist`, or for the look-ahead check
+  `related`, `idea`, `next-step` or `pitfall`;
 - `summary`: the problem, then the fix "apply all" will run, fenced so it
   stands out in one line of plain text (line breaks get eaten):
   `… |—| SUGGESTED FIX: <fix> |—|`;
@@ -176,9 +191,9 @@ First AskUserQuestion, a single question: "Apply all suggested fixes"
 
 - **Apply all:** queue every suggested fix (step 4). No more questions.
 - **One by one:** walk **every** finding from the report — code review,
-  conversation and checklist alike — one AskUserQuestion per finding, one
-  question per call, so each answer is queued (step 4) before the next
-  question. The question text carries the finding itself — its number,
+  conversation, checklist and look-ahead alike — one AskUserQuestion per
+  finding, one question per call, so each answer is queued (step 4) before the
+  next question. The question text carries the finding itself — its number,
   `file:line`, the problem and the suggested fix — never just "Finding N", so
   it reads on its own on mobile. Options, in this order, each with its
   description:
@@ -361,6 +376,7 @@ Never archive without that answer, or while the work is not in `<base>`.
 - A chat list that leaves out what the ReportFindings card shows, or a
   one-by-one question that names a finding without saying what it is.
 - One-by-one that skips the code-review findings.
+- Skipping the look-ahead check, or padding it with generic advice.
 - Running two queue jobs at once, or bundling several fixes in one commit.
 - Offering the ship after anything was committed, or while anything is left for
   later.
