@@ -53,25 +53,25 @@ Before any review, bring the branch up to date, so everything is reviewed on
 top of the current `<default>`. On a dirty tree, commit first (project commit
 procedure) — a rebase needs a clean tree.
 
-**Notes guard.** Review marks must not survive a rebase: a rebased commit sits
+**Notes guard.** Check marks must not survive a rebase: a rebased commit sits
 on new code and needs a new review. Check:
 
 ```bash
 git config --show-scope --get-all notes.rewriteRef
 ```
 
-If any value is `refs/notes/review`, or a glob that matches it
+If any value is `refs/notes/checks`, or a glob that matches it
 (`refs/notes/*`), unset that entry in the scope it came from —
 `git config --<scope> --unset-all notes.rewriteRef '^<value>$'` (escape `*` as
-`\*`) — and warn the user: which scope, which value, and that review marks
-would otherwise follow rebased commits and fake a review. A glob also stops
+`\*`) — and warn the user: which scope, which value, and that check marks would
+otherwise follow rebased commits and fake the checks. A glob also stops
 rewriting the other notes it covered; say so.
 
-Fetch (the review marks too, so marks pushed from another clone count):
+Fetch (the check marks too, so marks pushed from another clone count):
 
 ```bash
 git fetch origin
-git fetch origin refs/notes/review:refs/notes/review 2>/dev/null || true
+git fetch origin refs/notes/checks:refs/notes/checks 2>/dev/null || true
 ```
 
 Then rebase onto `<base>` with the `kix:rebase` skill when it is available — it
@@ -79,9 +79,9 @@ re-runs the pre-commit hook on every commit; slow, but worth the wait. Without
 it, `git rebase <base>`. Then `git push --force-with-lease origin HEAD` (on
 `<default>` itself there is no branch push).
 
-A rebase that moved the branch leaves its old review marks behind on the old
-commits: the code now sits on a new `<default>`, so it gets reviewed again.
-That is intended.
+A rebase that moved the branch leaves its old check marks behind on the old
+commits: the code now sits on a new `<default>`, so it gets checked again. That
+is intended.
 
 If the rebase stops on a conflict, abort it (`git rebase --abort`) and stop
 everything: "Before anything else, this branch needs a rebase onto `<default>`,
@@ -92,19 +92,19 @@ Resolving the conflict is the user's call.
 
 Run all three checks, in this order, before asking anything.
 
-**a. Code review.** Find the newest reviewed commit (see the `ship` skill,
-_Review marks_):
+**a. Code review.** Find the newest checked commit (see the `ship` skill,
+_Check marks_):
 
 ```bash
-git log --notes=review --format='%H %N' <base>..HEAD | grep -m1 -E '^[0-9a-f]{40} reviewed$'
+git log --notes=checks --format='%H %N' <base>..HEAD | grep -m1 -E '^[0-9a-f]{40} checked$'
 ```
 
 Run the `code-review` skill at level `medium` on everything after it — or on
 the whole branch against `<base>` when there is none — plus any uncommitted
-change. Skip this check when HEAD itself is reviewed and the tree is clean;
-then carry over every finding from this session's latest ReportFindings call
-that has no `outcome` — they are still open and go into the new report as they
-were. Keep its findings for the combined report below.
+change. Skip this check when HEAD itself is checked and the tree is clean; then
+carry over every finding from this session's latest ReportFindings call that
+has no `outcome` — they are still open and go into the new report as they were.
+Keep its findings for the combined report below.
 
 **b. Conversation.** Read the whole session and list:
 
@@ -127,19 +127,20 @@ quest or plan, a closed status, a "done" heading) or the item is pending work
 the session left behind. Usual causes: it was cancelled, it was deferred
 somewhere nobody linked, or it was done and not ticked.
 
-**Mark the review.** As soon as the three checks have run, mark the commit they
-looked at — HEAD — as reviewed. The mark says only that: this commit was
-reviewed. Any later commit (a fix, an arrival) is not, and the next `/close`
-reviews it.
+**Mark the checks.** As soon as the three checks have run, mark the commit they
+looked at — HEAD — as checked. The mark says only that: the checks ran on this
+commit. It is not an approval; the approval is the user's "Ship" answer in
+step 5. Any later commit (a fix, an arrival) is not checked, and the next
+`/close` checks it.
 
 ```bash
-git notes --ref=review add -f -m "reviewed" HEAD
-git push origin refs/notes/review
+git notes --ref=checks add -f -m "checked" HEAD
+git push origin refs/notes/checks
 ```
 
 If the notes push is rejected, run
-`git fetch origin refs/notes/review:refs/notes/review-remote`,
-`git notes --ref=review merge -s union refs/notes/review-remote`, and push
+`git fetch origin refs/notes/checks:refs/notes/checks-remote`,
+`git notes --ref=checks merge -s union refs/notes/checks-remote`, and push
 again.
 
 ## 2. Report
@@ -292,7 +293,7 @@ in any window, the link is all there is; say so.
   look like what you expect, run `/close` again."
 - **Any finding in the latest ReportFindings without an `outcome`** (left for
   later) → do not offer the ship. List what is still open.
-- **HEAD carries `reviewed`, no finding in the latest ReportFindings is left
+- **HEAD carries `checked`, no finding in the latest ReportFindings is left
   without an `outcome`, and nothing was committed during this `/close`** → show
   the branch diff (above, from `<base>`), then ask with AskUserQuestion: "Did
   you review the changes? Can I ship?", with the compare link in the question
@@ -371,7 +372,7 @@ Never archive without that answer, or while the work is not in `<base>`.
 - Archiving with Remote Control still on, or the session still pinned.
 - Treating "Leave for later" as a discard.
 - Reviewing before the rebase, or rebasing with `notes.rewriteRef` still
-  carrying review marks.
+  carrying check marks.
 - Hardcoding `main` instead of the detected default branch.
 - Offering a defer option in a repo that has no inbox, or Kingdone conventions
   (Gates, `Urgency:`, `R\$`) outside a Kingdone repo.

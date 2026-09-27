@@ -27,13 +27,15 @@ git symbolic-ref --short refs/remotes/origin/HEAD 2>/dev/null \
 Below, `<base>` is that ref (e.g. `origin/main`) and `<default>` is the branch
 name without `origin/`.
 
-## Review marks
+## Check marks
 
-A reviewed commit carries a git note in `refs/notes/review` reading `reviewed`,
-written by `close` right after its checks ran on that commit.
+A checked commit carries a git note in `refs/notes/checks` reading `checked`,
+written by `close` right after its checks ran on that commit. The mark only
+records that the checks ran — it is not an approval; the approval is the user's
+"Ship" answer in `close`. Old `reviewed` notes no longer count.
 
 ```bash
-git fetch origin refs/notes/review:refs/notes/review 2>/dev/null || true
+git fetch origin refs/notes/checks:refs/notes/checks 2>/dev/null || true
 ```
 
 ## Steps
@@ -53,13 +55,13 @@ git fetch origin refs/notes/review:refs/notes/review 2>/dev/null || true
    to rebase and recheck everything." Pulling `<default>` in can break this
    branch's work, and that needs a new review.
 
-3. **Review gate.**
+3. **Checks gate.**
 
    ```bash
-   git notes --ref=review show HEAD 2>/dev/null | head -1
+   git notes --ref=checks show HEAD 2>/dev/null | head -1
    ```
 
-   Anything but `reviewed` → stop: "The last commit has not been reviewed. Run
+   Anything but `checked` → stop: "The last commit has not been checked. Run
    `/close`." Do not review here.
 
    Then, if this session's latest ReportFindings call still has any finding
@@ -71,13 +73,13 @@ git fetch origin refs/notes/review:refs/notes/review 2>/dev/null || true
    ```bash
    git push origin HEAD:<default>
    git push --force-with-lease origin HEAD
-   git push origin refs/notes/review
+   git push origin refs/notes/checks
    ```
 
    The push to `<default>` is a fast-forward. If it is rejected, `<default>`
    moved: stop with the step 2 message. If the notes push is rejected, run
-   `git fetch origin refs/notes/review:refs/notes/review-remote`,
-   `git notes --ref=review merge -s union refs/notes/review-remote`, and push
+   `git fetch origin refs/notes/checks:refs/notes/checks-remote`,
+   `git notes --ref=checks merge -s union refs/notes/checks-remote`, and push
    again.
 
    On `<default>` itself (no branch), push is just `git push` plus the notes.
@@ -96,7 +98,7 @@ git fetch origin refs/notes/review:refs/notes/review 2>/dev/null || true
 - Rebasing or merging the default branch from here — send the user to `/close`
   instead.
 - Running a review from here.
-- Shipping a HEAD without a `reviewed` note.
+- Shipping a HEAD without a `checked` note.
 - Shipping while the session has open findings.
 - Hardcoding `main` instead of the detected default branch.
 - Force-pushing the default branch — never.
