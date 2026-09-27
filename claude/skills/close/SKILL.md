@@ -325,12 +325,16 @@ naming each task: "Mark <task> done" (Recommended) — "Its work is now on
 - _(Kingdone)_ The task is a quest (`qst-<id> <title>`, a note or a folder), in
   progress in `Satchel/Quest Pocket/` or planned in
   `Observatory/Drawer/Quests/Planned/`. On yes: stamp its note's frontmatter
-  with `completed: YYYY-MM-DD` (today), move it to
-  `Observatory/Drawer/Quests/Completed/` through the Obsidian CLI so links
-  follow, commit (`docs(observatory): <qst-id> is completed`, `Urgency: fyi`),
-  and push it straight to `<default>` as a fast-forward
-  (`git push origin HEAD:<default>`, then the branch). This status-only commit
-  is the one commit allowed after the ship.
+  with `completed: YYYY-MM-DD` (today) — for a note quest, that note; for a
+  folder quest, its main note, the one named after the quest's subject without
+  the `qst-<id>` prefix or verb, which the supporting notes are named after
+  (e.g. `Kix Checkpoints.md`; when unclear, ask the user which) — move it (a
+  folder quest moves whole) to `Observatory/Drawer/Quests/Completed/` through
+  the Obsidian CLI so links follow, commit
+  (`docs(observatory): <qst-id> is completed`, `Urgency: fyi`), and push it
+  straight to `<default>` as a fast-forward (`git push origin HEAD:<default>`,
+  then the branch). This status-only commit is the one commit allowed after the
+  ship.
 - _(Neither)_ No tracker: skip this.
 
 **b. Archive.** Ask with AskUserQuestion: "Archive this session now?" —
