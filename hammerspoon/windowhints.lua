@@ -62,6 +62,21 @@ local function aerospace(key, cmds)
   M[key]:start()
 end
 
+-- Every window id, front to back. hs.window._orderedwinids() is private
+-- but fast; an update that drops it would error after the key tap has
+-- started, swallowing every key until Esc. orderedWindows() is public and
+-- slower (~25ms), so it's the fallback that keeps the overlay working.
+local function orderedIds()
+  if hs.window._orderedwinids then
+    return hs.window._orderedwinids()
+  end
+  local ids = {}
+  for i, win in ipairs(hs.window.orderedWindows()) do
+    ids[i] = win:id()
+  end
+  return ids
+end
+
 -- Undo what the overlay did to the windows, then focus the picked window,
 -- or `origin` with none picked. All through aerospace rather than
 -- hs.window:focus(): aerospace keeps its own idea of the focused node, and
@@ -456,7 +471,7 @@ local function drawHints()
   -- ranked by the order it will leave them in, all in front of everything
   -- else.
   local rank = {}
-  for i, id in ipairs(hs.window._orderedwinids()) do
+  for i, id in ipairs(orderedIds()) do
     rank[id] = i
   end
   for k, w in ipairs(raised) do
@@ -568,7 +583,7 @@ function M.show()
   end
 
   -- What each stack shows now is its frontmost window.
-  for _, winId in ipairs(hs.window._orderedwinids()) do
+  for _, winId in ipairs(orderedIds()) do
     local id = tostring(winId)
     local ws = workspaceOf[id]
     if ws and stacked[ws] and not shownBefore[ws] and flipped[id] then
