@@ -105,7 +105,9 @@ print a ❓ line right before calling the tool:
 ⚠️ line; Decide's ✅ line counts each kind of decision (e.g.
 `✅ 8/14 Decide — 2 fixes queued, 1 skipped`).
 
-A run that finishes ends with `✅ <total>/<total> done`.
+A run that finishes ends with its last step's own line, saying what that step
+actually did — `✅ 14/14 Check — 14 commits landed on main (1435da0..a21b626)`,
+not a bare `done`.
 
 ⚠️ means "don't lose this": anything the user has to do after the run, even
 when it blocks nothing and needs no answer now (a question needing an answer
@@ -115,7 +117,7 @@ pick up, a branch or worktree to clean, a skill to reinstall, another session
 that must ship first. Put it on the step line where it shows up
 (`⚠️ 5/14 Tracker — dot-a7j done by this branch, close it after the ship`).
 Every run that leaves anything pending ends with a ⚠️ block listing each item
-and what to do, instead of `✅ <total>/<total> done`:
+and what to do, after the last step's line:
 
 ```
 ⚠️ Stopped at 10/14 Verdict — to do next:
