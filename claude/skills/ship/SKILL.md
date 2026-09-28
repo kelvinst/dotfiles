@@ -31,8 +31,7 @@ name without `origin/`.
 
 1. **Preflight.** Run the `preflight` skill, every time — even when HEAD
    already carries a check mark (preflight skips the code review then, but
-   still rebases and rechecks the conversation and checklists). Its verdict
-   decides:
+   still rebases and reruns every other check). Its verdict decides:
 
    - **Changed** or **Open** → stop here. Preflight already told the user what
      to do; add nothing, ship nothing.
