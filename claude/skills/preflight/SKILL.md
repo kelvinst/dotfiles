@@ -80,12 +80,11 @@ a step of its own:
 Each line starts with an emoji for the step's state, then `<n>/<total>` and the
 step name:
 
-| Emoji | When                                                      | Example                             |
-| ----- | --------------------------------------------------------- | ----------------------------------- |
-| ✅    | the step finished and worked — with its result            | `✅ 3/14 Conversation — 0 findings` |
-| ⏭️    | the step does not apply                                   | `⏭️ 8/14 Decide — no findings`      |
-| ⏸️    | the step waits for the user's answer (an AskUserQuestion) | `⏸️ 8/14 Decide — waiting for you`  |
-| ⚠️    | the run stops here and needs the user to act — say what   | `⚠️ 10/14 Verdict — changed: …`     |
+| Emoji | When                                                    | Example                             |
+| ----- | ------------------------------------------------------- | ----------------------------------- |
+| ✅    | the step finished and worked — with its result          | `✅ 3/14 Conversation — 0 findings` |
+| ⏭️    | the step does not apply                                 | `⏭️ 8/14 Decide — no findings`      |
+| ⚠️    | the run stops here and needs the user to act — say what | `⚠️ 10/14 Verdict — changed: …`     |
 
 A run that finishes ends with `✅ <total>/<total> done`.
 
