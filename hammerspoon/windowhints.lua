@@ -26,43 +26,64 @@ local tap = nil
 local hints = {}
 local typed = ""
 
+-- The window that was focused when the overlay opened. Esc, alt-f3 again
+-- or a key matching no label all hand focus back to it.
+local origin = nil
+
 -- Set while the focused accordion stack is flipped to tiles for the
--- overlay, so hiding it knows to flip it back: the workspace it lives on
--- and the window that was focused in it.
-local flipped = nil
+-- overlay, so hiding it knows to flip it back.
+local flipped = false
+
+-- Set once the restack has walked focus through the overlapping tiles,
+-- so hiding the overlay knows focus has moved off `origin`.
+local walked = false
 
 -- The flip to tiles lands a beat after the command returns; frames read
 -- before that are still the accordion's.
 local SETTLE_SECONDS = 0.2
 local pending = nil
 
--- Put the stack back to accordion if the overlay flipped it, then focus
--- the picked window — or, with none picked, the one that was focused
--- before, since raising the tiles for the overlay left some other window
--- on top. Both go through aerospace rather than
--- hs.window:focus(): aerospace keeps its own idea of the focused node, and
--- going around it leaves the tree out of step with what is on screen.
--- `layout` acts on the focused window, which the overlay never moves, so
--- it has to run before `focus`. Held in `M` so the task isn't collected
--- mid-run.
-local function finish(targetId)
-  local cmds = {}
-  if flipped then
-    table.insert(cmds, "aerospace layout accordion")
-    targetId = targetId or flipped.id
-    flipped = nil
-  end
-  if targetId then
-    table.insert(cmds, "aerospace focus --window-id " .. targetId)
-  end
-  if #cmds == 0 then
-    return
-  end
-  M.finishTask = hs.task.new("/bin/sh", nil, {
+-- Runs one shell line of aerospace commands, held in `M` under `key` so
+-- the task isn't collected mid-run.
+local function aerospace(key, cmds)
+  M[key] = hs.task.new("/bin/sh", nil, {
     "-c",
     PATH_PREFIX .. table.concat(cmds, " && "),
   })
-  M.finishTask:start()
+  M[key]:start()
+end
+
+-- Undo what the overlay did to the windows, then focus the picked window,
+-- or `origin` with none picked. All through aerospace rather than
+-- hs.window:focus(): aerospace keeps its own idea of the focused node, and
+-- going around it leaves the tree out of step with what is on screen.
+-- `layout` acts on the focused window, so after a restack walk focus has
+-- to be back on `origin` before the stack is flipped back to accordion.
+local function finish(targetId)
+  if M.walkTask and M.walkTask:isRunning() then
+    M.walkTask:terminate()
+  end
+
+  local cmds = {}
+  if walked and origin then
+    table.insert(cmds, "aerospace focus --window-id " .. origin)
+  end
+  if flipped then
+    table.insert(cmds, "aerospace layout accordion")
+  end
+  -- After a flip the accordion comes back showing whichever window its
+  -- tiles left on top, so focus is set again even when it is `origin`.
+  local final = targetId or origin
+  if final and (final ~= origin or flipped) then
+    table.insert(cmds, "aerospace focus --window-id " .. final)
+  end
+
+  walked = false
+  flipped = false
+  origin = nil
+  if #cmds > 0 then
+    aerospace("finishTask", cmds)
+  end
 end
 
 -- Every window on a visible workspace, with its on-screen frame. Aerospace
@@ -275,66 +296,28 @@ local function refresh()
   end
 end
 
--- Raise `list` in order, one at a time, so the last ends up on top. Fired
--- back to back, the raises reach each app's AX handling at their own pace
--- and land out of order — WhatsApp's in particular kept ending up under
--- the rest. So each waits until its window is actually frontmost among
--- the list, or RAISE_TIMEOUT runs out, before the next goes. Front-to-back
--- order comes from hs.window._orderedwinids(): a private call, but a few
--- milliseconds against the 25 of hs.window.orderedWindows(), and this
--- polls it.
-local RAISE_POLL = 0.015
-local RAISE_TIMEOUT = 0.3
-local restackTimer = nil
-
-local function stopRestack()
-  if restackTimer then
-    restackTimer:stop()
-    restackTimer = nil
-  end
-end
-
+-- Bring `list` to the front in order, so the last ends up on top, by
+-- walking aerospace focus through it. hs.window:raise() doesn't hold up:
+-- fired back to back the raises land out of order, and even spaced out
+-- the last one — WhatsApp — kept ending up under the rest. The walk
+-- leaves focus on the last window; finish() takes it back to `origin`
+-- only when the overlay closes, since doing it here would pull that
+-- window back over the stack whenever it sits in one.
 local function restack(list)
-  stopRestack()
-  local members = {}
+  if #list == 0 then
+    return
+  end
+  local cmds = {}
   for _, w in ipairs(list) do
-    members[w.win:id()] = true
+    table.insert(cmds, "aerospace focus --window-id " .. w.id)
   end
-
-  local function frontmost()
-    for _, id in ipairs(hs.window._orderedwinids()) do
-      if members[id] then
-        return id
-      end
-    end
-  end
-
-  local i = 0
-  local function step()
-    i = i + 1
-    local w = list[i]
-    if not w then
-      restackTimer = nil
-      return
-    end
-    local id = w.win:id()
-    w.win:raise()
-    local waited = 0
-    restackTimer = hs.timer.doEvery(RAISE_POLL, function()
-      waited = waited + RAISE_POLL
-      if frontmost() == id or waited >= RAISE_TIMEOUT then
-        restackTimer:stop()
-        step()
-      end
-    end)
-  end
-  step()
+  walked = true
+  aerospace("walkTask", cmds)
 end
 
 -- Tear the overlay down, then restore the stack and focus `targetId` when
 -- given.
 function M.hide(targetId)
-  stopRestack()
   if pending then
     pending:stop()
     pending = nil
@@ -548,9 +531,10 @@ function M.show()
       .. " --format '%{window-id}|%{workspace}|%{window-layout}'"
   )
   local id, ws, layout = (focused or ""):match("^(%d+)|([^|]*)|(%S*)")
+  origin = id
   if layout and layout:find("accordion") then
     hs.execute(PATH_PREFIX .. "aerospace layout tiles")
-    flipped = { id = id, workspace = ws }
+    flipped = true
     pending = hs.timer.doAfter(SETTLE_SECONDS, drawHints)
   else
     drawHints()
