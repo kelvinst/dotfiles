@@ -354,26 +354,46 @@ local function drawHints()
     return a.frame.y < b.frame.y
   end)
 
-  -- Tiles too narrow for their apps' minimum widths overlap. Raise them
-  -- left to right, so the rightmost ends up on top and each one's left
-  -- edge — where its label goes — shows past the one before it. Floating
-  -- windows go last so they stay above the tiles.
-  local raised = nil
-  if flipped then
-    raised = {}
-    for _, w in ipairs(windows) do
-      if w.workspace == flipped.workspace and w.layout ~= "floating" then
-        table.insert(raised, w)
+  -- Tiles too narrow for their apps' minimum widths overlap — whether the
+  -- overlay just flipped them from accordion or they were tiles already.
+  -- On every workspace where tiles overlap, raise them left to right, so
+  -- the rightmost ends up on top and each one's left edge — where its
+  -- label goes — shows past the one before it. Floating windows go last
+  -- so they stay above the tiles.
+  local byWorkspace = {}
+  for _, w in ipairs(windows) do
+    byWorkspace[w.workspace] = byWorkspace[w.workspace] or {}
+    table.insert(byWorkspace[w.workspace], w)
+  end
+
+  local raised = {}
+  for _, group in pairs(byWorkspace) do
+    local overlap = false
+    for i, a in ipairs(group) do
+      for j = i + 1, #group do
+        local b = group[j]
+        if
+          a.layout ~= "floating"
+          and b.layout ~= "floating"
+          and a.frame:intersect(b.frame).area > 0
+        then
+          overlap = true
+        end
       end
     end
-    for _, w in ipairs(windows) do
-      if w.workspace == flipped.workspace and w.layout == "floating" then
-        table.insert(raised, w)
+
+    if overlap then
+      for _, floating in ipairs({ false, true }) do
+        for _, w in ipairs(group) do
+          if (w.layout == "floating") == floating then
+            table.insert(raised, w)
+          end
+        end
       end
     end
-    for _, w in ipairs(raised) do
-      w.win:raise()
-    end
+  end
+  for _, w in ipairs(raised) do
+    w.win:raise()
   end
 
   -- Front-to-back rank of every window, lower is nearer the front. The
@@ -384,18 +404,44 @@ local function drawHints()
   for i, win in ipairs(hs.window.orderedWindows()) do
     rank[win:id()] = i
   end
-  for k, w in ipairs(raised or {}) do
+  for k, w in ipairs(raised) do
     rank[w.win:id()] = -k
   end
 
-  -- Whether each window's centre is hidden under a window in front of it.
+  -- Whether a frame fits inside a single screen, give or take a pixel.
+  local screens = {}
+  for _, sc in ipairs(hs.screen.allScreens()) do
+    table.insert(screens, sc:fullFrame())
+  end
+  local function onOneScreen(f)
+    for _, sf in ipairs(screens) do
+      if
+        f.x >= sf.x - 1
+        and f.y >= sf.y - 1
+        and f.x + f.w <= sf.x + sf.w + 1
+        and f.y + f.h <= sf.y + sf.h + 1
+      then
+        return true
+      end
+    end
+    return false
+  end
+
+  -- Whether each window's centre is hidden under a window in front of it,
+  -- or the window straddles two screens — the rightmost tile on the side
+  -- monitor spills onto the big one, and a label centred on it would sit
+  -- on the seam.
   local covered = {}
   for i, w in ipairs(windows) do
+    covered[i] = not onOneScreen(w.frame)
     local cx = w.frame.x + w.frame.w / 2
     local cy = w.frame.y + w.frame.h / 2
     local mine = rank[w.win:id()] or math.huge
     for _, o in ipairs(windows) do
       local f = o.frame
+      if covered[i] then
+        break
+      end
       if
         o ~= w
         and (rank[o.win:id()] or math.huge) < mine
