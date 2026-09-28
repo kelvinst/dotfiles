@@ -58,9 +58,10 @@ records that the checks ran — it is not an approval; the approval is the user'
 ## Progress
 
 The user wants to see where a run is while it runs. When each step ends, print
-one progress line (none when it starts), numbered across the whole run the user
-started (the `<command>` of _Verdict_), not per skill. Each check of step 2 is
-a step of its own:
+one progress line (none when it starts; the only other line is the ❓ line
+before a question, below), numbered across the whole run the user started (the
+`<command>` of _Verdict_), not per skill. Each check of step 2 is a step of its
+own:
 
 | Step                                    | `/preflight` | `/ship` | `/close` |
 | --------------------------------------- | ------------ | ------- | -------- |
@@ -80,16 +81,22 @@ a step of its own:
 Each line starts with an emoji for the step's state, then `<n>/<total>` and the
 step name:
 
-| Emoji | When                                                    | Example                             |
-| ----- | ------------------------------------------------------- | ----------------------------------- |
-| ✅    | the step finished and worked — with its result          | `✅ 3/14 Conversation — 0 findings` |
-| ⏭️    | the step does not apply                                 | `⏭️ 8/14 Decide — no findings`      |
-| ⚠️    | the run stops here and needs the user to act — say what | `⚠️ 10/14 Verdict — changed: …`     |
+| Emoji | When                                                                | Example                                      |
+| ----- | ------------------------------------------------------------------- | -------------------------------------------- |
+| ✅    | the step finished and worked — with its result                      | `✅ 3/14 Conversation — 0 findings`          |
+| ⏭️    | the step does not apply                                             | `⏭️ 8/14 Decide — no findings`               |
+| ⚠️    | the run stops here and needs the user to act — say what             | `⚠️ 10/14 Verdict — changed: …`              |
+| ❓    | right before each question to the user — with a short summary of it | `❓ 8/14 Decide — finding 2: tally vs split` |
 
-Decide is the one step with two lines: `❓ 8/14 Decide — <n> findings` right
-before its first AskUserQuestion, then, once every finding is decided,
-`✅ 8/14 Decide — <tally>` counting each kind of decision (e.g.
-`2 fixes queued, 1 skipped`).
+Before **every** AskUserQuestion — in any step of preflight, `ship` or `close`,
+each one-by-one finding question and each discard-reason question included —
+print a ❓ line right before calling the tool:
+`❓ <n>/<total> <Step> — <very short summary of what is about to be asked>`
+(e.g. `❓ 8/14 Decide — finding 2: tally vs split`,
+`❓ 11/14 Confirm — ship these 3 commits?`,
+`❓ 16/16 Archive — archive this session?`). The step still ends with its ✅ or
+⚠️ line; Decide's ✅ line counts each kind of decision (e.g.
+`✅ 8/14 Decide — 2 fixes queued, 1 skipped`).
 
 A run that finishes ends with `✅ <total>/<total> done`.
 
@@ -437,6 +444,8 @@ in any window, the link is all there is; say so.
   step starts instead of when it ends, or folding several steps into one line.
 - Printing several steps' progress lines in one text block instead of one
   message per step, each right after that step's own command.
+- Asking the user anything without printing the ❓ line first, or printing it
+  after the question.
 - Offering a defer option in a repo that has no inbox, or Kingdone conventions
   (Gates, `Urgency:`, `R\$`) outside a Kingdone repo.
 - Counting a skipped or dismissed question as answered.
