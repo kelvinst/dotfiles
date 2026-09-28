@@ -430,19 +430,15 @@ End every run with exactly one verdict. Callers (`ship`, and `close` through
 the skill the user started — `/preflight`, `/ship` or `/close` — even when they
 started it in plain words.
 
-**Showing the diff.** Never tell the user a keyboard shortcut — on mobile
-(Remote Control) there is none. Instead, open the diff for them: call
-`mcp__ccd_view__show_pane` with `pane: "diff"`. For the branch diff, pass
-`diff_scope: "all"`. For the commits this run made, `diff_scope` takes a single
-commit SHA, so pass the **first** commit of the batch and tell the user to move
-forward from there, commit by commit, up to HEAD. Also give the compare link
-when the remote is on GitHub, one link only — for the branch diff
+**Showing the diff.** Give the compare link when the remote is on GitHub, one
+link only — for the branch diff
 `https://github.com/<owner>/<repo>/compare/<default>...<HEAD sha>`, for this
 run's commits `.../compare/<first commit>^...<HEAD sha>`, the caret so the
 first commit's own changes show. It opens anywhere, phone included. The link
 goes in the reply itself, never only inside an AskUserQuestion: links do not
-render in a question card on mobile. If the pane call says the session is not
-open in any window, the link is all there is; say so.
+render in a question card on mobile. Never open the app's diff pane
+(`mcp__ccd_view__show_pane`) — it fails more often than not — and never tell
+the user a keyboard shortcut.
 
 - **Changed** — step 5 committed anything (fixes, arrivals, checklist edits).
   The rebase and step 1's commit of a dirty tree do not count: step 2 checked
@@ -481,8 +477,8 @@ runs after the answer.
 - Calling a run **clear** after it committed anything, or while any finding has
   no outcome.
 - Shipping from here — preflight only gives a verdict.
-- Telling the user a keyboard shortcut to open the diff instead of opening it
-  (and linking it) for them.
+- Opening the diff pane or telling the user a keyboard shortcut instead of
+  giving the compare link.
 - Treating "Leave for later" as a discard.
 - Discarding without a reason, or inventing one for the user.
 - Reviewing before the rebase, or rebasing with `notes.rewriteRef` still
