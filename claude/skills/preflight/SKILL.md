@@ -107,7 +107,7 @@ clear"):
 ```
 ✅ 1/14 Rebase — already on main
 ✅ 2/14 Code review — 0 findings
-✅ 3/14 Conversation — 0 findings
+✅ 3/14 Conversation — asks 0 · unanswered 0/0 · deferred 0 · promised 0 · inferred 0
 ```
 
 Each step runs at least one real command of its own (a grep, a `bd` search, a
@@ -188,6 +188,11 @@ Keep its findings for the combined report below.
 
 If the conversation was summarized earlier, say so: findings before the summary
 are only as good as the summary.
+
+This check's progress line tallies each of the six kinds, e.g.
+`✅ 3/14 Conversation — asks 0 · unanswered 0/0 · deferred 0 · promised 0 · inferred 1`;
+`unanswered x/y` is questions the user left unanswered / questions you left
+unanswered.
 
 **c. Checklists.** For every Markdown file the branch (or the dirty tree)
 touched — _(Kingdone)_ every note outside `Gates/` — look at its unchecked
