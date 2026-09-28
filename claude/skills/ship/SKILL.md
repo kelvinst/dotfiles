@@ -66,9 +66,10 @@ below are 11–14 of 14 (of 16 when `close` called ship).
 
    A dirty tree, no `UP_TO_DATE`, or a first note line other than `checked` →
    stop: "Something changed since the preflight." Then, after the ⚠️ block, ask
-   preflight's _Verdict_ rerun question, with the branch diff from `<base>` as
-   its link — `<command>` as _Verdict_ defines it (`/close` when close called
-   ship). Never rebase or review here to fix it.
+   preflight's _Verdict_ rerun question in its **changed** form (reviewed ·
+   skip my review · not now), with the branch diff from `<base>` as its link —
+   `<command>` as _Verdict_ defines it (`/close` when close called ship). Never
+   rebase or review here to fix it.
 
 4. **Push the default branch, the branch and the notes.**
 

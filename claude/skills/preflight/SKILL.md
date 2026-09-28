@@ -459,13 +459,30 @@ often than not — and never tell the user a keyboard shortcut.
 
 **Rerun.** A link can't run a slash command, but an answer can. After a
 **changed** or **open** verdict's ⚠️ block, print a ❓ line (e.g.
-`❓ 10/14 Verdict — rerun /ship?`) and ask with AskUserQuestion: "Run
-`<command>` again" (Recommended) · "Not now". The question text carries the
-same compare link the verdict already printed in the reply — the step 5 commits
-for **changed**, the branch diff for **open** — never a second link with a
-different range. On "Run `<command>` again", rerun `<command>` right away, from
-its first step, with fresh progress numbering. On "Not now", stop — nothing
-runs after the answer.
+`❓ 10/14 Verdict — rerun /ship?`) and ask with AskUserQuestion. The question
+text carries the same compare link the verdict already printed in the reply —
+the step 5 commits for **changed**, the branch diff for **open** — never a
+second link with a different range. The question depends on the verdict:
+
+- **Changed** — the question says outright that new commits landed that the
+  user has not seen: "`<n>` new commits landed since your last look
+  (`<first short sha>..<HEAD short sha>`). The next run checks them, but you
+  haven't seen them. Run `<command>` again?" Options:
+  - "I reviewed — run `<command>` again" (Recommended) — "You skimmed the new
+    commits. The rerun checks them again on its own.";
+  - "Run again, skip my review" — "Rerun now without looking. Only the
+    automated review checks the new commits.";
+  - "Not now" — "Stop. The ⚠️ block stays."
+- **Open** — nothing new was committed: "Findings still open — rerun
+  `<command>` to decide them?" Options: "Run `<command>` again" (Recommended) ·
+  "Not now".
+
+On any run option, rerun `<command>` right away, from its first step, with
+fresh progress numbering. On "Run again, skip my review", the skip goes on
+record: the rerun's final ⚠️ block (add one if the run would otherwise end
+without it) carries
+`- <first short sha>..<HEAD short sha> went through without your review — skim it`,
+even when that run ships. On "Not now", stop — nothing runs after the answer.
 
 ## Common mistakes
 
@@ -500,6 +517,10 @@ runs after the answer.
   total (`finding 6/9`).
 - Ending a **changed**, **open** or ship _Gate_ stop with only a text "run it
   again" instead of the rerun question.
+- A **changed** rerun question that doesn't say new, unseen commits landed, or
+  that offers only "I reviewed" — a user who skips the review on purpose must
+  have an honest option — or dropping the "without your review" ⚠️ item after
+  "Run again, skip my review".
 - Ending a run with pending items but no ⚠️ block, or marking something the
   user must do later with ✅.
 - Offering a defer option in a repo that has no inbox, or Kingdone conventions
