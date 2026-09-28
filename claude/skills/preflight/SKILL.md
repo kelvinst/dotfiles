@@ -462,8 +462,8 @@ compare link for what to look at first: for **changed**, the step 5 commits
 **open**, the branch diff (`.../compare/<base>...<HEAD sha>`). Print that link
 in the reply too, right before the question: inside the card it is unreachable
 on mobile. On "Run `<command>` again", rerun `<command>` right away, from its
-first step, with fresh progress numbering. On "Not now", stop — the ⚠️ block
-stays the last thing.
+first step, with fresh progress numbering. On "Not now", stop — nothing runs
+after the answer.
 
 ## Common mistakes
 
