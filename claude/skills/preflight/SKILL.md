@@ -65,48 +65,49 @@ not per skill. Each check of step 2 is a step of its own:
 
 | Step                                    | `/preflight` | `/ship` | `/close` |
 | --------------------------------------- | ------------ | ------- | -------- |
-| Rebase (1)                              | 1/10         | 1/14    | 1/16     |
-| Code review (2a)                        | 2/10         | 2/14    | 2/16     |
-| Conversation (2b)                       | 3/10         | 3/14    | 3/16     |
-| Checklists (2c)                         | 4/10         | 4/14    | 4/16     |
-| Tracker (2d)                            | 5/10         | 5/14    | 5/16     |
-| Look ahead (2e)                         | 6/10         | 6/14    | 6/16     |
-| Report (3)                              | 7/10         | 7/14    | 7/16     |
-| Decide (4)                              | 8/10         | 8/14    | 8/16     |
-| Fixes (5)                               | 9/10         | 9/14    | 9/16     |
-| Verdict (6)                             | 10/10        | 10/14   | 10/16    |
-| Confirm, Gate, Push, Check (`ship` 2–5) | —            | 11–14   | 11–14    |
-| Mark task done, Archive (`close` 2a–2b) | —            | —       | 15–16    |
+| Rebase (1)                              | 1/11         | 1/15    | 1/17     |
+| Code review (2a)                        | 2/11         | 2/15    | 2/17     |
+| Conversation (2b)                       | 3/11         | 3/15    | 3/17     |
+| Checklists (2c)                         | 4/11         | 4/15    | 4/17     |
+| Tracker (2d)                            | 5/11         | 5/15    | 5/17     |
+| Look ahead (2e)                         | 6/11         | 6/15    | 6/17     |
+| After ship (2f)                         | 7/11         | 7/15    | 7/17     |
+| Report (3)                              | 8/11         | 8/15    | 8/17     |
+| Decide (4)                              | 9/11         | 9/15    | 9/17     |
+| Fixes (5)                               | 10/11        | 10/15   | 10/17    |
+| Verdict (6)                             | 11/11        | 11/15   | 11/17    |
+| Confirm, Gate, Push, Check (`ship` 2–5) | —            | 12–15   | 12–15    |
+| Mark task done, Archive (`close` 2a–2b) | —            | —       | 16–17    |
 
 Each line starts with an emoji for the step's state, then `<n>/<total>` and the
 step name:
 
-| Emoji | When                                                                | Example                                               |
-| ----- | ------------------------------------------------------------------- | ----------------------------------------------------- |
-| ✅    | the step finished and worked — with its result                      | `✅ 3/14 Conversation — 0 findings`                   |
-| ⏭️    | the step does not apply                                             | `⏭️ 8/14 Decide — no findings`                        |
-| ⚠️    | the user must act on something, now or later — say what             | `⚠️ 10/14 Verdict — changed: …`                       |
-| ❓    | right before each question to the user — with a short summary of it | `❓ 8/14 Decide — finding 2/6: tally vs split`        |
-| ⏳    | a Fixes job is dispatched to its background agent                   | `⏳ 9.1/14 Fixes — job 1/2: ❓ before every question` |
+| Emoji | When                                                                | Example                                                |
+| ----- | ------------------------------------------------------------------- | ------------------------------------------------------ |
+| ✅    | the step finished and worked — with its result                      | `✅ 3/15 Conversation — 0 findings`                    |
+| ⏭️    | the step does not apply                                             | `⏭️ 9/15 Decide — no findings`                         |
+| ⚠️    | the user must act on something, now or later — say what             | `⚠️ 11/15 Verdict — changed: …`                        |
+| ❓    | right before each question to the user — with a short summary of it | `❓ 9/15 Decide — finding 2/6: tally vs split`         |
+| ⏳    | a Fixes job is dispatched to its background agent                   | `⏳ 10.1/15 Fixes — job 1/2: ❓ before every question` |
 
-Fixes (progress step 9 in every run) numbers each job as a sub-step: `9.1`,
-`9.2`, … Print its ⏳ line when the job is dispatched and its ✅ or ⚠️ line,
+Fixes (progress step 10 in every run) numbers each job as a sub-step: `10.1`,
+`10.2`, … Print its ⏳ line when the job is dispatched and its ✅ or ⚠️ line,
 with the commit or task id, when the job reports done:
-`✅ 9.1/14 Fixes — job 1/2: ❓ before every question (bb5098b)`. The step's own
-✅ line follows the last job.
+`✅ 10.1/15 Fixes — job 1/2: ❓ before every question (bb5098b)`. The step's
+own ✅ line follows the last job.
 
 Before **every** AskUserQuestion — in any step of preflight, `ship` or `close`,
 each one-by-one finding question and each discard-reason question included —
 print a ❓ line right before calling the tool:
 `❓ <n>/<total> <Step> — <very short summary of what is about to be asked>`
-(e.g. `❓ 8/14 Decide — finding 2/6: tally vs split`,
-`❓ 11/14 Confirm — ship these 3 commits?`,
-`❓ 16/16 Archive — archive this session?`). The step still ends with its ✅ or
+(e.g. `❓ 9/15 Decide — finding 2/6: tally vs split`,
+`❓ 12/15 Confirm — ship these 3 commits?`,
+`❓ 17/17 Archive — archive this session?`). The step still ends with its ✅ or
 ⚠️ line; Decide's ✅ line counts each kind of decision (e.g.
-`✅ 8/14 Decide — 2 fixes queued, 1 skipped`).
+`✅ 9/15 Decide — 2 fixes queued, 1 skipped`).
 
 A run that finishes ends with its last step's own line, saying what that step
-actually did — `✅ 14/14 Check — 14 commits landed on main (1435da0..a21b626)`,
+actually did — `✅ 15/15 Check — 14 commits landed on main (1435da0..a21b626)`,
 not a bare `done`.
 
 ⚠️ means "don't lose this": anything the user has to do after the run, even
@@ -115,12 +116,12 @@ now is ❓). Use it for a run that stopped before its last step, and for any
 step result that leaves the user something to do later — a deferred task to
 pick up, a branch or worktree to clean, a skill to reinstall, another session
 that must ship first. Put it on the step line where it shows up
-(`⚠️ 5/14 Tracker — dot-a7j done by this branch, close it after the ship`).
+(`⚠️ 5/15 Tracker — dot-a7j done by this branch, close it after the ship`).
 Every run that leaves anything pending ends with a ⚠️ block listing each item
 and what to do, after the last step's line:
 
 ```
-⚠️ Stopped at 10/14 Verdict — to do next:
+⚠️ Stopped at 11/15 Verdict — to do next:
 - skim bb5098b..44b795d, then run /ship again
 - close dot-a7j after the ship
 ```
@@ -130,9 +131,9 @@ steps end with nothing to say. Never fold them into one summary ("steps 1–6
 clear"):
 
 ```
-✅ 1/14 Rebase — already on main
-✅ 2/14 Code review — 0 findings
-✅ 3/14 Conversation — asks 0 · unanswered 0/0 · deferred 0 · promised 0 · inferred 0
+✅ 1/15 Rebase — already on main
+✅ 2/15 Code review — 0 findings
+✅ 3/15 Conversation — asks 0 · unanswered 0/0 · deferred 0 · promised 0 · inferred 0
 ```
 
 Each step runs at least one real command of its own (a grep, a `bd` search, a
@@ -186,7 +187,7 @@ Resolving the conflict is the user's call.
 
 ## 2. Collect findings
 
-Run all five checks, in this order, before asking anything.
+Run all six checks, in this order, before asking anything.
 
 **a. Code review.** Find the newest checked commit (see _Check marks_):
 
@@ -218,7 +219,7 @@ If the conversation was summarized earlier, say so: findings before the summary
 are only as good as the summary.
 
 This check's progress line tallies each of the six kinds, e.g.
-`✅ 3/14 Conversation — asks 0 · unanswered 0/0 · deferred 0 · promised 0 · inferred 1`;
+`✅ 3/15 Conversation — asks 0 · unanswered 0/0 · deferred 0 · promised 0 · inferred 1`;
 `unanswered x/y` is questions the user left unanswered / questions you left
 unanswered.
 
@@ -267,7 +268,23 @@ Each is a finding like any other, with a concrete suggested fix: usually the
 defer option (a task or an arrival), or doing it now when it is small. Only
 real, specific items — no generic advice; say what triggered each.
 
-**Mark the checks.** As soon as the five checks have run, mark the commit they
+**f. After ship.** A closed task means nothing is left to do: the work is in
+use, or — for a task other tasks depend on — ready for them to start. From the
+diff, the conversation and the touched files, list what still has to happen
+**after** the branch lands on `<default>` before that is true: data migrations,
+database schema migrations, configuration changes on a machine or a service, a
+deploy, an install or reinstall (`make install`, a skill, a plugin), a secret
+or env var to set, a restart, a manual check in the real app. Only what cannot
+be done before the ship — anything doable now is a look-ahead finding (check e)
+with the fix "do it now".
+
+Each is a finding (`category: after-ship`) whose suggested fix is to register
+it, never to do it: the "Create after-ship task" job of step 5. The current
+task stays blocked by it, so `close` will not mark the task done until it is.
+_(Neither)_ there is no tracker: the finding's fix is a ⚠️ line in the run's
+closing ⚠️ block.
+
+**Mark the checks.** As soon as the six checks have run, mark the commit they
 looked at — HEAD — as checked. The mark says only that: the checks ran on this
 commit. It is not an approval; the approval is the user's "Ship" answer in
 `ship`. Any later commit (a fix, an arrival) is not checked, and the next
@@ -285,14 +302,15 @@ again.
 
 ## 3. Report
 
-Make **one** ReportFindings call with every finding from the five checks, code
+Make **one** ReportFindings call with every finding from the six checks, code
 review first. It replaces any call the code-review skill made. Per finding:
 
 - `file` / `line`: where it lives — the code, the file with the checklist, or
   the file the conversation item is about;
 - `category`: for code-review findings, the category the code review gave;
   otherwise `conversation`, `checklist` or `tracker`, or for the look-ahead
-  check `related`, `idea`, `next-step` or `pitfall`;
+  check `related`, `idea`, `next-step` or `pitfall`, or `after-ship` for the
+  after-ship check;
 - `summary`: the problem, then the fix "apply all" will run, fenced so it
   stands out in one line of plain text (line breaks get eaten):
   `… |—| SUGGESTED FIX: <fix> |—|`;
@@ -320,12 +338,12 @@ First AskUserQuestion, a single question: "Apply all suggested fixes"
 
 - **Apply all:** queue every suggested fix (step 5). No more questions.
 - **One by one:** walk **every** finding from the report — code review,
-  conversation, checklist, tracker and look-ahead alike — one AskUserQuestion
-  per finding, one question per call, so each answer is queued (step 5) before
-  the next question. The question text carries the finding itself — its number
-  out of the total (`finding 6/9`), `file:line`, the problem and the suggested
-  fix — never just "Finding N", so it reads on its own on mobile. Options, in
-  this order, each with its description:
+  conversation, checklist, tracker, look-ahead and after-ship alike — one
+  AskUserQuestion per finding, one question per call, so each answer is queued
+  (step 5) before the next question. The question text carries the finding
+  itself — its number out of the total (`finding 6/9`), `file:line`, the
+  problem and the suggested fix — never just "Finding N", so it reads on its
+  own on mobile. Options, in this order, each with its description:
   - the suggested fix (Recommended);
   - each other real fix, when there is more than one — list them, keep your
     pick first;
@@ -335,6 +353,10 @@ First AskUserQuestion, a single question: "Apply all suggested fixes"
     - _(Beads)_ "Create task" — "Creates a bd task to do this another time;
       releases the ship after a re-run.";
     - _(Neither)_ no defer option;
+
+    An after-ship finding's suggested fix is already its defer option — the
+    after-ship task (Kingdone: arrival) — so it is not offered twice;
+
   - "Discard" — "ATTENTION: DISMISSES THE FINDING FOR GOOD AND RELEASES THE
     SHIP. It does not matter; ship anyway. Asks for the reason.";
   - "Leave for later" — "Not now, no decision yet. Keeps the finding open (no
@@ -410,6 +432,20 @@ the repo type, the language to write in, and these rules:
   at its end, commit that edit (one commit) and push. Finish with
   `bd dolt push` when the repo has a Dolt remote.
 
+- **Create after-ship task:** a deferred item, as above, that also blocks the
+  current work, so `close` cannot mark it done while the item is open. Its
+  title says what to do after the ship; its context says why the work is not in
+  use (or ready for its dependents) until it is done.
+
+  - _(Beads)_ create it like **Create task**, adding `--labels=after-ship`,
+    then make the current issue depend on it:
+    `bd dep add <current id> <new task id>`. No identifiable current issue →
+    create it unrelated and say so: nothing will block the close.
+  - _(Kingdone)_ create the arrival like **Create arrival**, then add
+    `- [ ] <what to do> → [[Gates/<title>|<title>]]` under an `## After ship`
+    heading (create it at the end when missing) in the current quest's main
+    note, and commit both together.
+
 - **Session title and link** (arrival or task) come from
   `mcp__ccd_session_mgmt__get_session` with `"self"`. When those tools are not
   available (a session started from the phone through a terminal
@@ -420,11 +456,11 @@ the repo type, the language to write in, and these rules:
 
 When the queue is empty, call ReportFindings again with each decided finding's
 `outcome`: `fixed` for an applied fix, `skipped` for a discard and for an
-arrival or task. A discarded finding's `summary` ends with
-`|—| DISCARDED: <reason> |—|`. A finding left for later gets no outcome: it
-stays open. Reprint the chat list with each finding's result — fixed (with its
-commit), deferred (arrival link or task id), discarded — <reason>, or still
-open.
+arrival or task (after-ship ones included). A discarded finding's `summary`
+ends with `|—| DISCARDED: <reason> |—|`. A finding left for later gets no
+outcome: it stays open. Reprint the chat list with each finding's result —
+fixed (with its commit), deferred (arrival link or task id), discarded —
+<reason>, or still open.
 
 ## 6. Verdict
 
@@ -459,7 +495,7 @@ often than not — and never tell the user a keyboard shortcut.
 
 **Rerun.** A link can't run a slash command, but an answer can. After a
 **changed** or **open** verdict's ⚠️ block, print a ❓ line (e.g.
-`❓ 10/14 Verdict — rerun /ship?`) and ask with AskUserQuestion. The question
+`❓ 11/15 Verdict — rerun /ship?`) and ask with AskUserQuestion. The question
 text carries the same compare link the verdict already printed in the reply —
 the step 5 commits for **changed**, the branch diff for **open** — never a
 second link with a different range. The question depends on the verdict:
@@ -491,6 +527,8 @@ even when that run ships. On "Not now", stop — nothing runs after the answer.
   one-by-one question that names a finding without saying what it is.
 - One-by-one that skips the code-review findings.
 - Skipping the look-ahead check, or padding it with generic advice.
+- Doing an after-ship item before the ship, or registering it without making
+  the current task depend on it.
 - Searching the tracker only by the branch's issue id, or only in the touched
   files.
 - Listing only the questions the user left unanswered, not the ones you did.
@@ -505,7 +543,7 @@ even when that run ships. On "Not now", stop — nothing runs after the answer.
 - Reviewing before the rebase, or rebasing with `notes.rewriteRef` still
   carrying check marks.
 - Hardcoding `main` instead of the detected default branch.
-- Numbering progress per skill (`1/10` inside a `/ship`) instead of across the
+- Numbering progress per skill (`1/11` inside a `/ship`) instead of across the
   whole run, or dropping the line for a skipped step, printing a line when a
   step starts instead of when it ends, or folding several steps into one line.
 - Printing several steps' progress lines in one text block instead of one

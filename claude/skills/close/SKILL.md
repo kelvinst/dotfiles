@@ -42,8 +42,8 @@ name without `origin/`.
 ## Progress
 
 Print a progress line when each step ends, and a ❓ line before each question,
-as preflight's _Progress_ says: `ship` (with its preflight) prints 1–14, then
-step 2a is 15/16 and 2b is 16/16.
+as preflight's _Progress_ says: `ship` (with its preflight) prints 1–15, then
+step 2a is 16/17 and 2b is 17/17.
 
 ## 1. Ship
 
@@ -52,7 +52,7 @@ arrival, no task, no other work — runs after it. The only exceptions are the
 bookkeeping of step 2 (marking the shipped task done on the user's yes) and the
 archive.
 
-Run the `ship` skill. It runs `preflight` (rebase, the five checks, findings,
+Run the `ship` skill. It runs `preflight` (rebase, the six checks, findings,
 fixes and deferrals), asks the user to confirm, and pushes. If it stops — a
 **changed** or **open** verdict, a "Not yet", a failed push — report why and
 stop: the session is not ready to archive.
@@ -69,9 +69,28 @@ Everything below runs **only after a successful ship**, in this order.
 **a. Mark the task done.** Find the task the session was about, the same way
 the Create task job finds the current work: an id in the branch name, the task
 claimed or worked on in this session, or one the conversation names. If none is
-identifiable, say so and ask nothing. Otherwise ask with AskUserQuestion,
-naming each task: "Mark <task> done" (Recommended) — "Its work is now on
-`<default>`." · "Leave it open". Never mark a task done without that yes.
+identifiable, say so and ask nothing.
+
+A task is done only when nothing is left: its work is in use, or ready for the
+tasks that depend on it. Before asking, look for what is still pending on it —
+the after-ship items preflight registered (data or schema migrations, config
+changes, installs, deploys) and anything else still open under it:
+
+- _(Beads)_ `bd dep list <id>` and `bd children <id>` (when it is an epic): any
+  open or in-progress issue it depends on (`blocks`) or that is its child;
+- _(Kingdone)_ unchecked `- [ ]` items under the quest note's `## After ship`
+  heading, and the arrivals they link that are still in `Gates/`;
+- _(Neither)_ the after-ship findings of this run's preflight.
+
+When there is any, do not offer to mark the task done: print
+`⚠️ 16/17 Mark task done — <task> has <n> item(s) left after the ship`, list
+each by its id (or arrival link) with what to do, say to close the task once
+they are done, and go on to 2b — the work is shipped and the items are in the
+tracker, so the session loses nothing.
+
+Otherwise ask with AskUserQuestion, naming each task: "Mark <task> done"
+(Recommended) — "Its work is now on `<default>`." · "Leave it open". Never mark
+a task done without that yes.
 
 - _(Beads)_ The task is a bd issue. On yes:
   `bd close <id> --reason="shipped to <default>"`, then `bd dolt push` when the
@@ -122,6 +141,8 @@ Never archive without that answer, or while the work is not in `<base>`.
   through `ship` → `preflight`.
 - Doing any work after the ship.
 - Marking a bd issue or a quest done without asking, or before the ship.
+- Offering to mark a task done while an after-ship item or another open blocker
+  on it is still pending.
 - Archiving after a ship that stopped.
 - Archiving with Remote Control still on, or the session still pinned.
 - In a terminal `claude remote-control` session (no `ccd_session_mgmt` tools),

@@ -30,8 +30,8 @@ name without `origin/`.
 ## Steps
 
 Print a progress line when each step ends, and a ❓ line before each question,
-as preflight's _Progress_ says: the preflight steps are 1–10, and steps 2–5
-below are 11–14 of 14 (of 16 when `close` called ship).
+as preflight's _Progress_ says: the preflight steps are 1–11, and steps 2–5
+below are 12–15 of 15 (of 17 when `close` called ship).
 
 1. **Preflight.** Run the `preflight` skill, every time — even when HEAD
    already carries a check mark (preflight skips the code review then, but
