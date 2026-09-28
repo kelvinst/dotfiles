@@ -437,14 +437,25 @@ in any window, the link is all there is; say so.
   The rebase and step 1's commit of a dirty tree do not count: step 2 checked
   them. Show the diff of the step 5 commits (above), then say: "There were
   changes. Review them yourself — skim the diff — and if they look like what
-  you expect, run `<command>` again." Those commits are not checked yet; the
-  next run checks them.
+  you expect, rerun." Then ask the rerun question (below). Those commits are
+  not checked yet; the next run checks them.
 - **Open** — any finding in the latest ReportFindings has no `outcome` (left
-  for later). List what is still open, then say: "Run `<command>` again when
-  you are ready to decide them."
+  for later). List what is still open, then ask the rerun question (below) for
+  when the user is ready to decide them.
 - **Clear** — HEAD carries `checked`, every finding in the latest
   ReportFindings has an `outcome`, and step 5 committed nothing. Say so. When
   preflight was run on its own, stop here — it never ships.
+
+**Rerun.** A link can't run a slash command, but an answer can. After a
+**changed** or **open** verdict's ⚠️ block, print a ❓ line (e.g.
+`❓ 10/14 Verdict — rerun /ship?`) and ask with AskUserQuestion: "Run
+`<command>` again" (Recommended) · "Not now". The question text carries the
+compare link for what to look at first: for **changed**, the step 5 commits
+(`https://github.com/<owner>/<repo>/compare/<first commit>^...<HEAD sha>`); for
+**open**, the branch diff (`.../compare/<base>...<HEAD sha>`). On "Run
+`<command>` again", rerun `<command>` right away, from its first step, with
+fresh progress numbering. On "Not now", stop — the ⚠️ block stays the last
+thing.
 
 ## Common mistakes
 
@@ -475,6 +486,8 @@ in any window, the link is all there is; say so.
 - Asking the user anything without printing the ❓ line first, or printing it
   after the question.
 - Running Fixes jobs without their `<step>.<job>` ⏳ and ✅ lines.
+- Ending a **changed**, **open** or ship _Gate_ stop with only a text "run it
+  again" instead of the rerun question.
 - Ending a run with pending items but no ⚠️ block, or marking something the
   user must do later with ✅.
 - Offering a defer option in a repo that has no inbox, or Kingdone conventions
