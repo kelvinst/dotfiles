@@ -169,13 +169,15 @@ local function clusterWindows(windows)
   return clusters
 end
 
--- One rect per window, in the same order. A lone window gets its label at
--- its left edge, vertically centred: tiles too narrow for their apps'
--- minimum widths overlap, and the left edge is the strip of each that
--- stays visible. A stack gets its labels side by side in a row centred on
--- the stack, wrapping onto more rows when the row would outgrow the widest
--- window in it — a floating window centred over the stack joins it too.
-local function layoutLabels(windows)
+-- One rect per window, in the same order. A lone window gets its label
+-- centred on it — unless `covered[i]` says its centre sits under another
+-- window, as happens when tiles too narrow for their apps' minimum widths
+-- overlap. Then the label goes at its left edge, vertically centred, the
+-- strip of it that stays visible. A stack gets its labels side by side in
+-- a row centred on the stack, wrapping onto more rows when the row would
+-- outgrow the widest window in it — a floating window centred over the
+-- stack joins it too.
+local function layoutLabels(windows, covered)
   local rects = {}
   local placed = {}
 
@@ -188,7 +190,10 @@ local function layoutLabels(windows)
 
   for _, c in ipairs(clusters) do
     local n = #c.members
-    local fixedX = n == 1 and c.frame.x + LABEL_PAD or nil
+    local fixedX = nil
+    if n == 1 and covered[c.members[1]] then
+      fixedX = c.frame.x + LABEL_PAD
+    end
     local fit = math.floor((c.width + LABEL_GAP) / (LABEL_W + LABEL_GAP))
     local cols = math.max(1, math.min(n, fit))
     local rows = math.ceil(n / cols)
@@ -353,8 +358,9 @@ local function drawHints()
   -- left to right, so the rightmost ends up on top and each one's left
   -- edge — where its label goes — shows past the one before it. Floating
   -- windows go last so they stay above the tiles.
+  local raised = nil
   if flipped then
-    local raised = {}
+    raised = {}
     for _, w in ipairs(windows) do
       if w.workspace == flipped.workspace and w.layout ~= "floating" then
         table.insert(raised, w)
@@ -370,8 +376,42 @@ local function drawHints()
     end
   end
 
+  -- Front-to-back rank of every window, lower is nearer the front. The
+  -- raises above take a moment to show up in hs.window.orderedWindows(),
+  -- so the raised windows are ranked by their raise order instead, all in
+  -- front of everything else.
+  local rank = {}
+  for i, win in ipairs(hs.window.orderedWindows()) do
+    rank[win:id()] = i
+  end
+  for k, w in ipairs(raised or {}) do
+    rank[w.win:id()] = -k
+  end
+
+  -- Whether each window's centre is hidden under a window in front of it.
+  local covered = {}
+  for i, w in ipairs(windows) do
+    local cx = w.frame.x + w.frame.w / 2
+    local cy = w.frame.y + w.frame.h / 2
+    local mine = rank[w.win:id()] or math.huge
+    for _, o in ipairs(windows) do
+      local f = o.frame
+      if
+        o ~= w
+        and (rank[o.win:id()] or math.huge) < mine
+        and cx >= f.x
+        and cx < f.x + f.w
+        and cy >= f.y
+        and cy < f.y + f.h
+      then
+        covered[i] = true
+        break
+      end
+    end
+  end
+
   local labels = makeLabels(#windows)
-  local rects = layoutLabels(windows)
+  local rects = layoutLabels(windows, covered)
   for i, w in ipairs(windows) do
     local hint = {
       id = w.id,
