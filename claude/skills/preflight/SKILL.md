@@ -98,6 +98,11 @@ clear"):
 ✅ 3/14 Conversation — 0 findings
 ```
 
+Each step runs at least one real command of its own (a grep, a `bd` search, a
+`git` call — whatever the step actually needs), and its progress line goes out
+right after that command, as its own message. Never put several steps' lines in
+one text block: the app shrinks such a block into one summary line.
+
 ## 1. Rebase onto the default branch
 
 Before any review, bring the branch up to date, so everything is reviewed on
@@ -425,6 +430,8 @@ in any window, the link is all there is; say so.
 - Numbering progress per skill (`1/10` inside a `/ship`) instead of across the
   whole run, or dropping the line for a skipped step, printing a line when a
   step starts instead of when it ends, or folding several steps into one line.
+- Printing several steps' progress lines in one text block instead of one
+  message per step, each right after that step's own command.
 - Offering a defer option in a repo that has no inbox, or Kingdone conventions
   (Gates, `Urgency:`, `R\$`) outside a Kingdone repo.
 - Counting a skipped or dismissed question as answered.
