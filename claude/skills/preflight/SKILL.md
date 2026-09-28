@@ -81,12 +81,19 @@ own:
 Each line starts with an emoji for the step's state, then `<n>/<total>` and the
 step name:
 
-| Emoji | When                                                                | Example                                      |
-| ----- | ------------------------------------------------------------------- | -------------------------------------------- |
-| ✅    | the step finished and worked — with its result                      | `✅ 3/14 Conversation — 0 findings`          |
-| ⏭️    | the step does not apply                                             | `⏭️ 8/14 Decide — no findings`               |
-| ⚠️    | the run stops here and needs the user to act — say what             | `⚠️ 10/14 Verdict — changed: …`              |
-| ❓    | right before each question to the user — with a short summary of it | `❓ 8/14 Decide — finding 2: tally vs split` |
+| Emoji | When                                                                | Example                                               |
+| ----- | ------------------------------------------------------------------- | ----------------------------------------------------- |
+| ✅    | the step finished and worked — with its result                      | `✅ 3/14 Conversation — 0 findings`                   |
+| ⏭️    | the step does not apply                                             | `⏭️ 8/14 Decide — no findings`                        |
+| ⚠️    | the run stops here and needs the user to act — say what             | `⚠️ 10/14 Verdict — changed: …`                       |
+| ❓    | right before each question to the user — with a short summary of it | `❓ 8/14 Decide — finding 2: tally vs split`          |
+| ⏳    | a Fixes job is dispatched to its background agent                   | `⏳ 9.1/14 Fixes — job 1/2: ❓ before every question` |
+
+Fixes (progress step 9 in every run) numbers each job as a sub-step: `9.1`,
+`9.2`, … Print its ⏳ line when the job is dispatched and its ✅ or ⚠️ line,
+with the commit or task id, when the job reports done:
+`✅ 9.1/14 Fixes — job 1/2: ❓ before every question (bb5098b)`. The step's own
+✅ line follows the last job.
 
 Before **every** AskUserQuestion — in any step of preflight, `ship` or `close`,
 each one-by-one finding question and each discard-reason question included —
@@ -451,6 +458,7 @@ in any window, the link is all there is; say so.
   message per step, each right after that step's own command.
 - Asking the user anything without printing the ❓ line first, or printing it
   after the question.
+- Running Fixes jobs without their `<step>.<job>` ⏳ and ✅ lines.
 - Offering a defer option in a repo that has no inbox, or Kingdone conventions
   (Gates, `Urgency:`, `R\$`) outside a Kingdone repo.
 - Counting a skipped or dismissed question as answered.
