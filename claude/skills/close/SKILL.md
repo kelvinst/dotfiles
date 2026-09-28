@@ -72,21 +72,26 @@ claimed or worked on in this session, or one the conversation names. If none is
 identifiable, say so and ask nothing.
 
 A task is done only when nothing is left: its work is in use, or ready for the
-tasks that depend on it. Before asking, look for what is still pending on it —
-the after-ship items preflight registered (data or schema migrations, config
-changes, installs, deploys) and anything else still open under it:
+tasks that depend on it. Before asking, read the whole task — there is no fixed
+format for what is pending, so read it for meaning, not for a keyword or a
+heading. Look for anything it says to do at a moment that is now or later:
+"after this is merged", "after it ships", "before deploying", "after the
+deploy", a migration to run, a config to change, something to install. Each
+such item is still pending unless the task, the conversation or the tracker
+shows it done. Also look for what is still open under the task:
 
-- _(Beads)_ `bd dep list <id>` and `bd children <id>` (when it is an epic): any
-  open or in-progress issue it depends on (`blocks`) or that is its child;
-- _(Kingdone)_ unchecked `- [ ]` items under the quest note's `## After ship`
-  heading, and the arrivals they link that are still in `Gates/`;
+- _(Beads)_ `bd show <id>` (description, design, notes, acceptance, comments),
+  plus any open or in-progress issue it depends on (`blocks`, in
+  `bd dep list <id>`) or, for an epic, any open child (`bd children <id>`);
+- _(Kingdone)_ the quest's notes, and the arrivals they link that are still in
+  `Gates/`;
 - _(Neither)_ the after-ship findings of this run's preflight.
 
 When there is any, do not offer to mark the task done: print
-`⚠️ 16/17 Mark task done — <task> has <n> item(s) left after the ship`, list
-each by its id (or arrival link) with what to do, say to close the task once
-they are done, and go on to 2b — the work is shipped and the items are in the
-tracker, so the session loses nothing.
+`⚠️ 16/17 Mark task done — <task> has <n> item(s) left`, list each — when it
+applies (as the task says it) and what to do, or the blocking issue's id — say
+to close the task once they are done, and go on to 2b: the work is shipped and
+the items live in the task, so the session loses nothing.
 
 Otherwise ask with AskUserQuestion, naming each task: "Mark <task> done"
 (Recommended) — "Its work is now on `<default>`." · "Leave it open". Never mark
@@ -141,8 +146,9 @@ Never archive without that answer, or while the work is not in `<base>`.
   through `ship` → `preflight`.
 - Doing any work after the ship.
 - Marking a bd issue or a quest done without asking, or before the ship.
-- Offering to mark a task done while an after-ship item or another open blocker
-  on it is still pending.
+- Offering to mark a task done while its content says something is still to be
+  done after the ship or the deploy, or while an open blocker on it is still
+  pending.
 - Archiving after a ship that stopped.
 - Archiving with Remote Control still on, or the session still pinned.
 - In a terminal `claude remote-control` session (no `ccd_session_mgmt` tools),

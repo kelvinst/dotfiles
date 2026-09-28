@@ -278,11 +278,11 @@ or env var to set, a restart, a manual check in the real app. Only what cannot
 be done before the ship — anything doable now is a look-ahead finding (check e)
 with the fix "do it now".
 
-Each is a finding (`category: after-ship`) whose suggested fix is to register
-it, never to do it: the "Create after-ship task" job of step 5. The current
-task stays blocked by it, so `close` will not mark the task done until it is.
-_(Neither)_ there is no tracker: the finding's fix is a ⚠️ line in the run's
-closing ⚠️ block.
+Each is a finding (`category: after-ship`) whose suggested fix is to write it
+down in the current task, never to do it: the "Note in the task" job of step 5.
+Skip what the task already says. `close` reads the task before marking it done,
+so what the task says is still pending keeps it open. _(Neither)_ there is no
+tracker: the finding's fix is a ⚠️ line in the run's closing ⚠️ block.
 
 **Mark the checks.** As soon as the six checks have run, mark the commit they
 looked at — HEAD — as checked. The mark says only that: the checks ran on this
@@ -354,8 +354,8 @@ First AskUserQuestion, a single question: "Apply all suggested fixes"
       releases the ship after a re-run.";
     - _(Neither)_ no defer option;
 
-    An after-ship finding's suggested fix is already its defer option — the
-    after-ship task (Kingdone: arrival) — so it is not offered twice;
+    An after-ship finding gets no defer option: its suggested fix already
+    leaves it for later, in the task itself;
 
   - "Discard" — "ATTENTION: DISMISSES THE FINDING FOR GOOD AND RELEASES THE
     SHIP. It does not matter; ship anyway. Asks for the reason.";
@@ -432,19 +432,22 @@ the repo type, the language to write in, and these rules:
   at its end, commit that edit (one commit) and push. Finish with
   `bd dolt push` when the repo has a Dolt remote.
 
-- **Create after-ship task:** a deferred item, as above, that also blocks the
-  current work, so `close` cannot mark it done while the item is open. Its
-  title says what to do after the ship; its context says why the work is not in
-  use (or ready for its dependents) until it is done.
+- **Note in the task:** write the item into the current work's own content — no
+  new task, arrival, label or heading of our own. Say when it applies, in the
+  words the moment calls for ("after this is merged to `<default>`", "before
+  deploying", "after the deploy"), and what to do. Follow how the project
+  already writes such things: look at how its other tasks or quests phrase them
+  and where they put them, and do the same; when nothing shows a habit, append
+  a short paragraph.
 
-  - _(Beads)_ create it like **Create task**, adding `--labels=after-ship`,
-    then make the current issue depend on it:
-    `bd dep add <current id> <new task id>`. No identifiable current issue →
-    create it unrelated and say so: nothing will block the close.
-  - _(Kingdone)_ create the arrival like **Create arrival**, then add
-    `- [ ] <what to do> → [[Gates/<title>|<title>]]` under an `## After ship`
-    heading (create it at the end when missing) in the current quest's main
-    note, and commit both together.
+  - _(Beads)_ the current issue's description
+    (`bd update <id> --description=…`, keeping what is there), or its notes
+    when that is where the project keeps them; then `bd dolt push` when the
+    repo has a Dolt remote. No identifiable current issue → do not write it
+    anywhere; the finding becomes a ⚠️ line in the closing ⚠️ block, and say
+    so.
+  - _(Kingdone)_ the current quest's main note; commit it (`Urgency: fyi`) and
+    push.
 
 - **Session title and link** (arrival or task) come from
   `mcp__ccd_session_mgmt__get_session` with `"self"`. When those tools are not
@@ -527,8 +530,9 @@ even when that run ships. On "Not now", stop — nothing runs after the answer.
   one-by-one question that names a finding without saying what it is.
 - One-by-one that skips the code-review findings.
 - Skipping the look-ahead check, or padding it with generic advice.
-- Doing an after-ship item before the ship, or registering it without making
-  the current task depend on it.
+- Doing an after-ship item before the ship, or creating a task, arrival, label
+  or heading for it instead of writing it in the current task the way the
+  project already does.
 - Searching the tracker only by the branch's issue id, or only in the touched
   files.
 - Listing only the questions the user left unanswered, not the ones you did.
