@@ -68,6 +68,9 @@ end
 -- going around it leaves the tree out of step with what is on screen.
 local function finish(targetId)
   if M.walkTask and M.walkTask:isRunning() then
+    -- Terminating the sh leaves its running `aerospace focus` alive, and
+    -- that can land after the focus below. Kill it first, synchronously.
+    hs.execute("pkill -TERM -P " .. M.walkTask:pid())
     M.walkTask:terminate()
   end
 
