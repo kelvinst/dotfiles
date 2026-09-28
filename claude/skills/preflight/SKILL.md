@@ -86,7 +86,7 @@ step name:
 | ✅    | the step finished and worked — with its result                      | `✅ 3/14 Conversation — 0 findings`                   |
 | ⏭️    | the step does not apply                                             | `⏭️ 8/14 Decide — no findings`                        |
 | ⚠️    | the user must act on something, now or later — say what             | `⚠️ 10/14 Verdict — changed: …`                       |
-| ❓    | right before each question to the user — with a short summary of it | `❓ 8/14 Decide — finding 2: tally vs split`          |
+| ❓    | right before each question to the user — with a short summary of it | `❓ 8/14 Decide — finding 2/6: tally vs split`        |
 | ⏳    | a Fixes job is dispatched to its background agent                   | `⏳ 9.1/14 Fixes — job 1/2: ❓ before every question` |
 
 Fixes (progress step 9 in every run) numbers each job as a sub-step: `9.1`,
@@ -99,7 +99,7 @@ Before **every** AskUserQuestion — in any step of preflight, `ship` or `close`
 each one-by-one finding question and each discard-reason question included —
 print a ❓ line right before calling the tool:
 `❓ <n>/<total> <Step> — <very short summary of what is about to be asked>`
-(e.g. `❓ 8/14 Decide — finding 2: tally vs split`,
+(e.g. `❓ 8/14 Decide — finding 2/6: tally vs split`,
 `❓ 11/14 Confirm — ship these 3 commits?`,
 `❓ 16/16 Archive — archive this session?`). The step still ends with its ✅ or
 ⚠️ line; Decide's ✅ line counts each kind of decision (e.g.
@@ -300,10 +300,13 @@ poorly on mobile (Remote Control), so the chat list must stand on its own —
 nothing only the card shows. Per finding:
 
 ```
-N. `<file>:<line>` — <problem>
+N/T. `<file>:<line>` — <problem>
    Fix: <suggested fix>
    If left: <failure scenario>
 ```
+
+Wherever a finding is named — the chat list, a question, a ❓ line, a job's ⏳
+or ✅ line — give its number out of the total: `finding 6/9`, `6/9.`.
 
 Zero findings → go to step 6 (Verdict).
 
@@ -316,10 +319,10 @@ First AskUserQuestion, a single question: "Apply all suggested fixes"
 - **One by one:** walk **every** finding from the report — code review,
   conversation, checklist, tracker and look-ahead alike — one AskUserQuestion
   per finding, one question per call, so each answer is queued (step 5) before
-  the next question. The question text carries the finding itself — its number,
-  `file:line`, the problem and the suggested fix — never just "Finding N", so
-  it reads on its own on mobile. Options, in this order, each with its
-  description:
+  the next question. The question text carries the finding itself — its number
+  out of the total (`finding 6/9`), `file:line`, the problem and the suggested
+  fix — never just "Finding N", so it reads on its own on mobile. Options, in
+  this order, each with its description:
   - the suggested fix (Recommended);
   - each other real fix, when there is more than one — list them, keep your
     pick first;
@@ -488,6 +491,8 @@ thing.
 - Asking the user anything without printing the ❓ line first, or printing it
   after the question.
 - Running Fixes jobs without their `<step>.<job>` ⏳ and ✅ lines.
+- Naming a finding by its number alone (`finding 6`) instead of out of the
+  total (`finding 6/9`).
 - Ending a **changed**, **open** or ship _Gate_ stop with only a text "run it
   again" instead of the rerun question.
 - Ending a run with pending items but no ⚠️ block, or marking something the
