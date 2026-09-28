@@ -27,8 +27,9 @@ local hints = {}
 local typed = ""
 
 -- Set while the focused accordion stack is flipped to tiles for the
--- overlay, so hiding it knows to flip it back.
-local flipped = false
+-- overlay, so hiding it knows to flip it back: the workspace it lives on
+-- and the window that was focused in it.
+local flipped = nil
 
 -- The flip to tiles lands a beat after the command returns; frames read
 -- before that are still the accordion's.
@@ -36,7 +37,9 @@ local SETTLE_SECONDS = 0.2
 local pending = nil
 
 -- Put the stack back to accordion if the overlay flipped it, then focus
--- the picked window. Both go through aerospace rather than
+-- the picked window — or, with none picked, the one that was focused
+-- before, since raising the tiles for the overlay left some other window
+-- on top. Both go through aerospace rather than
 -- hs.window:focus(): aerospace keeps its own idea of the focused node, and
 -- going around it leaves the tree out of step with what is on screen.
 -- `layout` acts on the focused window, which the overlay never moves, so
@@ -46,7 +49,8 @@ local function finish(targetId)
   local cmds = {}
   if flipped then
     table.insert(cmds, "aerospace layout accordion")
-    flipped = false
+    targetId = targetId or flipped.id
+    flipped = nil
   end
   if targetId then
     table.insert(cmds, "aerospace focus --window-id " .. targetId)
@@ -70,7 +74,8 @@ local function visibleWindows()
   local out, ok = hs.execute(
     PATH_PREFIX
       .. "aerospace list-windows --workspace visible"
-      .. " --format '%{window-id}|%{app-pid}|%{app-name}'"
+      .. " --format '%{window-id}|%{app-pid}|%{workspace}|%{window-layout}"
+      .. "|%{app-name}'"
   )
   if not ok then
     return {}
@@ -81,7 +86,8 @@ local function visibleWindows()
   local byPid = {}
   local windows = {}
   for line in out:gmatch("[^\n]+") do
-    local id, pid, app = line:match("^(%d+)|(%d+)|(.*)$")
+    local id, pid, ws, layout, app =
+      line:match("^(%d+)|(%d+)|([^|]*)|([^|]*)|(.*)$")
     if id then
       pid = tonumber(pid)
       if byPid[pid] == nil then
@@ -94,7 +100,14 @@ local function visibleWindows()
 
       local w = byPid[pid][tonumber(id)]
       if w and not w:isMinimized() then
-        table.insert(windows, { id = id, app = app, frame = w:frame() })
+        table.insert(windows, {
+          id = id,
+          app = app,
+          workspace = ws,
+          layout = layout,
+          win = w,
+          frame = w:frame(),
+        })
       end
     end
   end
@@ -123,6 +136,7 @@ local function makeLabels(n)
 end
 
 local LABEL_GAP = 8
+local LABEL_PAD = 16
 
 -- Windows whose centred labels would land on top of each other: an
 -- accordion stack puts its windows a few pixels apart, so every label
@@ -140,7 +154,13 @@ local function clusterWindows(windows)
       end
     end
     if not home then
-      home = { cx = cx, cy = cy, width = w.frame.w, members = {} }
+      home = {
+        cx = cx,
+        cy = cy,
+        frame = w.frame,
+        width = w.frame.w,
+        members = {},
+      }
       table.insert(clusters, home)
     end
     home.width = math.max(home.width, w.frame.w)
@@ -149,8 +169,10 @@ local function clusterWindows(windows)
   return clusters
 end
 
--- One rect per window, in the same order. A lone window gets its label
--- centred on it; a stack gets its labels side by side in a row centred on
+-- One rect per window, in the same order. A lone window gets its label at
+-- its left edge, vertically centred: tiles too narrow for their apps'
+-- minimum widths overlap, and the left edge is the strip of each that
+-- stays visible. A stack gets its labels side by side in a row centred on
 -- the stack, wrapping onto more rows when the row would outgrow the widest
 -- window in it — a floating window centred over the stack joins it too.
 local function layoutLabels(windows)
@@ -166,6 +188,7 @@ local function layoutLabels(windows)
 
   for _, c in ipairs(clusters) do
     local n = #c.members
+    local fixedX = n == 1 and c.frame.x + LABEL_PAD or nil
     local fit = math.floor((c.width + LABEL_GAP) / (LABEL_W + LABEL_GAP))
     local cols = math.max(1, math.min(n, fit))
     local rows = math.ceil(n / cols)
@@ -178,7 +201,7 @@ local function layoutLabels(windows)
       local left = c.cx
         - (inRow * LABEL_W + (inRow - 1) * LABEL_GAP) / 2
       local rect = {
-        x = left + col * (LABEL_W + LABEL_GAP),
+        x = fixedX or left + col * (LABEL_W + LABEL_GAP),
         y = top + row * (LABEL_H + LABEL_GAP),
         w = LABEL_W,
         h = LABEL_H,
@@ -326,6 +349,27 @@ local function drawHints()
     return a.frame.y < b.frame.y
   end)
 
+  -- Tiles too narrow for their apps' minimum widths overlap. Raise them
+  -- left to right, so the rightmost ends up on top and each one's left
+  -- edge — where its label goes — shows past the one before it. Floating
+  -- windows go last so they stay above the tiles.
+  if flipped then
+    local raised = {}
+    for _, w in ipairs(windows) do
+      if w.workspace == flipped.workspace and w.layout ~= "floating" then
+        table.insert(raised, w)
+      end
+    end
+    for _, w in ipairs(windows) do
+      if w.workspace == flipped.workspace and w.layout == "floating" then
+        table.insert(raised, w)
+      end
+    end
+    for _, w in ipairs(raised) do
+      w.win:raise()
+    end
+  end
+
   local labels = makeLabels(#windows)
   local rects = layoutLabels(windows)
   for i, w in ipairs(windows) do
@@ -357,13 +401,15 @@ function M.show()
   -- real window. Only the focused stack: `layout` acts on the focused
   -- window, and a stack on the other monitor would need focus moved there
   -- and back.
-  local layout = hs.execute(
+  local focused = hs.execute(
     PATH_PREFIX
-      .. "aerospace list-windows --focused --format '%{window-layout}'"
+      .. "aerospace list-windows --focused"
+      .. " --format '%{window-id}|%{workspace}|%{window-layout}'"
   )
+  local id, ws, layout = (focused or ""):match("^(%d+)|([^|]*)|(%S*)")
   if layout and layout:find("accordion") then
     hs.execute(PATH_PREFIX .. "aerospace layout tiles")
-    flipped = true
+    flipped = { id = id, workspace = ws }
     pending = hs.timer.doAfter(SETTLE_SECONDS, drawHints)
   else
     drawHints()
