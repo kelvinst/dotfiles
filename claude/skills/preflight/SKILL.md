@@ -76,10 +76,18 @@ of _Verdict_ — not per skill. Each check of step 2 is a step of its own:
 | Confirm, Gate, Push, Check (`ship` 2–5) | —            | 11–14   | 11–14    |
 | Mark task done, Archive (`close` 2a–2b) | —            | —       | 15–16    |
 
-Format: `▸ <n>/<total> <Step>` — e.g. `▸ 3/14 Conversation`. A step that does
-not apply still gets its line: `▸ 8/14 Decide — skipped (no findings)`. A run
-that stops early ends with `■ Stopped at <n>/<total> <Step>: <why>`; one that
-finishes ends with `✓ <total>/<total> done`.
+Each line starts with an emoji for the step's state, then `<n>/<total>` and the
+step name:
+
+| Emoji | When                                                      | Example                             |
+| ----- | --------------------------------------------------------- | ----------------------------------- |
+| ▶️    | the step starts                                           | `▶️ 3/14 Conversation`              |
+| ✅    | the step finished and worked — with its result            | `✅ 3/14 Conversation — 0 findings` |
+| ⏭️    | the step does not apply                                   | `⏭️ 8/14 Decide — no findings`      |
+| ⏸️    | the step waits for the user's answer (an AskUserQuestion) | `⏸️ 8/14 Decide — waiting for you`  |
+| ⚠️    | the run stops here and needs the user to act — say what   | `⚠️ 10/14 Verdict — changed: …`     |
+
+A run that finishes ends with `✅ <total>/<total> done`.
 
 ## 1. Rebase onto the default branch
 
@@ -406,7 +414,8 @@ in any window, the link is all there is; say so.
   carrying check marks.
 - Hardcoding `main` instead of the detected default branch.
 - Numbering progress per skill (`1/10` inside a `/ship`) instead of across the
-  whole run, or dropping the line for a skipped step.
+  whole run, or dropping the line for a skipped step, or the ✅ / ⚠️ line that
+  closes each step.
 - Offering a defer option in a repo that has no inbox, or Kingdone conventions
   (Gates, `Urgency:`, `R\$`) outside a Kingdone repo.
 - Counting a skipped or dismissed question as answered.
