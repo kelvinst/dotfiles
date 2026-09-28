@@ -204,10 +204,10 @@ My new, simplified, dotfiles
    brew install --cask amethyst
    ```
 
-1. Install [skhd](https://github.com/koekeishiya/skhd)
+1. Install [skhd](https://github.com/asmvik/skhd)
 
    ```shell
-   brew install koekeishiya/formulae/skhd
+   brew install asmvik/formulae/skhd
    ```
 
 1. Install [JankyBorders](https://github.com/FelixKratz/JankyBorders)
