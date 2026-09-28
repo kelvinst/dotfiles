@@ -83,10 +83,14 @@ end
 -- going around it leaves the tree out of step with what is on screen.
 local function finish(targetId)
   if M.walkTask and M.walkTask:isRunning() then
-    -- Terminating the sh leaves its running `aerospace focus` alive, and
-    -- that can land after the focus below. Kill it first, synchronously.
-    hs.execute("pkill -TERM -P " .. M.walkTask:pid())
-    M.walkTask:terminate()
+    -- A stray `aerospace focus` from the walk can land after the focus
+    -- below. Killing only the child is not enough: the sh moves on to the
+    -- next focus the moment it dies. So freeze the sh, kill its children,
+    -- then kill the sh, all synchronously.
+    local pid = M.walkTask:pid()
+    hs.execute(
+      string.format("kill -STOP %d; pkill -P %d; kill -KILL %d", pid, pid, pid)
+    )
   end
 
   local cmds = {}
