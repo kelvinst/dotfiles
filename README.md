@@ -306,6 +306,15 @@ My new, simplified, dotfiles
    This routes every app's links through Hammerspoon, not just one. Undo it in
    System Settings → Desktop & Dock → Default web browser.
 
+1. Free ⌥F3 for the window hints. `alt-f3` drops a letter on every window of
+   the visible aerospace workspaces, on both monitors (accordion stacks flip to
+   tiles while the overlay is up); type a letter to focus that window, or Esc
+   to back out. macOS binds ⌥F3 to Mission Control by default and swallows it
+   before Hammerspoon sees it, so turn that shortcut off (or move it off ⌥F3)
+   in System Settings → Keyboard → Keyboard Shortcuts → Mission Control. Plain
+   F3 stays free for Homerow. Hammerspoon also needs Accessibility permission
+   (System Settings → Privacy & Security → Accessibility).
+
 Feel free to fork and clone it from there. This is under MIT license, do what
 you want, just give me some credit for it. 😁
 
