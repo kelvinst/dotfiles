@@ -26,15 +26,39 @@ local tap = nil
 local hints = {}
 local typed = ""
 
--- `aerospace focus` rather than hs.window:focus(): aerospace keeps its own
--- idea of the focused node, and going around it leaves the tree out of step
--- with what is on screen. Held in `M` so the task isn't collected mid-run.
-local function focusWindow(id)
-  M.focusTask = hs.task.new("/bin/sh", nil, {
+-- Set while the focused accordion stack is flipped to tiles for the
+-- overlay, so hiding it knows to flip it back.
+local flipped = false
+
+-- The flip to tiles lands a beat after the command returns; frames read
+-- before that are still the accordion's.
+local SETTLE_SECONDS = 0.2
+local pending = nil
+
+-- Put the stack back to accordion if the overlay flipped it, then focus
+-- the picked window. Both go through aerospace rather than
+-- hs.window:focus(): aerospace keeps its own idea of the focused node, and
+-- going around it leaves the tree out of step with what is on screen.
+-- `layout` acts on the focused window, which the overlay never moves, so
+-- it has to run before `focus`. Held in `M` so the task isn't collected
+-- mid-run.
+local function finish(targetId)
+  local cmds = {}
+  if flipped then
+    table.insert(cmds, "aerospace layout accordion")
+    flipped = false
+  end
+  if targetId then
+    table.insert(cmds, "aerospace focus --window-id " .. targetId)
+  end
+  if #cmds == 0 then
+    return
+  end
+  M.finishTask = hs.task.new("/bin/sh", nil, {
     "-c",
-    PATH_PREFIX .. "aerospace focus --window-id " .. id,
+    PATH_PREFIX .. table.concat(cmds, " && "),
   })
-  M.focusTask:start()
+  M.finishTask:start()
 end
 
 -- Every window on a visible workspace, with its on-screen frame. Aerospace
@@ -223,7 +247,13 @@ local function refresh()
   end
 end
 
-function M.hide()
+-- Tear the overlay down, then restore the stack and focus `targetId` when
+-- given.
+function M.hide(targetId)
+  if pending then
+    pending:stop()
+    pending = nil
+  end
   if tap then
     tap:stop()
     tap = nil
@@ -234,6 +264,7 @@ function M.hide()
   canvases = {}
   hints = {}
   typed = ""
+  finish(targetId)
 end
 
 local function onKey(event)
@@ -268,8 +299,7 @@ local function onKey(event)
   end
 
   if target then
-    M.hide()
-    focusWindow(target.id)
+    M.hide(target.id)
   elseif anyPrefix then
     typed = candidate
     refresh()
@@ -279,14 +309,11 @@ local function onKey(event)
   return true
 end
 
-function M.show()
-  if tap then
-    M.hide()
-    return
-  end
-
+local function drawHints()
+  pending = nil
   local windows = visibleWindows()
   if #windows == 0 then
+    M.hide()
     return
   end
 
@@ -311,9 +338,36 @@ function M.show()
     table.insert(hints, hint)
     table.insert(canvases, drawLabel(hint))
   end
+end
 
+function M.show()
+  if tap then
+    M.hide()
+    return
+  end
+
+  -- Keys typed while the stack settles are the overlay's too: Escape backs
+  -- out, and anything else dismisses it like an unknown label would.
   tap = hs.eventtap.new({ hs.eventtap.event.types.keyDown }, onKey)
   tap:start()
+
+  -- An accordion stack hides all but one window, and aerospace can't say
+  -- in what order the rest sit. Flipping it to tiles for the length of the
+  -- overlay lays every window out side by side, so each label lands on its
+  -- real window. Only the focused stack: `layout` acts on the focused
+  -- window, and a stack on the other monitor would need focus moved there
+  -- and back.
+  local layout = hs.execute(
+    PATH_PREFIX
+      .. "aerospace list-windows --focused --format '%{window-layout}'"
+  )
+  if layout and layout:find("accordion") then
+    hs.execute(PATH_PREFIX .. "aerospace layout tiles")
+    flipped = true
+    pending = hs.timer.doAfter(SETTLE_SECONDS, drawHints)
+  else
+    drawHints()
+  end
 end
 
 -- Bound here rather than in aerospace.toml: aerospace would only turn
