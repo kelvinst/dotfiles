@@ -168,8 +168,11 @@ git fetch origin refs/notes/checks:refs/notes/checks 2>/dev/null || true
 ```
 
 Then rebase onto `<base>` with the `kix:rebase` skill when it is available — it
-re-runs the pre-commit hook on every commit; slow, but worth the wait. Without
-it, `git rebase <base>`. Then `git push --force-with-lease origin HEAD` (on
+re-runs the pre-commit hook on every commit; slow, but worth the wait. Invoke
+it with a leading `?` (`kix:rebase ? <base>`) to force its interactive mode
+whatever the user's configured default: the abort-on-conflict step below needs
+the rebase to stop on a conflict, not auto-resolve it. Without it,
+`git rebase <base>`. Then `git push --force-with-lease origin HEAD` (on
 `<default>` itself there is no branch push).
 
 A rebase that moved the branch leaves its old check marks behind on the old
