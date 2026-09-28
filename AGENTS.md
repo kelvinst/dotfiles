@@ -56,8 +56,8 @@ file) to see the change take effect; nothing is symlinked.
   tool being touched — e.g. `feat(zshrc): ...`, `fix(aerospace): ...`,
   `feat(nvim): ...`, `chore(beads): ...`. Wrap bodies at ~72 chars.
 - **macOS-specific tools** in play: kitty, aerospace, skhd, paneru,
-  hammerspoon, JankyBorders, ai-jail, worktrunk. Don't suggest Linux
-  equivalents unless asked.
+  hammerspoon, Karabiner-Elements, JankyBorders, ai-jail, worktrunk. Don't
+  suggest Linux equivalents unless asked.
 
 ## Non-interactive shell commands
 
