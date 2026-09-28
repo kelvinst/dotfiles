@@ -29,6 +29,10 @@ name without `origin/`.
 
 ## Steps
 
+Print a progress line before each step, as preflight's _Progress_ says: the
+preflight steps are 1–6, and steps 2–5 below are 7–10 of 10 (of 12 when `close`
+called ship).
+
 1. **Preflight.** Run the `preflight` skill, every time — even when HEAD
    already carries a check mark (preflight skips the code review then, but
    still rebases and reruns every other check). Its verdict decides:
@@ -98,4 +102,6 @@ name without `origin/`.
 - Shipping a HEAD without a `checked` note. Old `reviewed` notes in
   `refs/notes/review` no longer count.
 - Hardcoding `main` instead of the detected default branch.
+- Restarting the progress count at ship's own steps instead of going on from
+  preflight's.
 - Force-pushing the default branch — never.

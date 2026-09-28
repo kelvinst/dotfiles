@@ -23,7 +23,7 @@ says `Sessão do Claude:`).
 
 ## Repo type
 
-Detect it once, before step 0, from the repository root
+Detect it once, before step 1, from the repository root
 (`git rev-parse --show-toplevel`). The first match wins:
 
 1. **Kingdone** — `Gates/Gates.md` exists (the Obsidian vault layout). Deferred
@@ -51,11 +51,34 @@ the branch name without `origin/`.
 ## Check marks
 
 A checked commit carries a git note in `refs/notes/checks` reading `checked`,
-written by step 1 right after its checks ran on that commit. The mark only
+written by step 2 right after its checks ran on that commit. The mark only
 records that the checks ran — it is not an approval; the approval is the user's
 "Ship" answer in `ship`. `ship` reads it; only preflight writes it.
 
-## 0. Rebase onto the default branch
+## Progress
+
+The user wants to see where a run is while it runs. Before each step, print one
+progress line, numbered across the whole run the user started — the `<command>`
+of _Verdict_ — not per skill:
+
+| Step                                  | `/preflight` | `/ship` | `/close` |
+| ------------------------------------- | ------------ | ------- | -------- |
+| Rebase (preflight 1)                  | 1/6          | 1/10    | 1/12     |
+| Checks (preflight 2)                  | 2/6          | 2/10    | 2/12     |
+| Report (preflight 3)                  | 3/6          | 3/10    | 3/12     |
+| Decide (preflight 4)                  | 4/6          | 4/10    | 4/12     |
+| Fixes (preflight 5)                   | 5/6          | 5/10    | 5/12     |
+| Verdict (preflight 6)                 | 6/6          | 6/10    | 6/12     |
+| Confirm, Gate, Push, Check (ship 2–5) | —            | 7–10/10 | 7–10/12  |
+| Mark task done, Archive (close 2a–b)  | —            | —       | 11–12/12 |
+
+Format: `▸ <n>/<total> <Step>` — e.g. `▸ 1/10 Rebase`. During Checks, one line
+per check: `▸ 2/10 Checks · b. Conversation`. A step that does not apply still
+gets its line: `▸ 4/10 Decide — skipped (no findings)`. A run that stops early
+ends with `■ Stopped at <n>/<total> <Step>: <why>`; one that finishes ends with
+`✓ <n>/<total> done`.
+
+## 1. Rebase onto the default branch
 
 Before any review, bring the branch up to date, so everything is reviewed on
 top of the current `<default>`. On a dirty tree, commit first (project commit
@@ -96,7 +119,7 @@ everything: "Before anything else, this branch needs a rebase onto `<default>`,
 and it conflicts. Nothing lands until the branch sits on `<default>`."
 Resolving the conflict is the user's call.
 
-## 1. Collect findings
+## 2. Collect findings
 
 Run all five checks, in this order, before asking anything.
 
@@ -190,7 +213,7 @@ If the notes push is rejected, run
 `git notes --ref=checks merge -s union refs/notes/checks-remote`, and push
 again.
 
-## 2. Report
+## 3. Report
 
 Make **one** ReportFindings call with every finding from the five checks, code
 review first. It replaces any call the code-review skill made. Per finding:
@@ -215,17 +238,17 @@ N. `<file>:<line>` — <problem>
    If left: <failure scenario>
 ```
 
-Zero findings → go to step 5 (Verdict).
+Zero findings → go to step 6 (Verdict).
 
-## 3. Decide
+## 4. Decide
 
 First AskUserQuestion, a single question: "Apply all suggested fixes"
 (Recommended) · "Go one by one".
 
-- **Apply all:** queue every suggested fix (step 4). No more questions.
+- **Apply all:** queue every suggested fix (step 5). No more questions.
 - **One by one:** walk **every** finding from the report — code review,
   conversation, checklist, tracker and look-ahead alike — one AskUserQuestion
-  per finding, one question per call, so each answer is queued (step 4) before
+  per finding, one question per call, so each answer is queued (step 5) before
   the next question. The question text carries the finding itself — its number,
   `file:line`, the problem and the suggested fix — never just "Finding N", so
   it reads on its own on mobile. Options, in this order, each with its
@@ -258,7 +281,7 @@ First AskUserQuestion, a single question: "Apply all suggested fixes"
   or treat it as "Leave for later". Under "Apply all" nothing is discarded, so
   no reason is needed.
 
-## 4. Run the queue
+## 5. Run the queue
 
 Every decision that changes files or the tracker becomes one job. Jobs run
 **one at a time**, in order, each in a background agent (Agent tool,
@@ -327,7 +350,7 @@ stays open. Reprint the chat list with each finding's result — fixed (with its
 commit), deferred (arrival link or task id), discarded — <reason>, or still
 open.
 
-## 5. Verdict
+## 6. Verdict
 
 End every run with exactly one verdict. Callers (`ship`, and `close` through
 `ship`) move on only on **clear**. Below, `<command>` is the slash command of
@@ -345,9 +368,9 @@ when the remote is on GitHub —
 opens anywhere, phone included. If the pane call says the session is not open
 in any window, the link is all there is; say so.
 
-- **Changed** — step 4 committed anything (fixes, arrivals, checklist edits).
-  The rebase and step 0's commit of a dirty tree do not count: step 1 checked
-  them. Show the diff of the step 4 commits (above), then say: "There were
+- **Changed** — step 5 committed anything (fixes, arrivals, checklist edits).
+  The rebase and step 1's commit of a dirty tree do not count: step 2 checked
+  them. Show the diff of the step 5 commits (above), then say: "There were
   changes. Review them yourself — skim the diff — and if they look like what
   you expect, run `<command>` again." Those commits are not checked yet; the
   next run checks them.
@@ -355,7 +378,7 @@ in any window, the link is all there is; say so.
   for later). List what is still open, then say: "Run `<command>` again when
   you are ready to decide them."
 - **Clear** — HEAD carries `checked`, every finding in the latest
-  ReportFindings has an `outcome`, and step 4 committed nothing. Say so. When
+  ReportFindings has an `outcome`, and step 5 committed nothing. Say so. When
   preflight was run on its own, stop here — it never ships.
 
 ## Common mistakes
@@ -379,6 +402,8 @@ in any window, the link is all there is; say so.
 - Reviewing before the rebase, or rebasing with `notes.rewriteRef` still
   carrying check marks.
 - Hardcoding `main` instead of the detected default branch.
+- Numbering progress per skill (`1/6` inside a `/ship`) instead of across the
+  whole run, or dropping the line for a skipped step.
 - Offering a defer option in a repo that has no inbox, or Kingdone conventions
   (Gates, `Urgency:`, `R\$`) outside a Kingdone repo.
 - Counting a skipped or dismissed question as answered.

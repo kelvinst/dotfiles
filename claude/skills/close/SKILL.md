@@ -39,6 +39,11 @@ git symbolic-ref --short refs/remotes/origin/HEAD 2>/dev/null \
 Below, `<base>` is that ref (e.g. `origin/main`) and `<default>` is the branch
 name without `origin/`.
 
+## Progress
+
+Print a progress line before each step, as preflight's _Progress_ says: `ship`
+(with its preflight) prints 1–10, then step 2a is 11/12 and 2b is 12/12.
+
 ## 1. Ship
 
 Shipping is always the **last** thing a session does: nothing — no fix, no
