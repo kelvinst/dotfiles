@@ -46,7 +46,7 @@ arrival, no task, no other work — runs after it. The only exceptions are the
 bookkeeping of step 2 (marking the shipped task done on the user's yes) and the
 archive.
 
-Run the `ship` skill. It runs `preflight` (rebase, the four checks, findings,
+Run the `ship` skill. It runs `preflight` (rebase, the five checks, findings,
 fixes and deferrals), asks the user to confirm, and pushes. If it stops — a
 **changed** or **open** verdict, a "Not yet", a failed push — report why and
 stop: the session is not ready to archive.

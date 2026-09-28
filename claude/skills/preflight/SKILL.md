@@ -98,7 +98,7 @@ Resolving the conflict is the user's call.
 
 ## 1. Collect findings
 
-Run all four checks, in this order, before asking anything.
+Run all five checks, in this order, before asking anything.
 
 **a. Code review.** Find the newest checked commit (see _Check marks_):
 
@@ -118,6 +118,8 @@ Keep its findings for the combined report below.
 - things the user asked for that were not done, or were done only in part;
 - questions you asked that the user never answered — an AskUserQuestion the
   user skipped, dismissed or rejected is unanswered;
+- questions the user asked that you never answered, or answered only in part —
+  a question buried in a longer message counts;
 - things the user deferred ("later", "tomorrow", "I'll look at it");
 - follow-ups you promised;
 - inferred loose ends: what the work implies but nobody said (run it for real,
@@ -134,8 +136,32 @@ quest or plan, a closed status, a "done" heading) or the item is pending work
 the session left behind. Usual causes: it was cancelled, it was deferred
 somewhere nobody linked, or it was done and not ticked.
 
-**d. Look ahead.** From the work done — the diff, the conversation, the touched
-files — list:
+**d. Tracker.** Search the tracker for items related to the work — by the
+files, the feature, the names and the terms the branch touches, not only by the
+id in the branch name:
+
+- _(Beads)_ open and in-progress bd issues (`bd list`, `bd search <term>`,
+  `bd show <id>` for their dependencies);
+- _(Kingdone)_ arrivals in `Gates/`, quests anywhere (in progress, planned or
+  someday), and unchecked `- [ ]` items in any note, not only the touched ones;
+- _(Neither)_ skip this check.
+
+List each item the work affects, either way:
+
+- this work does it, fully or in part — it can be closed, ticked or updated;
+- it depends on this work, or is blocked by it — it should know this lands (a
+  note, a link, an unblocked dependency);
+- this work depends on it, or conflicts with work it plans;
+- it plans something this work changes or makes obsolete.
+
+Each is a finding with a concrete suggested fix: close or tick it, add a note
+or link saying what landed, add or drop a dependency, or rewrite the plan. The
+issue or quest the branch itself is about is not a finding: `close` marks it
+done after the ship.
+
+**e. Look ahead.** From the work done — the diff, the conversation, the touched
+files — list what nobody raised: nothing already in the conversation or in the
+tracker (check d) goes here:
 
 - related things the change touches or should touch but nobody mentioned (other
   callers, sibling configs, docs, other repos or branches that depend on it);
@@ -148,7 +174,7 @@ Each is a finding like any other, with a concrete suggested fix: usually the
 defer option (a task or an arrival), or doing it now when it is small. Only
 real, specific items — no generic advice; say what triggered each.
 
-**Mark the checks.** As soon as the four checks have run, mark the commit they
+**Mark the checks.** As soon as the five checks have run, mark the commit they
 looked at — HEAD — as checked. The mark says only that: the checks ran on this
 commit. It is not an approval; the approval is the user's "Ship" answer in
 `ship`. Any later commit (a fix, an arrival) is not checked, and the next
@@ -166,14 +192,14 @@ again.
 
 ## 2. Report
 
-Make **one** ReportFindings call with every finding from the four checks, code
+Make **one** ReportFindings call with every finding from the five checks, code
 review first. It replaces any call the code-review skill made. Per finding:
 
 - `file` / `line`: where it lives — the code, the file with the checklist, or
   the file the conversation item is about;
 - `category`: for code-review findings, the category the code review gave;
-  otherwise `conversation` or `checklist`, or for the look-ahead check
-  `related`, `idea`, `next-step` or `pitfall`;
+  otherwise `conversation`, `checklist` or `tracker`, or for the look-ahead
+  check `related`, `idea`, `next-step` or `pitfall`;
 - `summary`: the problem, then the fix "apply all" will run, fenced so it
   stands out in one line of plain text (line breaks get eaten):
   `… |—| SUGGESTED FIX: <fix> |—|`;
@@ -198,9 +224,9 @@ First AskUserQuestion, a single question: "Apply all suggested fixes"
 
 - **Apply all:** queue every suggested fix (step 4). No more questions.
 - **One by one:** walk **every** finding from the report — code review,
-  conversation, checklist and look-ahead alike — one AskUserQuestion per
-  finding, one question per call, so each answer is queued (step 4) before the
-  next question. The question text carries the finding itself — its number,
+  conversation, checklist, tracker and look-ahead alike — one AskUserQuestion
+  per finding, one question per call, so each answer is queued (step 4) before
+  the next question. The question text carries the finding itself — its number,
   `file:line`, the problem and the suggested fix — never just "Finding N", so
   it reads on its own on mobile. Options, in this order, each with its
   description:
@@ -339,6 +365,9 @@ in any window, the link is all there is; say so.
   one-by-one question that names a finding without saying what it is.
 - One-by-one that skips the code-review findings.
 - Skipping the look-ahead check, or padding it with generic advice.
+- Searching the tracker only by the branch's issue id, or only in the touched
+  files.
+- Listing only the questions the user left unanswered, not the ones you did.
 - Running two queue jobs at once, or bundling several fixes in one commit.
 - Calling a run **clear** after it committed anything, or while any finding has
   no outcome.
