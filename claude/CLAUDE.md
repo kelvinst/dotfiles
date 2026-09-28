@@ -14,8 +14,11 @@
 
 ## Asking questions
 
-- Put links in an `AskUserQuestion` as normal markdown. Mobile (Remote Control,
-  the claude.ai app) renders the link text and drops the href, so the
-  `askuserquestion-links` PreToolUse hook rewrites `[text](url)` to `text: url`
-  in the question and in every option description before the question is shown
-  — no need to repeat the link in the reply for that reason alone.
+- A link inside an `AskUserQuestion` never reaches a phone. Mobile (Remote
+  Control, the claude.ai app) drops the href, and the raw URL the
+  `askuserquestion-links` PreToolUse hook writes in its place — it rewrites
+  `[text](url)` to `text: url` in the question and in every option description
+  — is visible there but neither tappable nor copyable. So write the question
+  and its links as normal text in the reply right before the tool call, then
+  ask. The reply is the only place a link is reachable on mobile; the hook only
+  makes the address readable inside the card.

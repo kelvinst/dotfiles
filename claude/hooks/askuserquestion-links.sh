@@ -59,7 +59,6 @@ if not changed:
 
 print(json.dumps({"hookSpecificOutput": {
     "hookEventName": "PreToolUse",
-    "permissionDecision": "allow",
     "updatedInput": tool_input,
 }}))
 '
