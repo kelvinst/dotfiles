@@ -9,7 +9,7 @@
       "complex_modifications": {
         "rules": [
           {
-            "description": "Built-in keyboard: Caps Lock is Control, double-tap for Return",
+            "description": "Caps Lock is Control, double-tap for Return",
             "manipulators": [
               {
                 "type": "basic",
@@ -35,14 +35,6 @@
                     "type": "variable_if",
                     "name": "caps_lock_tapped",
                     "value": 1
-                  },
-                  {
-                    "type": "device_if",
-                    "identifiers": [
-                      {
-                        "is_built_in_keyboard": true
-                      }
-                    ]
                   }
                 ]
               },
@@ -85,17 +77,7 @@
                 },
                 "parameters": {
                   "basic.to_delayed_action_delay_milliseconds": 300
-                },
-                "conditions": [
-                  {
-                    "type": "device_if",
-                    "identifiers": [
-                      {
-                        "is_built_in_keyboard": true
-                      }
-                    ]
-                  }
-                ]
+                }
               }
             ]
           },
