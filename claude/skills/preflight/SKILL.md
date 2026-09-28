@@ -85,7 +85,7 @@ step name:
 | ----- | ------------------------------------------------------------------- | ----------------------------------------------------- |
 | ✅    | the step finished and worked — with its result                      | `✅ 3/14 Conversation — 0 findings`                   |
 | ⏭️    | the step does not apply                                             | `⏭️ 8/14 Decide — no findings`                        |
-| ⚠️    | the run stops here and needs the user to act — say what             | `⚠️ 10/14 Verdict — changed: …`                       |
+| ⚠️    | the user must act on something, now or later — say what             | `⚠️ 10/14 Verdict — changed: …`                       |
 | ❓    | right before each question to the user — with a short summary of it | `❓ 8/14 Decide — finding 2: tally vs split`          |
 | ⏳    | a Fixes job is dispatched to its background agent                   | `⏳ 9.1/14 Fixes — job 1/2: ❓ before every question` |
 
@@ -106,6 +106,22 @@ print a ❓ line right before calling the tool:
 `✅ 8/14 Decide — 2 fixes queued, 1 skipped`).
 
 A run that finishes ends with `✅ <total>/<total> done`.
+
+⚠️ means "don't lose this": anything the user has to do after the run, even
+when it blocks nothing and needs no answer now (a question needing an answer
+now is ❓). Use it for a run that stopped before its last step, and for any
+step result that leaves the user something to do later — a deferred task to
+pick up, a branch or worktree to clean, a skill to reinstall, another session
+that must ship first. Put it on the step line where it shows up
+(`⚠️ 5/14 Tracker — dot-a7j done by this branch, close it after the ship`).
+Every run that leaves anything pending ends with a ⚠️ block listing each item
+and what to do, instead of `✅ <total>/<total> done`:
+
+```
+⚠️ Stopped at 10/14 Verdict — to do next:
+- skim bb5098b..44b795d, then run /ship again
+- close dot-a7j after the ship
+```
 
 Every step gets its own line, printed as that step ends — even when several
 steps end with nothing to say. Never fold them into one summary ("steps 1–6
@@ -459,6 +475,8 @@ in any window, the link is all there is; say so.
 - Asking the user anything without printing the ❓ line first, or printing it
   after the question.
 - Running Fixes jobs without their `<step>.<job>` ⏳ and ✅ lines.
+- Ending a run with pending items but no ⚠️ block, or marking something the
+  user must do later with ✅.
 - Offering a defer option in a repo that has no inbox, or Kingdone conventions
   (Gates, `Urgency:`, `R\$`) outside a Kingdone repo.
 - Counting a skipped or dismissed question as answered.
