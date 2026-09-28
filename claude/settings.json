@@ -39,6 +39,15 @@
             "command": "bash \"$HOME/.claude/hooks/allow-remote-control-off.sh\""
           }
         ]
+      },
+      {
+        "matcher": "AskUserQuestion",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "bash \"$HOME/.claude/hooks/askuserquestion-links.sh\""
+          }
+        ]
       }
     ]
   },

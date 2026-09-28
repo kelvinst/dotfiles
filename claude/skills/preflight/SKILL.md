@@ -435,10 +435,8 @@ commit SHA, so pass the **first** commit of the batch and tell the user to move
 forward from there, commit by commit, up to HEAD. Also give the compare link
 when the remote is on GitHub —
 `https://github.com/<owner>/<repo>/compare/<from sha>...<HEAD sha>` — which
-opens anywhere, phone included. The link goes in the reply itself, never only
-inside an AskUserQuestion: links do not render in a question card on mobile. If
-the pane call says the session is not open in any window, the link is all there
-is; say so.
+opens anywhere, phone included. If the pane call says the session is not open
+in any window, the link is all there is; say so.
 
 - **Changed** — step 5 committed anything (fixes, arrivals, checklist edits).
   The rebase and step 1's commit of a dirty tree do not count: step 2 checked

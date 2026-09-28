@@ -42,10 +42,8 @@ below are 11–14 of 14 (of 16 when `close` called ship).
    - **Clear** → go on.
 
 2. **Confirm.** Show the branch diff from `<base>` the way preflight's _Showing
-   the diff_ says, then write the question and the compare link as normal text
-   — a link only reaches a phone from the reply, not from inside the question —
-   and ask the same with AskUserQuestion: "Did you review the changes? Can I
-   ship?", with the compare link in the question text too. Options:
+   the diff_ says, then ask with AskUserQuestion: "Did you review the changes?
+   Can I ship?", with the compare link in the question text. Options:
 
    - "Ship" — "Not a merge: no merge commit. The branch was already rebased
      onto `<default>`, so its commits land on top of it as they are — flat
