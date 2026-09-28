@@ -34,8 +34,9 @@ as preflight's _Progress_ says: the preflight steps are 1–11, and steps 2–5
 below are 12–15 of 15 (of 17 when `close` called ship).
 
 1. **Preflight.** Run the `preflight` skill, every time — even when HEAD
-   already carries a check mark (preflight skips the code review then, but
-   still rebases and reruns every other check). Its verdict decides:
+   already carries a check mark (preflight skips its git-only checks then, but
+   still rebases and reruns the ones that read the session or bd). Its verdict
+   decides:
 
    - **Changed** or **Open** → stop here. Preflight already told the user what
      to do; add nothing, ship nothing.

@@ -188,6 +188,33 @@ Resolving the conflict is the user's call.
 
 Run all six checks, in this order, before asking anything.
 
+**Already checked.** When, after step 1, HEAD carries `checked` and the tree is
+clean, the committed code is exactly what the last run checked, so every check
+that reads only committed git state gives the same answer: skip it. A rebase
+that moved the branch, or step 1's commit of a dirty tree, leaves HEAD
+unchecked, so nothing is skipped then. Look it up once:
+
+```bash
+git notes --ref=checks show HEAD 2>/dev/null | head -1
+git status --porcelain
+```
+
+| Check           | When HEAD is checked and the tree clean                                              |
+| --------------- | ------------------------------------------------------------------------------------ |
+| a. Code review  | skip — reads only the diff                                                           |
+| b. Conversation | run — reads the session                                                              |
+| c. Checklists   | skip — reads only committed files                                                    |
+| d. Tracker      | _(Kingdone)_ skip — the vault is in HEAD; _(Beads)_ run — bd state lives outside git |
+| e. Look ahead   | run — reads the session and the tracker too                                          |
+| f. After ship   | run — reads the session and the task                                                 |
+| Mark the checks | skip — HEAD already carries the mark                                                 |
+
+A skipped check prints
+`⏭️ <n>/<total> <Step> — HEAD <short sha> already checked` and carries over
+every finding of its kind from this session's latest ReportFindings call that
+has no `outcome` — still open, into the new report as they were. Its line still
+follows a real command (the lookup above).
+
 **a. Code review.** Find the newest checked commit (see _Check marks_):
 
 ```bash
@@ -196,10 +223,8 @@ git log --notes=checks --format='%H %N' <base>..HEAD | grep -m1 -E '^[0-9a-f]{40
 
 Run the `code-review` skill at level `medium` on everything after it — or on
 the whole branch against `<base>` when there is none — plus any uncommitted
-change. Skip this check when HEAD itself is checked and the tree is clean; then
-carry over every finding from this session's latest ReportFindings call that
-has no `outcome` — they are still open and go into the new report as they were.
-Keep its findings for the combined report below.
+change — unless _Already checked_ skips it. Keep its findings for the combined
+report below.
 
 **b. Conversation.** Read the whole session and list:
 
@@ -283,11 +308,12 @@ Skip what the task already says. `close` reads the task before marking it done,
 so what the task says is still pending keeps it open. _(Neither)_ there is no
 tracker: the finding's fix is a ⚠️ line in the run's closing ⚠️ block.
 
-**Mark the checks.** As soon as the six checks have run, mark the commit they
-looked at — HEAD — as checked. The mark says only that: the checks ran on this
-commit. It is not an approval; the approval is the user's "Ship" answer in
-`ship`. Any later commit (a fix, an arrival) is not checked, and the next
-preflight checks it.
+**Mark the checks.** As soon as the six checks have run (or been skipped by
+_Already checked_, which also skips this mark), mark the commit they looked at
+— HEAD — as checked. The mark says only that: the checks ran on this commit. It
+is not an approval; the approval is the user's "Ship" answer in `ship`. Any
+later commit (a fix, an arrival) is not checked, and the next preflight checks
+it.
 
 ```bash
 git notes --ref=checks add -f -m "checked" HEAD
@@ -545,6 +571,9 @@ even when that run ships. On "Not now", stop — nothing runs after the answer.
   giving the compare link.
 - Treating "Leave for later" as a discard.
 - Discarding without a reason, or inventing one for the user.
+- Rerunning a git-only check (code review, checklists, a Kingdone tracker
+  search) on a HEAD already checked with a clean tree, or skipping the
+  conversation, look-ahead or a bd tracker search because HEAD is checked.
 - Reviewing before the rebase, or rebasing with `notes.rewriteRef` still
   carrying check marks.
 - Hardcoding `main` instead of the detected default branch.
