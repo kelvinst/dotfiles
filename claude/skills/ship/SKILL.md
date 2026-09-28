@@ -29,7 +29,7 @@ name without `origin/`.
 
 ## Steps
 
-Print a progress line before each step, as preflight's _Progress_ says: the
+Print a progress line when each step ends, as preflight's _Progress_ says: the
 preflight steps are 1–10, and steps 2–5 below are 11–14 of 14 (of 16 when
 `close` called ship).
 

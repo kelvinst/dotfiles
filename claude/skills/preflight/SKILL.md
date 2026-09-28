@@ -57,9 +57,10 @@ records that the checks ran — it is not an approval; the approval is the user'
 
 ## Progress
 
-The user wants to see where a run is while it runs. Before each step, print one
-progress line, numbered across the whole run the user started — the `<command>`
-of _Verdict_ — not per skill. Each check of step 2 is a step of its own:
+The user wants to see where a run is while it runs. When each step ends, print
+one progress line (none when it starts), numbered across the whole run the user
+started (the `<command>` of _Verdict_), not per skill. Each check of step 2 is
+a step of its own:
 
 | Step                                    | `/preflight` | `/ship` | `/close` |
 | --------------------------------------- | ------------ | ------- | -------- |
@@ -81,7 +82,6 @@ step name:
 
 | Emoji | When                                                      | Example                             |
 | ----- | --------------------------------------------------------- | ----------------------------------- |
-| ▶️    | the step starts                                           | `▶️ 3/14 Conversation`              |
 | ✅    | the step finished and worked — with its result            | `✅ 3/14 Conversation — 0 findings` |
 | ⏭️    | the step does not apply                                   | `⏭️ 8/14 Decide — no findings`      |
 | ⏸️    | the step waits for the user's answer (an AskUserQuestion) | `⏸️ 8/14 Decide — waiting for you`  |
@@ -414,8 +414,8 @@ in any window, the link is all there is; say so.
   carrying check marks.
 - Hardcoding `main` instead of the detected default branch.
 - Numbering progress per skill (`1/10` inside a `/ship`) instead of across the
-  whole run, or dropping the line for a skipped step, or the ✅ / ⚠️ line that
-  closes each step.
+  whole run, or dropping the line for a skipped step, or printing a line when a
+  step starts instead of when it ends.
 - Offering a defer option in a repo that has no inbox, or Kingdone conventions
   (Gates, `Urgency:`, `R\$`) outside a Kingdone repo.
 - Counting a skipped or dismissed question as answered.

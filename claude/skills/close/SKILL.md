@@ -41,8 +41,8 @@ name without `origin/`.
 
 ## Progress
 
-Print a progress line before each step, as preflight's _Progress_ says: `ship`
-(with its preflight) prints 1–14, then step 2a is 15/16 and 2b is 16/16.
+Print a progress line when each step ends, as preflight's _Progress_ says:
+`ship` (with its preflight) prints 1–14, then step 2a is 15/16 and 2b is 16/16.
 
 ## 1. Ship
 
