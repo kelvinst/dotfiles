@@ -58,10 +58,10 @@ records that the checks ran — it is not an approval; the approval is the user'
 ## Progress
 
 The user wants to see where a run is while it runs. When each step ends, print
-one progress line (none when it starts; the only other line is the ❓ line
-before a question, below), numbered across the whole run the user started (the
-`<command>` of _Verdict_), not per skill. Each check of step 2 is a step of its
-own:
+one progress line (none when it starts; the only other lines are the ❓ line
+before a question and the ⏳ line when a Fixes job is dispatched, both below),
+numbered across the whole run the user started (the `<command>` of _Verdict_),
+not per skill. Each check of step 2 is a step of its own:
 
 | Step                                    | `/preflight` | `/ship` | `/close` |
 | --------------------------------------- | ------------ | ------- | -------- |
