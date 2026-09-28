@@ -91,10 +91,18 @@ naming each task: "Mark <task> done" (Recommended) — "Its work is now on
   ship.
 - _(Neither)_ No tracker: skip this.
 
-**b. Archive.** Ask with AskUserQuestion: "Archive this session now?" —
-"Archive" (Recommended) · "Leave it open". On "Archive", get this session's
-state with `mcp__ccd_session_mgmt__get_session` (`"self"`), then, before
-archiving:
+**b. Archive.** First check the session's mode. When the
+`mcp__ccd_session_mgmt__*` tools are not available, the session was started
+from the phone through a terminal `claude remote-control` server: Remote
+Control is its only transport, so turning it off would kill the session, and
+nothing inside it can archive it. There, skip this step's question, switch and
+archive entirely — tell the user in one line that the work is shipped and the
+session can be archived from the phone (the session's menu → Archive), and
+stop.
+
+Otherwise ask with AskUserQuestion: "Archive this session now?" — "Archive"
+(Recommended) · "Leave it open". On "Archive", get this session's state with
+`mcp__ccd_session_mgmt__get_session` (`"self"`), then, before archiving:
 
 - **Remote Control.** When `remoteControlState` is `on` or `connecting`, turn
   it off with `mcp__ccd_session_mgmt__set_remote_control`
@@ -116,6 +124,9 @@ Never archive without that answer, or while the work is not in `<base>`.
 - Marking a bd issue or a quest done without asking, or before the ship.
 - Archiving after a ship that stopped.
 - Archiving with Remote Control still on, or the session still pinned.
+- In a terminal `claude remote-control` session (no `ccd_session_mgmt` tools),
+  trying to turn Remote Control off or to archive — it ends the session; point
+  the user to the phone instead.
 - Hardcoding `main` instead of the detected default branch.
 - Naming an arrival without linking it, or a task without its id.
 - Writing in English to a user who speaks Portuguese.
