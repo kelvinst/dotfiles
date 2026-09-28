@@ -30,9 +30,16 @@ local typed = ""
 -- or a key matching no label all hand focus back to it.
 local origin = nil
 
--- Set while the focused accordion stack is flipped to tiles for the
--- overlay, so hiding it knows to flip it back.
-local flipped = false
+-- Accordion windows flipped to tiles for the overlay, as window id ->
+-- the accordion layout to put back when it closes.
+local flipped = {}
+
+-- For each workspace with a flipped stack, the window its accordion showed
+-- before the flip, and which workspace every visible window is on. The
+-- restack walk leaves another window on top of each stack, and a flipped
+-- stack comes back showing that one unless it gets focus again.
+local shownBefore = {}
+local workspaceOf = {}
 
 -- Set once the restack has walked focus through the overlapping tiles,
 -- so hiding the overlay knows focus has moved off `origin`.
@@ -44,11 +51,13 @@ local SETTLE_SECONDS = 0.2
 local pending = nil
 
 -- Runs one shell line of aerospace commands, held in `M` under `key` so
--- the task isn't collected mid-run.
+-- the task isn't collected mid-run. `;` rather than `&&`: one command
+-- failing — a window closed while the overlay was up — mustn't skip the
+-- rest of the restore.
 local function aerospace(key, cmds)
   M[key] = hs.task.new("/bin/sh", nil, {
     "-c",
-    PATH_PREFIX .. table.concat(cmds, " && "),
+    PATH_PREFIX .. table.concat(cmds, "; "),
   })
   M[key]:start()
 end
@@ -57,29 +66,34 @@ end
 -- or `origin` with none picked. All through aerospace rather than
 -- hs.window:focus(): aerospace keeps its own idea of the focused node, and
 -- going around it leaves the tree out of step with what is on screen.
--- `layout` acts on the focused window, so after a restack walk focus has
--- to be back on `origin` before the stack is flipped back to accordion.
 local function finish(targetId)
   if M.walkTask and M.walkTask:isRunning() then
     M.walkTask:terminate()
   end
 
   local cmds = {}
-  if walked and origin then
-    table.insert(cmds, "aerospace focus --window-id " .. origin)
+  local anyFlipped = false
+  for id, layout in pairs(flipped) do
+    table.insert(cmds, "aerospace layout --window-id " .. id .. " " .. layout)
+    anyFlipped = true
   end
-  if flipped then
-    table.insert(cmds, "aerospace layout accordion")
-  end
-  -- After a flip the accordion comes back showing whichever window its
-  -- tiles left on top, so focus is set again even when it is `origin`.
+  -- A stack flipped back, or walked over, shows whichever window was left
+  -- on top, so focus is set again even when it stays on `origin` — first
+  -- on what each other stack showed before, then on the final window.
   local final = targetId or origin
-  if final and (final ~= origin or flipped) then
+  for ws, id in pairs(shownBefore) do
+    if ws ~= workspaceOf[final] then
+      table.insert(cmds, "aerospace focus --window-id " .. id)
+    end
+  end
+  if final and (final ~= origin or walked or anyFlipped) then
     table.insert(cmds, "aerospace focus --window-id " .. final)
   end
 
   walked = false
-  flipped = false
+  flipped = {}
+  shownBefore = {}
+  workspaceOf = {}
   origin = nil
   if #cmds > 0 then
     aerospace("finishTask", cmds)
@@ -520,21 +534,47 @@ function M.show()
   tap:start()
 
   -- An accordion stack hides all but one window, and aerospace can't say
-  -- in what order the rest sit. Flipping it to tiles for the length of the
-  -- overlay lays every window out side by side, so each label lands on its
-  -- real window. Only the focused stack: `layout` acts on the focused
-  -- window, and a stack on the other monitor would need focus moved there
-  -- and back.
-  local focused = hs.execute(
+  -- in what order the rest sit. Flipping every accordion on the visible
+  -- workspaces — both monitors, so a window on the other one is as easy
+  -- to reach — to tiles for the length of the overlay lays each window
+  -- out side by side, so each label lands on its real window. Flipped per
+  -- window with `--window-id`, which leaves focus alone and covers nested
+  -- stacks too; each keeps its orientation, h_accordion to h_tiles.
+  origin = hs.execute(
+    PATH_PREFIX .. "aerospace list-windows --focused --format '%{window-id}'"
+  ):match("%d+")
+
+  local out = hs.execute(
     PATH_PREFIX
-      .. "aerospace list-windows --focused"
+      .. "aerospace list-windows --workspace visible"
       .. " --format '%{window-id}|%{workspace}|%{window-layout}'"
   )
-  local id, ws, layout = (focused or ""):match("^(%d+)|([^|]*)|(%S*)")
-  origin = id
-  if layout and layout:find("accordion") then
-    hs.execute(PATH_PREFIX .. "aerospace layout tiles")
-    flipped = true
+  local cmds = {}
+  local stacked = {}
+  for id, ws, layout in (out or ""):gmatch("(%d+)|([^|\n]*)|(%S+)") do
+    workspaceOf[id] = ws
+    local orientation = layout:match("^([hv])_accordion$")
+    if orientation then
+      flipped[id] = layout
+      stacked[ws] = true
+      table.insert(
+        cmds,
+        "aerospace layout --window-id " .. id .. " " .. orientation .. "_tiles"
+      )
+    end
+  end
+
+  -- What each stack shows now is its frontmost window.
+  for _, winId in ipairs(hs.window._orderedwinids()) do
+    local id = tostring(winId)
+    local ws = workspaceOf[id]
+    if ws and stacked[ws] and not shownBefore[ws] and flipped[id] then
+      shownBefore[ws] = id
+    end
+  end
+
+  if #cmds > 0 then
+    hs.execute(PATH_PREFIX .. table.concat(cmds, " && "))
     pending = hs.timer.doAfter(SETTLE_SECONDS, drawHints)
   else
     drawHints()
