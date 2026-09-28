@@ -86,6 +86,11 @@ step name:
 | ⏭️    | the step does not apply                                 | `⏭️ 8/14 Decide — no findings`      |
 | ⚠️    | the run stops here and needs the user to act — say what | `⚠️ 10/14 Verdict — changed: …`     |
 
+Decide is the one step with two lines: `❓ 8/14 Decide — <n> findings` right
+before its first AskUserQuestion, then, once every finding is decided,
+`✅ 8/14 Decide — <tally>` counting each kind of decision (e.g.
+`2 fixes queued, 1 skipped`).
+
 A run that finishes ends with `✅ <total>/<total> done`.
 
 Every step gets its own line, printed as that step ends — even when several
