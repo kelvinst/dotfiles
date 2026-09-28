@@ -434,7 +434,7 @@ started it in plain words.
 commit SHA, so pass the **first** commit of the batch and tell the user to move
 forward from there, commit by commit, up to HEAD. Also give the compare link
 when the remote is on GitHub —
-`https://github.com/<owner>/<repo>/compare/<from sha>...<HEAD sha>` — which
+`https://github.com/<owner>/<repo>/compare/<from sha>^...<HEAD sha>` — which
 opens anywhere, phone included. The link goes in the reply itself, never only
 inside an AskUserQuestion: links do not render in a question card on mobile. If
 the pane call says the session is not open in any window, the link is all there
@@ -457,13 +457,12 @@ is; say so.
 **changed** or **open** verdict's ⚠️ block, print a ❓ line (e.g.
 `❓ 10/14 Verdict — rerun /ship?`) and ask with AskUserQuestion: "Run
 `<command>` again" (Recommended) · "Not now". The question text carries the
-compare link for what to look at first: for **changed**, the step 5 commits
-(`https://github.com/<owner>/<repo>/compare/<first commit>^...<HEAD sha>`); for
-**open**, the branch diff (`.../compare/<base>...<HEAD sha>`). Print that link
-in the reply too, right before the question: inside the card it is unreachable
-on mobile. On "Run `<command>` again", rerun `<command>` right away, from its
-first step, with fresh progress numbering. On "Not now", stop — nothing runs
-after the answer.
+same compare link the verdict already printed in the reply — for **changed**,
+the step 5 commits; for **open**, the branch diff
+(`.../compare/<base>...<HEAD sha>`). Never a second link with a different
+range. On "Run `<command>` again", rerun `<command>` right away, from its first
+step, with fresh progress numbering. On "Not now", stop — nothing runs after
+the answer.
 
 ## Common mistakes
 
