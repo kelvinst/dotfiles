@@ -14,6 +14,7 @@ HOME_TARGETS := \
 	.config/caveman \
 	.config/direnv \
 	.config/init_starship.sh \
+	.config/karabiner/karabiner.json \
 	.config/kitty \
 	.config/nvim \
 	.config/starship-full.toml \
@@ -67,6 +68,8 @@ install: backup
 	cp -r ./config/direnv/* ~/.config/direnv/
 	mkdir -p ~/.config/kitty/
 	cp -r ./config/kitty/* ~/.config/kitty/
+	mkdir -p ~/.config/karabiner/
+	cp -f ./config/karabiner/karabiner.json ~/.config/karabiner/karabiner.json
 	mkdir -p ~/.config/nvim/
 	cp -r ./config/nvim/* ~/.config/nvim/
 	mkdir -p ~/.config/tms/
@@ -106,6 +109,7 @@ clean:
 	rm -rf ~/.config/caveman/*
 	rm -rf ~/.config/direnv/*
 	rm -rf ~/.config/kitty/*
+	rm -f ~/.config/karabiner/karabiner.json
 	rm -rf ~/.config/nvim/*
 	rm -rf ~/.config/tms/*
 	rm -rf ~/.config/tidewave/*
@@ -136,6 +140,8 @@ update:
 	cp -r ~/.config/direnv/* ./config/direnv/
 	mkdir -p ./config/kitty/
 	cp -r ~/.config/kitty/* ./config/kitty/
+	mkdir -p ./config/karabiner/
+	cp -f ~/.config/karabiner/karabiner.json ./config/karabiner/karabiner.json
 	mkdir -p ./config/nvim/
 	cp -r ~/.config/nvim/* ./config/nvim/
 	mkdir -p ./config/tms/
