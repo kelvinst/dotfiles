@@ -59,24 +59,27 @@ records that the checks ran — it is not an approval; the approval is the user'
 
 The user wants to see where a run is while it runs. Before each step, print one
 progress line, numbered across the whole run the user started — the `<command>`
-of _Verdict_ — not per skill:
+of _Verdict_ — not per skill. Each check of step 2 is a step of its own:
 
-| Step                                  | `/preflight` | `/ship` | `/close` |
-| ------------------------------------- | ------------ | ------- | -------- |
-| Rebase (preflight 1)                  | 1/6          | 1/10    | 1/12     |
-| Checks (preflight 2)                  | 2/6          | 2/10    | 2/12     |
-| Report (preflight 3)                  | 3/6          | 3/10    | 3/12     |
-| Decide (preflight 4)                  | 4/6          | 4/10    | 4/12     |
-| Fixes (preflight 5)                   | 5/6          | 5/10    | 5/12     |
-| Verdict (preflight 6)                 | 6/6          | 6/10    | 6/12     |
-| Confirm, Gate, Push, Check (ship 2–5) | —            | 7–10/10 | 7–10/12  |
-| Mark task done, Archive (close 2a–b)  | —            | —       | 11–12/12 |
+| Step                                    | `/preflight` | `/ship` | `/close` |
+| --------------------------------------- | ------------ | ------- | -------- |
+| Rebase (1)                              | 1/10         | 1/14    | 1/16     |
+| Code review (2a)                        | 2/10         | 2/14    | 2/16     |
+| Conversation (2b)                       | 3/10         | 3/14    | 3/16     |
+| Checklists (2c)                         | 4/10         | 4/14    | 4/16     |
+| Tracker (2d)                            | 5/10         | 5/14    | 5/16     |
+| Look ahead (2e)                         | 6/10         | 6/14    | 6/16     |
+| Report (3)                              | 7/10         | 7/14    | 7/16     |
+| Decide (4)                              | 8/10         | 8/14    | 8/16     |
+| Fixes (5)                               | 9/10         | 9/14    | 9/16     |
+| Verdict (6)                             | 10/10        | 10/14   | 10/16    |
+| Confirm, Gate, Push, Check (`ship` 2–5) | —            | 11–14   | 11–14    |
+| Mark task done, Archive (`close` 2a–2b) | —            | —       | 15–16    |
 
-Format: `▸ <n>/<total> <Step>` — e.g. `▸ 1/10 Rebase`. During Checks, one line
-per check: `▸ 2/10 Checks · b. Conversation`. A step that does not apply still
-gets its line: `▸ 4/10 Decide — skipped (no findings)`. A run that stops early
-ends with `■ Stopped at <n>/<total> <Step>: <why>`; one that finishes ends with
-`✓ <n>/<total> done`.
+Format: `▸ <n>/<total> <Step>` — e.g. `▸ 3/14 Conversation`. A step that does
+not apply still gets its line: `▸ 8/14 Decide — skipped (no findings)`. A run
+that stops early ends with `■ Stopped at <n>/<total> <Step>: <why>`; one that
+finishes ends with `✓ <total>/<total> done`.
 
 ## 1. Rebase onto the default branch
 
@@ -402,7 +405,7 @@ in any window, the link is all there is; say so.
 - Reviewing before the rebase, or rebasing with `notes.rewriteRef` still
   carrying check marks.
 - Hardcoding `main` instead of the detected default branch.
-- Numbering progress per skill (`1/6` inside a `/ship`) instead of across the
+- Numbering progress per skill (`1/10` inside a `/ship`) instead of across the
   whole run, or dropping the line for a skipped step.
 - Offering a defer option in a repo that has no inbox, or Kingdone conventions
   (Gates, `Urgency:`, `R\$`) outside a Kingdone repo.
