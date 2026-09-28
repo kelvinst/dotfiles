@@ -88,9 +88,10 @@ shows it done. Also look for what is still open under the task:
 
 When there is any, do not offer to mark the task done: print
 `⚠️ 16/17 Mark task done — <task> has <n> item(s) left`, list each — when it
-applies (as the task says it) and what to do, or the blocking issue's id — say
-to close the task once they are done, and go on to 2b: the work is shipped and
-the items live in the task, so the session loses nothing.
+applies (as the task says it) and what to do, or the blocking issue's id — and
+stop there: skip 2b, do not offer to archive. End on that ⚠️ block, and say to
+run `/close` again once the items are done — the rerun ships nothing new and
+goes straight to marking the task done and archiving.
 
 Otherwise ask with AskUserQuestion, naming each task: "Mark <task> done"
 (Recommended) — "Its work is now on `<default>`." · "Leave it open". Never mark
@@ -136,7 +137,8 @@ Otherwise ask with AskUserQuestion: "Archive this session now?" — "Archive"
   holds live work.
 
 Then call `mcp__ccd_session_mgmt__archive_session` with `session_id: "self"`.
-Never archive without that answer, or while the work is not in `<base>`.
+Never archive without that answer, or while the work is not in `<base>`, or
+while the task has items left (2a).
 
 ## Common mistakes
 
@@ -147,6 +149,7 @@ Never archive without that answer, or while the work is not in `<base>`.
 - Offering to mark a task done while its content says something is still to be
   done after the ship or the deploy, or while an open blocker on it is still
   pending.
+- Archiving while the task still has items left after the ship.
 - Archiving after a ship that stopped.
 - Archiving with Remote Control still on, or the session still pinned.
 - In a terminal `claude remote-control` session (no `ccd_session_mgmt` tools),
