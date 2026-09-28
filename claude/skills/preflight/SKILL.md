@@ -408,7 +408,10 @@ the repo type, the language to write in, and these rules:
   `bd dolt push` when the repo has a Dolt remote.
 
 - **Session title and link** (arrival or task) come from
-  `mcp__ccd_session_mgmt__get_session` with `"self"`.
+  `mcp__ccd_session_mgmt__get_session` with `"self"`. When those tools are not
+  available (a session started from the phone through a terminal
+  `claude remote-control` server), take the title from the conversation and
+  write it without a link.
 
 - **Discard / Leave for later:** no job.
 
