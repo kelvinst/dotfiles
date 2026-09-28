@@ -275,9 +275,66 @@ local function refresh()
   end
 end
 
+-- Raise `list` in order, one at a time, so the last ends up on top. Fired
+-- back to back, the raises reach each app's AX handling at their own pace
+-- and land out of order — WhatsApp's in particular kept ending up under
+-- the rest. So each waits until its window is actually frontmost among
+-- the list, or RAISE_TIMEOUT runs out, before the next goes. Front-to-back
+-- order comes from hs.window._orderedwinids(): a private call, but a few
+-- milliseconds against the 25 of hs.window.orderedWindows(), and this
+-- polls it.
+local RAISE_POLL = 0.015
+local RAISE_TIMEOUT = 0.3
+local restackTimer = nil
+
+local function stopRestack()
+  if restackTimer then
+    restackTimer:stop()
+    restackTimer = nil
+  end
+end
+
+local function restack(list)
+  stopRestack()
+  local members = {}
+  for _, w in ipairs(list) do
+    members[w.win:id()] = true
+  end
+
+  local function frontmost()
+    for _, id in ipairs(hs.window._orderedwinids()) do
+      if members[id] then
+        return id
+      end
+    end
+  end
+
+  local i = 0
+  local function step()
+    i = i + 1
+    local w = list[i]
+    if not w then
+      restackTimer = nil
+      return
+    end
+    local id = w.win:id()
+    w.win:raise()
+    local waited = 0
+    restackTimer = hs.timer.doEvery(RAISE_POLL, function()
+      waited = waited + RAISE_POLL
+      if frontmost() == id or waited >= RAISE_TIMEOUT then
+        restackTimer:stop()
+        step()
+      end
+    end)
+  end
+  step()
+end
+
 -- Tear the overlay down, then restore the stack and focus `targetId` when
 -- given.
 function M.hide(targetId)
+  stopRestack()
   if pending then
     pending:stop()
     pending = nil
@@ -392,17 +449,15 @@ local function drawHints()
       end
     end
   end
-  for _, w in ipairs(raised) do
-    w.win:raise()
-  end
+  restack(raised)
 
   -- Front-to-back rank of every window, lower is nearer the front. The
-  -- raises above take a moment to show up in hs.window.orderedWindows(),
-  -- so the raised windows are ranked by their raise order instead, all in
-  -- front of everything else.
+  -- restack above runs in the background, so the raised windows are
+  -- ranked by the order it will leave them in, all in front of everything
+  -- else.
   local rank = {}
-  for i, win in ipairs(hs.window.orderedWindows()) do
-    rank[win:id()] = i
+  for i, id in ipairs(hs.window._orderedwinids()) do
+    rank[id] = i
   end
   for k, w in ipairs(raised) do
     rank[w.win:id()] = -k
