@@ -436,9 +436,10 @@ link only — for the branch diff
 run's commits `.../compare/<first commit>^...<HEAD sha>`, the caret so the
 first commit's own changes show. It opens anywhere, phone included. The link
 goes in the reply itself, never only inside an AskUserQuestion: links do not
-render in a question card on mobile. Never open the app's diff pane
-(`mcp__ccd_view__show_pane`) — it fails more often than not — and never tell
-the user a keyboard shortcut.
+render in a question card on mobile. When the remote is not on GitHub, print
+the range's `git log --oneline` and `git diff --stat` in the reply instead.
+Never open the app's diff pane (`mcp__ccd_view__show_pane`) — it fails more
+often than not — and never tell the user a keyboard shortcut.
 
 - **Changed** — step 5 committed anything (fixes, arrivals, checklist edits).
   The rebase and step 1's commit of a dirty tree do not count: step 2 checked
