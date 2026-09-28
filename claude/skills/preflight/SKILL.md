@@ -89,6 +89,16 @@ step name:
 
 A run that finishes ends with `✅ <total>/<total> done`.
 
+Every step gets its own line, printed as that step ends — even when several
+steps end with nothing to say. Never fold them into one summary ("steps 1–6
+clear"):
+
+```
+✅ 1/14 Rebase — already on main
+✅ 2/14 Code review — 0 findings
+✅ 3/14 Conversation — 0 findings
+```
+
 ## 1. Rebase onto the default branch
 
 Before any review, bring the branch up to date, so everything is reviewed on
@@ -414,8 +424,8 @@ in any window, the link is all there is; say so.
   carrying check marks.
 - Hardcoding `main` instead of the detected default branch.
 - Numbering progress per skill (`1/10` inside a `/ship`) instead of across the
-  whole run, or dropping the line for a skipped step, or printing a line when a
-  step starts instead of when it ends.
+  whole run, or dropping the line for a skipped step, printing a line when a
+  step starts instead of when it ends, or folding several steps into one line.
 - Offering a defer option in a repo that has no inbox, or Kingdone conventions
   (Gates, `Urgency:`, `R\$`) outside a Kingdone repo.
 - Counting a skipped or dismissed question as answered.
