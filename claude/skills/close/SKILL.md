@@ -24,8 +24,7 @@ Detect it from the repository root (`git rev-parse --show-toplevel`), the same
 way `preflight` does. The first match wins:
 
 1. **Kingdone** — `Gates/Gates.md` exists. The vault's own conventions (its
-   `CLAUDE.md`) apply: the `Urgency:` trailer, renames through the Obsidian
-   CLI, and so on.
+   `CLAUDE.md`) apply: renames through the Obsidian CLI, and so on.
 2. **Beads** — a `.beads/` directory exists and `command -v bd` succeeds.
 3. **Neither** — no tracker.
 
@@ -109,10 +108,9 @@ a task done without that yes.
   (e.g. `Kix Checkpoints.md`; when unclear, ask the user which) — move it (a
   folder quest moves whole) to `Observatory/Drawer/Quests/Completed/` through
   the Obsidian CLI so links follow, commit
-  (`docs(observatory): <qst-id> is completed`, `Urgency: fyi`), and push it
-  straight to `<default>` as a fast-forward (`git push origin HEAD:<default>`,
-  then the branch). This status-only commit is the one commit allowed after the
-  ship.
+  (`docs(observatory): <qst-id> is completed`), and push it straight to
+  `<default>` as a fast-forward (`git push origin HEAD:<default>`, then the
+  branch). This status-only commit is the one commit allowed after the ship.
 - _(Neither)_ No tracker: skip this.
 
 **b. Archive.** First check the session's mode. When the

@@ -35,8 +35,7 @@ Detect it once, before step 1, from the repository root
 
 Everything marked _(Kingdone)_ or _(Beads)_ below applies only to that type. In
 a Kingdone repo the vault's own conventions (its `CLAUDE.md`) apply to every
-job: the `Urgency:` trailer on commits that touch a note, renames through the
-Obsidian CLI, and so on.
+job: renames through the Obsidian CLI, and so on.
 
 **Default branch.** Never assume `main`:
 
@@ -408,8 +407,7 @@ the repo type, the language to write in, and these rules:
   `[-]` with `→ arrival created: [[Gates/<title>|<title>]]` at its end;
   anything else (a paragraph, a heading, a decision) gets a line saying it left
   a pending item in that arrival, with the link. Commit the arrival and the
-  source edit together (`docs(gates): add arrival for …`, `Urgency: action`)
-  and push.
+  source edit together (`docs(gates): add arrival for …`) and push.
 
 - _(Beads)_ **Create task:** find the current work first — the issue the branch
   is about: an id in the branch name, the issue claimed or worked on in this
@@ -436,9 +434,13 @@ the repo type, the language to write in, and these rules:
   new task, arrival, label or heading of our own. Say when it applies, in the
   words the moment calls for ("after this is merged to `<default>`", "before
   deploying", "after the deploy"), and what to do. Follow how the project
-  already writes such things: look at how its other tasks or quests phrase them
-  and where they put them, and do the same; when nothing shows a habit, append
-  a short paragraph.
+  already writes such things. Look for a stored habit first — _(Beads)_
+  `bd memories after-ship`; _(Kingdone)_ the project's memory. Only when there
+  is none, look at how its other tasks or quests phrase them and where they put
+  them (when nothing shows a habit, append a short paragraph), then store what
+  you found so the next run skips the search — _(Beads)_
+  `bd remember --key after-ship-convention "<where and how>"`; _(Kingdone)_ a
+  project memory.
 
   - _(Beads)_ the current issue's description
     (`bd update <id> --description=…`, keeping what is there), or its notes
@@ -446,8 +448,7 @@ the repo type, the language to write in, and these rules:
     repo has a Dolt remote. No identifiable current issue → do not write it
     anywhere; the finding becomes a ⚠️ line in the closing ⚠️ block, and say
     so.
-  - _(Kingdone)_ the current quest's main note; commit it (`Urgency: fyi`) and
-    push.
+  - _(Kingdone)_ the current quest's main note; commit it and push.
 
 - **Session title and link** (arrival or task) come from
   `mcp__ccd_session_mgmt__get_session` with `"self"`. When those tools are not
@@ -566,7 +567,7 @@ even when that run ships. On "Not now", stop — nothing runs after the answer.
 - Ending a run with pending items but no ⚠️ block, or marking something the
   user must do later with ✅.
 - Offering a defer option in a repo that has no inbox, or Kingdone conventions
-  (Gates, `Urgency:`, `R\$`) outside a Kingdone repo.
+  (Gates, `R\$`) outside a Kingdone repo.
 - Counting a skipped or dismissed question as answered.
 - Naming an arrival without linking it, or a task without its id; leaving the
   source checklist item without a pointer back.
