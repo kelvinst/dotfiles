@@ -3,7 +3,9 @@
     {
       "name": "Default profile",
       "selected": true,
-      "virtual_hid_keyboard": { "keyboard_type_v2": "ansi" },
+      "virtual_hid_keyboard": {
+        "keyboard_type_v2": "ansi"
+      },
       "complex_modifications": {
         "rules": [
           {
@@ -13,12 +15,19 @@
                 "type": "basic",
                 "from": {
                   "key_code": "caps_lock",
-                  "modifiers": { "optional": ["any"] }
+                  "modifiers": {
+                    "optional": ["any"]
+                  }
                 },
                 "to": [
-                  { "key_code": "return_or_enter" },
                   {
-                    "set_variable": { "name": "caps_lock_tapped", "value": 0 }
+                    "key_code": "return_or_enter"
+                  },
+                  {
+                    "set_variable": {
+                      "name": "caps_lock_tapped",
+                      "value": 0
+                    }
                   }
                 ],
                 "conditions": [
@@ -29,7 +38,11 @@
                   },
                   {
                     "type": "device_if",
-                    "identifiers": [{ "is_built_in_keyboard": true }]
+                    "identifiers": [
+                      {
+                        "is_built_in_keyboard": true
+                      }
+                    ]
                   }
                 ]
               },
@@ -37,13 +50,20 @@
                 "type": "basic",
                 "from": {
                   "key_code": "caps_lock",
-                  "modifiers": { "optional": ["any"] }
+                  "modifiers": {
+                    "optional": ["any"]
+                  }
                 },
                 "to": [
                   {
-                    "set_variable": { "name": "caps_lock_tapped", "value": 1 }
+                    "set_variable": {
+                      "name": "caps_lock_tapped",
+                      "value": 1
+                    }
                   },
-                  { "key_code": "left_control" }
+                  {
+                    "key_code": "left_control"
+                  }
                 ],
                 "to_delayed_action": {
                   "to_if_invoked": [
@@ -69,20 +89,121 @@
                 "conditions": [
                   {
                     "type": "device_if",
-                    "identifiers": [{ "is_built_in_keyboard": true }]
+                    "identifiers": [
+                      {
+                        "is_built_in_keyboard": true
+                      }
+                    ]
                   }
                 ]
               }
             ]
           },
           {
-            "description": "Built-in keyboard: double-tap Left Shift for Shift+Return",
+            "description": "ErgoDox: double-tap Left Control for Return",
+            "manipulators": [
+              {
+                "type": "basic",
+                "from": {
+                  "key_code": "left_control",
+                  "modifiers": {
+                    "optional": ["any"]
+                  }
+                },
+                "to": [
+                  {
+                    "key_code": "return_or_enter"
+                  },
+                  {
+                    "set_variable": {
+                      "name": "left_control_tapped",
+                      "value": 0
+                    }
+                  }
+                ],
+                "conditions": [
+                  {
+                    "type": "variable_if",
+                    "name": "left_control_tapped",
+                    "value": 1
+                  },
+                  {
+                    "type": "device_if",
+                    "identifiers": [
+                      {
+                        "vendor_id": 12951,
+                        "product_id": 18806,
+                        "is_keyboard": true
+                      }
+                    ]
+                  }
+                ]
+              },
+              {
+                "type": "basic",
+                "from": {
+                  "key_code": "left_control",
+                  "modifiers": {
+                    "optional": ["any"]
+                  }
+                },
+                "to": [
+                  {
+                    "set_variable": {
+                      "name": "left_control_tapped",
+                      "value": 1
+                    }
+                  },
+                  {
+                    "key_code": "left_control"
+                  }
+                ],
+                "to_delayed_action": {
+                  "to_if_invoked": [
+                    {
+                      "set_variable": {
+                        "name": "left_control_tapped",
+                        "value": 0
+                      }
+                    }
+                  ],
+                  "to_if_canceled": [
+                    {
+                      "set_variable": {
+                        "name": "left_control_tapped",
+                        "value": 0
+                      }
+                    }
+                  ]
+                },
+                "parameters": {
+                  "basic.to_delayed_action_delay_milliseconds": 300
+                },
+                "conditions": [
+                  {
+                    "type": "device_if",
+                    "identifiers": [
+                      {
+                        "vendor_id": 12951,
+                        "product_id": 18806,
+                        "is_keyboard": true
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "description": "Built-in keyboard and ErgoDox: double-tap Left Shift for Shift+Return",
             "manipulators": [
               {
                 "type": "basic",
                 "from": {
                   "key_code": "left_shift",
-                  "modifiers": { "optional": ["any"] }
+                  "modifiers": {
+                    "optional": ["any"]
+                  }
                 },
                 "to": [
                   {
@@ -90,7 +211,10 @@
                     "modifiers": ["left_shift"]
                   },
                   {
-                    "set_variable": { "name": "left_shift_tapped", "value": 0 }
+                    "set_variable": {
+                      "name": "left_shift_tapped",
+                      "value": 0
+                    }
                   }
                 ],
                 "conditions": [
@@ -101,7 +225,16 @@
                   },
                   {
                     "type": "device_if",
-                    "identifiers": [{ "is_built_in_keyboard": true }]
+                    "identifiers": [
+                      {
+                        "is_built_in_keyboard": true
+                      },
+                      {
+                        "vendor_id": 12951,
+                        "product_id": 18806,
+                        "is_keyboard": true
+                      }
+                    ]
                   }
                 ]
               },
@@ -109,13 +242,20 @@
                 "type": "basic",
                 "from": {
                   "key_code": "left_shift",
-                  "modifiers": { "optional": ["any"] }
+                  "modifiers": {
+                    "optional": ["any"]
+                  }
                 },
                 "to": [
                   {
-                    "set_variable": { "name": "left_shift_tapped", "value": 1 }
+                    "set_variable": {
+                      "name": "left_shift_tapped",
+                      "value": 1
+                    }
                   },
-                  { "key_code": "left_shift" }
+                  {
+                    "key_code": "left_shift"
+                  }
                 ],
                 "to_delayed_action": {
                   "to_if_invoked": [
@@ -141,7 +281,16 @@
                 "conditions": [
                   {
                     "type": "device_if",
-                    "identifiers": [{ "is_built_in_keyboard": true }]
+                    "identifiers": [
+                      {
+                        "is_built_in_keyboard": true
+                      },
+                      {
+                        "vendor_id": 12951,
+                        "product_id": 18806,
+                        "is_keyboard": true
+                      }
+                    ]
                   }
                 ]
               }
