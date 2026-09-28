@@ -433,12 +433,13 @@ started it in plain words.
 `diff_scope: "all"`. For the commits this run made, `diff_scope` takes a single
 commit SHA, so pass the **first** commit of the batch and tell the user to move
 forward from there, commit by commit, up to HEAD. Also give the compare link
-when the remote is on GitHub —
-`https://github.com/<owner>/<repo>/compare/<from sha>^...<HEAD sha>` — which
-opens anywhere, phone included. The link goes in the reply itself, never only
-inside an AskUserQuestion: links do not render in a question card on mobile. If
-the pane call says the session is not open in any window, the link is all there
-is; say so.
+when the remote is on GitHub, one link only — for the branch diff
+`https://github.com/<owner>/<repo>/compare/<base>...<HEAD sha>`, for this run's
+commits `.../compare/<first commit>^...<HEAD sha>`, the caret so the first
+commit's own changes show. It opens anywhere, phone included. The link goes in
+the reply itself, never only inside an AskUserQuestion: links do not render in
+a question card on mobile. If the pane call says the session is not open in any
+window, the link is all there is; say so.
 
 - **Changed** — step 5 committed anything (fixes, arrivals, checklist edits).
   The rebase and step 1's commit of a dirty tree do not count: step 2 checked
@@ -447,8 +448,8 @@ is; say so.
   you expect, rerun." Then ask the rerun question (below). Those commits are
   not checked yet; the next run checks them.
 - **Open** — any finding in the latest ReportFindings has no `outcome` (left
-  for later). List what is still open, then ask the rerun question (below) for
-  when the user is ready to decide them.
+  for later). List what is still open, show the branch diff (above), then ask
+  the rerun question (below) for when the user is ready to decide them.
 - **Clear** — HEAD carries `checked`, every finding in the latest
   ReportFindings has an `outcome`, and step 5 committed nothing. Say so. When
   preflight was run on its own, stop here — it never ships.
@@ -457,12 +458,11 @@ is; say so.
 **changed** or **open** verdict's ⚠️ block, print a ❓ line (e.g.
 `❓ 10/14 Verdict — rerun /ship?`) and ask with AskUserQuestion: "Run
 `<command>` again" (Recommended) · "Not now". The question text carries the
-same compare link the verdict already printed in the reply — for **changed**,
-the step 5 commits; for **open**, the branch diff
-(`.../compare/<base>...<HEAD sha>`). Never a second link with a different
-range. On "Run `<command>` again", rerun `<command>` right away, from its first
-step, with fresh progress numbering. On "Not now", stop — nothing runs after
-the answer.
+same compare link the verdict already printed in the reply — the step 5 commits
+for **changed**, the branch diff for **open** — never a second link with a
+different range. On "Run `<command>` again", rerun `<command>` right away, from
+its first step, with fresh progress numbering. On "Not now", stop — nothing
+runs after the answer.
 
 ## Common mistakes
 
