@@ -225,9 +225,13 @@ session has no findings of its own to carry over. Decide it with this one test
 
 ```bash
 [ -z "$(git status --porcelain)" ] && [ -n "$CLAUDE_CODE_SESSION_ID" ] \
-  && [ "$(git notes --ref=checks show HEAD 2>/dev/null | head -1)" = "checked $CLAUDE_CODE_SESSION_ID" ] \
+  && git notes --ref=checks show HEAD 2>/dev/null | grep -qx "checked $CLAUDE_CODE_SESSION_ID" \
   && echo SKIP
 ```
+
+It matches any line of the note, not only the first: when a rejected notes push
+falls back to `git notes merge -s union` (below), two sessions' lines stack on
+the same commit.
 
 Skip only when it prints `SKIP`; otherwise run every check.
 
@@ -253,8 +257,10 @@ same reason _Already checked_ ignores it: its findings are not here to carry
 over:
 
 ```bash
-[ -n "$CLAUDE_CODE_SESSION_ID" ] && git log --notes=checks --format='%H %N' <base>..HEAD \
-  | grep -m1 -E "^[0-9a-f]{40} checked $CLAUDE_CODE_SESSION_ID\$" | cut -c1-40
+[ -n "$CLAUDE_CODE_SESSION_ID" ] && for c in $(git rev-list <base>..HEAD); do
+  git notes --ref=checks show "$c" 2>/dev/null | grep -qx "checked $CLAUDE_CODE_SESSION_ID" \
+    && { echo "$c"; break; }
+done
 ```
 
 Run the `code-review` skill at level `medium` on everything after it — or on
