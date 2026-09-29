@@ -223,8 +223,8 @@ agent (Agent tool, `run_in_background: true`); d's agent takes
 `model: "sonnet"`, a's keeps the session's model. While they run, the main
 session does **b** (it reads the session, which no agent sees) and then **c**
 (a `git diff --name-only` and a grep — cheaper inline than an agent). **e** and
-**f** run last, in the main session, once b, c and both agents reported — they
-must leave out what the others found.
+**f** run last, in the main session, once b, c and every dispatched agent
+reported — they must leave out what the others found.
 
 Each agent's prompt is self-contained: the check's own text below, `<base>`,
 the repo root, the repo type, the language to write in, and these rules:
