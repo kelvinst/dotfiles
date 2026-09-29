@@ -49,10 +49,9 @@ below are 12–15 of 15 (of 17 when `close` called ship).
    empty range.
 
 2. **Confirm.** Show the branch diff from `<base>` the way preflight's _Showing
-   the diff_ says, then write the question and the compare link as normal text
-   — a link only reaches a phone from the reply, not from inside the question —
-   and ask the same with AskUserQuestion: "Did you review the changes? Can I
-   ship?", with the compare link in the question text too. Options:
+   the diff_ says — the compare link in the reply, never in the question — say
+   what "Ship" does, then ask with AskUserQuestion: "Reviewed — can I ship?"
+   Options:
 
    - "Ship" — "Not a merge: no merge commit. The branch was already rebased
      onto `<default>`, so its commits land on top of it as they are — flat
@@ -72,13 +71,13 @@ below are 12–15 of 15 (of 17 when `close` called ship).
    ```
 
    A dirty tree, no `UP_TO_DATE`, or a first note line not starting with
-   `checked` → stop. After the ⚠️ block, ask: "Something changed since the
-   preflight (<what: dirty tree / `<default>` moved / HEAD not checked>). Run
-   `<command>` again?", with the branch diff from `<base>` as its link and the
-   same three options as preflight's _Verdict_ **changed** rerun question
-   (reviewed · skip my review · not now); on "skip my review", the ⚠️ item
-   names the branch range `<base>..HEAD`. `<command>` as _Verdict_ defines it
-   (`/close` when close called ship). Never rebase or review here to fix it.
+   `checked` → stop. After the ⚠️ block, say in the reply what changed since
+   the preflight (dirty tree / `<default>` moved / HEAD not checked) with the
+   branch diff from `<base>` as its link, then ask "Run `<command>` again?"
+   with the same three options as preflight's _Verdict_ **changed** rerun
+   question (reviewed · skip my review · not now); on "skip my review", the ⚠️
+   item names the branch range `<base>..HEAD`. `<command>` as _Verdict_ defines
+   it (`/close` when close called ship). Never rebase or review here to fix it.
 
 4. **Push the default branch, the branch and the notes.**
 

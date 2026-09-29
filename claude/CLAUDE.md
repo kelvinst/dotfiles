@@ -14,9 +14,18 @@
 
 ## Asking questions
 
-- A link inside an `AskUserQuestion` never reaches a phone: mobile (Remote
-  Control, the claude.ai app) renders the link text and drops the href, and a
-  raw URL put in the question instead is visible there but neither tappable nor
-  copyable. So whenever a question carries a link, write the question and its
-  links as normal text in the reply right before the tool call, then ask. The
-  reply is the only place a link is reachable on mobile.
+- Context goes in the reply, not in the question. Before every
+  `AskUserQuestion`, write in the reply what the user needs to decide — even
+  under "no explanations", this is the one place the why is always given: what
+  is being asked and why, the recommended option and why it is the recommended
+  one, and a short line on each other option. Plain Markdown, formatted to read
+  — a heading or bold lead, short paragraphs or a list, `code` for paths.
+- The question itself is one short line that points at that context ("Finding
+  3/11 — take the recommended fix?"), and option labels and descriptions stay
+  short. The card renders every word in bold and gets hard to read when long.
+- The reply is also the only record: once answered, the card collapses to the
+  chosen label, so whatever lived only in the question is gone for the user.
+- Links too: a link inside an `AskUserQuestion` never reaches a phone — mobile
+  (Remote Control, the claude.ai app) renders the link text and drops the href,
+  and a raw URL there is neither tappable nor copyable. Put every link in the
+  reply, never in the question.

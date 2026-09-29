@@ -438,10 +438,23 @@ First AskUserQuestion, a single question: "Apply all suggested fixes"
 - **One by one:** walk **every** finding from the report — code review,
   conversation, checklist, tracker, look-ahead and after-ship alike — one
   AskUserQuestion per finding, one question per call, so each answer is queued
-  (step 5) before the next question. The question text carries the finding
-  itself — its number out of the total (`finding 6/9`), `file:line`, the
-  problem and the suggested fix — never just "Finding N", so it reads on its
-  own on mobile. Options, in this order, each with its description:
+  (step 5) before the next question. Right before each question, after its ❓
+  line, print the finding in the reply as a short block the user can read and
+  scroll back to — the card collapses to the chosen label once answered. Print
+  it as Markdown, not in a code block:
+
+  ```
+  **Finding 6/9 — `<file>:<line>`**
+  <problem: what goes wrong and when, one or two sentences>
+  - **Fix (recommended):** <the fix> — <why this one over the others>
+  - **<other fix>:** <what it does, its trade-off>   (one per extra fix)
+  - **Defer / Discard / Leave for later:** <only what is specific to this
+    finding, e.g. an existing task that already covers it>
+  ```
+
+  The question is one short line pointing at that block — "Finding 6/9 — take
+  the recommended fix?" — never the finding itself. Options, in this order,
+  each with its description:
   - the suggested fix (Recommended);
   - each other real fix, when there is more than one — list them, keep your
     pick first;
@@ -463,16 +476,17 @@ First AskUserQuestion, a single question: "Apply all suggested fixes"
 
   AskUserQuestion takes at most four options: when the fixes, the defer option,
   "Discard" and "Leave for later" do not fit, drop the least likely extra fix
-  and mention it in the question text. "Other" is always there; follow whatever
+  and mention it in the block above. "Other" is always there; follow whatever
   the user types.
 
   When the user picks "Discard", ask right away, in its own AskUserQuestion,
-  why — the reason is required. Offer 2–3 likely reasons for this specific
-  finding as options (e.g. "Not a real problem", "Intended behavior", "Not
-  worth the cost"); "Other" takes free text. Only a discard with a reason
-  counts: a skipped or empty answer leaves the finding undecided — ask again,
-  or treat it as "Leave for later". Under "Apply all" nothing is discarded, so
-  no reason is needed.
+  why — the reason is required. The question is short ("Why discard finding
+  6/9?"); the finding is already in the block above. Offer 2–3 likely reasons
+  for this specific finding as options (e.g. "Not a real problem", "Intended
+  behavior", "Not worth the cost"); "Other" takes free text. Only a discard
+  with a reason counts: a skipped or empty answer leaves the finding undecided
+  — ask again, or treat it as "Leave for later". Under "Apply all" nothing is
+  discarded, so no reason is needed.
 
 ## 5. Run the queue
 
@@ -605,24 +619,27 @@ often than not — and never tell the user a keyboard shortcut.
 
 **Rerun.** A link can't run a slash command, but an answer can. After a
 **changed** or **open** verdict's ⚠️ block, print a ❓ line (e.g.
-`❓ 11/15 Verdict — rerun /ship?`) and ask with AskUserQuestion. The question
-text carries the same compare link the verdict already printed in the reply —
-the step 5 commits for **changed**, the branch diff for **open** — never a
-second link with a different range. The question depends on the verdict:
+`❓ 11/15 Verdict — rerun /ship?`), write what is being asked and each option
+in the reply, as the global _Asking questions_ rule says, and ask with
+AskUserQuestion. The only link is the compare link the verdict already printed
+in the reply — the step 5 commits for **changed**, the branch diff for **open**
+— never a second link with a different range, and never inside the question.
+The question depends on the verdict:
 
-- **Changed** — the question says outright that new commits landed that the
-  user has not seen: "`<n>` new commits landed since your last look
+- **Changed** — the reply says outright that new commits landed that the user
+  has not seen: "`<n>` new commits landed since your last look
   (`<first short sha>..<HEAD short sha>`). The next run checks them, but you
-  haven't seen them. Run `<command>` again?" — naming the edited tracker items
-  instead of (or next to) the commits when a Fix job edited any. Options:
+  haven't seen them." — naming the edited tracker items instead of (or next to)
+  the commits when a Fix job edited any. The question: "Run `<command>` again?"
+  Options:
   - "I reviewed — run `<command>` again" (Recommended) — "You skimmed the new
     commits. The rerun checks them again on its own.";
   - "Run again, skip my review" — "Rerun now without looking. Only the
     automated review checks the new commits.";
   - "Not now" — "Stop. The ⚠️ block stays."
-- **Open** — nothing new was committed: "Findings still open — rerun
-  `<command>` to decide them?" Options: "Run `<command>` again" (Recommended) ·
-  "Not now".
+- **Open** — nothing new was committed; the reply lists what is still open. The
+  question: "Rerun `<command>` to decide them?" Options: "Run `<command>`
+  again" (Recommended) · "Not now".
 
 On any run option, rerun `<command>` right away, from its first step, with
 fresh progress numbering. On "Run again, skip my review", the skip goes on
@@ -634,8 +651,9 @@ even when that run ships. On "Not now", stop — nothing runs after the answer.
 ## Common mistakes
 
 - Two ReportFindings lists (one from code-review, one of yours) instead of one.
-- A chat list that leaves out what the ReportFindings card shows, or a
-  one-by-one question that names a finding without saying what it is.
+- A chat list that leaves out what the ReportFindings card shows.
+- A one-by-one question with no finding block printed right before it, or with
+  the whole finding stuffed into the question text instead.
 - One-by-one that skips the code-review findings.
 - Skipping the look-ahead check, or padding it with generic advice.
 - Doing an after-ship item before the ship, or creating a task, arrival, label
@@ -681,7 +699,7 @@ even when that run ships. On "Not now", stop — nothing runs after the answer.
   total (`finding 6/9`).
 - Ending a **changed**, **open** or ship _Gate_ stop with only a text "run it
   again" instead of the rerun question.
-- A **changed** rerun question that doesn't say new, unseen commits landed, or
+- A **changed** rerun reply that doesn't say new, unseen commits landed, or
   that offers only "I reviewed" — a user who skips the review on purpose must
   have an honest option — or dropping the "without your review" ⚠️ item after
   "Run again, skip my review".
