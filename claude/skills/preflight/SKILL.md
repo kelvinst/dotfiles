@@ -586,18 +586,22 @@ the range's `git log --oneline` and `git diff --stat` in the reply instead.
 Never open the app's diff pane (`mcp__ccd_view__show_pane`) — it fails more
 often than not — and never tell the user a keyboard shortcut.
 
-- **Changed** — step 5 committed anything (fixes, arrivals, checklist edits).
-  The rebase and step 1's commit of a dirty tree do not count: step 2 checked
-  them. Show the diff of the step 5 commits (above), then say: "There were
-  changes. Review them yourself — skim the diff — and if they look like what
-  you expect, rerun." Then ask the rerun question (below). Those commits are
-  not checked yet; the next run checks them.
+- **Changed** — step 5 committed anything (fixes, arrivals, checklist edits),
+  or a Fix job edited a tracker item (`bd update`, `bd dep add`) — a bd edit
+  commits nothing, but the user has not seen it either. The rebase and step 1's
+  commit of a dirty tree do not count: step 2 checked them. Show the diff of
+  the step 5 commits (above) and, for each edited item, `bd show <id>` in the
+  reply, then say: "There were changes. Review them yourself — skim the diff —
+  and if they look like what you expect, rerun." Then ask the rerun question
+  (below). Those commits and items are not checked yet; the next run checks
+  them.
 - **Open** — any finding in the latest ReportFindings has no `outcome` (left
   for later). List what is still open, show the branch diff (above), then ask
   the rerun question (below) for when the user is ready to decide them.
 - **Clear** — HEAD's first note line starts with `checked`, every finding in
-  the latest ReportFindings has an `outcome`, and step 5 committed nothing. Say
-  so. When preflight was run on its own, stop here — it never ships.
+  the latest ReportFindings has an `outcome`, and step 5 committed nothing and
+  edited no tracker item. Say so. When preflight was run on its own, stop here
+  — it never ships.
 
 **Rerun.** A link can't run a slash command, but an answer can. After a
 **changed** or **open** verdict's ⚠️ block, print a ❓ line (e.g.
@@ -609,7 +613,8 @@ second link with a different range. The question depends on the verdict:
 - **Changed** — the question says outright that new commits landed that the
   user has not seen: "`<n>` new commits landed since your last look
   (`<first short sha>..<HEAD short sha>`). The next run checks them, but you
-  haven't seen them. Run `<command>` again?" Options:
+  haven't seen them. Run `<command>` again?" — naming the edited tracker items
+  instead of (or next to) the commits when a Fix job edited any. Options:
   - "I reviewed — run `<command>` again" (Recommended) — "You skimmed the new
     commits. The rerun checks them again on its own.";
   - "Run again, skip my review" — "Rerun now without looking. Only the
