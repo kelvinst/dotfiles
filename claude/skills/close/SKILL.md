@@ -77,7 +77,11 @@ heading. Look for anything it says to do at a moment that is now or later:
 "after this is merged", "after it ships", "before deploying", "after the
 deploy", a migration to run, a config to change, something to install. Each
 such item is still pending unless the task, the conversation or the tracker
-shows it done. Also look for what is still open under the task:
+shows it done. An item this session created, or only planned (rewrote its
+description, design or acceptance, without doing its work), is not the
+session's task and is never offered as done: its work has not started. When
+that is all the session did, say so, ask nothing, and go to 2b. Also look for
+what is still open under the task:
 
 - _(Beads)_ `bd show <id>` (description, design, notes, acceptance, comments),
   plus any open or in-progress issue it depends on (`blocks`, in
@@ -146,6 +150,8 @@ while the task has items left (2a).
   through `ship` → `preflight`.
 - Doing any work after the ship.
 - Marking a bd issue or a quest done without asking, or before the ship.
+- Offering to mark done a bd issue or arrival this session only created or
+  planned.
 - Offering to mark a task done while its content says something is still to be
   done after the ship or the deploy, or while an open blocker on it is still
   pending.

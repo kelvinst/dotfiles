@@ -42,6 +42,12 @@ below are 12–15 of 15 (of 17 when `close` called ship).
      to do; add nothing, ship nothing.
    - **Clear** → go on.
 
+   A clear branch with no commits past `<base>` (`git rev-list --count
+   <base>..HEAD` prints `0` — e.g. a session that only wrote bd issues) has
+   nothing to ship: print `⏭️` lines for steps 2–4 (`nothing to ship`) and
+   step 5's line says `0 commits — <default> unchanged`. Never ask to ship an
+   empty range.
+
 2. **Confirm.** Show the branch diff from `<base>` the way preflight's _Showing
    the diff_ says, then write the question and the compare link as normal text
    — a link only reaches a phone from the reply, not from inside the question —
