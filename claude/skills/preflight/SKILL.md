@@ -262,7 +262,7 @@ Skip only when it prints `SKIP`; otherwise run every check.
 | --------------- | ------------------------------------------------------------------------------------ |
 | a. Code review  | skip — reads only the diff                                                           |
 | b. Conversation | run — reads the session                                                              |
-| c. Checklists   | skip — reads only committed files                                                    |
+| c. Checklists   | skip — same files, and this same session already ran it                              |
 | d. Tracker      | _(Kingdone)_ skip — the vault is in HEAD; _(Beads)_ run — bd state lives outside git |
 | e. Look ahead   | run — reads the session and the tracker too                                          |
 | f. After ship   | run — reads the session and the task                                                 |
