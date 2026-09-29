@@ -205,15 +205,16 @@ bd count --status=open; bd count --status=in_progress   # d, (Beads) only
 
 | Check          | Skip when                            | Inline when                                | Agent when |
 | -------------- | ------------------------------------ | ------------------------------------------ | ---------- |
-| a. Code review | nothing after `<from>`               | ≤ 100 changed lines                        | more       |
+| a. Code review | nothing after `<from>`               | ≤ 400 changed lines                        | more       |
 | c. Checklists  | no Markdown file touched             | always otherwise                           | never      |
-| d. Tracker     | _(Neither)_, or 0 open + in-progress | ≤ 15 — one `bd list` read against the diff | more       |
+| d. Tracker     | _(Neither)_, or 0 open + in-progress | ≤ 60 — one `bd list` read against the diff | more       |
 
 _(Kingdone)_ d always gets an agent: it searches the whole vault. b, e and f
 always run inline. A skipped check prints `⏭️ <n>/<total> <Step> — <reason>`
 (e.g. `no Markdown touched`). The thresholds are about an agent's fixed cost —
 a fresh context — against the work: under them, doing it inline costs fewer
-tokens and finishes about as soon.
+tokens and finishes about as soon. The limits come from a measured run: each
+agent carries ~40–50k tokens of fixed context, so below them inline is cheaper.
 
 **Parallel run.** An agent costs a fresh context of its own, so only the heavy
 checks get one, as _Triage_ says: **a** (code review) and **d** (tracker
