@@ -62,7 +62,7 @@ it.
 
 The user wants to see where a run is while it runs. When each step ends, print
 one progress line (none when it starts; the only other lines are the ❓ line
-before a question and the ⏳ line when a Fixes job is dispatched, both below),
+before a question and the ⏳ line when a Fixes job starts, both below),
 numbered across the whole run the user started (the `<command>` of _Verdict_),
 not per skill. Each check of step 2 is a step of its own:
 
@@ -91,11 +91,11 @@ step name:
 | ⏭️    | the step does not apply                                             | `⏭️ 9/15 Decide — no findings`                         |
 | ⚠️    | the user must act on something, now or later — say what             | `⚠️ 11/15 Verdict — changed: …`                        |
 | ❓    | right before each question to the user — with a short summary of it | `❓ 9/15 Decide — finding 2/6: tally vs split`         |
-| ⏳    | a Fixes job is dispatched to its background agent                   | `⏳ 10.1/15 Fixes — job 1/2: ❓ before every question` |
+| ⏳    | a Fixes job starts                                                  | `⏳ 10.1/15 Fixes — job 1/2: ❓ before every question` |
 
 Fixes (progress step 10 in every run) numbers each job as a sub-step: `10.1`,
-`10.2`, … Print its ⏳ line when the job is dispatched and its ✅ or ⚠️ line,
-with the commit or task id, when the job reports done:
+`10.2`, … Print its ⏳ line when the job starts and its ✅ or ⚠️ line, with the
+commit or task id, when the job is done:
 `✅ 10.1/15 Fixes — job 1/2: ❓ before every question (bb5098b)`. The step's
 own ✅ line follows the last job.
 
@@ -141,9 +141,8 @@ clear"):
 
 Each step runs at least one real command of its own (a grep, a `bd` search, a
 `git` call — whatever the step actually needs), and its progress line goes out
-right after that command, as its own message — for a check run by a background
-agent (step 2), right after its notification arrives. Never put several steps'
-lines in one text block: the app shrinks such a block into one summary line.
+right after that command, as its own message. Never put several steps' lines in
+one text block: the app shrinks such a block into one summary line.
 
 ## 1. Rebase onto the default branch
 
@@ -191,59 +190,29 @@ Resolving the conflict is the user's call.
 
 ## 2. Collect findings
 
-Run all six checks before asking anything. They run in parallel once step 1 is
-done — the rebase is the only thing they wait for.
+Run all six checks, in this order, in the main session, before asking anything.
+No check goes to an agent: an agent starts without the conversation, and most
+checks read it — the code review too, to tell a bug from intended behavior — so
+an agent either misses it or pays for a copy of it. A measured run found
+nothing an agent caught that the inline run missed, at about three times the
+tokens.
 
-**Triage.** Before dispatching anything, size each check with cheap commands,
-in one Bash call, after _Already checked_ (below) has dropped what it skips:
+**Skips.** After _Already checked_ (below), one Bash call finds the checks with
+nothing to look at:
 
 ```bash
-git diff --shortstat <from>..HEAD      # a: <from> = newest checked commit, else <base>
+git diff --shortstat <from>..HEAD   # a: <from> as check a finds it, else <base>
 git diff --name-only <base>...HEAD -- '*.md'   # c
-bd count --status=open; bd count --status=in_progress   # d, (Beads) only
 ```
 
-| Check          | Skip when                            | Inline when                                | Agent when |
-| -------------- | ------------------------------------ | ------------------------------------------ | ---------- |
-| a. Code review | nothing after `<from>`               | ≤ 400 changed lines                        | more       |
-| c. Checklists  | no Markdown file touched             | always otherwise                           | never      |
-| d. Tracker     | _(Neither)_, or 0 open + in-progress | ≤ 60 — one `bd list` read against the diff | more       |
+| Check          | Skip when                                 |
+| -------------- | ----------------------------------------- |
+| a. Code review | nothing after `<from>`                    |
+| c. Checklists  | no Markdown file touched                  |
+| d. Tracker     | _(Neither)_ — there is no tracker to read |
 
-_(Kingdone)_ d always gets an agent: it searches the whole vault. b, e and f
-always run inline. A skipped check prints `⏭️ <n>/<total> <Step> — <reason>`
-(e.g. `no Markdown touched`). The thresholds are about an agent's fixed cost —
-a fresh context — against the work: under them, doing it inline costs fewer
-tokens and finishes about as soon. The limits come from a measured run: each
-agent carries ~40–50k tokens of fixed context, so below them inline is cheaper.
-
-**Parallel run.** An agent costs a fresh context of its own, so only the heavy
-checks get one, as _Triage_ says: **a** (code review) and **d** (tracker
-searches). Dispatch those that need one in **one** message right after step 1
-(and after _Already checked_, which drops any it skips), each a background
-agent (Agent tool, `run_in_background: true`); d's agent takes
-`model: "sonnet"`, a's keeps the session's model. While they run, the main
-session does **b** (it reads the session, which no agent sees) and then **c**
-(a `git diff --name-only` and a grep — cheaper inline than an agent). **e** and
-**f** run last, in the main session, once b, c and every dispatched agent
-reported — they must leave out what the others found.
-
-Each agent's prompt is self-contained: the check's own text below, `<base>`,
-the repo root, the repo type, the language to write in, and these rules:
-
-- read only — no edits, no commits, no `bd` writes, no notes;
-- never call ReportFindings or AskUserQuestion;
-- reply with the findings only, one line each, no preamble or summary:
-  `<file>:<line> | <category> | <problem> | <fix> | <failure scenario>` — or
-  `none`;
-- for check a, the prompt says the `code-review` skill's ReportFindings call
-  and its own output format are overridden: the agent replies only in the pipe
-  format above.
-
-Print each check's progress line as its result arrives — b and c when the main
-session ends them, each agent's when its notification comes in — so the lines
-follow completion order, each keeping its own step number. Never print a line
-for an agent that has not reported. When the Agent tool is not available, run
-the checks one after another in the main session, in the order a–f.
+A skipped check prints `⏭️ <n>/<total> <Step> — <reason>` (e.g.
+`no Markdown touched`), right after that call. b, e and f always run.
 
 **Already checked.** When, after step 1, the tree is clean and HEAD's mark was
 written by this very session, the committed code is exactly what this session's
@@ -278,14 +247,18 @@ every finding of its kind from this session's latest ReportFindings call that
 has no `outcome` — still open, into the new report as they were. Its line still
 follows a real command (the test above).
 
-**a. Code review.** Find the newest checked commit (see _Check marks_):
+**a. Code review.** Find `<from>`, the newest commit this session checked (see
+_Check marks_) — a mark from another session or clone does not count, for the
+same reason _Already checked_ ignores it: its findings are not here to carry
+over:
 
 ```bash
-git log --notes=checks --format='%H %N' <base>..HEAD | grep -m1 -E '^[0-9a-f]{40} checked( |$)'
+[ -n "$CLAUDE_CODE_SESSION_ID" ] && git log --notes=checks --format='%H %N' <base>..HEAD \
+  | grep -m1 -E "^[0-9a-f]{40} checked $CLAUDE_CODE_SESSION_ID\$" | cut -c1-40
 ```
 
 Run the `code-review` skill at level `medium` on everything after it — or on
-the whole branch against `<base>` when there is none — plus any uncommitted
+the whole branch against `<base>` when it prints nothing — plus any uncommitted
 change — unless _Already checked_ skips it. Keep its findings for the combined
 report below.
 
@@ -321,8 +294,9 @@ somewhere nobody linked, or it was done and not ticked.
 files, the feature, the names and the terms the branch touches, not only by the
 id in the branch name:
 
-- _(Beads)_ open and in-progress bd issues (`bd list`, `bd search <term>`,
-  `bd show <id>` for their dependencies);
+- _(Beads)_ open and in-progress bd issues (`bd list --limit 0` — plain
+  `bd list` stops at 50 —, `bd search <term>`, `bd show <id>` for their
+  dependencies);
 - _(Kingdone)_ arrivals in `Gates/`, quests anywhere (in progress, planned or
   someday), and unchecked `- [ ]` items in any note, not only the touched ones;
 - _(Neither)_ skip this check.
@@ -467,13 +441,13 @@ First AskUserQuestion, a single question: "Apply all suggested fixes"
 ## 5. Run the queue
 
 Every decision that changes files or the tracker becomes one job. Jobs run
-**one at a time**, in order, each in a background agent (Agent tool,
-`run_in_background: true`): dispatch the next only when the previous one
-reports done. Never run two at once — each commits, and a pre-commit hook may
-reject a commit while other changes sit unstaged.
+**one at a time**, in order, in the main session: finish one (its commit and
+push) before starting the next. Never run two at once — each commits, and a
+pre-commit hook may reject a commit while other changes sit unstaged. No job
+goes to an agent: the jobs run in sequence anyway, so an agent saves no time,
+and it would start without the conversation that explains the fix.
 
-Each job's prompt is self-contained: the finding, the chosen action, the files,
-the repo type, the language to write in, and these rules:
+Each job follows these rules:
 
 - **Fix:** apply it and make one atomic commit for it (project commit procedure
   — `kix:commit` when available), then push the branch.
@@ -640,12 +614,10 @@ even when that run ships. On "Not now", stop — nothing runs after the answer.
 - Skipping on a check mark written by another session (or with
   `$CLAUDE_CODE_SESSION_ID` unset) — only an exact `checked <this session id>`
   skips.
-- Dispatching agents before the triage, or giving an agent to a check the
-  triage sized inline or skipped.
-- Running checks a and d in the main session past the triage thresholds when
-  the Agent tool is there, dispatching their agents in separate messages,
-  giving checks b, c, e or f an agent of their own, or running look ahead or
-  after ship before every other check reported.
+- Sending a check or a Fixes job to an agent instead of running it in the main
+  session.
+- Taking the code-review range from a check mark another session or clone
+  wrote.
 - Reviewing before the rebase, or rebasing with `notes.rewriteRef` still
   carrying check marks.
 - Hardcoding `main` instead of the detected default branch.
