@@ -190,15 +190,37 @@ Resolving the conflict is the user's call.
 Run all six checks before asking anything. They run in parallel once step 1 is
 done — the rebase is the only thing they wait for.
 
+**Triage.** Before dispatching anything, size each check with cheap commands,
+in one Bash call, after _Already checked_ (below) has dropped what it skips:
+
+```bash
+git diff --shortstat <from>..HEAD      # a: <from> = newest checked commit, else <base>
+git diff --name-only <base>...HEAD -- '*.md'   # c
+bd count --status=open; bd count --status=in_progress   # d, (Beads) only
+```
+
+| Check          | Skip when                            | Inline when                                | Agent when |
+| -------------- | ------------------------------------ | ------------------------------------------ | ---------- |
+| a. Code review | nothing after `<from>`               | ≤ 100 changed lines                        | more       |
+| c. Checklists  | no Markdown file touched             | always otherwise                           | never      |
+| d. Tracker     | _(Neither)_, or 0 open + in-progress | ≤ 15 — one `bd list` read against the diff | more       |
+
+_(Kingdone)_ d always gets an agent: it searches the whole vault. b, e and f
+always run inline. A skipped check prints `⏭️ <n>/<total> <Step> — <reason>`
+(e.g. `no Markdown touched`). The thresholds are about an agent's fixed cost —
+a fresh context — against the work: under them, doing it inline costs fewer
+tokens and finishes about as soon.
+
 **Parallel run.** An agent costs a fresh context of its own, so only the heavy
-checks get one: **a** (code review) and **d** (tracker searches). Dispatch both
-in **one** message right after step 1 (and after _Already checked_, which drops
-any it skips), each a background agent (Agent tool, `run_in_background: true`);
-d's agent takes `model: "sonnet"`, a's keeps the session's model. While they
-run, the main session does **b** (it reads the session, which no agent sees)
-and then **c** (a `git diff --name-only` and a grep — cheaper inline than an
-agent). **e** and **f** run last, in the main session, once b, c and both
-agents reported — they must leave out what the others found.
+checks get one, as _Triage_ says: **a** (code review) and **d** (tracker
+searches). Dispatch those that need one in **one** message right after step 1
+(and after _Already checked_, which drops any it skips), each a background
+agent (Agent tool, `run_in_background: true`); d's agent takes
+`model: "sonnet"`, a's keeps the session's model. While they run, the main
+session does **b** (it reads the session, which no agent sees) and then **c**
+(a `git diff --name-only` and a grep — cheaper inline than an agent). **e** and
+**f** run last, in the main session, once b, c and both agents reported — they
+must leave out what the others found.
 
 Each agent's prompt is self-contained: the check's own text below, `<base>`,
 the repo root, the repo type, the language to write in, and these rules:
@@ -601,9 +623,12 @@ even when that run ships. On "Not now", stop — nothing runs after the answer.
 - Rerunning a git-only check (code review, checklists, a Kingdone tracker
   search) on a HEAD already checked with a clean tree, or skipping the
   conversation, look-ahead or a bd tracker search because HEAD is checked.
-- Running checks a and d in the main session when the Agent tool is there,
-  dispatching their agents in separate messages, giving checks b, c or e an
-  agent of their own, or running look ahead before every other check reported.
+- Dispatching agents before the triage, or giving an agent to a check the
+  triage sized inline or skipped.
+- Running checks a and d in the main session past the triage thresholds when
+  the Agent tool is there, dispatching their agents in separate messages,
+  giving checks b, c, e or f an agent of their own, or running look ahead or
+  after ship before every other check reported.
 - Reviewing before the rebase, or rebasing with `notes.rewriteRef` still
   carrying check marks.
 - Hardcoding `main` instead of the detected default branch.
