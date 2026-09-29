@@ -190,29 +190,30 @@ Resolving the conflict is the user's call.
 Run all six checks before asking anything. They run in parallel once step 1 is
 done — the rebase is the only thing they wait for.
 
-**Parallel run.** Checks a, c and d read only the branch and the tracker, so
-each goes to its own background agent (Agent tool, `run_in_background: true`),
-all dispatched in **one** message right after step 1 (and after _Already
-checked_, which drops the ones it skips). Check b reads the session, which no
-agent sees: the main session does it while the agents run. Checks e and f run
-last, in the main session, once b and every agent reported — it must leave out
-what the others found.
+**Parallel run.** An agent costs a fresh context of its own, so only the heavy
+checks get one: **a** (code review) and **d** (tracker searches). Dispatch both
+in **one** message right after step 1 (and after _Already checked_, which drops
+any it skips), each a background agent (Agent tool, `run_in_background: true`);
+d's agent takes `model: "sonnet"`, a's keeps the session's model. While they
+run, the main session does **b** (it reads the session, which no agent sees)
+and then **c** (a `git diff --name-only` and a grep — cheaper inline than an
+agent). **e** and **f** run last, in the main session, once b, c and both
+agents reported — they must leave out what the others found.
 
 Each agent's prompt is self-contained: the check's own text below, `<base>`,
 the repo root, the repo type, the language to write in, and these rules:
 
 - read only — no edits, no commits, no `bd` writes, no notes;
 - never call ReportFindings or AskUserQuestion;
-- return the findings as a list, each with `file`, `line`, `category`, the
-  problem, the suggested fix and the failure scenario — or say there are none.
+- reply with the findings only, one line each, no preamble or summary:
+  `<file>:<line> | <category> | <problem> | <fix> | <failure scenario>` — or
+  `none`.
 
-Code review's agent runs the `code-review` skill as its check says and returns
-its findings the same way. Print each check's progress line as its result
-arrives — the main session's check b when it ends, each agent's when its
-notification comes in — so the lines follow completion order, each keeping its
-own step number. Never print a line for an agent that has not reported. When
-the Agent tool is not available, run the checks one after another in the main
-session, in the order a–f.
+Print each check's progress line as its result arrives — b and c when the main
+session ends them, each agent's when its notification comes in — so the lines
+follow completion order, each keeping its own step number. Never print a line
+for an agent that has not reported. When the Agent tool is not available, run
+the checks one after another in the main session, in the order a–f.
 
 **Already checked.** When, after step 1, HEAD carries `checked` and the tree is
 clean, the committed code is exactly what the last run checked, so every check
@@ -600,9 +601,9 @@ even when that run ships. On "Not now", stop — nothing runs after the answer.
 - Rerunning a git-only check (code review, checklists, a Kingdone tracker
   search) on a HEAD already checked with a clean tree, or skipping the
   conversation, look-ahead or a bd tracker search because HEAD is checked.
-- Running checks a, c and d one after another in the main session when the
-  Agent tool is there, dispatching their agents in separate messages, or
-  running look ahead before the conversation check and every agent reported.
+- Running checks a and d in the main session when the Agent tool is there,
+  dispatching their agents in separate messages, giving checks b, c or e an
+  agent of their own, or running look ahead before every other check reported.
 - Reviewing before the rebase, or rebasing with `notes.rewriteRef` still
   carrying check marks.
 - Hardcoding `main` instead of the detected default branch.
