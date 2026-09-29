@@ -49,10 +49,14 @@ the branch name without `origin/`.
 
 ## Check marks
 
-A checked commit carries a git note in `refs/notes/checks` reading `checked`,
-written by step 2 right after its checks ran on that commit. The mark only
-records that the checks ran — it is not an approval; the approval is the user's
-"Ship" answer in `ship`. `ship` reads it; only preflight writes it.
+A checked commit carries a git note in `refs/notes/checks` whose first line
+reads `checked <session id>` — the `$CLAUDE_CODE_SESSION_ID` of the session
+that ran the checks — written by step 2 right after its checks ran on that
+commit. The first word is what makes a commit checked; the session id only
+decides whether _Already checked_ may skip (older notes read just `checked`).
+The mark only records that the checks ran — it is not an approval; the approval
+is the user's "Ship" answer in `ship`. `ship` reads it; only preflight writes
+it.
 
 ## Progress
 
@@ -237,18 +241,24 @@ follow completion order, each keeping its own step number. Never print a line
 for an agent that has not reported. When the Agent tool is not available, run
 the checks one after another in the main session, in the order a–f.
 
-**Already checked.** When, after step 1, HEAD carries `checked` and the tree is
-clean, the committed code is exactly what the last run checked, so every check
-that reads only committed git state gives the same answer: skip it. A rebase
-that moved the branch, or step 1's commit of a dirty tree, leaves HEAD
-unchecked, so nothing is skipped then. Look it up once:
+**Already checked.** When, after step 1, the tree is clean and HEAD's mark was
+written by this very session, the committed code is exactly what this session's
+last run checked, so every check that reads only committed git state gives the
+same answer: skip it. A rebase that moved the branch, or step 1's commit of a
+dirty tree, leaves HEAD unchecked, so nothing is skipped then. A mark from
+another session or clone (notes come from origin) skips nothing either: this
+session has no findings of its own to carry over. Decide it with this one test
+— no judgement, no reading the conversation:
 
 ```bash
-git notes --ref=checks show HEAD 2>/dev/null | head -1
-git status --porcelain
+[ -z "$(git status --porcelain)" ] && [ -n "$CLAUDE_CODE_SESSION_ID" ] \
+  && [ "$(git notes --ref=checks show HEAD 2>/dev/null | head -1)" = "checked $CLAUDE_CODE_SESSION_ID" ] \
+  && echo SKIP
 ```
 
-| Check           | When HEAD is checked and the tree clean                                              |
+Skip only when it prints `SKIP`; otherwise run every check.
+
+| Check           | When the test prints `SKIP`                                                          |
 | --------------- | ------------------------------------------------------------------------------------ |
 | a. Code review  | skip — reads only the diff                                                           |
 | b. Conversation | run — reads the session                                                              |
@@ -262,12 +272,12 @@ A skipped check prints
 `⏭️ <n>/<total> <Step> — HEAD <short sha> already checked` and carries over
 every finding of its kind from this session's latest ReportFindings call that
 has no `outcome` — still open, into the new report as they were. Its line still
-follows a real command (the lookup above).
+follows a real command (the test above).
 
 **a. Code review.** Find the newest checked commit (see _Check marks_):
 
 ```bash
-git log --notes=checks --format='%H %N' <base>..HEAD | grep -m1 -E '^[0-9a-f]{40} checked$'
+git log --notes=checks --format='%H %N' <base>..HEAD | grep -m1 -E '^[0-9a-f]{40} checked( |$)'
 ```
 
 Run the `code-review` skill at level `medium` on everything after it — or on
@@ -365,7 +375,7 @@ later commit (a fix, an arrival) is not checked, and the next preflight checks
 it.
 
 ```bash
-git notes --ref=checks add -f -m "checked" HEAD
+git notes --ref=checks add -f -m "checked ${CLAUDE_CODE_SESSION_ID:-unknown}" HEAD
 git push origin refs/notes/checks
 ```
 
@@ -568,9 +578,9 @@ often than not — and never tell the user a keyboard shortcut.
 - **Open** — any finding in the latest ReportFindings has no `outcome` (left
   for later). List what is still open, show the branch diff (above), then ask
   the rerun question (below) for when the user is ready to decide them.
-- **Clear** — HEAD carries `checked`, every finding in the latest
-  ReportFindings has an `outcome`, and step 5 committed nothing. Say so. When
-  preflight was run on its own, stop here — it never ships.
+- **Clear** — HEAD's first note line starts with `checked`, every finding in
+  the latest ReportFindings has an `outcome`, and step 5 committed nothing. Say
+  so. When preflight was run on its own, stop here — it never ships.
 
 **Rerun.** A link can't run a slash command, but an answer can. After a
 **changed** or **open** verdict's ⚠️ block, print a ❓ line (e.g.
@@ -621,8 +631,11 @@ even when that run ships. On "Not now", stop — nothing runs after the answer.
 - Treating "Leave for later" as a discard.
 - Discarding without a reason, or inventing one for the user.
 - Rerunning a git-only check (code review, checklists, a Kingdone tracker
-  search) on a HEAD already checked with a clean tree, or skipping the
+  search) when the _Already checked_ test prints `SKIP`, or skipping the
   conversation, look-ahead or a bd tracker search because HEAD is checked.
+- Skipping on a check mark written by another session (or with
+  `$CLAUDE_CODE_SESSION_ID` unset) — only an exact `checked <this session id>`
+  skips.
 - Dispatching agents before the triage, or giving an agent to a check the
   triage sized inline or skipped.
 - Running checks a and d in the main session past the triage thresholds when

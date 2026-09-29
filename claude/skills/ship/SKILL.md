@@ -65,14 +65,14 @@ below are 12–15 of 15 (of 17 when `close` called ship).
    git notes --ref=checks show HEAD 2>/dev/null | head -1
    ```
 
-   A dirty tree, no `UP_TO_DATE`, or a first note line other than `checked` →
-   stop. After the ⚠️ block, ask: "Something changed since the preflight
-   (<what: dirty tree / `<default>` moved / HEAD not checked>). Run `<command>`
-   again?", with the branch diff from `<base>` as its link and the same three
-   options as preflight's _Verdict_ **changed** rerun question (reviewed · skip
-   my review · not now); on "skip my review", the ⚠️ item names the branch
-   range `<base>..HEAD`. `<command>` as _Verdict_ defines it (`/close` when
-   close called ship). Never rebase or review here to fix it.
+   A dirty tree, no `UP_TO_DATE`, or a first note line not starting with
+   `checked` → stop. After the ⚠️ block, ask: "Something changed since the
+   preflight (<what: dirty tree / `<default>` moved / HEAD not checked>). Run
+   `<command>` again?", with the branch diff from `<base>` as its link and the
+   same three options as preflight's _Verdict_ **changed** rerun question
+   (reviewed · skip my review · not now); on "skip my review", the ⚠️ item
+   names the branch range `<base>..HEAD`. `<command>` as _Verdict_ defines it
+   (`/close` when close called ship). Never rebase or review here to fix it.
 
 4. **Push the default branch, the branch and the notes.**
 
@@ -101,13 +101,13 @@ below are 12–15 of 15 (of 17 when `close` called ship).
 
 ## Common mistakes
 
-- Skipping preflight because HEAD already carries `checked`.
+- Skipping preflight because HEAD already carries a `checked` mark.
 - Going past a **changed** or **open** verdict.
 - Rebasing, merging the default branch, or reviewing from ship itself instead
   of through preflight.
 - Pushing without the "Ship" answer.
-- Shipping a HEAD without a `checked` note. Old `reviewed` notes in
-  `refs/notes/review` no longer count.
+- Shipping a HEAD whose first note line does not start with `checked`. Old
+  `reviewed` notes in `refs/notes/review` no longer count.
 - Hardcoding `main` instead of the detected default branch.
 - Restarting the progress count at ship's own steps instead of going on from
   preflight's.
