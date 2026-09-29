@@ -233,7 +233,10 @@ the repo root, the repo type, the language to write in, and these rules:
 - never call ReportFindings or AskUserQuestion;
 - reply with the findings only, one line each, no preamble or summary:
   `<file>:<line> | <category> | <problem> | <fix> | <failure scenario>` — or
-  `none`.
+  `none`;
+- for check a, the prompt says the `code-review` skill's ReportFindings call
+  and its own output format are overridden: the agent replies only in the pipe
+  format above.
 
 Print each check's progress line as its result arrives — b and c when the main
 session ends them, each agent's when its notification comes in — so the lines
