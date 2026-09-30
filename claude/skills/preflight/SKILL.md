@@ -440,11 +440,14 @@ First AskUserQuestion, a single question: "Apply all suggested fixes"
 - **Apply all:** queue every suggested fix (step 5). No more questions.
 - **One by one:** walk **every** finding from the report — code review,
   conversation, checklist, tracker, look-ahead and after-ship alike — one
-  AskUserQuestion per finding, one question per call, so each answer is queued
-  (step 5) before the next question. Right before each question, after its ❓
-  line, print the finding in the reply as a short block the user can read and
-  scroll back to — the card collapses to the chosen label once answered. Print
-  it as Markdown, not in a code block:
+  AskUserQuestion per finding, one question per call. Ask **all** of them
+  first, back to back: an answer only records the decision, nothing runs yet.
+  No fix, commit, task or `bd update` happens between two questions — step 5
+  starts only after the last finding (and its discard reason) is answered, so
+  the user answers in one sitting and walks away while the queue runs. Right
+  before each question, after its ❓ line, print the finding in the reply as a
+  short block the user can read and scroll back to — the card collapses to the
+  chosen label once answered. Print it as Markdown, not in a code block:
 
   ```
   **Finding 6/9 — `<file>:<line>`**
@@ -658,6 +661,8 @@ even when that run ships. On "Not now", stop — nothing runs after the answer.
 - A one-by-one question with no finding block printed right before it, or with
   the whole finding stuffed into the question text instead.
 - One-by-one that skips the code-review findings.
+- One-by-one that applies each fix right after its answer (ask, fix, ask, fix)
+  instead of asking every question first and running the queue after the last.
 - Skipping the look-ahead check, or padding it with generic advice.
 - Doing an after-ship item before the ship, or creating a task, arrival, label
   or heading for it instead of writing it in the current task the way the
