@@ -25,5 +25,8 @@
         "matcher": ""
       }
     ]
+  },
+  "env": {
+    "PROJECT_CODE": "dot"
   }
 }
