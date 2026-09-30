@@ -175,9 +175,12 @@ Then rebase onto `<base>` with the `kix:rebase` skill when it is available — i
 re-runs the pre-commit hook on every commit; slow, but worth the wait. Invoke
 it with a leading `?` (`kix:rebase ? <base>`) to force its interactive mode
 whatever the user's configured default: the abort-on-conflict step below needs
-the rebase to stop on a conflict, not auto-resolve it. Without it,
-`git rebase <base>`. Then `git push --force-with-lease origin HEAD` (on
-`<default>` itself there is no branch push).
+the rebase to stop on a conflict, not auto-resolve it. An older `kix:rebase`
+(its _Invocation modes_ list no `?` marker) would read the `?` as part of the
+branch name: invoke it with just `<default>` then — interactive is its only
+default. Without it, `git rebase <base>`. Then
+`git push --force-with-lease origin HEAD` (on `<default>` itself there is no
+branch push).
 
 A rebase that moved the branch leaves its old check marks behind on the old
 commits: the code now sits on a new `<default>`, so it gets checked again. That
