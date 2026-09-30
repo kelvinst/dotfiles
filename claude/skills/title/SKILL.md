@@ -30,10 +30,9 @@ None → guess every part. Any part given overrides the guess, in any order:
 - anything else → the description.
 
 **Called by another skill** (preflight, ship, close — always with a state):
-never ask and never write. No project code → leave it out; several candidate
-items → take the best guess silently; skip the supersede and epic proposals.
-The caller is in the middle of its own work, and a question or a dirty
-`.claude/settings.json` would stop it.
+never ask and never write. Several candidate items → take the best guess
+silently; skip the supersede and epic proposals. The caller is in the middle of
+its own work, and a question or a tracker write would stop it.
 
 ## States
 
@@ -55,15 +54,13 @@ a guess alone — only when the work is in `origin/<default>`
 ## Steps
 
 1. **Project code.** Run `project-code` (on PATH after `make install`; else
-   `bin/project-code` in the dotfiles repo). Exit 0 → use its output. Exit 2 →
-   run `project-code propose`, ask the user to confirm it or type another
-   (context in the reply: the repo name from `project-code repo`, the proposal,
-   that it is saved in `.claude/settings.json` and ships with the branch). Then
-   `project-code set <code>` and tell the user the file changed and needs
-   committing with the branch. If `set` exits 1, the code was not 3 characters
-   `a-z0-9`: ask again. Exit 1 (not a git repo) → no code; the prefix is just
-   `<emoji>`. Exit 3 (`.claude/settings.json` is not valid JSON) → no code this
-   time; tell the user the file needs fixing by hand.
+   `bin/project-code` in the dotfiles repo) and use its output — it is the only
+   source of the code: the one saved in `.claude/settings.json`, else one
+   generated from the repo name. Never derive or ask for a code yourself. Exit
+   1 (not a git repo) → no code; the prefix is just `<emoji>`. Exit 3
+   (`.claude/settings.json` is not valid JSON) → no code this time; tell the
+   user the file needs fixing by hand. To pin another code, the user runs
+   `project-code set <code>`.
 2. **Tracker.** From the repo root, first match wins: **Kingdone**
    (`Gates/Gates.md` exists; items are quests `qst-<id>`), **Beads** (`.beads/`
    exists and `command -v bd`), **neither** (no id in the title).

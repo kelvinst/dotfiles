@@ -7,17 +7,18 @@ set -euo pipefail
 
 usage() {
   cat <<'EOF'
-Usage: project-code [get|repo|propose|set CODE]
+Usage: project-code [get|repo|set CODE]
 
-  get        Print the code (default). Exit 2 when the repo has none.
+  get        Print the code (default): the saved one, else one generated
+             from the repo name — the same name always gives the same code.
+  repo       Print the original repo's folder name — a linked worktree
+             resolves to the repo it was made from.
+  set CODE   Save CODE (3 chars, a-z 0-9) into .claude/settings.json at
+             the worktree root, keeping every other key. For a repo whose
+             generated code clashes with another's, or reads badly.
 
 Exit 1 outside a git repo, 3 when .claude/settings.json is not a JSON
 object (a syntax error, say) — fix the file by hand then.
-  repo       Print the original repo's folder name — a linked worktree
-             resolves to the repo it was made from.
-  propose    Print a proposed code derived from the repo name.
-  set CODE   Write CODE (3 chars, a-z 0-9) into .claude/settings.json at
-             the worktree root, keeping every other key.
 EOF
 }
 
@@ -40,13 +41,15 @@ check_object() {
 }
 
 cmd_get() {
-  local file code
+  local file code=""
   file=$(settings)
   check_object "$file"
-  [ -f "$file" ] || exit 2
-  code=$(jq -r '.env.PROJECT_CODE // empty' "$file")
-  [ -n "$code" ] || exit 2
-  echo "$code"
+  [ -f "$file" ] && code=$(jq -r '.env.PROJECT_CODE // empty' "$file")
+  if [ -n "$code" ]; then
+    echo "$code"
+  else
+    generate
+  fi
 }
 
 # The common dir is <repo>/.git for the main checkout and every worktree.
@@ -57,20 +60,28 @@ cmd_repo() {
   basename "$(dirname "$common")"
 }
 
-# Initials when the name has three or more words (split on - _ . and camel
-# case), otherwise its first three letters. Only a starting point: the user
-# confirms or picks another.
-cmd_propose() {
-  local name words
+# Deterministic, from the repo name split into words on - _ . and camel
+# case: three or more words → the first letter of each of the first three
+# (obsidian-kingdone-chapel → okc); two → the first and last letter of the
+# first word and the first letter of the second (kix-agents → kxa); one →
+# its first three letters (dotfiles → dot). Two repos can land on the same
+# code; `set` overrides it.
+generate() {
+  local name w0 w1 words=()
   name=$(cmd_repo)
   read -r -a words <<<"$(printf '%s' "$name" |
     sed -E 's/([a-z0-9])([A-Z])/\1 \2/g' | tr '_.-' '   ' |
-    tr '[:upper:]' '[:lower:]')"
-  if [ "${#words[@]}" -ge 3 ]; then
-    printf '%s%s%s\n' "${words[0]:0:1}" "${words[1]:0:1}" "${words[2]:0:1}"
-  else
-    printf '%s' "${words[*]}" | tr -cd 'a-z0-9' | cut -c1-3
-  fi
+    tr '[:upper:]' '[:lower:]' | tr -cd 'a-z0-9 ')" || true
+  case ${#words[@]} in
+  0) echo ;;
+  1) echo "${words[0]:0:3}" ;;
+  2)
+    w0=${words[0]}
+    w1=${words[1]}
+    echo "${w0:0:1}${w0:${#w0}-1:1}${w1:0:1}"
+    ;;
+  *) echo "${words[0]:0:1}${words[1]:0:1}${words[2]:0:1}" ;;
+  esac
 }
 
 cmd_set() {
@@ -94,7 +105,6 @@ cmd_set() {
 case ${1-get} in
 get) cmd_get ;;
 repo) cmd_repo ;;
-propose) cmd_propose ;;
 set) cmd_set "${2-}" ;;
 -h | --help | help) usage ;;
 *)

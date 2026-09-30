@@ -82,23 +82,22 @@ Stored per repo in the checked-in `.claude/settings.json`:
 `env` is an official settings key, so no schema warnings, and every worktree
 and clone gets the value.
 
-When missing, the code is derived from the **original** repo's folder name, not
-the worktree's: the parent of
-`git rev-parse --path-format=absolute --git-common-dir`. Proposal rule:
-initials of the name's words split on `-`, `_`, `.` or camel case when there
-are three or more; otherwise the first letters of the name (`dotfiles` →
-`dot`). The proposal is only a starting point — `kix-agents` → `kxa` is a human
-choice — which is why the user confirms. The skill shows the proposal, the user
-confirms or types another, and the skill writes it into `.claude/settings.json`
-on the current branch, creating the file or merging into an existing one. It
-then ships with the branch like any other change.
+`bin/project-code` is the only source of the code (tested by
+`test/project-code.sh` in `make test`): the saved one, else one generated
+deterministically from the **original** repo's folder name, not the worktree's
+— the parent of `git rev-parse --path-format=absolute --git-common-dir`.
+Nothing is asked or written. The name is split into words on `-`, `_`, `.` and
+camel case:
 
-Known codes: `dot` dotfiles, `kxa` kix-agents, `stg` Stingdom, `okc`
-obsidian-kingdone-chapel.
+- three or more words → first letter of each of the first three
+  (`obsidian-kingdone-chapel` → `okc`);
+- two words → first and last letter of the first word, first letter of the
+  second (`kix-agents` → `kxa`);
+- one word → its first three letters (`dotfiles` → `dot`).
 
-The deterministic part — find the repo name, read an existing code, propose one
-— is a script, `bin/project-code`, with `test/project-code.sh` run by
-`make test`. The skill calls it and handles the confirm and the write.
+Two repos can land on the same code, or a generated one can read badly
+(`Stingdom` → `sti`, where `stg` is wanted): `project-code set <code>` saves an
+override into `.claude/settings.json`, which ships with the branch.
 
 ## Main item
 
@@ -121,9 +120,9 @@ Steps 2 and 4 write to the tracker and wait for the user's yes. Steps 1, 3 and
 ## Hooks into other skills
 
 The skill is driven by invocations, not by a hook. Called by another skill it
-never asks and never writes: no project code → left out, several items → best
-silent guess, no supersede or epic proposal. Each lifecycle skill runs `/title`
-with its state as its first step (and ✅/🚫 at the end of close):
+never asks and never writes: several items → best silent guess, no supersede or
+epic proposal. Each lifecycle skill runs `/title` with its state as its first
+step (and ✅/🚫 at the end of close):
 
 | Skill     | Title call                                  |
 | --------- | ------------------------------------------- |

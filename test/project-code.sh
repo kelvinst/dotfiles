@@ -34,11 +34,12 @@ check() {
   fi
 }
 
-echo "no settings file: get exits 2 quietly"
+echo "no settings file: get falls back to the generated code"
 setup dotfiles
 out=$("$PROJECT_CODE_BIN" get 2>&1)
-check "exit status" "$?" "2"
-check "output" "$out" ""
+check "exit status" "$?" "0"
+check "output" "$out" "dot"
+check "nothing written" "$([ -e .claude ] && echo yes || echo no)" "no"
 teardown
 
 echo "get reads an existing code"
@@ -49,12 +50,18 @@ check "code" "$("$PROJECT_CODE_BIN" get)" "dot"
 check "default subcommand is get" "$("$PROJECT_CODE_BIN")" "dot"
 teardown
 
-echo "settings without the key: get exits 2"
-setup dotfiles
+echo "settings without the key: get falls back to the generated code"
+setup obsidian-kingdone-chapel
 mkdir -p .claude
 printf '{"hooks":{}}\n' >.claude/settings.json
-"$PROJECT_CODE_BIN" get >/dev/null 2>&1
-check "exit status" "$?" "2"
+check "code" "$("$PROJECT_CODE_BIN" get)" "okc"
+teardown
+
+echo "a saved code wins over the generated one"
+setup kix-agents
+mkdir -p .claude
+printf '{"env":{"PROJECT_CODE":"zzz"}}\n' >.claude/settings.json
+check "code" "$("$PROJECT_CODE_BIN" get)" "zzz"
 teardown
 
 echo "repo name from a worktree subdirectory is the original repo's"
@@ -63,14 +70,18 @@ git_q worktree add -q "$work/wt/session-x-123" -b wt
 mkdir -p "$work/wt/session-x-123/sub"
 cd "$work/wt/session-x-123/sub" || exit 1
 check "repo" "$("$PROJECT_CODE_BIN" repo)" "dotfiles"
-check "propose" "$("$PROJECT_CODE_BIN" propose)" "dot"
+check "generated" "$("$PROJECT_CODE_BIN" get)" "dot"
 teardown
 
-echo "proposals"
-for pair in dotfiles:dot obsidian-kingdone-chapel:okc kix-agents:kix \
-  Stingdom:sti StingDomApp:sda my_big.repo-name:mbr; do
+echo "generated codes"
+# One word: its first three letters. Two: first and last letter of the
+# first word, first letter of the second. Three or more: the first
+# letter of each of the first three.
+for pair in dotfiles:dot Stingdom:sti obsidian-kingdone-chapel:okc \
+  kix-agents:kxa kix_agents:kxa KixAgents:kxa kixAgents:kxa \
+  StingDomApp:sda my_big.repo-name:mbr a-b:aab; do
   setup "${pair%%:*}"
-  check "${pair%%:*}" "$("$PROJECT_CODE_BIN" propose)" "${pair##*:}"
+  check "${pair%%:*}" "$("$PROJECT_CODE_BIN" get)" "${pair##*:}"
   teardown
 done
 
