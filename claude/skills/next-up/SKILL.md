@@ -61,6 +61,7 @@ gh pr list --state open --json number,title,headRefName,isDraft,reviewDecision
 gh pr list --state merged --limit 50 --json number,title,headRefName,mergedAt
 git status --short && git worktree list
 git branch -r --merged origin/<default>   # branches whose work already landed
+git log origin/<default> --oneline --grep='<id>'   # commits citing a bead's id
 ```
 
 `<default>` is the default branch
@@ -102,8 +103,9 @@ by its id and title, every PR by its number. When a section has nothing, say so
 in one line rather than dropping it.
 
 1. **TRACKER DRIFT** — work done but not marked so:
-   - an issue still in_progress whose work has landed — PR merged, or its
-     branch (named with its id) merged into `origin/<default>`;
+   - an issue still in_progress whose work has landed — PR merged, its branch
+     (named with its id) merged into `origin/<default>`, or a commit on
+     `origin/<default>` citing its id (branch names often carry no id);
    - an issue already closed whose work has not landed — PR still open, or
      branch commits not yet in `origin/<default>`;
    - an epic whose status breaks the epic-status rule;
