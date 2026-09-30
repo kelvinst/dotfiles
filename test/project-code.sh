@@ -104,6 +104,20 @@ done
 check "untouched" "$(jq -r .env.PROJECT_CODE .claude/settings.json)" "dot"
 teardown
 
+echo "malformed or non-object settings: exit 3, no temp file left"
+for bad in '{bad' '[]' '"x"'; do
+  setup dotfiles
+  mkdir -p .claude "$work/tmp"
+  printf '%s\n' "$bad" >.claude/settings.json
+  "$PROJECT_CODE_BIN" get >/dev/null 2>&1
+  check "get [$bad]" "$?" "3"
+  TMPDIR="$work/tmp" "$PROJECT_CODE_BIN" set dot >/dev/null 2>&1
+  check "set [$bad]" "$?" "3"
+  check "file untouched [$bad]" "$(cat .claude/settings.json)" "$bad"
+  check "no temp left [$bad]" "$(ls "$work/tmp" | wc -l | tr -d ' ')" "0"
+  teardown
+done
+
 echo "outside a git repo: exit 1"
 work=$(mktemp -d)
 cd "$work" || exit 1

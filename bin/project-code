@@ -10,6 +10,9 @@ usage() {
 Usage: project-code [get|repo|propose|set CODE]
 
   get        Print the code (default). Exit 2 when the repo has none.
+
+Exit 1 outside a git repo, 3 when .claude/settings.json is not a JSON
+object (a syntax error, say) — fix the file by hand then.
   repo       Print the original repo's folder name — a linked worktree
              resolves to the repo it was made from.
   propose    Print a proposed code derived from the repo name.
@@ -26,9 +29,20 @@ settings() {
   echo "$top/.claude/settings.json"
 }
 
+# Exits 3 when the file exists but is not a JSON object: guessing a fix
+# for a hand-edited settings file is not this script's job.
+check_object() {
+  [ -f "$1" ] || return 0
+  jq -e 'type == "object" and ((.env // {}) | type == "object")' "$1" \
+    >/dev/null 2>&1 && return 0
+  echo "project-code: $1 is not a JSON object with an object env" >&2
+  exit 3
+}
+
 cmd_get() {
   local file code
   file=$(settings)
+  check_object "$file"
   [ -f "$file" ] || exit 2
   code=$(jq -r '.env.PROJECT_CODE // empty' "$file")
   [ -n "$code" ] || exit 2
@@ -66,11 +80,15 @@ cmd_set() {
     exit 1
   fi
   file=$(settings)
+  check_object "$file"
   mkdir -p "$(dirname "$file")"
   [ -f "$file" ] || echo '{}' >"$file"
   tmp=$(mktemp)
+  # Expanded now: tmp is local and gone by the time EXIT fires.
+  # shellcheck disable=SC2064
+  trap "rm -f '$tmp'" EXIT
   jq --arg c "$code" '.env.PROJECT_CODE = $c' "$file" >"$tmp"
-  mv -f "$tmp" "$file"
+  cat "$tmp" >"$file"
 }
 
 case ${1-get} in
