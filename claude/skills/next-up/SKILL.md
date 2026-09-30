@@ -61,8 +61,11 @@ gh pr list --state open --json number,title,headRefName,isDraft,reviewDecision
 gh pr list --state merged --limit 50 --json number,title,headRefName,mergedAt
 git status --short && git worktree list
 git branch -r --merged origin/<default>   # branches whose work already landed
-git log origin/<default> --oneline --grep='<id>'   # commits citing a bead's id
+git log origin/<default> --oneline -E --grep='<id>([^.[:alnum:]]|$)'   # cites <id>
 ```
+
+Bound the id in that grep: a bare `--grep='<id>'` is a substring match, so
+`okc-2h2.1` also matches every `okc-2h2.12` commit.
 
 `<default>` is the default branch
 (`git symbolic-ref --short refs/remotes/origin/HEAD`); never assume `main`.
