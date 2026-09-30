@@ -15,6 +15,9 @@ item (when the repo has an inbox for them), or an explicit dismissal. It is the
 only place a review happens: `ship` and `close` run it, and never review on
 their own.
 
+**Title.** Before anything else, run the `title` skill with `🔍`, so the
+session title shows the branch is under review.
+
 **Language.** This skill is written in English; everything you produce follows
 the language the user is speaking: replies, the findings list, ReportFindings
 text, AskUserQuestion questions and option labels, and the content of every

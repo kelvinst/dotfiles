@@ -29,3 +29,9 @@
   (Remote Control, the claude.ai app) renders the link text and drops the href,
   and a raw URL there is neither tappable nor copyable. Put every link in the
   reply, never in the question.
+
+## Session title
+
+- Run the `title` skill whenever the session's state changes: a tracker item
+  gets filed, a design or plan gets approved, implementation starts. The
+  lifecycle skills (preflight, ship, close) run it themselves.
