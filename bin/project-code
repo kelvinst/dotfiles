@@ -1,0 +1,86 @@
+#!/usr/bin/env bash
+# project-code — the repo's 3-letter project code (dot, kxa, okc...), kept in
+# the checked-in .claude/settings.json as env.PROJECT_CODE. The /title skill
+# puts it in the session title prefix.
+
+set -euo pipefail
+
+usage() {
+  cat <<'EOF'
+Usage: project-code [get|repo|propose|set CODE]
+
+  get        Print the code (default). Exit 2 when the repo has none.
+  repo       Print the original repo's folder name — a linked worktree
+             resolves to the repo it was made from.
+  propose    Print a proposed code derived from the repo name.
+  set CODE   Write CODE (3 chars, a-z 0-9) into .claude/settings.json at
+             the worktree root, keeping every other key.
+EOF
+}
+
+# Called as file=$(settings): the exit 1 fails the assignment, and set -e
+# ends the script with it.
+settings() {
+  local top
+  top=$(git rev-parse --show-toplevel 2>/dev/null) || exit 1
+  echo "$top/.claude/settings.json"
+}
+
+cmd_get() {
+  local file code
+  file=$(settings)
+  [ -f "$file" ] || exit 2
+  code=$(jq -r '.env.PROJECT_CODE // empty' "$file")
+  [ -n "$code" ] || exit 2
+  echo "$code"
+}
+
+# The common dir is <repo>/.git for the main checkout and every worktree.
+cmd_repo() {
+  local common
+  common=$(git rev-parse --path-format=absolute --git-common-dir 2>/dev/null) ||
+    exit 1
+  basename "$(dirname "$common")"
+}
+
+# Initials when the name has three or more words (split on - _ . and camel
+# case), otherwise its first three letters. Only a starting point: the user
+# confirms or picks another.
+cmd_propose() {
+  local name words
+  name=$(cmd_repo)
+  read -r -a words <<<"$(printf '%s' "$name" |
+    sed -E 's/([a-z0-9])([A-Z])/\1 \2/g' | tr '_.-' '   ' |
+    tr '[:upper:]' '[:lower:]')"
+  if [ "${#words[@]}" -ge 3 ]; then
+    printf '%s%s%s\n' "${words[0]:0:1}" "${words[1]:0:1}" "${words[2]:0:1}"
+  else
+    printf '%s' "${words[*]}" | tr -cd 'a-z0-9' | cut -c1-3
+  fi
+}
+
+cmd_set() {
+  local code=${1-} file tmp
+  if ! [[ $code =~ ^[a-z0-9]{3}$ ]]; then
+    echo "project-code: code must be 3 characters, a-z or 0-9: '$code'" >&2
+    exit 1
+  fi
+  file=$(settings)
+  mkdir -p "$(dirname "$file")"
+  [ -f "$file" ] || echo '{}' >"$file"
+  tmp=$(mktemp)
+  jq --arg c "$code" '.env.PROJECT_CODE = $c' "$file" >"$tmp"
+  mv -f "$tmp" "$file"
+}
+
+case ${1-get} in
+get) cmd_get ;;
+repo) cmd_repo ;;
+propose) cmd_propose ;;
+set) cmd_set "${2-}" ;;
+-h | --help | help) usage ;;
+*)
+  usage >&2
+  exit 1
+  ;;
+esac
