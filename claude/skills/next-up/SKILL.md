@@ -28,9 +28,10 @@ These are the defaults. The repo's own bd memories refine or override them
 - **An epic is a Shape Up project**: a shaped bet with an appetite, a single
   feature big enough to be broken into pieces that depend on one another. Not a
   theme bucket. Loose issues with no epic are fine.
-- **Epic status** follows its children, first match wins: `blocked` when every
-  open child is blocked; `in_progress` when any child is in_progress, or when
-  it holds both closed and open children; `open` otherwise (no child started).
+- **Epic status** follows its children, first match wins: closeable when every
+  child is closed; `blocked` when it has open children and every one is
+  blocked; `in_progress` when any child is in_progress, or when it holds both
+  closed and open children; `open` otherwise (no child started).
 - **A bead closes only after its PR merges.** Opening a PR leaves it
   in_progress.
 - **Every open epic carries the label `epic`**, and no non-epic does — children
