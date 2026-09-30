@@ -32,8 +32,9 @@ These are the defaults. The repo's own bd memories refine or override them
   child is closed; `blocked` when it has open children and every one is
   blocked; `in_progress` when any child is in_progress, or when it holds both
   closed and open children; `open` otherwise (no child started).
-- **A bead closes only after its PR merges.** Opening a PR leaves it
-  in_progress.
+- **A bead closes only after its work lands** on the default branch — its PR
+  merged, or its branch's commits in `origin/<default>` for work shipped
+  without a PR. Opening a PR, or committing on a branch, leaves it in_progress.
 - **Every open epic carries the label `epic`**, and no non-epic does — children
   created with `--parent` inherit it and should drop it.
 - **An epic carries the union of its children's labels** (minus `epic`), so
@@ -59,7 +60,11 @@ bd blocked --json < /dev/null
 gh pr list --state open --json number,title,headRefName,isDraft,reviewDecision
 gh pr list --state merged --limit 50 --json number,title,headRefName,mergedAt
 git status --short && git worktree list
+git branch -r --merged origin/<default>   # branches whose work already landed
 ```
+
+`<default>` is the default branch
+(`git symbolic-ref --short refs/remotes/origin/HEAD`); never assume `main`.
 
 For the detail of many issues at once (description, notes, design,
 dependencies, parent), pass all ids to one call:
@@ -97,8 +102,10 @@ by its id and title, every PR by its number. When a section has nothing, say so
 in one line rather than dropping it.
 
 1. **TRACKER DRIFT** — work done but not marked so:
-   - an issue still in_progress whose PR has merged;
-   - an issue already closed whose PR is still open;
+   - an issue still in_progress whose work has landed — PR merged, or its
+     branch (named with its id) merged into `origin/<default>`;
+   - an issue already closed whose work has not landed — PR still open, or
+     branch commits not yet in `origin/<default>`;
    - an epic whose status breaks the epic-status rule;
    - an open epic without the `epic` label, or a non-epic carrying it;
    - an epic that is a theme, not a project: no `blocks` edge between its open
@@ -130,7 +137,8 @@ in one line rather than dropping it.
 
 5. **IN-PROGRESS LOOSE ISSUES** — each in_progress issue with no epic: its PR
    state (`gh pr view <n> --json state,reviewDecision,statusCheckRollup`), and
-   any uncommitted or unpushed work on its branch or worktree. Also list open
+   any uncommitted or unpushed work on its branch or worktree, and whether its
+   branch has already landed on `origin/<default>` without a PR. Also list open
    PRs no bead points at, and worktrees whose branch already merged or sits at
    the default branch (print the `git worktree remove` for each).
 
