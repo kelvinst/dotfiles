@@ -12,11 +12,12 @@ The title shows, at a glance in the sidebar, the project, the tracker item and
 where that item is in its life:
 
 ```
-[<emoji> <code>-<id>] <description>
+<emoji> <code>-<id> │ <description>
 ```
 
-`[📝 dot-mrr] Session naming skill`. With no tracker item yet:
-`[📥 dot] <description>`.
+`📝 dot-mrr │ Session naming skill`. With no tracker item yet:
+`📥 dot │ <description>`. The prefix is everything before `│` (space, U+2502
+box-drawing bar, space); the description is everything after it.
 
 **Language.** The description follows the language the user is speaking.
 
@@ -27,6 +28,12 @@ None → guess every part. Any part given overrides the guess, in any order:
 - a state, as emoji or word (table below);
 - a tracker id (`dot-abc`, `qst-abc`);
 - anything else → the description.
+
+**Called by another skill** (preflight, ship, close — always with a state):
+never ask and never write. No project code → leave it out; several candidate
+items → take the best guess silently; skip the supersede and epic proposals.
+The caller is in the middle of its own work, and a question or a dirty
+`.claude/settings.json` would stop it.
 
 ## States
 
@@ -53,8 +60,10 @@ a guess alone — only when the work is in `origin/<default>`
    (context in the reply: the repo name from `project-code repo`, the proposal,
    that it is saved in `.claude/settings.json` and ships with the branch). Then
    `project-code set <code>` and tell the user the file changed and needs
-   committing with the branch. Exit 1 (not a git repo) → no code; the prefix is
-   just `[<emoji>]`.
+   committing with the branch. If `set` exits 1, the code was not 3 characters
+   `a-z0-9`: ask again. Exit 1 (not a git repo) → no code; the prefix is just
+   `<emoji>`. Exit 3 (`.claude/settings.json` is not valid JSON) → no code this
+   time; tell the user the file needs fixing by hand.
 2. **Tracker.** From the repo root, first match wins: **Kingdone**
    (`Gates/Gates.md` exists; items are quests `qst-<id>`), **Beads** (`.beads/`
    exists and `command -v bd`), **neither** (no id in the title).
@@ -79,8 +88,8 @@ a guess alone — only when the work is in `origin/<default>`
 4. **State.** Argument, else the table above.
 5. **Description.** Argument; else the main item's title; else a short topic of
    the session. Trim to about 40 characters on a word boundary. When the
-   current title already has a `[...]` prefix and its description still fits
-   the main item, keep that description.
+   current title already has a `│` separator and its description still fits the
+   main item, keep that description.
 6. **Rename.** Load `mcp__ccd_session_mgmt__set_session_title` with ToolSearch
    if it is deferred, then call it for this session (`session_id: "self"`). If
    the tool does not exist (plain CLI), print `/rename <title>` in a code block

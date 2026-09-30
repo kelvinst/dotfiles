@@ -7,18 +7,17 @@ Bead: `dot-mrr`. Related: `dot-4v7` (split ship into land + close), `dot-0oq`
 
 Glance at the Claude sidebar and know, per session: which project, which
 tracker item, and where that item is in its lifecycle. The title carries a
-bracketed prefix with all three; the rest of the title stays a human
-description.
+prefix with all three; the rest of the title stays a human description.
 
 ## Title shape
 
 ```
-[<emoji> <code>-<id>] <description>
+<emoji> <code>-<id> │ <description>
 ```
 
-- `[📝 dot-mrr] Session naming skill`
-- No tracker item yet: `[📥 dot] Session naming skill`
-- No tracker at all (repo without Beads or Kingdone): `[🔨 xyz] <description>`
+- `📝 dot-mrr │ Session naming skill`
+- No tracker item yet: `📥 dot │ Session naming skill`
+- No tracker at all (repo without Beads or Kingdone): `🔨 xyz │ <description>`
 
 `<code>` is the 3-letter project code. `<id>` is the tracker item's short
 base36 id with the tracker prefix dropped: Beads `dot-mrr` → `mrr`, Kingdone
@@ -26,9 +25,9 @@ base36 id with the tracker prefix dropped: Beads `dot-mrr` → `mrr`, Kingdone
 
 `<description>` is the main item's title, trimmed to about 40 characters on a
 word boundary. With no item, a short topic of the session. On a rename the
-skill replaces only the `[...]` prefix when the current title already has one
-and its description still fits the main item; otherwise it rewrites the whole
-title.
+skill replaces only the prefix (everything before `│`) when the current title
+already has one and its description still fits the main item; otherwise it
+rewrites the whole title.
 
 ## States
 
@@ -121,14 +120,16 @@ Steps 2 and 4 write to the tracker and wait for the user's yes. Steps 1, 3 and
 
 ## Hooks into other skills
 
-The skill is driven by invocations, not by a hook. Each lifecycle skill runs
-`/title` with its state as its first step (and ✅/🚫 at the end of close):
+The skill is driven by invocations, not by a hook. Called by another skill it
+never asks and never writes: no project code → left out, several items → best
+silent guess, no supersede or epic proposal. Each lifecycle skill runs `/title`
+with its state as its first step (and ✅/🚫 at the end of close):
 
 | Skill     | Title call                                  |
 | --------- | ------------------------------------------- |
 | preflight | `/title 🔍` at start                        |
 | land      | `/title 🛬` at start                        |
-| ship      | `/title 🚀` at start                        |
+| ship      | `/title 🚀` once preflight comes back clear |
 | close     | `/title ✅` when reason is shipped, else 🚫 |
 
 `dot-4v7` renames and splits these skills. At implementation time the lines go
@@ -146,7 +147,7 @@ plan gets approved, implementation starts.
 - `test/project-code.sh`: repo name from a worktree resolves to the original
   repo; existing `PROJECT_CODE` is returned as is; proposals for sample names.
 - Manual, in the desktop app: `/title` in this session gives
-  `[📝 dot-mrr] Session naming skill`; `/title impl` switches to 🔨; a repo
+  `📝 dot-mrr │ Session naming skill`; `/title impl` switches to 🔨; a repo
   with no code asks for one and writes `.claude/settings.json`; plain CLI
   prints a `/rename` line.
 
