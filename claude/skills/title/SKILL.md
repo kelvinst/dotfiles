@@ -15,7 +15,7 @@ where that item is in its life:
 <emoji> <code>-<id> │ <description>
 ```
 
-`📝 dot-mrr │ Session naming skill`. With no tracker item yet:
+`📐 dot-mrr │ Session naming skill`. With no tracker item yet:
 `📥 dot │ <description>`. The prefix is everything before `│` (space, U+2502
 box-drawing bar, space); the description is everything after it.
 
@@ -39,15 +39,15 @@ its own work, and a question or a tracker write would stop it.
 | Emoji | Word      | When                                                           |
 | ----- | --------- | -------------------------------------------------------------- |
 | 📥    | `reg`     | the session only filed or edited tracker items                 |
-| 📝    | `plan`    | brainstorming, spec or plan work, no product code edited       |
-| 🔨    | `impl`    | code edited, or a plan being executed                          |
+| 📐    | `plan`    | brainstorming, spec or plan work, no product code edited       |
+| 🏭    | `impl`    | code edited, or a plan being executed                          |
 | 🔍    | `rev`     | preflight or a code review running                             |
 | 🛬    | `land`    | land running, or landed and no code edited since               |
-| 🚀    | `ship`    | ship running                                                   |
-| ✅    | `shipped` | the item closed as shipped — the work is on the default branch |
+| 📦    | `ship`    | ship running                                                   |
+| 🏁    | `shipped` | the item closed as shipped — the work is on the default branch |
 | 🚫    | `closed`  | the item closed as cancelled, superseded or wontfix            |
 
-Guessing: the latest of these signals in the session wins. ✅ never comes from
+Guessing: the latest of these signals in the session wins. 🏁 never comes from
 a guess alone — only when the work is in `origin/<default>`
 (`git merge-base --is-ancestor HEAD <base>`) and the item is closed.
 
@@ -99,7 +99,7 @@ printing the proposed title.
 ## Common mistakes
 
 - Taking the repo name from the worktree folder — always `project-code repo`.
-- Setting ✅ because ship started, or because close ran with another reason.
+- Setting 🏁 because ship started, or because close ran with another reason.
 - Writing a supersede or an epic without the user's yes.
 - Dropping the user's description on every rename instead of swapping only the
   prefix.

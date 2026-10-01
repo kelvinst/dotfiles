@@ -15,9 +15,9 @@ prefix with all three; the rest of the title stays a human description.
 <emoji> <code>-<id> │ <description>
 ```
 
-- `📝 dot-mrr │ Session naming skill`
+- `📐 dot-mrr │ Session naming skill`
 - No tracker item yet: `📥 dot │ Session naming skill`
-- No tracker at all (repo without Beads or Kingdone): `🔨 xyz │ <description>`
+- No tracker at all (repo without Beads or Kingdone): `🏭 xyz │ <description>`
 
 `<code>` is the 3-letter project code. `<id>` is the tracker item's short
 base36 id with the tracker prefix dropped: Beads `dot-mrr` → `mrr`, Kingdone
@@ -34,12 +34,12 @@ rewrites the whole title.
 | State               | Emoji | Set when                                                                        |
 | ------------------- | ----- | ------------------------------------------------------------------------------- |
 | registering         | 📥    | the session only files or edits tracker items                                   |
-| planning            | 📝    | brainstorming, spec or plan work, no product code edited                        |
-| implementing        | 🔨    | code edits or plan execution                                                    |
+| planning            | 📐    | brainstorming, spec or plan work, no product code edited                        |
+| implementing        | 🏭    | code edits or plan execution                                                    |
 | reviewing           | 🔍    | preflight starts (also a code review run)                                       |
-| landing / landed    | 🛬    | land starts; stays until code edits resume, then 🔨                             |
-| shipping            | 🚀    | ship starts                                                                     |
-| shipped             | ✅    | close runs with reason `shipped` — only after the work is on the default branch |
+| landing / landed    | 🛬    | land starts; stays until code edits resume, then 🏭                             |
+| shipping            | 📦    | ship starts                                                                     |
+| shipped             | 🏁    | close runs with reason `shipped` — only after the work is on the default branch |
 | closed, not shipped | 🚫    | close runs with reason cancelled / superseded / wontfix                         |
 
 When guessing from context, the latest signal in the session wins.
@@ -122,21 +122,21 @@ Steps 2 and 4 write to the tracker and wait for the user's yes. Steps 1, 3 and
 The skill is driven by invocations, not by a hook. Called by another skill it
 never asks and never writes: several items → best silent guess, no supersede or
 epic proposal. Each lifecycle skill runs `/title` with its state as its first
-step (and ✅/🚫 at the end of close):
+step (and 🏁/🚫 at the end of close):
 
 | Skill     | Title call                                  |
 | --------- | ------------------------------------------- |
 | preflight | `/title 🔍` at start                        |
 | land      | `/title 🛬` at start                        |
-| ship      | `/title 🚀` once preflight comes back clear |
-| close     | `/title ✅` when reason is shipped, else 🚫 |
+| ship      | `/title 📦` once preflight comes back clear |
+| close     | `/title 🏁` when reason is shipped, else 🚫 |
 
 `dot-4v7` renames and splits these skills. At implementation time the lines go
 into whichever of the four exist. If `dot-4v7` has not landed yet, today's
-`preflight`, `ship` and `close` get 🔍, 🚀 and ✅ (close only archives shipped
+`preflight`, `ship` and `close` get 🔍, 📦 and 🏁 (close only archives shipped
 work today), and a line is added to `dot-4v7` to add the 🛬 and 🚫 hooks.
 
-For states no owned skill marks (📥, 📝, 🔨 — brainstorming and plan execution
+For states no owned skill marks (📥, 📐, 🏭 — brainstorming and plan execution
 come from plugins), a line in the global `claude/CLAUDE.md` tells the agent to
 run `/title` when the session's state changes: an item gets filed, a design or
 plan gets approved, implementation starts.
@@ -146,7 +146,7 @@ plan gets approved, implementation starts.
 - `test/project-code.sh`: repo name from a worktree resolves to the original
   repo; existing `PROJECT_CODE` is returned as is; proposals for sample names.
 - Manual, in the desktop app: `/title` in this session gives
-  `📝 dot-mrr │ Session naming skill`; `/title impl` switches to 🔨; a repo
+  `📐 dot-mrr │ Session naming skill`; `/title impl` switches to 🏭; a repo
   with no code asks for one and writes `.claude/settings.json`; plain CLI
   prints a `/rename` line.
 

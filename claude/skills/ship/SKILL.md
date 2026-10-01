@@ -40,7 +40,7 @@ below are 12–15 of 15 (of 17 when `close` called ship).
 
    - **Changed** or **Open** → stop here. Preflight already told the user what
      to do; add nothing, ship nothing.
-   - **Clear** → run the `title` skill with `🚀` (preflight set 🔍 while it
+   - **Clear** → run the `title` skill with `📦` (preflight set 🔍 while it
      ran), then go on.
 
    A clear branch with no commits past `<base>` (`git rev-list --count

@@ -119,7 +119,7 @@ a task done without that yes.
   branch). This status-only commit is the one commit allowed after the ship.
 - _(Neither)_ No tracker: skip this.
 
-Then run the `title` skill: `✅` once the task is marked done, or when there is
+Then run the `title` skill: `🏁` once the task is marked done, or when there is
 no task or no tracker — the work is on the default branch now; `🛬` when the
 user chose to leave it open — landed, not finished.
 
