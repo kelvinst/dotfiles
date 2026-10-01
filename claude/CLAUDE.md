@@ -34,4 +34,4 @@
 
 - Run the `title` skill whenever the session's state changes: a tracker item
   gets filed, a design or plan gets approved, implementation starts. The
-  lifecycle skills (preflight, ship, close) run it themselves.
+  `close` skill runs it itself for 📦 and 🏁.

@@ -29,10 +29,10 @@ None → guess every part. Any part given overrides the guess, in any order:
 - a tracker id (`dot-abc`, `qst-abc`);
 - anything else → the description.
 
-**Called by another skill** (preflight, ship, close — always with a state):
-never ask and never write. Several candidate items → take the best guess
-silently; skip the supersede and epic proposals. The caller is in the middle of
-its own work, and a question or a tracker write would stop it.
+**Called by another skill** (close — always with a state): never ask and never
+write. Several candidate items → take the best guess silently; skip the
+supersede and epic proposals. The caller is in the middle of its own work, and
+a question or a tracker write would stop it.
 
 ## States
 
@@ -41,13 +41,13 @@ its own work, and a question or a tracker write would stop it.
 | 📥    | `reg`     | the session only filed or edited tracker items                 |
 | 📐    | `plan`    | brainstorming, spec or plan work, no product code edited       |
 | 🏭    | `impl`    | code edited, or a plan being executed                          |
-| 🔍    | `rev`     | preflight or a code review running                             |
-| 🛬    | `land`    | land running, or landed and no code edited since               |
-| 📦    | `ship`    | ship running                                                   |
+| 📦    | `ship`    | close delivering landed work                                   |
 | 🏁    | `shipped` | the item closed as shipped — the work is on the default branch |
 
-Guessing: the latest of these signals in the session wins. 🏁 never comes from
-a guess alone — only when the work is in `origin/<default>`
+Reviews (preflight, debrief, a code review) and landing on the default branch
+are gates the item can pass while still being implemented — they are not
+states. Guessing: the latest of these signals in the session wins. 🏁 never
+comes from a guess alone — only when the work is in `origin/<default>`
 (`git merge-base --is-ancestor HEAD <base>`) and the item is closed. An item
 closed without shipping (cancelled, superseded, wontfix) has no state of its
 own: leave the title as it is.

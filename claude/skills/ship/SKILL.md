@@ -40,8 +40,7 @@ below are 12–15 of 15 (of 17 when `close` called ship).
 
    - **Changed** or **Open** → stop here. Preflight already told the user what
      to do; add nothing, ship nothing.
-   - **Clear** → run the `title` skill with `📦` (preflight set 🔍 while it
-     ran), then go on.
+   - **Clear** → go on.
 
    A clear branch with no commits past `<base>` (`git rev-list --count
    <base>..HEAD` prints `0` — e.g. a session that only wrote bd issues) has
@@ -104,9 +103,6 @@ below are 12–15 of 15 (of 17 when `close` called ship).
    ```
 
    Report the commits that landed (`git log --oneline <old base>..HEAD`).
-
-   On `IN_DEFAULT`, run the `title` skill with `🛬`: the work is on `<default>`
-   and the item is still open. `close` moves it on to 🏁.
 
 ## Common mistakes
 

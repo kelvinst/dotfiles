@@ -58,6 +58,9 @@ stop: the session is not ready to archive.
 
 ## 2. Archive
 
+First run the `title` skill with `📦`: the work landed, and the item is being
+delivered.
+
 Tell the user what was done: fixes with their commits, what was deferred, what
 was left or discarded (each discard with its reason), what was inferred and
 from where. Every arrival you mention is a link to its note; every bd task and
@@ -120,8 +123,9 @@ a task done without that yes.
 - _(Neither)_ No tracker: skip this.
 
 Then run the `title` skill: `🏁` once the task is marked done, or when there is
-no task or no tracker — the work is on the default branch now; `🛬` when the
-user chose to leave it open — landed, not finished.
+no task or no tracker — the work is on the default branch now; `🏭` when the
+user chose to leave it open, or when 2a stops on items left — landed is not
+finished.
 
 **b. Archive.** First check the session's mode. When the
 `mcp__ccd_session_mgmt__*` tools are not available, the session was started

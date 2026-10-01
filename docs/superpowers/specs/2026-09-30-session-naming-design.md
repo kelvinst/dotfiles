@@ -31,15 +31,18 @@ rewrites the whole title.
 
 ## States
 
-| State            | Emoji | Set when                                                                        |
-| ---------------- | ----- | ------------------------------------------------------------------------------- |
-| registering      | 📥    | the session only files or edits tracker items                                   |
-| planning         | 📐    | brainstorming, spec or plan work, no product code edited                        |
-| implementing     | 🏭    | code edits or plan execution                                                    |
-| reviewing        | 🔍    | preflight starts (also a code review run)                                       |
-| landing / landed | 🛬    | land starts; stays until code edits resume, then 🏭                             |
-| shipping         | 📦    | ship starts                                                                     |
-| shipped          | 🏁    | close runs with reason `shipped` — only after the work is on the default branch |
+| State        | Emoji | Set when                                                                        |
+| ------------ | ----- | ------------------------------------------------------------------------------- |
+| registering  | 📥    | the session only files or edits tracker items                                   |
+| planning     | 📐    | brainstorming, spec or plan work, no product code edited                        |
+| implementing | 🏭    | code edits or plan execution                                                    |
+| shipping     | 📦    | close starts delivering after a successful ship                                 |
+| shipped      | 🏁    | close runs with reason `shipped` — only after the work is on the default branch |
+
+Reviews (preflight, debrief, a code review) and landing on the default branch
+are not states: they are gates rerun after each step, and work can land while
+it is still being implemented (Stingdom does this often). They never touch the
+title.
 
 A close without a ship (cancelled, superseded, wontfix) keeps the last state:
 the title is not touched.
@@ -53,7 +56,7 @@ Installed by `make install` like the other skills (the Makefile globs
 `claude/skills/*`).
 
 **Arguments.** None → guess every part from the session. Any part can be given
-to override the guess, in any order: a state word or emoji (`impl`, `🔍`), a
+to override the guess, in any order: a state word or emoji (`impl`, `📦`), a
 tracker id (`dot-abc`, `qst-abc`), or free text for the description.
 
 **Steps.**
@@ -123,22 +126,12 @@ Steps 2 and 4 write to the tracker and wait for the user's yes. Steps 1, 3 and
 
 The skill is driven by invocations, not by a hook. Called by another skill it
 never asks and never writes: several items → best silent guess, no supersede or
-epic proposal. Each lifecycle skill runs `/title` with its state as its first
-step (and 🏁 at the end of close):
+epic proposal. Only `close` calls it: `/title 📦` once its ship succeeded, then
+`/title 🏁` when the item is marked done (`🏭` when it is left open or has
+items left). preflight, ship (land) and debrief never touch the title. After
+`dot-4v7` the same calls sit wherever the item gets closed as shipped.
 
-| Skill     | Title call                                    |
-| --------- | --------------------------------------------- |
-| preflight | `/title 🔍` at start                          |
-| land      | `/title 🛬` at start                          |
-| ship      | `/title 📦` once preflight comes back clear   |
-| close     | `/title 🏁` when reason is shipped, else none |
-
-`dot-4v7` renames and splits these skills. At implementation time the lines go
-into whichever of the four exist. If `dot-4v7` has not landed yet, today's
-`preflight`, `ship` and `close` get 🔍, 📦 and 🏁 (close only archives shipped
-work today), and a line is added to `dot-4v7` to add the 🛬 hook.
-
-For states no owned skill marks (📥, 📐, 🏭 — brainstorming and plan execution
+For states close does not mark (📥, 📐, 🏭 — brainstorming and plan execution
 come from plugins), a line in the global `claude/CLAUDE.md` tells the agent to
 run `/title` when the session's state changes: an item gets filed, a design or
 plan gets approved, implementation starts.

@@ -2,9 +2,9 @@
 
 > **Executed 2026-09-30; superseded in parts.** After this plan ran, the title
 > lost its brackets (`📐 dot-mrr │ <description>`), the states became 📥 📐 🏭
-> 🔍 🛬 📦 🏁, and `project-code` generates a code instead of asking for one.
-> The spec, `docs/superpowers/specs/2026-09-30-session-naming-design.md`, is
-> the current design.
+> 📦 🏁, and `project-code` generates a code instead of asking for one. The
+> spec, `docs/superpowers/specs/2026-09-30-session-naming-design.md`, is the
+> current design.
 
 > **For agentic workers:** REQUIRED SUB-SKILL: Use
 > superpowers:subagent-driven-development (recommended) or
