@@ -105,6 +105,9 @@ below are 12–15 of 15 (of 17 when `close` called ship).
 
    Report the commits that landed (`git log --oneline <old base>..HEAD`).
 
+   On `IN_DEFAULT`, run the `title` skill with `🛬`: the work is on `<default>`
+   and the item is still open. `close` moves it on to 🏁.
+
 ## Common mistakes
 
 - Skipping preflight because HEAD already carries a `checked` mark.
