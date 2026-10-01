@@ -58,9 +58,6 @@ stop: the session is not ready to archive.
 
 ## 2. Archive
 
-First run the `title` skill with `📦`: the work landed, and the item is being
-delivered.
-
 Tell the user what was done: fixes with their commits, what was deferred, what
 was left or discarded (each discard with its reason), what was inferred and
 from where. Every arrival you mention is a link to its note; every bd task and
@@ -101,7 +98,8 @@ stop there: skip 2b, do not offer to archive. End on that ⚠️ block, and say 
 run `/close` again once the items are done — the rerun ships nothing new and
 goes straight to marking the task done and archiving.
 
-Otherwise ask with AskUserQuestion, naming each task: "Mark <task> done"
+Otherwise run the `title` skill with `📦` — the task's work landed and is being
+delivered — then ask with AskUserQuestion, naming each task: "Mark <task> done"
 (Recommended) — "Its work is now on `<default>`." · "Leave it open". Never mark
 a task done without that yes.
 
