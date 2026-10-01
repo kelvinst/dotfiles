@@ -31,16 +31,18 @@ rewrites the whole title.
 
 ## States
 
-| State               | Emoji | Set when                                                                        |
-| ------------------- | ----- | ------------------------------------------------------------------------------- |
-| registering         | 📥    | the session only files or edits tracker items                                   |
-| planning            | 📐    | brainstorming, spec or plan work, no product code edited                        |
-| implementing        | 🏭    | code edits or plan execution                                                    |
-| reviewing           | 🔍    | preflight starts (also a code review run)                                       |
-| landing / landed    | 🛬    | land starts; stays until code edits resume, then 🏭                             |
-| shipping            | 📦    | ship starts                                                                     |
-| shipped             | 🏁    | close runs with reason `shipped` — only after the work is on the default branch |
-| closed, not shipped | 🚫    | close runs with reason cancelled / superseded / wontfix                         |
+| State            | Emoji | Set when                                                                        |
+| ---------------- | ----- | ------------------------------------------------------------------------------- |
+| registering      | 📥    | the session only files or edits tracker items                                   |
+| planning         | 📐    | brainstorming, spec or plan work, no product code edited                        |
+| implementing     | 🏭    | code edits or plan execution                                                    |
+| reviewing        | 🔍    | preflight starts (also a code review run)                                       |
+| landing / landed | 🛬    | land starts; stays until code edits resume, then 🏭                             |
+| shipping         | 📦    | ship starts                                                                     |
+| shipped          | 🏁    | close runs with reason `shipped` — only after the work is on the default branch |
+
+A close without a ship (cancelled, superseded, wontfix) keeps the last state:
+the title is not touched.
 
 When guessing from context, the latest signal in the session wins.
 
@@ -122,19 +124,19 @@ Steps 2 and 4 write to the tracker and wait for the user's yes. Steps 1, 3 and
 The skill is driven by invocations, not by a hook. Called by another skill it
 never asks and never writes: several items → best silent guess, no supersede or
 epic proposal. Each lifecycle skill runs `/title` with its state as its first
-step (and 🏁/🚫 at the end of close):
+step (and 🏁 at the end of close):
 
-| Skill     | Title call                                  |
-| --------- | ------------------------------------------- |
-| preflight | `/title 🔍` at start                        |
-| land      | `/title 🛬` at start                        |
-| ship      | `/title 📦` once preflight comes back clear |
-| close     | `/title 🏁` when reason is shipped, else 🚫 |
+| Skill     | Title call                                    |
+| --------- | --------------------------------------------- |
+| preflight | `/title 🔍` at start                          |
+| land      | `/title 🛬` at start                          |
+| ship      | `/title 📦` once preflight comes back clear   |
+| close     | `/title 🏁` when reason is shipped, else none |
 
 `dot-4v7` renames and splits these skills. At implementation time the lines go
 into whichever of the four exist. If `dot-4v7` has not landed yet, today's
 `preflight`, `ship` and `close` get 🔍, 📦 and 🏁 (close only archives shipped
-work today), and a line is added to `dot-4v7` to add the 🛬 and 🚫 hooks.
+work today), and a line is added to `dot-4v7` to add the 🛬 hook.
 
 For states no owned skill marks (📥, 📐, 🏭 — brainstorming and plan execution
 come from plugins), a line in the global `claude/CLAUDE.md` tells the agent to

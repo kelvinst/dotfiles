@@ -45,11 +45,12 @@ its own work, and a question or a tracker write would stop it.
 | 🛬    | `land`    | land running, or landed and no code edited since               |
 | 📦    | `ship`    | ship running                                                   |
 | 🏁    | `shipped` | the item closed as shipped — the work is on the default branch |
-| 🚫    | `closed`  | the item closed as cancelled, superseded or wontfix            |
 
 Guessing: the latest of these signals in the session wins. 🏁 never comes from
 a guess alone — only when the work is in `origin/<default>`
-(`git merge-base --is-ancestor HEAD <base>`) and the item is closed.
+(`git merge-base --is-ancestor HEAD <base>`) and the item is closed. An item
+closed without shipping (cancelled, superseded, wontfix) has no state of its
+own: leave the title as it is.
 
 ## Steps
 
