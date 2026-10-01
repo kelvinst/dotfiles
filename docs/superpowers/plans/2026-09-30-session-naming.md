@@ -1,5 +1,11 @@
 # Session Naming Implementation Plan
 
+> **Executed 2026-09-30; superseded in parts.** After this plan ran, the title
+> lost its brackets (`📐 dot-mrr │ <description>`), the states became 📥 📐 🏭
+> 🔍 🛬 📦 🏁, and `project-code` generates a code instead of asking for one.
+> The spec, `docs/superpowers/specs/2026-09-30-session-naming-design.md`, is
+> the current design.
+
 > **For agentic workers:** REQUIRED SUB-SKILL: Use
 > superpowers:subagent-driven-development (recommended) or
 > superpowers:executing-plans to implement this plan task-by-task. Steps use
@@ -73,7 +79,7 @@ lifecycle moments; a global `CLAUDE.md` line covers the rest.
     `<worktree root>/.claude/settings.json`, keeping other keys; invalid code →
     message on stderr, exit 1.
 
-- [ ] **Step 1: Write the failing test**
+- [x] **Step 1: Write the failing test**
 
 Create `test/project-code.sh` (then `chmod +x test/project-code.sh`):
 
@@ -199,12 +205,12 @@ fi
 exit $((failures > 0))
 ```
 
-- [ ] **Step 2: Run test to verify it fails**
+- [x] **Step 2: Run test to verify it fails**
 
 Run: `./test/project-code.sh` Expected: FAIL lines (script missing — every
 check fails), exit 1.
 
-- [ ] **Step 3: Write the implementation**
+- [x] **Step 3: Write the implementation**
 
 Create `bin/project-code` (then `chmod +x bin/project-code`):
 
@@ -297,12 +303,12 @@ set) cmd_set "${2-}" ;;
 esac
 ```
 
-- [ ] **Step 4: Run test to verify it passes**
+- [x] **Step 4: Run test to verify it passes**
 
 Run: `./test/project-code.sh` Expected: `all passed`, exit 0. Then `make test`
 — every suite passes.
 
-- [ ] **Step 5: Commit**
+- [x] **Step 5: Commit**
 
 ```bash
 git add bin/project-code test/project-code.sh
@@ -327,7 +333,7 @@ git commit -m "feat(bin): add project-code for the session title prefix"
   `📝 plan`, `🔨 impl`, `🔍 rev`, `🛬 land`, `🚀 ship`, `✅ shipped`,
   `🚫 closed`.
 
-- [ ] **Step 1: Write the skill**
+- [x] **Step 1: Write the skill**
 
 Create `claude/skills/title/SKILL.md`:
 
@@ -433,19 +439,19 @@ printing the proposed title.
   prefix.
 ````
 
-- [ ] **Step 2: Format and check**
+- [x] **Step 2: Format and check**
 
 Run: `npx --no-install prettier --check claude/skills/title/SKILL.md` (or
 `prettier --check`). Fix with `--write` if needed. Expected: file passes.
 
-- [ ] **Step 3: Set this repo's code with the script**
+- [x] **Step 3: Set this repo's code with the script**
 
 Run from the worktree root:
 `bin/project-code set dot && cat .claude/settings.json` Expected: existing
 `enabledPlugins` and `hooks` intact, plus `"env": { "PROJECT_CODE": "dot" }`.
 Then `npx --no-install prettier --write .claude/settings.json`.
 
-- [ ] **Step 4: Commit**
+- [x] **Step 4: Commit**
 
 ```bash
 git add claude/skills/title/SKILL.md .claude/settings.json
@@ -474,7 +480,7 @@ If `dot-4v7` (land/ship/close split) has already landed on main when this task
 runs, put 🔍 in preflight, 🛬 at land's start, 🚀 at ship's start, and ✅/🚫 in
 close by reason, instead of the lines below.
 
-- [ ] **Step 1: preflight**
+- [x] **Step 1: preflight**
 
 Insert before `**Language.**` in `claude/skills/preflight/SKILL.md`:
 
@@ -483,7 +489,7 @@ Insert before `**Language.**` in `claude/skills/preflight/SKILL.md`:
 session title shows the branch is under review.
 ```
 
-- [ ] **Step 2: ship**
+- [x] **Step 2: ship**
 
 Insert right after the `## Steps` heading paragraph (before step 1) in
 `claude/skills/ship/SKILL.md`:
@@ -492,7 +498,7 @@ Insert right after the `## Steps` heading paragraph (before step 1) in
 Before step 1, run the `title` skill with `🚀`.
 ```
 
-- [ ] **Step 3: close**
+- [x] **Step 3: close**
 
 In `claude/skills/close/SKILL.md`, step `2a` — right after the text that marks
 the task done, add:
@@ -502,7 +508,7 @@ Once the task is marked done (or there is none), run the `title` skill with
 `✅`: the work is on the default branch now.
 ```
 
-- [ ] **Step 4: CLAUDE.md**
+- [x] **Step 4: CLAUDE.md**
 
 Append to `claude/CLAUDE.md`:
 
@@ -514,7 +520,7 @@ Append to `claude/CLAUDE.md`:
   lifecycle skills (preflight, ship, close) run it themselves.
 ```
 
-- [ ] **Step 5: Format and commit**
+- [x] **Step 5: Format and commit**
 
 Run:
 `npx --no-install prettier --write claude/CLAUDE.md claude/skills/*/SKILL.md`
@@ -532,18 +538,18 @@ git commit -m "feat(claude): set the session title from lifecycle skills"
 
 **Files:** none in the repo (install + tracker only).
 
-- [ ] **Step 1: Install**
+- [x] **Step 1: Install**
 
 Run: `make install`. Expected: `~/.claude/skills/title/SKILL.md` and
 `~/.local/bin/project-code` exist.
 
-- [ ] **Step 2: Dogfood**
+- [x] **Step 2: Dogfood**
 
 Invoke `/title` in this session. Expected title:
 `[🔨 dot-mrr] Session naming skill: /title sets…` (trimmed). Then `/title 📝` →
 emoji swaps, description kept.
 
-- [ ] **Step 3: dot-4v7 follow-up**
+- [x] **Step 3: dot-4v7 follow-up**
 
 If `dot-4v7` has not landed:
 
@@ -551,7 +557,7 @@ If `dot-4v7` has not landed:
 bd update dot-4v7 --append-notes="When splitting: land runs the title skill with 🛬 at its start; close runs it with ✅ when the reason is shipped, 🚫 otherwise (see dot-mrr spec)."
 ```
 
-- [ ] **Step 4: dot-0oq**
+- [x] **Step 4: dot-0oq**
 
 Ask the user whether to close `dot-0oq` as superseded by `dot-mrr`
 (`bd supersede dot-0oq --with=dot-mrr`). Write only on yes.
