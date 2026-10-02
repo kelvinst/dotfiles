@@ -18,8 +18,10 @@
   `AskUserQuestion`, write in the reply what the user needs to decide — even
   under "no explanations", this is the one place the why is always given: what
   is being asked and why, the recommended option and why it is the recommended
-  one, and a short line on each other option. Plain Markdown, formatted to read
-  — a heading or bold lead, short paragraphs or a list, `code` for paths.
+  one, and a short line on each other option. Plain Markdown, built to scan,
+  not to read through — a bold lead, then one bullet per point with a bold
+  label (`- **Recommended:** …`, `- **If left:** …`), `code` for paths. No
+  prose paragraphs; caveman shortens each bullet, never merges them.
 - The question itself is one short line that points at that context ("Finding
   3/11 — take the recommended fix?"), and option labels and descriptions stay
   short. The card renders every word in bold and gets hard to read when long.
