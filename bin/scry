@@ -1,0 +1,311 @@
+#!/usr/bin/env bash
+# scry — our Obsidian CLI wrapper with more commands
+#
+# Obsidian's own CLI (`obsidian`) works on the files of a vault but cannot
+# add, close or forget vaults, and obsidian:// URIs only reach vaults it
+# already knows. Its `eval` runs JS inside the app, though, so the commands
+# here send the same IPC messages Obsidian's own vault picker does
+# (`vault-open`, `vault-remove`, `vault-list`) and Obsidian does the work
+# itself — nothing here edits its config files.
+set -euo pipefail
+
+# The CLI reads stdin when it has one and then never exits.
+exec </dev/null
+
+cmd_help() {
+  cat <<'EOF'
+scry — Obsidian helper.
+
+Usage: scry <command> [args...]
+
+Commands:
+  open     Open a folder as a vault, registering it when new.
+
+  remove   Close a vault's window and forget the vault.
+
+  prune    Forget every vault whose folder no longer exists.
+
+  list     List known vaults: id, open/closed, path.
+
+  help     Show this help.
+
+Run `scry <command> help` for details on a command.
+
+Any other command is forwarded to `obsidian` verbatim, so
+`scry search query=foo` runs `obsidian search query=foo`.
+
+Needs Obsidian's CLI on (Settings > General > Advanced). Obsidian is
+launched when it is not running.
+
+Environment:
+  SCRY_WAIT  seconds to wait for Obsidian's CLI to answer (default: 30)
+EOF
+}
+
+cmd_open_help() {
+  cat <<'EOF'
+Usage: scry open [dir]
+
+Open dir (default: the current directory) as an Obsidian vault, creating
+the folder when missing. A folder Obsidian already knows just opens; a new
+one is added to its vault list first, as "Open folder as vault" does.
+EOF
+}
+
+cmd_remove_help() {
+  cat <<'EOF'
+Usage: scry remove <dir>...
+
+Forget each vault, as "Remove from list" in the vault picker does: close
+its window when open, drop it from the vault list and clear the app data
+Obsidian keeps for it. The folder and its notes stay on disk.
+
+The removal is sent from another open vault's window, so the last open
+vault cannot be removed.
+EOF
+}
+
+cmd_prune_help() {
+  cat <<'EOF'
+Usage: scry prune [-n|--dry-run]
+
+Run `scry remove` on every known vault whose folder no longer exists —
+old scratch folders, deleted worktrees.
+
+Options:
+  -n, --dry-run  Only print the vaults that would be removed.
+EOF
+}
+
+cmd_list_help() {
+  cat <<'EOF'
+Usage: scry list
+
+Print every vault Obsidian knows, one per line, tab-separated:
+id, open or closed, path.
+EOF
+}
+
+# One CLI call, capped so a wedged one can't hang us.
+cli() {
+  perl -e 'alarm shift; exec @ARGV' 10 obsidian "$@" 2>&1
+}
+
+# An eval's value, without the "=> " prefix. The CLI now and then drops a
+# reply and prints nothing, so this retries an empty one: only use it for
+# reads and calls that are safe to repeat.
+eval_read() {
+  local out
+  for _ in 1 2 3; do
+    out=$(cli "$@" || true)
+    if [ -n "$out" ]; then
+      printf '%s\n' "${out#=> }"
+      return 0
+    fi
+    sleep 0.3
+  done
+  return 1
+}
+
+ensure_ready() {
+  pgrep -xq Obsidian || open -a Obsidian
+  local wait_secs=${SCRY_WAIT:-30}
+  for _ in $(seq $((wait_secs * 2))); do
+    [ "$(cli eval code=1 || true)" = "=> 1" ] && return 0
+    sleep 0.5
+  done
+  echo "scry: Obsidian's CLI did not answer; is it enabled in" \
+    "Settings > General > Advanced?" >&2
+  exit 1
+}
+
+# The vault list as JSON: {"<id>": {"path": ..., "open": true?}, ...}.
+vaults_json() {
+  eval_read eval \
+    code="JSON.stringify(window.electron.ipcRenderer.sendSync('vault-list'))"
+}
+
+# id of the vault at path $1, empty when unknown.
+vault_id() {
+  vaults_json | jq -r --arg p "$1" \
+    'to_entries[] | select(.value.path == $p) | .key' | head -n 1
+}
+
+vault_open() {
+  vaults_json | jq -e --arg id "$1" '.[$id].open == true' >/dev/null
+}
+
+# Absolute path without touching the disk, for folders that may be gone.
+abs_path() {
+  local p=$1
+  if [ -d "$p" ]; then
+    (cd -- "$p" && pwd)
+    return
+  fi
+  case "$p" in
+  /*) ;;
+  *) p="$PWD/$p" ;;
+  esac
+  printf '%s\n' "${p%/}"
+}
+
+cmd_open() {
+  case "${1:-}" in
+  help | -h | --help)
+    cmd_open_help
+    return
+    ;;
+  esac
+  if [ $# -gt 1 ]; then
+    cmd_open_help >&2
+    exit 2
+  fi
+  local target=${1:-.} dir path_json result
+  mkdir -p -- "$target"
+  dir=$(cd -- "$target" && pwd)
+  ensure_ready
+
+  path_json=$(jq -Rn --arg p "$dir" '$p')
+  result=$(cli eval \
+    code="window.electron.ipcRenderer.sendSync('vault-open', $path_json, false)" ||
+    true)
+  case "$result" in
+  "=> true") return 0 ;;
+  # When the call opens a new window the CLI often loses the reply, even
+  # though the vault opened — check the vault list instead, giving the new
+  # window a moment to land in it.
+  "")
+    for _ in $(seq 10); do
+      [ -n "$(vault_id "$dir")" ] && return 0
+      sleep 0.5
+    done
+    ;;
+  esac
+  result=${result#=> }
+  echo "scry: could not open $dir: ${result:-no reply}" >&2
+  exit 1
+}
+
+# Forget one vault. Returns 1 (after saying why) when it can't.
+remove_one() {
+  local dir id path_json result
+  dir=$(abs_path "$1")
+  id=$(vault_id "$dir")
+  if [ -z "$id" ]; then
+    echo "scry: not a known vault: $dir" >&2
+    return 1
+  fi
+
+  if vault_open "$id"; then
+    # Closing a window replies with nothing; wait for the list to agree.
+    cli vault="$id" eval code="window.close()" >/dev/null || true
+    for _ in $(seq 20); do
+      vault_open "$id" || break
+      sleep 0.25
+    done
+    if vault_open "$id"; then
+      echo "scry: could not close $dir" >&2
+      return 1
+    fi
+  fi
+
+  # Same cleanup as the picker's "Remove from list": the app data Obsidian
+  # keys by vault id goes with the vault.
+  path_json=$(jq -Rn --arg p "$dir" '$p')
+  # Sent to whichever window is active, now that this one is closed.
+  result=$(cli eval code="(() => {
+    const ok = window.electron.ipcRenderer.sendSync('vault-remove', $path_json)
+    if (ok) {
+      const prefix = '$id-'
+      indexedDB.databases().then(dbs => dbs
+        .filter(db => db.name.startsWith(prefix))
+        .forEach(db => indexedDB.deleteDatabase(db.name)))
+      Object.keys(localStorage)
+        .filter(key => key.startsWith(prefix))
+        .forEach(key => localStorage.removeItem(key))
+    }
+    return ok
+  })()" || true)
+  [ "$result" = "=> true" ] && return 0
+  # A dropped reply may still have removed it.
+  [ -z "$result" ] && [ -z "$(vault_id "$dir")" ] && return 0
+  result=${result#=> }
+  [ "$result" = false ] &&
+    result="Obsidian refused; is it the only vault open?"
+  echo "scry: could not remove $dir: ${result:-no reply}" >&2
+  return 1
+}
+
+cmd_remove() {
+  case "${1:-}" in
+  "" | help | -h | --help)
+    cmd_remove_help
+    [ $# -gt 0 ]
+    return
+    ;;
+  esac
+  ensure_ready
+  local failed=0 dir
+  for dir in "$@"; do
+    remove_one "$dir" || failed=1
+  done
+  return "$failed"
+}
+
+cmd_prune() {
+  local dry=false
+  case "${1:-}" in
+  help | -h | --help)
+    cmd_prune_help
+    return
+    ;;
+  -n | --dry-run) dry=true ;;
+  "") ;;
+  *)
+    cmd_prune_help >&2
+    exit 2
+    ;;
+  esac
+  ensure_ready
+  local failed=0 dir
+  while IFS= read -r dir; do
+    [ -e "$dir" ] && continue
+    echo "$dir"
+    $dry || remove_one "$dir" || failed=1
+  done < <(vaults_json | jq -r '.[].path')
+  return "$failed"
+}
+
+cmd_list() {
+  case "${1:-}" in
+  help | -h | --help)
+    cmd_list_help
+    return
+    ;;
+  esac
+  ensure_ready
+  vaults_json | jq -r 'to_entries[] |
+    [.key, (if .value.open then "open" else "closed" end), .value.path] |
+    @tsv'
+}
+
+case "${1:-help}" in
+open)
+  shift
+  cmd_open "$@"
+  ;;
+remove)
+  shift
+  cmd_remove "$@"
+  ;;
+prune)
+  shift
+  cmd_prune "$@"
+  ;;
+list)
+  shift
+  cmd_list "$@"
+  ;;
+help | -h | --help) cmd_help ;;
+*) exec obsidian "$@" ;;
+esac
