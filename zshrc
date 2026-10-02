@@ -181,6 +181,10 @@ alias l='lc --color -Gla'
 # make
 alias m='make'
 
+# obsidian - scry forwards what it doesn't know to the real CLI; as an alias
+# this only reaches the prompt, so scripts calling `obsidian` get the binary
+alias obsidian='scry'
+
 # open
 alias o='open'
 
