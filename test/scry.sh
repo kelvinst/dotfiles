@@ -32,8 +32,10 @@ touch "$STUB_RUNNING"
 STUB
   # Logs one line per effect (open/close/remove/passthrough); reads such
   # as the readiness probe and vault-list are not logged.
+  # Like the real CLI, it drains whatever stdin it is handed.
   cat >"$work/bin/obsidian" <<'STUB'
 #!/bin/sh
+cat >/dev/null
 [ -e "$STUB_RUNNING" ] || exit 1
 target= code= is_eval=
 for a; do

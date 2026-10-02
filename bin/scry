@@ -86,9 +86,11 @@ id, open or closed, path.
 EOF
 }
 
-# One CLI call, capped so a wedged one can't hang us.
+# One CLI call, capped so a wedged one can't hang us. Its own </dev/null
+# matters inside `while read` loops: the CLI drains any stdin it gets,
+# which would swallow the rest of the loop's input.
 cli() {
-  perl -e 'alarm shift; exec @ARGV' 10 obsidian "$@" 2>&1
+  perl -e 'alarm shift; exec @ARGV' 10 obsidian "$@" </dev/null 2>&1
 }
 
 # An eval's value, without the "=> " prefix. The CLI now and then drops a
