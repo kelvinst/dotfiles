@@ -23,6 +23,9 @@ check "event" "$(jq -r .hookSpecificOutput.hookEventName <<<"$out")" "SessionSta
 check "mentions title skill" \
   "$(jq -r .hookSpecificOutput.additionalContext <<<"$out" | grep -c 'title')" "1"
 
+check "skips without the rename tool" \
+  "$(jq -r .hookSpecificOutput.additionalContext <<<"$out" | grep -c 'set_session_title.*skip')" "1"
+
 if [ "$failures" -eq 0 ]; then
   echo "all passed"
 else
