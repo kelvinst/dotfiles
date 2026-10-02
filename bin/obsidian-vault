@@ -1,12 +1,12 @@
 #!/usr/bin/env bash
-# obsidian-vault — open a folder as an Obsidian vault, registering it first
-# when Obsidian has never seen it.
+# obsidian-vault — open a folder as an Obsidian vault.
 #
-# obsidian:// URIs only reach folders already listed in Obsidian's
-# obsidian.json; no URI, flag or `open -a` adds a new one. Obsidian also
-# keeps that list in memory and rewrites the file itself, so an entry added
-# while it runs gets clobbered. Hence: quit Obsidian, register the folder,
-# relaunch straight into it. Windows open at quit come back on relaunch.
+# obsidian:// URIs only reach folders Obsidian already knows, and no flag
+# adds a new one. So this goes through Obsidian's CLI instead: `eval` runs
+# JS inside the app, which sends the same `vault-open` message the "Open
+# folder as vault" button does. Obsidian then registers the folder (or
+# finds it, when known) and opens its window itself — we never touch its
+# config files. Needs the CLI on (Settings > General > Advanced).
 set -euo pipefail
 
 usage() {
@@ -14,12 +14,10 @@ usage() {
 Usage: obsidian-vault [dir]
 
 Open dir (default: the current directory) as an Obsidian vault, creating
-the folder when missing. A folder Obsidian already knows just opens; a new
-one makes Obsidian quit (when running), registers it, then relaunches.
+the folder when missing. Launches Obsidian first when it is not running.
 
 Environment:
-  OBSIDIAN_CONFIG  vault list (default: ~/Library/Application
-                   Support/obsidian/obsidian.json)
+  OBSIDIAN_VAULT_WAIT  seconds to wait for Obsidian's CLI (default: 30)
 EOF
 }
 
@@ -34,45 +32,51 @@ if [ $# -gt 1 ]; then
   exit 2
 fi
 
-config=${OBSIDIAN_CONFIG:-"$HOME/Library/Application Support/obsidian/obsidian.json"}
+wait_secs=${OBSIDIAN_VAULT_WAIT:-30}
 target=${1:-.}
 mkdir -p -- "$target"
 dir=$(cd -- "$target" && pwd)
 
-vault_id() {
-  [ -f "$config" ] || return 0
-  jq -r --arg p "$dir" \
-    '.vaults // {} | to_entries[] | select(.value.path == $p) | .key' \
-    "$config" | head -n 1
+# The CLI reads stdin when it has one and then never exits, so detach it;
+# the alarm caps a call that hangs anyway.
+cli() {
+  perl -e 'alarm shift; exec @ARGV' 10 obsidian "$@" </dev/null 2>&1
 }
 
-id=$(vault_id)
-if [ -z "$id" ]; then
-  if pgrep -xq Obsidian; then
-    echo "obsidian-vault: quitting Obsidian to register $dir" >&2
-    osascript -e 'quit app "Obsidian"' >/dev/null
-    for _ in $(seq 50); do
-      pgrep -xq Obsidian || break
-      sleep 0.2
-    done
-    if pgrep -xq Obsidian; then
-      echo "obsidian-vault: Obsidian did not quit; vault not registered" >&2
-      exit 1
-    fi
-    # Quitting may have rewritten the list; another window could have
-    # registered the folder meanwhile.
-    id=$(vault_id)
+if ! pgrep -xq Obsidian; then
+  open -a Obsidian
+fi
+
+ready=false
+for _ in $(seq $((wait_secs * 2))); do
+  if [ "$(cli eval code=1 || true)" = "=> 1" ]; then
+    ready=true
+    break
   fi
+  sleep 0.5
+done
+if ! $ready; then
+  echo "obsidian-vault: Obsidian's CLI did not answer; is it enabled in" \
+    "Settings > General > Advanced?" >&2
+  exit 1
 fi
 
-if [ -z "$id" ]; then
-  id=$(openssl rand -hex 8)
-  mkdir -p "$(dirname "$config")"
-  tmp=$(mktemp "$config.XXXXXX")
-  { cat "$config" 2>/dev/null || echo '{}'; } |
-    jq --arg id "$id" --arg p "$dir" --argjson ts "$(($(date +%s) * 1000))" \
-      '.vaults[$id] = {path: $p, ts: $ts, open: true}' >"$tmp"
-  mv -f "$tmp" "$config"
-fi
-
-open "obsidian://open?vault=$id"
+path_json=$(jq -Rn --arg p "$dir" '$p')
+result=$(cli eval \
+  code="window.electron.ipcRenderer.sendSync('vault-open', $path_json, false)" ||
+  true)
+case "$result" in
+"=> true") exit 0 ;;
+# When the call opens a new window the CLI often loses the reply, even
+# though the vault opened — check Obsidian's vault list instead, giving
+# the new window a moment to land in it.
+"")
+  for _ in $(seq 10); do
+    cli vaults verbose | cut -f 2- | grep -qxF -- "$dir" && exit 0
+    sleep 0.5
+  done
+  ;;
+esac
+result=${result#=> }
+echo "obsidian-vault: could not open $dir: ${result:-no reply}" >&2
+exit 1

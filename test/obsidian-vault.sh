@@ -1,9 +1,8 @@
 #!/usr/bin/env bash
 # Regression tests for `obsidian-vault` (dot-73z).
 #
-# Stubs `pgrep`, `osascript` and `open` on PATH and points OBSIDIAN_CONFIG
-# at a temp file, so no run quits or launches the real Obsidian or touches
-# its vault list.
+# Stubs `pgrep`, `open` and Obsidian's `obsidian` CLI on PATH, so no run
+# launches the real app or adds a vault to its list.
 set -uo pipefail
 
 SCRIPT=${SCRIPT:-"$(cd "$(dirname "$0")/.." && pwd)/bin/obsidian-vault"}
@@ -11,24 +10,31 @@ failures=0
 
 setup() {
   work=$(mktemp -d)
-  export OBSIDIAN_CONFIG="$work/obsidian.json"
   export STUB_LOG="$work/calls"
   export STUB_RUNNING="$work/running"
+  export STUB_RESULT="=> true"
+  export OBSIDIAN_VAULT_WAIT=1
   : >"$STUB_LOG"
   mkdir -p "$work/bin"
-  # pgrep succeeds while the "running" flag file exists; quitting drops it.
+  # pgrep succeeds while the "running" flag file exists; `open` creates it.
   cat >"$work/bin/pgrep" <<'STUB'
 #!/bin/sh
 [ -e "$STUB_RUNNING" ]
 STUB
-  cat >"$work/bin/osascript" <<'STUB'
-#!/bin/sh
-printf 'osascript %s\n' "$*" >>"$STUB_LOG"
-rm -f "$STUB_RUNNING"
-STUB
   cat >"$work/bin/open" <<'STUB'
 #!/bin/sh
 printf 'open %s\n' "$*" >>"$STUB_LOG"
+touch "$STUB_RUNNING"
+STUB
+  # The CLI only answers while the app runs; the readiness probe
+  # (code=1) is not logged so the log shows the real call alone.
+  cat >"$work/bin/obsidian" <<'STUB'
+#!/bin/sh
+[ -e "$STUB_RUNNING" ] || exit 1
+[ "$2" = "code=1" ] && { echo "=> 1"; exit 0; }
+[ "$1" = "vaults" ] && { printf 'v\t%s\n' "${STUB_VAULT:-}"; exit 0; }
+printf '%s\n' "$*" >>"$STUB_LOG"
+echo "$STUB_RESULT"
 STUB
   chmod +x "$work/bin/"*
   PATH="$work/bin:$PATH"
@@ -50,37 +56,60 @@ check() {
   fi
 }
 
-# A known folder opens by its id without quitting Obsidian.
+# Running app: one vault-open eval with the folder as a JSON string.
 setup
-mkdir "$work/known"
-printf '{"vaults":{"abc":{"path":"%s","ts":1}}}' "$work/known" >"$OBSIDIAN_CONFIG"
 touch "$STUB_RUNNING"
-"$SCRIPT" "$work/known"
-check "known vault opens by id" "open obsidian://open?vault=abc" "$(cat "$STUB_LOG")"
+dir="$work/my \"notes\""
+"$SCRIPT" "$dir"
+check "exit status" "0" "$?"
+check "folder is created" "yes" "$([ -d "$dir" ] && echo yes)"
+check "sends vault-open with the escaped path" \
+  "eval code=window.electron.ipcRenderer.sendSync('vault-open', \"$work/my \\\"notes\\\"\", false)" \
+  "$(cat "$STUB_LOG")"
 teardown
 
-# A new folder quits the running app, gets registered, then opens.
+# Closed app: launches it, then opens the current directory.
 setup
-printf '{"vaults":{"abc":{"path":"/elsewhere","ts":1}}}' >"$OBSIDIAN_CONFIG"
-touch "$STUB_RUNNING"
-"$SCRIPT" "$work/new/notes" 2>/dev/null
-id=$(jq -r --arg p "$work/new/notes" \
-  '.vaults | to_entries[] | select(.value.path == $p) | .key' "$OBSIDIAN_CONFIG")
-check "new folder is created" "yes" "$([ -d "$work/new/notes" ] && echo yes)"
-check "existing vaults are kept" "/elsewhere" "$(jq -r '.vaults.abc.path' "$OBSIDIAN_CONFIG")"
-check "new vault id is 16 hex chars" "16" "$(printf %s "$id" | grep -qE "^[0-9a-f]{16}$" && echo 16)"
-check "quits, then opens the new vault" \
-  "osascript -e quit app \"Obsidian\"
-open obsidian://open?vault=$id" "$(cat "$STUB_LOG")"
+mkdir "$work/here"
+(cd "$work/here" && "$SCRIPT")
+check "launches Obsidian, then sends vault-open" \
+  "open -a Obsidian
+eval code=window.electron.ipcRenderer.sendSync('vault-open', \"$work/here\", false)" \
+  "$(cat "$STUB_LOG")"
 teardown
 
-# No config yet and Obsidian closed: writes a fresh list, no quit.
+# Obsidian refuses the folder: its reason surfaces, exit fails.
 setup
-mkdir "$work/fresh"
-(cd "$work/fresh" && "$SCRIPT")
-check "registers cwd in a fresh config" "$work/fresh" \
-  "$(jq -r '.vaults[].path' "$OBSIDIAN_CONFIG")"
-check "no quit when not running" "1" "$(wc -l <"$STUB_LOG" | tr -d ' ')"
+touch "$STUB_RUNNING"
+export STUB_RESULT="=> no permission to access folder"
+err=$("$SCRIPT" "$work/x" 2>&1)
+check "refusal fails the run" "1" "$?"
+check "refusal reason is shown" \
+  "obsidian-vault: could not open $work/x: no permission to access folder" "$err"
+teardown
+
+# Empty reply (new window ate it): trusts the vault list instead.
+setup
+touch "$STUB_RUNNING"
+export STUB_RESULT=""
+export STUB_VAULT="$work/z z"
+"$SCRIPT" "$work/z z"
+check "empty reply with vault listed succeeds" "0" "$?"
+err=$("$SCRIPT" "$work/other" 2>&1)
+check "empty reply without vault listed fails" "1" "$?"
+check "empty reply reason" "obsidian-vault: could not open $work/other: no reply" "$err"
+unset STUB_VAULT
+teardown
+
+# CLI never answers (e.g. turned off): fails without sending anything.
+setup
+cat >"$work/bin/open" <<'STUB'
+#!/bin/sh
+printf 'open %s\n' "$*" >>"$STUB_LOG"
+STUB
+"$SCRIPT" "$work/y" 2>/dev/null
+check "silent CLI fails the run" "1" "$?"
+check "only the launch was attempted" "open -a Obsidian" "$(cat "$STUB_LOG")"
 teardown
 
 [ "$failures" -eq 0 ]
