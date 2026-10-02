@@ -40,6 +40,17 @@
           }
         ]
       }
+    ],
+    "SessionStart": [
+      {
+        "matcher": "startup",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "bash \"$HOME/.claude/hooks/title-first-prompt.sh\""
+          }
+        ]
+      }
     ]
   },
   "statusLine": {

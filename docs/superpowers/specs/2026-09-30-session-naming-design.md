@@ -145,8 +145,13 @@ plan gets approved, implementation starts.
   with no code asks for one and writes `.claude/settings.json`; plain CLI
   prints a `/rename` line.
 
-## Open questions
+## First prompt
 
-- `dot-0oq` (auto-name sessions on start) overlaps this. Proposal: close it as
-  superseded by `dot-mrr`, optionally adding a SessionStart nudge that asks the
-  agent to run `/title` on the first turn.
+`dot-0oq` (auto-name sessions on start) is superseded by `dot-mrr`; its goal
+lives here. A SessionStart hook, `claude/hooks/title-first-prompt.sh` (matcher
+`startup`, registered in `claude/settings.json`), adds one line of context
+asking the agent to run the title skill right after the user's first message. A
+hook cannot pick the item or the state, so it only nudges; resumes, clears and
+compactions do not match, so a running session keeps its title. The app's own
+title from the first prompt is replaced without an approval prompt, since the
+app set it. `test/title-first-prompt.sh` checks the hook's output.
