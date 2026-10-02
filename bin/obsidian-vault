@@ -1,0 +1,78 @@
+#!/usr/bin/env bash
+# obsidian-vault — open a folder as an Obsidian vault, registering it first
+# when Obsidian has never seen it.
+#
+# obsidian:// URIs only reach folders already listed in Obsidian's
+# obsidian.json; no URI, flag or `open -a` adds a new one. Obsidian also
+# keeps that list in memory and rewrites the file itself, so an entry added
+# while it runs gets clobbered. Hence: quit Obsidian, register the folder,
+# relaunch straight into it. Windows open at quit come back on relaunch.
+set -euo pipefail
+
+usage() {
+  cat <<'EOF'
+Usage: obsidian-vault [dir]
+
+Open dir (default: the current directory) as an Obsidian vault, creating
+the folder when missing. A folder Obsidian already knows just opens; a new
+one makes Obsidian quit (when running), registers it, then relaunches.
+
+Environment:
+  OBSIDIAN_CONFIG  vault list (default: ~/Library/Application
+                   Support/obsidian/obsidian.json)
+EOF
+}
+
+case "${1:-}" in
+-h | --help)
+  usage
+  exit 0
+  ;;
+esac
+if [ $# -gt 1 ]; then
+  usage >&2
+  exit 2
+fi
+
+config=${OBSIDIAN_CONFIG:-"$HOME/Library/Application Support/obsidian/obsidian.json"}
+target=${1:-.}
+mkdir -p -- "$target"
+dir=$(cd -- "$target" && pwd)
+
+vault_id() {
+  [ -f "$config" ] || return 0
+  jq -r --arg p "$dir" \
+    '.vaults // {} | to_entries[] | select(.value.path == $p) | .key' \
+    "$config" | head -n 1
+}
+
+id=$(vault_id)
+if [ -z "$id" ]; then
+  if pgrep -xq Obsidian; then
+    echo "obsidian-vault: quitting Obsidian to register $dir" >&2
+    osascript -e 'quit app "Obsidian"' >/dev/null
+    for _ in $(seq 50); do
+      pgrep -xq Obsidian || break
+      sleep 0.2
+    done
+    if pgrep -xq Obsidian; then
+      echo "obsidian-vault: Obsidian did not quit; vault not registered" >&2
+      exit 1
+    fi
+    # Quitting may have rewritten the list; another window could have
+    # registered the folder meanwhile.
+    id=$(vault_id)
+  fi
+fi
+
+if [ -z "$id" ]; then
+  id=$(openssl rand -hex 8)
+  mkdir -p "$(dirname "$config")"
+  tmp=$(mktemp "$config.XXXXXX")
+  { cat "$config" 2>/dev/null || echo '{}'; } |
+    jq --arg id "$id" --arg p "$dir" --argjson ts "$(($(date +%s) * 1000))" \
+      '.vaults[$id] = {path: $p, ts: $ts, open: true}' >"$tmp"
+  mv -f "$tmp" "$config"
+fi
+
+open "obsidian://open?vault=$id"
