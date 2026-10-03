@@ -267,12 +267,18 @@ cmd_prune() {
     ;;
   esac
   ensure_ready
-  local failed=0 dir
+  local failed=0 dir paths
+  # Read the list up front: a failed read inside `< <(...)` would go
+  # unnoticed and look like nothing to prune.
+  if ! paths=$(vaults_json | jq -r '.[].path'); then
+    echo "scry: could not read Obsidian's vault list" >&2
+    exit 1
+  fi
   while IFS= read -r dir; do
     [ -e "$dir" ] && continue
     echo "$dir"
     $dry || remove_one "$dir" || failed=1
-  done < <(vaults_json | jq -r '.[].path')
+  done <<<"$paths"
   return "$failed"
 }
 

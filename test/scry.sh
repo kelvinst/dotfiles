@@ -58,7 +58,7 @@ set_vaults() {
 }
 case "$code" in
 1) echo "=> 1" ;;
-*vault-list*) printf '=> %s\n' "$(jq -c . "$STUB_VAULTS")" ;;
+*vault-list*) [ -n "${STUB_LIST_EMPTY:-}" ] || printf '=> %s\n' "$(jq -c . "$STUB_VAULTS")" ;;
 *vault-open*)
   p=$(arg vault-open)
   printf 'open %s\n' "$p" >>"$STUB_LOG"
@@ -206,6 +206,16 @@ check "prune: removes missing ones only" "alive" "$(jq -r 'keys | join(",")' "$S
 check "prune: closes the open one first" "remove $work/gone1
 close gone2
 remove $work/gone2" "$(cat "$STUB_LOG")"
+teardown
+
+# prune: an unreadable vault list fails instead of pruning nothing.
+setup
+touch "$STUB_RUNNING"
+export STUB_LIST_EMPTY=1
+err=$("$SCRIPT" prune 2>&1)
+check "prune: unreadable list fails" "1" "$?"
+check "prune: unreadable list reason" "scry: could not read Obsidian's vault list" "$err"
+unset STUB_LIST_EMPTY
 teardown
 
 # list and passthrough.
