@@ -275,6 +275,8 @@ cmd_prune() {
     exit 1
   fi
   while IFS= read -r dir; do
+    # An empty list still yields one empty line through <<<.
+    [ -n "$dir" ] || continue
     [ -e "$dir" ] && continue
     echo "$dir"
     $dry || remove_one "$dir" || failed=1

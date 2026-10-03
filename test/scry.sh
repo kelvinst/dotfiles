@@ -218,6 +218,14 @@ check "prune: unreadable list reason" "scry: could not read Obsidian's vault lis
 unset STUB_LIST_EMPTY
 teardown
 
+# prune: no vaults at all is nothing to do, not an error.
+setup
+touch "$STUB_RUNNING"
+out=$("$SCRIPT" prune 2>&1)
+check "prune: empty list exit status" "0" "$?"
+check "prune: empty list prints nothing" "" "$out"
+teardown
+
 # list and passthrough.
 setup
 touch "$STUB_RUNNING"
