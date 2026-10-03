@@ -9,9 +9,6 @@
 # itself — nothing here edits its config files.
 set -euo pipefail
 
-# The CLI reads stdin when it has one and then never exits.
-exec </dev/null
-
 cmd_help() {
   cat <<'EOF'
 scry — Obsidian helper.
@@ -31,8 +28,9 @@ Commands:
 
 Run `scry <command> help` for details on a command.
 
-Any other command is forwarded to `obsidian` verbatim, so
-`scry search query=foo` runs `obsidian search query=foo`.
+Any other command, or none, is forwarded to `obsidian` verbatim, so
+`scry search query=foo` runs `obsidian search query=foo` and a bare `scry`
+opens Obsidian's interactive CLI.
 
 Needs Obsidian's CLI on (Settings > General > Advanced). Obsidian is
 launched when it is not running.
@@ -291,7 +289,9 @@ cmd_list() {
     @tsv'
 }
 
-case "${1:-help}" in
+# No command at all forwards too, so a bare `obsidian` (aliased to scry)
+# still opens the native interactive CLI.
+case "${1:-}" in
 open)
   shift
   cmd_open "$@"

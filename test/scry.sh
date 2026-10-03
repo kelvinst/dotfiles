@@ -35,7 +35,7 @@ STUB
   # Like the real CLI, it drains whatever stdin it is handed.
   cat >"$work/bin/obsidian" <<'STUB'
 #!/bin/sh
-cat >/dev/null
+input=$(cat)
 [ -e "$STUB_RUNNING" ] || exit 1
 target= code= is_eval=
 for a; do
@@ -45,7 +45,10 @@ for a; do
   code=*) code=$(printf '%s' "${a#code=}" | tr '\n' ' ') ;;
   esac
 done
-[ -n "$is_eval" ] || { printf 'passthrough %s\n' "$*" >>"$STUB_LOG"; exit 0; }
+[ -n "$is_eval" ] || {
+  printf 'passthrough %s%s\n' "$*" "${input:+ stdin=$input}" >>"$STUB_LOG"
+  exit 0
+}
 # The JSON string argument following an IPC message name, decoded.
 arg() {
   printf '%s' "$code" | sed -n "s/.*'$1', \(\"[^)]*\"\)[,)].*/\1/p" | jq -r .
@@ -212,8 +215,11 @@ add_vault ida /a true
 add_vault idb "/b c" false
 check "list: id, state, path" "ida	open	/a
 idb	closed	/b c" "$("$SCRIPT" list)"
-"$SCRIPT" search query=foo
-check "unknown commands go to obsidian" "passthrough search query=foo" "$(cat "$STUB_LOG")"
+echo hi | "$SCRIPT" search query=foo
+"$SCRIPT" </dev/null
+check "unknown and no commands go to obsidian, stdin intact" \
+  "passthrough search query=foo stdin=hi
+passthrough " "$(cat "$STUB_LOG")"
 teardown
 
 [ "$failures" -eq 0 ]
