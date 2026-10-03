@@ -87,5 +87,9 @@
   "editorMode": "vim",
   "preferredNotifChannel": "kitty",
   "inputNeededNotifEnabled": true,
-  "agentPushNotifEnabled": true
+  "agentPushNotifEnabled": true,
+  "env": {
+    "KIX_COMMIT_MODE": "auto",
+    "KIX_REBASE_MODE": "auto"
+  }
 }
