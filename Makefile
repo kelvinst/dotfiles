@@ -85,7 +85,7 @@ install: backup
 	cp -f ./claude/hooks/* ~/.claude/hooks/
 	chmod +x ~/.claude/hooks/*
 	mkdir -p ~/.claude/skills/
-	cp -Rf ./claude/skills/* ~/.claude/skills/
+	for d in ./claude/skills/*; do [ -e "$$d" ] || continue; cp -Rf "$$d" ~/.claude/skills/; done
 	cp -f ./claude/CLAUDE.md ~/.claude/CLAUDE.md
 	cp -f ./claude/settings.json ~/.claude/settings.json
 	mkdir -p ~/.zsh/completions/
@@ -116,7 +116,7 @@ clean:
 	rm -rf ~/.hammerspoon/*
 	for f in ./bin/*; do rm -rf ~/.local/bin/$$(basename $$f); done
 	for f in ./claude/hooks/*; do rm -f ~/.claude/hooks/$$(basename $$f); done
-	for d in ./claude/skills/*; do rm -rf ~/.claude/skills/$$(basename $$d); done
+	for d in ./claude/skills/*; do [ -e "$$d" ] || continue; rm -rf ~/.claude/skills/$$(basename $$d); done
 	rm -f ~/.claude/CLAUDE.md
 	rm -f ~/.claude/settings.json
 	rm -rf ~/.config/init_starship.sh
@@ -159,7 +159,7 @@ update:
 	for f in ./bin/*; do cp -r ~/.local/bin/$$(basename $$f) ./bin/; done
 	mkdir -p ./claude/hooks/
 	cp -f ~/.claude/hooks/* ./claude/hooks/
-	for d in ./claude/skills/*; do cp -Rf ~/.claude/skills/$$(basename $$d)/. $$d/; done
+	for d in ./claude/skills/*; do [ -e "$$d" ] || continue; cp -Rf ~/.claude/skills/$$(basename $$d)/. $$d/; done
 	cp -f ~/.claude/CLAUDE.md ./claude/CLAUDE.md
 	cp -f ~/.claude/settings.json ./claude/settings.json
 	cp ~/.aerospace.toml ./aerospace.toml
