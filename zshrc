@@ -123,6 +123,7 @@ alias b='bat'
 # claude
 alias cl='ai-jail-worktree claude'
 alias cl!='cl --dangerously-skip-permissions'
+alias project-code="$HOME/Developer/kix-agents/claude-code/bin/project-code"
 
 # clear
 alias c='clear'
