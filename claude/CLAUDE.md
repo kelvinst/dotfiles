@@ -34,6 +34,6 @@
 
 ## Session title
 
-- Run the `title` skill whenever the session's state changes: a tracker item
-  gets filed, a design or plan gets approved, implementation starts. The
-  `close` skill runs it itself for 📦 and 🏁.
+- Run the `kix:title` skill whenever the session's state changes: a tracker
+  item gets filed, a design or plan gets approved, implementation starts. The
+  `kix:close` skill runs it itself for 📦 and 🏁.
