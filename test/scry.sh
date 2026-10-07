@@ -244,6 +244,16 @@ check "list: launches Obsidian in the background" "launch -g -a Obsidian" \
   "$(cat "$STUB_LOG")"
 teardown
 
+# open under macOS's /bin/bash 3.2 (no Homebrew bash first on PATH, e.g.
+# from Hammerspoon): a closed app still gets launched in front.
+setup
+mkdir "$work/old"
+/bin/bash "$SCRIPT" open "$work/old" 2>"$work/err"
+check "open: works under /bin/bash 3.2" "0" "$?"
+check "open: /bin/bash 3.2 launches Obsidian in front" "launch -a Obsidian
+open $work/old" "$(cat "$STUB_LOG")"
+teardown
+
 # list and passthrough.
 setup
 touch "$STUB_RUNNING"

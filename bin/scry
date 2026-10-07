@@ -115,9 +115,11 @@ eval_read() {
 # Launches Obsidian when it is not running: in the background (-g), so it
 # doesn't steal focus, unless $1 is "front" — only `open` shows a vault.
 ensure_ready() {
-  local launch=(-g)
-  [ "${1:-}" = front ] && launch=()
-  pgrep -xq Obsidian || open "${launch[@]}" -a Obsidian
+  # A scalar, not an array: an empty "${a[@]}" trips set -u on the
+  # /bin/bash 3.2 that Hammerspoon or launchd may run us with.
+  local bg=-g
+  [ "${1:-}" = front ] && bg=
+  pgrep -xq Obsidian || open ${bg:+"$bg"} -a Obsidian
   local wait_secs=${SCRY_WAIT:-30}
   for _ in $(seq $((wait_secs * 2))); do
     [ "$(cli eval code=1 || true)" = "=> 1" ] && return 0
