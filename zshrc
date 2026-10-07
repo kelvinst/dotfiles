@@ -182,8 +182,9 @@ alias l='lc --color -Gla'
 # make
 alias m='make'
 
-# obsidian - scry forwards what it doesn't know to the real CLI; as an alias
-# this only reaches the prompt, so scripts calling `obsidian` get the binary
+# obsidian - scry forwards what it doesn't know to the real CLI, obsidian-cli.
+# As an alias this only reaches the prompt: scripts calling `obsidian` get the
+# app binary itself (case-insensitive disk), so they should call obsidian-cli
 alias obsidian='scry'
 
 # open
