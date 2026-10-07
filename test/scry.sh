@@ -236,6 +236,14 @@ check "prune: empty list exit status" "0" "$?"
 check "prune: empty list prints nothing" "" "$out"
 teardown
 
+# list: a closed app is launched in the background (-g), not focused.
+setup
+add_vault ida /a true
+"$SCRIPT" list >/dev/null
+check "list: launches Obsidian in the background" "launch -g -a Obsidian" \
+  "$(cat "$STUB_LOG")"
+teardown
+
 # list and passthrough.
 setup
 touch "$STUB_RUNNING"
