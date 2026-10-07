@@ -1,12 +1,17 @@
 #!/usr/bin/env bash
 # scry — our Obsidian CLI wrapper with more commands
 #
-# Obsidian's own CLI (`obsidian`) works on the files of a vault but cannot
+# Obsidian's own CLI (`obsidian-cli`) works on the files of a vault but cannot
 # add, close or forget vaults, and obsidian:// URIs only reach vaults it
 # already knows. Its `eval` runs JS inside the app, though, so the commands
 # here send the same IPC messages Obsidian's own vault picker does
 # (`vault-open`, `vault-remove`, `vault-list`) and Obsidian does the work
 # itself — nothing here edits its config files.
+#
+# Always `obsidian-cli`, never `obsidian`: on a case-insensitive disk that
+# name is the app binary itself, which relays to a running app but, while
+# the app is down or still starting, launches another Obsidian inside the
+# terminal and leaves the CLI socket dead until Obsidian restarts.
 set -euo pipefail
 
 cmd_help() {
@@ -28,8 +33,8 @@ Commands:
 
 Run `scry <command> help` for details on a command.
 
-Any other command, or none, is forwarded to `obsidian` verbatim, so
-`scry search query=foo` runs `obsidian search query=foo` and a bare `scry`
+Any other command, or none, is forwarded to `obsidian-cli` verbatim, so
+`scry search query=foo` runs `obsidian-cli search query=foo` and a bare `scry`
 opens Obsidian's interactive CLI.
 
 Needs Obsidian's CLI on (Settings > General > Advanced). Obsidian is
@@ -88,7 +93,7 @@ EOF
 # matters inside `while read` loops: the CLI drains any stdin it gets,
 # which would swallow the rest of the loop's input.
 cli() {
-  perl -e 'alarm shift; exec @ARGV' 10 obsidian "$@" </dev/null 2>&1
+  perl -e 'alarm shift; exec @ARGV' 10 obsidian-cli "$@" </dev/null 2>&1
 }
 
 # An eval's value, without the "=> " prefix. The CLI now and then drops a
@@ -317,5 +322,5 @@ list)
   cmd_list "$@"
   ;;
 help | -h | --help) cmd_help ;;
-*) exec obsidian "$@" ;;
+*) exec obsidian-cli "$@" ;;
 esac

@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 # Regression tests for `scry` (dot-73z, dot-ffu.2).
 #
-# Stubs `pgrep`, `open` and Obsidian's `obsidian` CLI on PATH. The stub
+# Stubs `pgrep`, `open` and Obsidian's `obsidian-cli` on PATH. The stub
 # CLI keeps a fake vault list in a JSON file and acts on the IPC messages
 # scry sends through `eval`, so no run launches the real app or touches
 # its vault list.
@@ -30,10 +30,19 @@ STUB
 printf 'launch %s\n' "$*" >>"$STUB_LOG"
 touch "$STUB_RUNNING"
 STUB
+  # `obsidian` on PATH is the app binary itself (the disk is
+  # case-insensitive): called while the app is down it starts a second
+  # Obsidian in the terminal and wedges the CLI (dot-ffu.7). scry must
+  # never call it, so this stub only logs.
+  cat >"$work/bin/obsidian" <<'STUB'
+#!/bin/sh
+printf 'app %s\n' "$*" >>"$STUB_LOG"
+exit 1
+STUB
   # Logs one line per effect (open/close/remove/passthrough); reads such
   # as the readiness probe and vault-list are not logged.
   # Like the real CLI, it drains whatever stdin it is handed.
-  cat >"$work/bin/obsidian" <<'STUB'
+  cat >"$work/bin/obsidian-cli" <<'STUB'
 #!/bin/sh
 input=$(cat)
 [ -e "$STUB_RUNNING" ] || exit 1
@@ -126,6 +135,7 @@ mkdir "$work/here"
 check "open: launches Obsidian, then opens cwd" \
   "launch -a Obsidian
 open $work/here" "$(cat "$STUB_LOG")"
+check "open: never calls the app binary" "" "$(grep '^app' "$STUB_LOG")"
 teardown
 
 # open: Obsidian refuses the folder.
@@ -235,7 +245,7 @@ check "list: id, state, path" "ida	open	/a
 idb	closed	/b c" "$("$SCRIPT" list)"
 echo hi | "$SCRIPT" search query=foo
 "$SCRIPT" </dev/null
-check "unknown and no commands go to obsidian, stdin intact" \
+check "unknown and no commands go to obsidian-cli, stdin intact" \
   "passthrough search query=foo stdin=hi
 passthrough " "$(cat "$STUB_LOG")"
 teardown
