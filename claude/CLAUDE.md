@@ -25,8 +25,8 @@
   order:
   1. the text the user needs to answer it — a finding block, the options
      explained, links — in the reply;
-  2. a read-only command of its own (a `grep`, a `bd show`, a `git status` or
-     `git log` the question is about);
+  2. a real, read-only command of its own (a `grep`, a `bd show`, a
+     `git status`, `log` or `diff` the question is about);
   3. the ❓ line, when the skill uses progress lines;
   4. the AskUserQuestion call.
 - The app summarizes the reply text that comes right before a question card,
