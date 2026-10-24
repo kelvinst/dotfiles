@@ -32,5 +32,5 @@
 - The app summarizes the reply text that comes right before a question card,
   and on mobile the user then gets a one-line summary instead of the block. A
   tool call between the text and the card keeps the text whole.
-- Links never go inside the question card: a link in a card cannot be opened on
-  mobile.
+- Links never go inside the question card — not in the question, its options or
+  their descriptions: a link in a card cannot be opened on mobile.
