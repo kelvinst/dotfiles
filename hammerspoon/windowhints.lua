@@ -596,7 +596,7 @@ function M.show()
   end
 
   if #cmds > 0 then
-    hs.execute(PATH_PREFIX .. table.concat(cmds, " && "))
+    hs.execute(PATH_PREFIX .. table.concat(cmds, "; "))
     pending = hs.timer.doAfter(SETTLE_SECONDS, drawHints)
   else
     drawHints()
