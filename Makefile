@@ -11,7 +11,6 @@ HOME_TARGETS := \
 	.ai-jail \
 	.claude/CLAUDE.md \
 	.claude/settings.json \
-	.config/caveman \
 	.config/direnv \
 	.config/init_starship.sh \
 	.config/karabiner/karabiner.json \
@@ -62,8 +61,6 @@ backup:
 	fi
 
 install: backup
-	mkdir -p ~/.config/caveman/
-	cp -r ./config/caveman/* ~/.config/caveman/
 	mkdir -p ~/.config/direnv/
 	cp -r ./config/direnv/* ~/.config/direnv/
 	mkdir -p ~/.config/kitty/
@@ -106,7 +103,6 @@ install: backup
 	for s in /tmp/kitty-*; do [ -S "$$s" ] && kitty @ --to unix:$$s load-config || true; done
 
 clean:
-	rm -rf ~/.config/caveman/*
 	rm -rf ~/.config/direnv/*
 	rm -rf ~/.config/kitty/*
 	rm -f ~/.config/karabiner/karabiner.json
@@ -134,8 +130,6 @@ clean:
 	rm -rf ~/.zshrc
 
 update:
-	mkdir -p ./config/caveman/
-	cp -r ~/.config/caveman/* ./config/caveman/
 	mkdir -p ./config/direnv/
 	cp -r ~/.config/direnv/* ./config/direnv/
 	mkdir -p ./config/kitty/
