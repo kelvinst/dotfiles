@@ -21,12 +21,8 @@
       }
     ]
   },
-  "statusLine": {
-    "type": "command",
-    "command": "bash \"$HOME\"/.claude/plugins/cache/caveman/caveman/*/src/hooks/caveman-statusline.sh"
-  },
   "enabledPlugins": {
-    "caveman@caveman": true,
+    "caveman@caveman": false,
     "kix@kix-agents": true,
     "superpowers@claude-plugins-official": true
   },
