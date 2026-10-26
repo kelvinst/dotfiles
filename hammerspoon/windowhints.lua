@@ -595,6 +595,8 @@ function M.show()
         .. id
     )
   end
+  -- Front to back as it stands before any flip lands.
+  local order = orderedIds()
   if #cmds > 0 then
     local done = hs.execute(PATH_PREFIX .. table.concat(cmds, "; "))
     for id in (done or ""):gmatch("flipped:(%d+)") do
@@ -602,9 +604,8 @@ function M.show()
     end
   end
 
-  -- What each stack shows is its frontmost window. The flips don't touch
-  -- the window order, and haven't landed yet anyway.
-  for _, winId in ipairs(orderedIds()) do
+  -- What each stack showed is its frontmost window that flipped.
+  for _, winId in ipairs(order) do
     local id = tostring(winId)
     local ws = workspaceOf[id]
     if ws and flipped[id] and not shownBefore[ws] then
