@@ -590,7 +590,7 @@ function M.show()
       "aerospace layout --window-id "
         .. id
         .. " "
-        .. layout:gsub("accordion$", "tiles")
+        .. (layout:gsub("accordion$", "tiles"))
         .. " && echo flipped:"
         .. id
     )
