@@ -579,16 +579,26 @@ function M.show()
     end
   end
 
-  -- One call per window, so one that fails — closed since list-windows —
-  -- neither stops the rest nor lands in `flipped`, where finish() would
-  -- put an accordion back on it.
+  -- One shell line, each flip echoing its id once it worked. `;` between
+  -- them, so one that fails — closed since list-windows — neither stops
+  -- the rest nor lands in `flipped`, where finish() would put an
+  -- accordion back on it.
+  local cmds = {}
   for id, layout in pairs(accordion) do
-    local tiles = layout:gsub("accordion$", "tiles")
-    local _, ok = hs.execute(
-      PATH_PREFIX .. "aerospace layout --window-id " .. id .. " " .. tiles
+    table.insert(
+      cmds,
+      "aerospace layout --window-id "
+        .. id
+        .. " "
+        .. layout:gsub("accordion$", "tiles")
+        .. " && echo flipped:"
+        .. id
     )
-    if ok then
-      flipped[id] = layout
+  end
+  if #cmds > 0 then
+    local done = hs.execute(PATH_PREFIX .. table.concat(cmds, "; "))
+    for id in (done or ""):gmatch("flipped:(%d+)") do
+      flipped[id] = accordion[id]
     end
   end
 
