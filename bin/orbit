@@ -375,13 +375,16 @@ cmd_open() {
       fi
     fi
     aerospace focus --window-id "$window_id"
-  elif [ -n "$(lsappinfo find "bundleid=$bundle_id")" ] &&
+  elif [ -z "$(lsappinfo find "bundleid=$bundle_id")" ] ||
     ! aerospace list-windows --all --format '%{window-id} %{app-bundle-id}' 2>/dev/null |
     awk -v id="$bundle_id" '$2 == id {found=1; exit} END {exit !found}'; then
-    # Running with no window anywhere (its last one closed): a reopen
-    # brings back the main window. Falling through would reach `open -nb`
-    # and ask single-instance apps for a second copy — WhatsApp refuses
-    # with a dialog, Mail starts another process (dot-bt5).
+    # Not running, or running with no window anywhere (its last one
+    # closed): a launch or a reopen brings up the main window. Falling
+    # through asks single-instance apps for a second copy — WhatsApp
+    # refuses with a dialog, Mail starts another process (dot-bt5). For a
+    # closed app even the AppleScript below does it: `tell application id`
+    # launches the app before failing, and the fallback then finds it
+    # running and runs `open -nb` on top.
     open -b "$bundle_id"
   elif [ "$bundle_id" = "com.apple.finder" ]; then
     # Finder new window command is different than the default "make new window"
@@ -407,13 +410,7 @@ cmd_open() {
     # Apps that land here can't be told to make a window over AppleScript
     # (Claude for Desktop answers that with -2710), so a second instance is
     # the only way to get a second window out of them — hence `open -nb`.
-    # When the app isn't running at all, though, `-n` buys nothing: plain
-    # `open -b` launches it and the first window comes for free.
-    if [ -n "$(lsappinfo find "bundleid=$bundle_id")" ]; then
-      open -nb "$bundle_id"
-    else
-      open -b "$bundle_id"
-    fi
+    open -nb "$bundle_id"
   fi
 }
 

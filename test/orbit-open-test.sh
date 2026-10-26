@@ -14,7 +14,9 @@ setup() {
   export XDG_CACHE_HOME="$work/cache"
   export ORBIT_LOCK_DIR="$work/lock"
   export STUB_LOG="$work/calls"
+  export STUB_LAUNCHED="$work/launched"
   : >"$STUB_LOG"
+  : >"$STUB_LAUNCHED"
   mkdir -p "$work/bin"
 
   # `<window-id> <bundle-id>` per line in STUB_WINDOWS, wherever they are.
@@ -31,19 +33,22 @@ list-windows)
 esac
 STUB
 
-  # Running apps are the bundle ids in STUB_RUNNING.
+  # Running apps are the bundle ids in STUB_RUNNING, plus any osascript
+  # launched along the way.
   cat >"$work/bin/lsappinfo" <<'STUB'
 #!/bin/sh
 id=${2#bundleid=}
-case " ${STUB_RUNNING-} " in
+case " ${STUB_RUNNING-} $(cat "$STUB_LAUNCHED") " in
 *" $id "*) echo "ASN:0x0-0x1:" ;;
 esac
 STUB
 
-  # Apps like WhatsApp and Mail can't be told to make a new window.
+  # Apps like WhatsApp and Mail can't be told to make a new window. Like
+  # the real one, `tell application id` launches the app before it fails.
   cat >"$work/bin/osascript" <<'STUB'
 #!/bin/sh
 printf 'osascript %s\n' "$*" >>"$STUB_LOG"
+printf '%s\n' "$*" | sed -n 's/.*application id "\([^"]*\)".*/\1/p' >>"$STUB_LAUNCHED"
 exit 1
 STUB
 
@@ -90,7 +95,10 @@ check "open call" "$(opens)" "open -b com.apple.mail"
 teardown
 
 # --- what the fix must keep ----------------------------------------------
-echo "not running: launched"
+# AppleScript's `tell application id` launched a closed app before it
+# failed, so the fallback found it running and asked for a second copy
+# on top: two Mail processes a second apart.
+echo "not running: launched once"
 setup
 "$ORBIT" open -g net.whatsapp.WhatsApp
 check "open call" "$(opens)" "open -b net.whatsapp.WhatsApp"
