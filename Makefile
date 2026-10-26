@@ -177,7 +177,7 @@ update:
 # touches $HOME, the live aerospace, or the installed copies, so it is safe
 # to run at any time without installing first.
 test:
-	@for t in ./test/*.sh; do \
+	@for t in ./test/*-test.sh; do \
 		echo "==> $$t"; \
 		"$$t" || exit 1; \
 	done

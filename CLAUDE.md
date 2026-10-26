@@ -38,7 +38,7 @@ make install   # back up the installed copies, then copy everything into $HOME
 make backup    # only move the installed copies into a timestamped backup
 make clean     # remove the installed copies
 make update    # copy from $HOME back into the repo (reverse direction)
-make test      # run ./test/*.sh against stubbed tools in a temp dir
+make test      # run ./test/*-test.sh against stubbed tools in a temp dir
 ```
 
 `make test` needs nothing installed and touches nothing outside a temp
