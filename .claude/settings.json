@@ -24,6 +24,16 @@
         ],
         "matcher": ""
       }
+    ],
+    "Stop": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "bash \"$HOME/.claude/hooks/autocommit.sh\""
+          }
+        ]
+      }
     ]
   },
   "env": {
