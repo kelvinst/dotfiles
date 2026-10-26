@@ -22,17 +22,10 @@
     ]
   },
   "enabledPlugins": {
-    "caveman@caveman": false,
     "kix@kix-agents": true,
     "superpowers@claude-plugins-official": true
   },
   "extraKnownMarketplaces": {
-    "caveman": {
-      "source": {
-        "source": "github",
-        "repo": "JuliusBrussee/caveman"
-      }
-    },
     "superwhisper": {
       "source": {
         "source": "github",
