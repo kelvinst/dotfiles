@@ -571,18 +571,11 @@ function M.show()
       .. "aerospace list-windows --workspace visible"
       .. " --format '%{window-id}|%{workspace}|%{window-layout}'"
   )
-  local cmds = {}
-  local stacked = {}
+  local accordion = {}
   for id, ws, layout in (out or ""):gmatch("(%d+)|([^|\n]*)|(%S+)") do
     workspaceOf[id] = ws
-    local orientation = layout:match("^([hv])_accordion$")
-    if orientation then
-      flipped[id] = layout
-      stacked[ws] = true
-      table.insert(
-        cmds,
-        "aerospace layout --window-id " .. id .. " " .. orientation .. "_tiles"
-      )
+    if layout:match("^[hv]_accordion$") then
+      accordion[id] = layout
     end
   end
 
@@ -590,13 +583,32 @@ function M.show()
   for _, winId in ipairs(orderedIds()) do
     local id = tostring(winId)
     local ws = workspaceOf[id]
-    if ws and stacked[ws] and not shownBefore[ws] and flipped[id] then
+    if ws and accordion[id] and not shownBefore[ws] then
       shownBefore[ws] = id
     end
   end
 
-  if #cmds > 0 then
-    hs.execute(PATH_PREFIX .. table.concat(cmds, "; "))
+  -- One call per window, so one that fails — closed since list-windows —
+  -- neither stops the rest nor lands in `flipped`, where finish() would
+  -- put an accordion back on it.
+  local stacked = {}
+  for id, layout in pairs(accordion) do
+    local tiles = layout:gsub("accordion$", "tiles")
+    local _, ok = hs.execute(
+      PATH_PREFIX .. "aerospace layout --window-id " .. id .. " " .. tiles
+    )
+    if ok then
+      flipped[id] = layout
+      stacked[workspaceOf[id]] = true
+    end
+  end
+  for ws in pairs(shownBefore) do
+    if not stacked[ws] then
+      shownBefore[ws] = nil
+    end
+  end
+
+  if next(flipped) then
     pending = hs.timer.doAfter(SETTLE_SECONDS, drawHints)
   else
     drawHints()
