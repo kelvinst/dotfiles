@@ -579,19 +579,9 @@ function M.show()
     end
   end
 
-  -- What each stack shows now is its frontmost window.
-  for _, winId in ipairs(orderedIds()) do
-    local id = tostring(winId)
-    local ws = workspaceOf[id]
-    if ws and accordion[id] and not shownBefore[ws] then
-      shownBefore[ws] = id
-    end
-  end
-
   -- One call per window, so one that fails — closed since list-windows —
   -- neither stops the rest nor lands in `flipped`, where finish() would
   -- put an accordion back on it.
-  local stacked = {}
   for id, layout in pairs(accordion) do
     local tiles = layout:gsub("accordion$", "tiles")
     local _, ok = hs.execute(
@@ -599,12 +589,16 @@ function M.show()
     )
     if ok then
       flipped[id] = layout
-      stacked[workspaceOf[id]] = true
     end
   end
-  for ws in pairs(shownBefore) do
-    if not stacked[ws] then
-      shownBefore[ws] = nil
+
+  -- What each stack shows is its frontmost window. The flips don't touch
+  -- the window order, and haven't landed yet anyway.
+  for _, winId in ipairs(orderedIds()) do
+    local id = tostring(winId)
+    local ws = workspaceOf[id]
+    if ws and flipped[id] and not shownBefore[ws] then
+      shownBefore[ws] = id
     end
   end
 
