@@ -375,6 +375,14 @@ cmd_open() {
       fi
     fi
     aerospace focus --window-id "$window_id"
+  elif [ -n "$(lsappinfo find "bundleid=$bundle_id")" ] &&
+    ! aerospace list-windows --all --format '%{window-id} %{app-bundle-id}' 2>/dev/null |
+    awk -v id="$bundle_id" '$2 == id {found=1; exit} END {exit !found}'; then
+    # Running with no window anywhere (its last one closed): a reopen
+    # brings back the main window. Falling through would reach `open -nb`
+    # and ask single-instance apps for a second copy — WhatsApp refuses
+    # with a dialog, Mail starts another process (dot-bt5).
+    open -b "$bundle_id"
   elif [ "$bundle_id" = "com.apple.finder" ]; then
     # Finder new window command is different than the default "make new window"
     osascript -e 'tell application "Finder"
