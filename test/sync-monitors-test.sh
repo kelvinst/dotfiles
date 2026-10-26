@@ -145,7 +145,7 @@ STUB_COUNT=2 \
   "$ORBIT" sync-monitors --force
 check "exit status" "$?" "0"
 check "recorded mode" "$(state)" "external"
-check "0/G/M/P seeded" "$(grep -c '^move-workspace-to-monitor ' "$STUB_LOG")" "4"
+check "0 seeded" "$(grep -c '^move-workspace-to-monitor ' "$STUB_LOG")" "1"
 teardown
 
 # --- the early return ----------------------------------------------------

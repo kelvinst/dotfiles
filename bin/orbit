@@ -51,7 +51,7 @@ Commands:
            server running.
 
   sync-monitors
-           Re-seed the secondary-monitor workspaces and switch the
+           Re-seed workspace 0 on the secondary monitor and switch the
            main-monitor layouts to suit the monitors currently attached.
 
   help     Show this help.
@@ -1344,7 +1344,7 @@ Adapt aerospace to the monitors currently attached. Meant to be driven by
 a display watcher (see `~/.hammerspoon/monitors.lua`) but safe to run by hand.
 
 With an external monitor attached:
-  - workspaces 0, G, M and P are pushed to the secondary monitor, the same
+  - workspace 0 is pushed to the secondary monitor, the same
     seeding `after-startup-command` and the `alt-semicolon` service-mode
     `m` binding do;
   - every populated main-monitor workspace is flattened into `tiles`,
@@ -1537,12 +1537,9 @@ cmd_sync_monitors() {
 
   if [ "$mode" = external ]; then
     # Mirrors `after-startup-command` and the service-mode `m` binding in
-    # `~/.aerospace.toml`. `move-workspace-to-monitor` is a one-shot, so
-    # alt-tabbing a workspace elsewhere afterwards still sticks.
+    # `~/.aerospace.toml`.
     seeded=1
-    for ws in 0 G M P; do
-      aerospace move-workspace-to-monitor --workspace "$ws" secondary || seeded=0
-    done
+    aerospace move-workspace-to-monitor --workspace 0 secondary || seeded=0
 
     # Workspace 0 doubles as the marker for which monitor is the secondary
     # one, there being no query for that. Tiling on a guessed id is worse
