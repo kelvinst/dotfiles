@@ -50,15 +50,17 @@ local walked = false
 local SETTLE_SECONDS = 0.2
 local pending = nil
 
--- Runs one shell line of aerospace commands, held in `M` under `key` so
--- the task isn't collected mid-run. `;` rather than `&&`: one command
--- failing — a window closed while the overlay was up — mustn't skip the
--- rest of the restore.
+-- One shell line of aerospace commands. `;` rather than `&&`: one
+-- command failing — a window closed while the overlay was up — mustn't
+-- skip the rest.
+local function shellLine(cmds)
+  return PATH_PREFIX .. table.concat(cmds, "; ")
+end
+
+-- Runs a shellLine, held in `M` under `key` so the task isn't collected
+-- mid-run.
 local function aerospace(key, cmds)
-  M[key] = hs.task.new("/bin/sh", nil, {
-    "-c",
-    PATH_PREFIX .. table.concat(cmds, "; "),
-  })
+  M[key] = hs.task.new("/bin/sh", nil, { "-c", shellLine(cmds) })
   M[key]:start()
 end
 
@@ -579,10 +581,9 @@ function M.show()
     end
   end
 
-  -- One shell line, each flip echoing its id once it worked. `;` between
-  -- them, so one that fails — closed since list-windows — neither stops
-  -- the rest nor lands in `flipped`, where finish() would put an
-  -- accordion back on it.
+  -- One shellLine, each flip echoing its id once it worked, so one that
+  -- fails — closed since list-windows — neither stops the rest nor lands
+  -- in `flipped`, where finish() would put an accordion back on it.
   local cmds = {}
   for id, layout in pairs(accordion) do
     table.insert(
@@ -598,7 +599,7 @@ function M.show()
   -- Front to back as it stands before any flip lands.
   local order = orderedIds()
   if #cmds > 0 then
-    local done = hs.execute(PATH_PREFIX .. table.concat(cmds, "; "))
+    local done = hs.execute(shellLine(cmds))
     for id in (done or ""):gmatch("flipped:(%d+)") do
       flipped[id] = accordion[id]
     end
