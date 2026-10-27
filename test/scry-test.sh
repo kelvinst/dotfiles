@@ -282,6 +282,7 @@ icloud="$HOME/Library/Mobile Documents"
 mkdir -p "$icloud/iCloud~md~obsidian/Documents"
 drive="/Volumes/scry-test-unmounted-$$"
 add_vault offdrive "$drive/notes" false
+add_vault offroot "$drive" false
 add_vault offcloud "$icloud/com~apple~CloudDocs/notes" false
 add_vault gone "$icloud/iCloud~md~obsidian/Documents/gone" false
 out=$("$SCRIPT" prune -n 2>"$work/err")
@@ -289,11 +290,12 @@ check "prune -n: offline vaults are not listed" \
   "$icloud/iCloud~md~obsidian/Documents/gone" "$out"
 check "prune -n: offline vaults are reported as skipped" \
   "scry: skipping $drive/notes: $drive is not mounted
+scry: skipping $drive: $drive is not mounted
 scry: skipping $icloud/com~apple~CloudDocs/notes: $icloud/com~apple~CloudDocs is missing (iCloud Drive off?)" \
   "$(cat "$work/err")"
 "$SCRIPT" prune >/dev/null 2>&1
 check "prune: offline skips keep exit status 0" "0" "$?"
-check "prune: offline vaults stay" "offcloud,offdrive" \
+check "prune: offline vaults stay" "offcloud,offdrive,offroot" \
   "$(jq -r 'keys | join(",")' "$STUB_VAULTS")"
 teardown
 HOME=$real_home

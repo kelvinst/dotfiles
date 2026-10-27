@@ -366,12 +366,12 @@ cmd_remove() {
 offline_reason() {
   local icloud="$HOME/Library/Mobile Documents" root
   case "$1" in
-  /Volumes/*/*)
+  /Volumes/*)
     root=${1#/Volumes/}
     root=/Volumes/${root%%/*}
     [ -d "$root" ] || echo "$root is not mounted"
     ;;
-  "$icloud"/*/*)
+  "$icloud"/*)
     root=${1#"$icloud"/}
     root=$icloud/${root%%/*}
     [ -d "$root" ] || echo "$root is missing (iCloud Drive off?)"
