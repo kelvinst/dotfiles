@@ -293,6 +293,34 @@ check "open: /bin/bash 3.2 launches Obsidian in front" "launch -a Obsidian
 open $work/old" "$(cat "$STUB_LOG")"
 teardown
 
+# which: the longest vault root containing the path wins.
+setup
+touch "$STUB_RUNNING"
+mkdir -p "$work/notes/sub/deep" "$work/notes-old" "$work/elsewhere"
+touch "$work/notes/sub/deep/n.md"
+add_vault outer "$work/notes" true
+add_vault inner "$work/notes/sub" false
+add_vault sibling "$work/notes-old" false
+check "which: path inside nested vaults picks the inner one" \
+  "inner	$work/notes/sub" "$("$SCRIPT" which "$work/notes/sub/deep/n.md")"
+check "which: a vault root is its own vault" \
+  "outer	$work/notes" "$("$SCRIPT" which "$work/notes/")"
+check "which: relative path, default cwd" \
+  "inner	$work/notes/sub
+outer	$work/notes" \
+  "$(cd "$work/notes/sub/deep" && "$SCRIPT" which ../../sub/deep/n.md &&
+    cd "$work/notes" && "$SCRIPT" which)"
+check "which: a sibling prefix is not a match" \
+  "sibling	$work/notes-old" "$("$SCRIPT" which "$work/notes-old")"
+check "which: a missing path still resolves" \
+  "outer	$work/notes" "$("$SCRIPT" which "$work/notes/gone/x.md")"
+err=$("$SCRIPT" which "$work/elsewhere" 2>&1)
+check "which: outside every vault fails" "1" "$?"
+check "which: outside every vault reason" \
+  "scry: not inside a known vault: $work/elsewhere" "$err"
+check "which: reads change nothing" "" "$(cat "$STUB_LOG")"
+teardown
+
 # list and passthrough.
 setup
 touch "$STUB_RUNNING"

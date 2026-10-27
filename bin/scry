@@ -31,6 +31,8 @@ Commands:
 
   list     List known vaults: id, open/closed, path.
 
+  which    Print the vault a path belongs to.
+
   help     Show this help.
 
 Run `scry <command> help` for details on a command.
@@ -101,6 +103,16 @@ id, open or closed, path.
 EOF
 }
 
+cmd_which_help() {
+  cat <<'EOF'
+Usage: scry which [path]
+
+Print the vault path (default: the current directory) belongs to,
+tab-separated: id, vault folder. With vaults nested inside each other the
+innermost one wins, as in Obsidian's own lookup. The path need not exist.
+EOF
+}
+
 # One CLI call, capped so a wedged one can't hang us. Its own </dev/null
 # matters inside `while read` loops: the CLI drains any stdin it gets,
 # which would swallow the rest of the loop's input.
@@ -154,22 +166,42 @@ vault_id() {
     'to_entries[] | select(.value.path == $p) | .key' | head -n 1
 }
 
+# id and folder, tab-separated, of the vault holding absolute path $1: the
+# longest vault root containing it. Returns 1 when no vault does and 2 (after
+# saying why) when the vault list can't be read.
+vault_for_path() {
+  local json
+  if ! json=$(vaults_json); then
+    echo "scry: could not read Obsidian's vault list" >&2
+    return 2
+  fi
+  jq -er --arg p "$1" '[to_entries[] |
+    (.value.path | rtrimstr("/")) as $v |
+    select($p == $v or ($p | startswith($v + "/")))] |
+    max_by(.value.path | length) // empty |
+    [.key, .value.path] | @tsv' <<<"$json" || return 1
+}
+
 vault_open() {
   vaults_json | jq -e --arg id "$1" '.[$id].open == true' >/dev/null
 }
 
-# Absolute path without touching the disk, for folders that may be gone.
+# Absolute path, for paths that may be gone: the deepest folder that still
+# exists is resolved on disk (so `..` and trailing slashes go), the rest is
+# kept as given.
 abs_path() {
-  local p=$1
-  if [ -d "$p" ]; then
-    (cd -- "$p" && pwd)
-    return
-  fi
+  local p=$1 rest= base
   case "$p" in
   /*) ;;
   *) p="$PWD/$p" ;;
   esac
-  printf '%s\n' "${p%/}"
+  while [ -n "$p" ] && [ ! -d "$p" ]; do
+    rest="/${p##*/}$rest"
+    p=${p%/*}
+  done
+  base=$(cd -- "${p:-/}" && pwd)
+  rest=${base%/}$rest
+  printf '%s\n' "${rest:-/}"
 }
 
 cmd_open() {
@@ -339,6 +371,25 @@ cmd_prune() {
   return "$failed"
 }
 
+cmd_which() {
+  case "${1:-}" in
+  help | -h | --help)
+    cmd_which_help
+    return
+    ;;
+  esac
+  if [ $# -gt 1 ]; then
+    cmd_which_help >&2
+    exit 2
+  fi
+  local path rc=0
+  path=$(abs_path "${1:-.}")
+  ensure_ready
+  vault_for_path "$path" || rc=$?
+  [ "$rc" -eq 1 ] && echo "scry: not inside a known vault: $path" >&2
+  return "$rc"
+}
+
 cmd_list() {
   case "${1:-}" in
   help | -h | --help)
@@ -374,6 +425,10 @@ prune)
 list)
   shift
   cmd_list "$@"
+  ;;
+which)
+  shift
+  cmd_which "$@"
   ;;
 help | -h | --help) cmd_help ;;
 *) exec obsidian-cli "$@" ;;
