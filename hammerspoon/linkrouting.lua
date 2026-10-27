@@ -18,6 +18,13 @@
 -- is edited.
 
 local BROWSER_BUNDLE_ID = "com.google.Chrome"
+local OBSIDIAN_BUNDLE_ID = "md.obsidian"
+
+-- Katapult (kelvinst/katapult) is a one-page https redirector to any scheme,
+-- the target URL-encoded after the `#`: chat apps only follow https links, so
+-- vault notes are linked through it. For an Obsidian note the page has
+-- nothing to add here: unwrap it and skip the browser tab altogether.
+local KATAPULT_PREFIX = "https://kelvinst.github.io/katapult/#"
 
 -- $0 is a throwaway shell name, $1 the bundle id, $2 the URL — passed as
 -- argv rather than interpolated so URLs never reach the shell as code.
@@ -81,6 +88,94 @@ else
 fi
 ]]
 
+-- Obsidian's own handler raises whichever of its windows was focused last —
+-- often on another workspace or monitor, the very jump OPEN_LINK avoids for
+-- the browser. Same answer: with an Obsidian window on the focused workspace,
+-- focus it and open the note there in a new tab; with none, open the note in
+-- a new pop-out window (or, with none open at all, its main one), which
+-- aerospace puts on the focused workspace. $1 is the bundle id, $2 the
+-- obsidian:// URL.
+local OPEN_OBSIDIAN = [[
+exec </dev/null
+
+export PATH="$HOME/.local/bin:/opt/homebrew/bin:/opt/homebrew/sbin:$PATH"
+
+# Our links carry their own paneType; this script picks it instead.
+url=$(printf '%s' "$2" | sed -E 's/&paneType=[^&]*//')
+
+focused=$(aerospace list-windows --focused \
+  --format '%{window-id} %{app-bundle-id}' 2>/dev/null)
+case "$focused" in
+*" $1") window_id=${focused%% *} ;;
+*)
+  window_id=$(aerospace list-windows --workspace focused --app-bundle-id "$1" \
+    --format '%{window-id}' 2>/dev/null | head -n1)
+  ;;
+esac
+
+if [ -n "$window_id" ]; then
+  aerospace focus --window-id "$window_id" 2>/dev/null || :
+  # Wait for the raise before handing the URL over, as OPEN_LINK does:
+  # Obsidian opens the tab in the window it last saw focused.
+  for _ in 1 2 3 4 5 6 7 8 9 10; do
+    front=$(lsappinfo info -only bundleid "$(lsappinfo front)" 2>/dev/null)
+    case "$front" in
+    *"\"$1\"") break ;;
+    esac
+    sleep 0.05
+  done
+
+  open -g "$url&paneType=tab"
+else
+  # `-g` keeps macOS from activating Obsidian, which would raise its last
+  # window and drag the focus — and the new pop-out — over there.
+  before=$(aerospace list-windows --monitor all --app-bundle-id "$1" \
+    --format '%{window-id}' 2>/dev/null)
+  # With no Obsidian window anywhere, its main window is the new one; asking
+  # for a pop-out too would open the note twice.
+  if [ -n "$before" ]; then
+    pane=window
+  else
+    pane=tab
+  fi
+  open -g "$url&paneType=$pane"
+
+  # Focus the pop-out once it shows up, up to two seconds.
+  for _ in $(seq 40); do
+    new=$(aerospace list-windows --monitor all --app-bundle-id "$1" \
+      --format '%{window-id}' 2>/dev/null |
+      grep -vxF "$before" | head -n1)
+    if [ -n "$new" ]; then
+      aerospace focus --window-id "$new" 2>/dev/null || :
+      break
+    fi
+    sleep 0.05
+  done
+fi
+]]
+
+-- Decodes %XX escapes; `+` stays as it is, since a fragment is no form.
+local function percent_decode(text)
+  return (
+    text:gsub("%%(%x%x)", function(hex)
+      return string.char(tonumber(hex, 16))
+    end)
+  )
+end
+
+-- The script and arguments that open `url`: a Katapult link to obsidian://
+-- goes straight to OPEN_OBSIDIAN; everything else, other Katapult targets
+-- included, goes to the browser, where the page asks before launching an app.
+local function opener(url)
+  if url:sub(1, #KATAPULT_PREFIX) == KATAPULT_PREFIX then
+    local target = percent_decode(url:sub(#KATAPULT_PREFIX + 1))
+    if target:match("^obsidian://") then
+      return OPEN_OBSIDIAN, OBSIDIAN_BUNDLE_ID, target
+    end
+  end
+  return OPEN_LINK, BROWSER_BUNDLE_ID, url
+end
+
 -- Held for the same reason `monitors` holds its sync task: a task that gets
 -- collected mid-run never calls back, so the link would never open and the
 -- alert below would never fire — a click that leaves no trace at all. The
@@ -90,6 +185,7 @@ fi
 local running = {}
 
 function hs.urlevent.httpCallback(_scheme, _host, _params, fullURL)
+  local script, bundle_id, url = opener(fullURL)
   local task
   task = hs.task.new("/bin/sh", function(exitCode, _stdout, stderr)
     -- Nothing else surfaces a failure here: once Hammerspoon is the
@@ -105,10 +201,10 @@ function hs.urlevent.httpCallback(_scheme, _host, _params, fullURL)
     running[task] = nil
   end, {
     "-c",
-    OPEN_LINK,
+    script,
     "sh",
-    BROWSER_BUNDLE_ID,
-    fullURL,
+    bundle_id,
+    url,
   })
 
   running[task] = true
