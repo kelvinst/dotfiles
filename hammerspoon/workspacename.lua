@@ -40,8 +40,17 @@ end
 
 local function cancel()
   hide()
+  -- In the background: aerospace waits on Hammerspoon's own windows while
+  -- it moves focus, so a blocking hs.execute here stalled both for 3s, and
+  -- the prompt with them.
   if origin then
-    hs.execute(PATH_PREFIX .. "aerospace focus --window-id " .. origin)
+    M.task = hs.task.new("/bin/sh", nil, {
+      "-c",
+      PATH_PREFIX .. 'aerospace focus --window-id "$1"',
+      "sh",
+      origin,
+    })
+    M.task:start()
   end
 end
 
