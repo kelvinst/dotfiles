@@ -33,6 +33,13 @@ def segments(tokens):
         yield seg
 
 
+# -9, -SIGTERM, -TERM: a signal, not a cluster of single-letter flags.
+def is_signal(body):
+    return body.isdigit() or body.startswith("SIG") or (
+        len(body) >= 3 and body.isalnum() and body.isupper()
+    )
+
+
 def check_pkill(args):
     exact = full = False
     pattern = None
@@ -42,7 +49,7 @@ def check_pkill(args):
         if a == "--":
             pattern = args[i + 1] if i + 1 < len(args) else None
             break
-        if a.startswith("-") and len(a) > 1 and not a[1:].isdigit():
+        if a.startswith("-") and len(a) > 1 and not is_signal(a[1:]):
             for j, c in enumerate(a[1:]):
                 if c == "x":
                     exact = True
