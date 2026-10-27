@@ -173,9 +173,22 @@ ensure_ready() {
 }
 
 # The vault list as JSON: {"<id>": {"path": ..., "open": true?}, ...}.
+# Besides dropping replies, the CLI sometimes answers with an error line
+# instead (e.g. "Vault not found." from a window that is closing), so this
+# retries any reply that is not a JSON object rather than hand it to jq.
 vaults_json() {
-  eval_read eval \
-    code="JSON.stringify(window.electron.ipcRenderer.sendSync('vault-list'))"
+  local out
+  for _ in 1 2 3; do
+    out=$(eval_read eval \
+      code="JSON.stringify(window.electron.ipcRenderer.sendSync('vault-list'))" ||
+      true)
+    if jq -e 'type == "object"' >/dev/null 2>&1 <<<"$out"; then
+      printf '%s\n' "$out"
+      return 0
+    fi
+    sleep 0.3
+  done
+  return 1
 }
 
 # id of the vault at path $1, empty when unknown.
@@ -200,8 +213,15 @@ vault_for_path() {
     [.key, .value.path] | @tsv' <<<"$json" || return 1
 }
 
+# Whether vault $1 is open: 0 open, 1 closed, 2 (after saying so) when
+# the vault list can't be read.
 vault_open() {
-  vaults_json | jq -e --arg id "$1" '.[$id].open == true' >/dev/null
+  local json
+  if ! json=$(vaults_json); then
+    echo "scry: could not read Obsidian's vault list" >&2
+    return 2
+  fi
+  jq -e --arg id "$1" '.[$id].open == true' >/dev/null <<<"$json"
 }
 
 # Absolute path, for paths that may be gone: the deepest folder that still
@@ -276,13 +296,19 @@ known_vault_id() {
 
 # Close vault $1's window when it is open; $2 is its path, for messages.
 # Returns 1 (after saying why) when the window stays open.
+# An unreadable vault list fails too: it says nothing about the window.
 close_one() {
-  local id=$1 dir=$2
-  vault_open "$id" || return 0
+  local id=$1 dir=$2 rc=0
+  vault_open "$id" || rc=$?
+  [ "$rc" -eq 1 ] && return 0
+  [ "$rc" -eq 2 ] && return 1
   # Closing a window replies with nothing; wait for the list to agree.
   cli vault="$id" eval code="window.close()" >/dev/null || true
   for _ in $(seq 20); do
-    vault_open "$id" || return 0
+    rc=0
+    vault_open "$id" || rc=$?
+    [ "$rc" -eq 1 ] && return 0
+    [ "$rc" -eq 2 ] && return 1
     sleep 0.25
   done
   echo "scry: could not close $dir" >&2

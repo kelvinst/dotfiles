@@ -1,5 +1,6 @@
 #!/usr/bin/env bash
-# Regression tests for `scry` (dot-73z, dot-ffu.1, dot-ffu.2, dot-ffu.5, dot-ffu.6).
+# Regression tests for `scry` (dot-73z, dot-ffu.1, dot-ffu.2, dot-ffu.5,
+# dot-ffu.6, dot-ffu.8).
 #
 # Stubs `pgrep`, `pkill`, `osascript`, `open` and Obsidian's `obsidian-cli`
 # on PATH. The stub CLI keeps a fake vault list in a JSON file and acts on
@@ -17,6 +18,7 @@ setup() {
   export STUB_VAULTS="$work/vaults.json"
   export SCRY_WAIT=1 SCRY_QUIT_WAIT=1
   unset STUB_OPEN_REPLY STUB_OPEN_ADD STUB_REMOVE_REFUSE STUB_QUIT_STUCK
+  unset STUB_LIST_GARBAGE_FROM STUB_LIST_GARBAGE_UPTO
   echo '{}' >"$STUB_VAULTS"
   : >"$STUB_LOG"
   mkdir -p "$work/bin"
@@ -81,7 +83,18 @@ set_vaults() {
 }
 case "$code" in
 1) echo "=> 1" ;;
-*vault-list*) [ -n "${STUB_LIST_EMPTY:-}" ] || printf '=> %s\n' "$(jq -c . "$STUB_VAULTS")" ;;
+*vault-list*)
+  # Reads numbered STUB_LIST_GARBAGE_FROM..UPTO get a CLI error line
+  # instead of JSON, as a window that is closing can answer.
+  n=$(($(cat "$STUB_VAULTS.reads" 2>/dev/null || echo 0) + 1))
+  echo "$n" >"$STUB_VAULTS.reads"
+  if [ "$n" -ge "${STUB_LIST_GARBAGE_FROM:-0}" ] &&
+    [ "$n" -le "${STUB_LIST_GARBAGE_UPTO:--1}" ]; then
+    echo "Vault not found."
+  elif [ -z "${STUB_LIST_EMPTY:-}" ]; then
+    printf '=> %s\n' "$(jq -c . "$STUB_VAULTS")"
+  fi
+  ;;
 *vault-open*)
   p=$(arg vault-open)
   printf 'open %s\n' "$p" >>"$STUB_LOG"
@@ -211,6 +224,45 @@ err=$("$SCRIPT" remove /b 2>&1)
 check "remove: refusal fails" "1" "$?"
 check "remove: refusal reason" \
   "scry: could not remove /b: Obsidian refused; is it the only vault open?" "$err"
+teardown
+
+# remove: a non-JSON reply to a vault-list read while the window closes
+# is retried, not fed to jq (dot-ffu.8). Reads: 1 id, 2 open?, 3 closed?
+setup
+touch "$STUB_RUNNING"
+add_vault keep /keep true
+add_vault ida /a true
+export STUB_LIST_GARBAGE_FROM=3 STUB_LIST_GARBAGE_UPTO=3
+err=$("$SCRIPT" remove /a 2>&1)
+check "remove: garbled list read exit status" "0" "$?"
+check "remove: garbled list read prints nothing" "" "$err"
+check "remove: garbled list read still closes, then removes" "close ida
+remove /a" "$(cat "$STUB_LOG")"
+teardown
+
+# close: a vault list that turns unreadable is a failure, not "closed".
+setup
+touch "$STUB_RUNNING"
+add_vault ida /a true
+export STUB_LIST_GARBAGE_FROM=2 STUB_LIST_GARBAGE_UPTO=99
+err=$("$SCRIPT" close /a 2>&1)
+check "close: unreadable list before closing fails" "1" "$?"
+check "close: unreadable list before closing reason" \
+  "scry: could not read Obsidian's vault list" "$err"
+check "close: unreadable list sends no close" "" "$(cat "$STUB_LOG")"
+teardown
+
+setup
+touch "$STUB_RUNNING"
+add_vault ida /a true
+add_vault idb /b true
+export STUB_LIST_GARBAGE_FROM=3 STUB_LIST_GARBAGE_UPTO=99
+err=$("$SCRIPT" remove /a 2>&1)
+check "remove: unreadable list after closing fails" "1" "$?"
+check "remove: unreadable list after closing reason" \
+  "scry: could not read Obsidian's vault list" "$err"
+check "remove: unreadable list after closing removes nothing" "close ida" \
+  "$(cat "$STUB_LOG")"
 teardown
 
 # close: open vaults' windows close, closed ones are left alone, and
