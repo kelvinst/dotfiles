@@ -487,9 +487,15 @@ cmd_reveal() {
   fi
   id=${vault%%$'\t'*}
   root=${vault#*$'\t'}
-  open_vault "$root"
   rel=${path#"${root%/}"}
   rel=${rel#/}
+  case "/$rel" in
+  */.*)
+    echo "scry: Obsidian does not show hidden files: $path" >&2
+    return 1
+    ;;
+  esac
+  open_vault "$root"
   [ -n "$rel" ] || return 0
 
   # A window just opened may not answer yet, or not have indexed its

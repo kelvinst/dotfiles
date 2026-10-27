@@ -561,6 +561,18 @@ check "reveal: outside every vault reason" \
 check "reveal: outside every vault opens nothing" "" "$(cat "$STUB_LOG")"
 teardown
 
+# reveal: hidden paths fail at once; Obsidian never indexes them.
+setup
+touch "$STUB_RUNNING"
+mkdir -p "$work/notes/.obsidian"
+add_vault outer "$work/notes" true
+err=$("$SCRIPT" reveal "$work/notes/.obsidian" 2>&1)
+check "reveal: hidden path fails" "1" "$?"
+check "reveal: hidden path reason" \
+  "scry: Obsidian does not show hidden files: $work/notes/.obsidian" "$err"
+check "reveal: hidden path opens nothing" "" "$(cat "$STUB_LOG")"
+teardown
+
 # reveal: the file tree never finds the path.
 setup
 touch "$STUB_RUNNING"
