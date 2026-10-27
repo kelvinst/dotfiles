@@ -148,6 +148,20 @@ check "recorded mode" "$(state)" "external"
 check "0 seeded" "$(grep -c '^move-workspace-to-monitor ' "$STUB_LOG")" "1"
 teardown
 
+# --- dot-mjd: a labeled workspace 0 -------------------------------------
+echo "external: workspace 0 seeded under its label"
+setup
+STUB_COUNT=2 \
+  STUB_WS=$'0⠀Chat\n1' \
+  STUB_WS_MON_ALL=$'0⠀Chat 2\n1 1' \
+  STUB_WS_MON_POPULATED=$'0⠀Chat 2\n1 1' \
+  STUB_LAYOUT=h_accordion STUB_LAYOUT_RC=0 \
+  "$ORBIT" sync-monitors --force
+check "exit status" "$?" "0"
+check "0 seeded by its label" "$(grep -c $'^move-workspace-to-monitor --workspace 0⠀Chat secondary$' "$STUB_LOG")" "1"
+check "only the main workspace flattened" "$(grep '^flatten-workspace-tree' "$STUB_LOG")" "flatten-workspace-tree --workspace 1"
+teardown
+
 # --- the early return ----------------------------------------------------
 echo "an unchanged mode is left alone"
 setup
