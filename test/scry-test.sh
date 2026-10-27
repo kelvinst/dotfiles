@@ -499,6 +499,16 @@ check "restart: silent CLI fails" "1" "$?"
 check "restart: silent CLI reason" "scry: Obsidian's CLI did not answer; is it enabled in Settings > General > Advanced?" "$err"
 teardown
 
+# list: an unreadable vault list fails with a reason, not silently.
+setup
+touch "$STUB_RUNNING"
+export STUB_LIST_GARBAGE_FROM=1 STUB_LIST_GARBAGE_UPTO=99
+err=$("$SCRIPT" list 2>&1)
+check "list: unreadable list fails" "1" "$?"
+check "list: unreadable list reason" \
+  "scry: could not read Obsidian's vault list" "$err"
+teardown
+
 # list and passthrough.
 setup
 touch "$STUB_RUNNING"

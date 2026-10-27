@@ -462,7 +462,9 @@ cmd_list() {
     ;;
   esac
   ensure_ready
-  vaults_json | jq -r 'to_entries[] |
+  local json
+  json=$(vault_list) || exit 1
+  jq -r <<<"$json" 'to_entries[] |
     [.key, (if .value.open then "open" else "closed" end), .value.path] |
     @tsv'
 }
