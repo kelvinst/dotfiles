@@ -1,8 +1,9 @@
 -- Workspace labels. alt-shift-r opens a small prompt in the middle of the
 -- focused screen, pre-filled with the focused workspace's label; Enter
 -- hands it to `orbit rename-workspace`, which puts it next to the
--- workspace number in the menu bar. An empty label drops it, Esc or
--- clicking away leaves everything as it was.
+-- workspace number in the menu bar, and a spinner shows until it's done.
+-- An empty label drops it, Esc or clicking away leaves everything as it
+-- was.
 local M = {}
 
 local HOTKEY_MODS = { alt = true, shift = true }
@@ -18,8 +19,8 @@ local PROMPT_H = 64
 local PATH_PREFIX =
   'PATH="$HOME/.local/bin:/opt/homebrew/bin:/opt/homebrew/sbin:$PATH" '
 
--- Live state while the prompt is up, held on the module table so nothing
--- is collected mid-use (see init.lua).
+-- Held on the module table so nothing is collected while in use (see
+-- init.lua).
 M.prompt = nil
 M.content = nil
 M.task = nil
@@ -28,40 +29,28 @@ M.task = nil
 -- it through aerospace, which keeps its own idea of the focused node.
 local origin = nil
 
-local function shell(cmd)
-  local out = hs.execute(PATH_PREFIX .. cmd)
-  return (out or ""):gsub("%s+$", "")
-end
+-- Set from Enter until orbit is done; the prompt shows a spinner and
+-- takes no more input meanwhile.
+local applying = false
 
-local function htmlEscape(s)
-  return (
-    s:gsub("&", "&amp;")
-      :gsub("<", "&lt;")
-      :gsub(">", "&gt;")
-      :gsub('"', "&quot;")
-  )
-end
-
-local function close()
-  if M.prompt then
-    M.prompt:delete()
-    M.prompt = nil
-  end
-  M.content = nil
+local function hide()
+  applying = false
+  M.prompt:hide()
 end
 
 local function cancel()
-  close()
+  hide()
   if origin then
     hs.execute(PATH_PREFIX .. "aerospace focus --window-id " .. origin)
   end
 end
 
 local function submit(label)
-  close()
+  applying = true
+  M.prompt:evaluateJavaScript("busy()")
   -- Through `sh -c` with the label as "$1", so nothing typed is ever
-  -- parsed as shell.
-  M.task = hs.task.new("/bin/sh", nil, {
+  -- parsed as shell. orbit puts focus back itself.
+  M.task = hs.task.new("/bin/sh", hide, {
     "-c",
     PATH_PREFIX .. 'orbit rename-workspace "$1"',
     "sh",
@@ -70,8 +59,7 @@ local function submit(label)
   M.task:start()
 end
 
-local function page(workspace, label)
-  return [[
+local PAGE = [[
 <!doctype html>
 <html><head><meta charset="utf-8"><style>
   html, body { margin: 0; height: 100%; background: transparent; }
@@ -83,14 +71,31 @@ local function page(workspace, label)
   span { opacity: 0.6; font-variant-numeric: tabular-nums; }
   input { flex: 1; font: inherit; color: inherit; background: transparent;
           border: 0; outline: 0; }
+  input:disabled { opacity: 0.5; }
+  #spin { display: none; width: 18px; height: 18px; border-radius: 50%;
+          border: 2px solid rgba(225, 227, 228, 0.25);
+          border-top-color: #e1e3e4; animation: spin 0.7s linear infinite; }
+  body.busy #spin { display: block; }
+  @keyframes spin { to { transform: rotate(360deg); } }
 </style></head><body>
-  <span>]] .. htmlEscape(workspace) .. [[</span>
-  <input id="label" value="]] .. htmlEscape(label) .. [["
-         placeholder="label" autofocus>
+  <span id="position"></span>
+  <input id="label" placeholder="label">
+  <div id="spin"></div>
 <script>
   const input = document.getElementById("label");
   const send = (msg) => webkit.messageHandlers.workspacename.postMessage(msg);
-  input.select();
+  function open(position, label) {
+    document.body.classList.remove("busy");
+    document.getElementById("position").textContent = position;
+    input.disabled = false;
+    input.value = label;
+    input.focus();
+    input.select();
+  }
+  function busy() {
+    document.body.classList.add("busy");
+    input.disabled = true;
+  }
   input.addEventListener("keydown", (e) => {
     if (e.key === "Enter") send({ action: "submit", label: input.value });
     if (e.key === "Escape") send({ action: "cancel" });
@@ -98,15 +103,49 @@ local function page(workspace, label)
   window.addEventListener("blur", () => send({ action: "cancel" }));
 </script>
 </body></html>]]
-end
+
+-- Built once, up front, and only shown and hidden after: creating a
+-- webview and loading its page is what made the prompt slow to appear.
+M.content = hs.webview.usercontent.new("workspacename")
+M.content:setCallback(function(msg)
+  -- A hidden prompt's late blur, or Esc while orbit is still applying,
+  -- has nothing left to answer.
+  if applying or not M.prompt:isVisible() then
+    return
+  end
+  local body = msg.body or {}
+  if body.action == "submit" then
+    submit(body.label or "")
+  else
+    cancel()
+  end
+end)
+
+M.prompt = hs.webview
+  .new(
+    { x = 0, y = 0, w = PROMPT_W, h = PROMPT_H },
+    { developerExtrasEnabled = false },
+    M.content
+  )
+  :windowStyle({ "borderless" })
+  :transparent(true)
+  :allowTextEntry(true)
+  :level(hs.drawing.windowLevels.modalPanel)
+  :html(PAGE)
 
 function M.show()
-  if M.prompt then
+  if applying or M.prompt:isVisible() then
     return
   end
 
-  local current = shell("aerospace list-workspaces --focused")
-  local position, rest = current:match("^(%d+)(.*)$")
+  -- One shell for both lookups.
+  local out = hs.execute(
+    PATH_PREFIX
+      .. "aerospace list-workspaces --focused; "
+      .. "aerospace list-windows --focused --format '%{window-id}'"
+  ) or ""
+  local current, window = out:match("^([^\n]*)\n?([^\n]*)")
+  local position, rest = (current or ""):match("^(%d+)(.*)$")
   if not position then
     -- Nothing to keep a number for (splash, or a workspace named some
     -- other way); orbit would refuse it anyway.
@@ -115,46 +154,25 @@ function M.show()
   -- orbit spells the gap, and every space in a label, as U+2800 (see
   -- `orbit rename-workspace help`); the prompt shows plain spaces.
   local label = rest:gsub("^" .. GAP, ""):gsub(GAP, " ")
-  origin = shell("aerospace list-windows --focused --format '%{window-id}'")
-  if origin == "" then
-    origin = nil
-  end
+  origin = window ~= "" and window or nil
 
-  local win = hs.window.focusedWindow()
-  local screen = (win and win:screen() or hs.screen.mainScreen()):frame()
-  local rect = hs.geometry.rect(
-    screen.x + (screen.w - PROMPT_W) / 2,
-    screen.y + (screen.h - PROMPT_H) / 2,
-    PROMPT_W,
-    PROMPT_H
-  )
-
-  M.content = hs.webview.usercontent.new("workspacename")
-  M.content:setCallback(function(msg)
-    -- The prompt losing focus as it closes sends a late cancel; a prompt
-    -- already gone has nothing left to answer.
-    if not M.prompt then
-      return
-    end
-    local body = msg.body or {}
-    if body.action == "submit" then
-      submit(body.label or "")
-    else
-      cancel()
-    end
-  end)
-
-  M.prompt = hs.webview
-    .new(rect, { developerExtrasEnabled = false }, M.content)
-    :windowStyle({ "borderless" })
-    :transparent(true)
-    :allowTextEntry(true)
-    :level(hs.drawing.windowLevels.modalPanel)
-    :html(page(position, label))
-    :show()
+  -- The main screen is the one holding the focused window.
+  local screen = hs.screen.mainScreen():frame()
+  M.prompt:frame({
+    x = screen.x + (screen.w - PROMPT_W) / 2,
+    y = screen.y + (screen.h - PROMPT_H) / 2,
+    w = PROMPT_W,
+    h = PROMPT_H,
+  })
+  M.prompt:show()
   -- Key focus, so typing lands in the prompt and not the window under it.
+  -- Not `hswindow():focus()`: finding the prompt's hs.window goes through
+  -- Accessibility and took 3s.
   hs.focus()
-  M.prompt:hswindow():focus()
+  M.prompt:bringToFront()
+  M.prompt:evaluateJavaScript(
+    "open(" .. hs.json.encode({ position, label }):sub(2, -2) .. ")"
+  )
 end
 
 -- An event tap rather than hs.hotkey, for the reason windowhints.lua gives.
@@ -169,8 +187,8 @@ local function onTrigger(event)
       return false
     end
   end
-  -- Out of the tap's callback: the prompt runs shell lookups first, and a
-  -- slow tap callback gets the tap disabled by macOS.
+  -- Out of the tap's callback: the prompt runs a shell lookup first, and
+  -- a slow tap callback gets the tap disabled by macOS.
   hs.timer.doAfter(0, M.show)
   return true
 end

@@ -16,6 +16,7 @@ failures=0
 setup() {
   work=$(mktemp -d)
   export XDG_CACHE_HOME="$work/cache"
+  export XDG_STATE_HOME="$work/state"
   export ORBIT_LOCK_DIR="$work/lock"
   export STUB_DIR="$work/world"
   mkdir -p "$STUB_DIR" "$work/bin"
@@ -232,6 +233,59 @@ check "a" "$(on a)" "2"
 check "b" "$(on b)" "1"
 check "state of 1" "$(cat "$XDG_CACHE_HOME/orbit/preset/1")" "two"
 check "state of 2" "$(cat "$XDG_CACHE_HOME/orbit/preset/2")" "one"
+teardown
+
+# --- saved labels --------------------------------------------------------
+labels() { tr '\t\n' '= ' <"$XDG_STATE_HOME/orbit/labels" 2>/dev/null; }
+save() {
+  mkdir -p "$XDG_STATE_HOME/orbit"
+  printf '%s\n' "$@" | tr '=' '\t' >"$XDG_STATE_HOME/orbit/labels"
+}
+
+echo "saved: a rename is remembered, a new one replaces it"
+setup 1 a=1 b=2
+"$ORBIT" rename-workspace Code
+"$ORBIT" rename-workspace Notes
+check "labels" "$(labels)" "1=Notes "
+teardown
+
+echo "saved: an empty label forgets it"
+setup "1⠀Code" a="1⠀Code"
+save "1=Code" "2=Web"
+"$ORBIT" rename-workspace ""
+check "labels" "$(labels)" "2=Web "
+teardown
+
+echo "saved: going to an emptied position brings its label back"
+setup 2 b=2
+save "1=Code"
+"$ORBIT" workspace 1
+check "aerospace call" "$(last_call)" "workspace 1⠀Code"
+teardown
+
+echo "saved: move-workspace swaps the saved labels"
+setup "1⠀Code" a="1⠀Code" b="3⠀Web"
+save "1=Code" "3=Web"
+"$ORBIT" move-workspace 3
+check "labels" "$(labels | tr ' ' '\n' | sort | tr '\n' ' ')" "1=Web 3=Code "
+teardown
+
+echo "restore: windows on a bare number move to its saved label"
+setup 2 a=1 b=1 c=2
+save "1=Code" "4=Empty"
+"$ORBIT" restore-labels
+check "exit status" "$?" "0"
+check "window a" "$(on a)" "1⠀Code"
+check "window b" "$(on b)" "1⠀Code"
+check "unlabeled untouched" "$(on c)" "2"
+check "focus kept" "$(focused)" "2"
+teardown
+
+echo "restore: an already labeled position is left alone"
+setup 2 a="1⠀Code" b=1
+save "1=Code"
+"$ORBIT" restore-labels
+check "stray bare window" "$(on b)" "1"
 teardown
 
 if [ "$failures" -eq 0 ]; then
