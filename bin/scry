@@ -91,7 +91,9 @@ cmd_prune_help() {
 Usage: scry prune [-n|--dry-run]
 
 Run `scry remove` on every known vault whose folder no longer exists —
-old scratch folders, deleted worktrees.
+old scratch folders, deleted worktrees. A vault on an unmounted drive
+(/Volumes/<name>) or in an iCloud container that is missing (iCloud Drive
+off) is skipped with a note on stderr, since it may only be offline.
 
 Options:
   -n, --dry-run  Only print the vaults that would be removed.
@@ -358,6 +360,25 @@ cmd_remove() {
   return "$failed"
 }
 
+# Why a missing vault folder $1 may only be offline — on an unmounted
+# drive or in an iCloud container that is not there (iCloud Drive off) —
+# or nothing when it is really gone.
+offline_reason() {
+  local icloud="$HOME/Library/Mobile Documents" root
+  case "$1" in
+  /Volumes/*/*)
+    root=${1#/Volumes/}
+    root=/Volumes/${root%%/*}
+    [ -d "$root" ] || echo "$root is not mounted"
+    ;;
+  "$icloud"/*/*)
+    root=${1#"$icloud"/}
+    root=$icloud/${root%%/*}
+    [ -d "$root" ] || echo "$root is missing (iCloud Drive off?)"
+    ;;
+  esac
+}
+
 cmd_prune() {
   local dry=false
   case "${1:-}" in
@@ -373,7 +394,7 @@ cmd_prune() {
     ;;
   esac
   ensure_ready
-  local failed=0 dir paths
+  local failed=0 dir paths offline
   # Read the list up front: a failed read inside `< <(...)` would go
   # unnoticed and look like nothing to prune.
   if ! paths=$(vaults_json | jq -r '.[].path'); then
@@ -384,6 +405,11 @@ cmd_prune() {
     # An empty list still yields one empty line through <<<.
     [ -n "$dir" ] || continue
     [ -e "$dir" ] && continue
+    offline=$(offline_reason "$dir")
+    if [ -n "$offline" ]; then
+      echo "scry: skipping $dir: $offline" >&2
+      continue
+    fi
     echo "$dir"
     $dry || remove_one "$dir" || failed=1
   done <<<"$paths"

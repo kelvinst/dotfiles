@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Regression tests for `scry` (dot-73z, dot-ffu.1, dot-ffu.2, dot-ffu.5).
+# Regression tests for `scry` (dot-73z, dot-ffu.1, dot-ffu.2, dot-ffu.5, dot-ffu.6).
 #
 # Stubs `pgrep`, `pkill`, `osascript`, `open` and Obsidian's `obsidian-cli`
 # on PATH. The stub CLI keeps a fake vault list in a JSON file and acts on
@@ -270,6 +270,33 @@ check "prune: closes the open one first" "remove $work/gone1
 close gone2
 remove $work/gone2" "$(cat "$STUB_LOG")"
 teardown
+
+# prune: a vault on an unmounted drive or in a missing iCloud container
+# may just be offline, so it is skipped (and said so) rather than removed.
+# A missing folder inside a container that is there still goes.
+setup
+touch "$STUB_RUNNING"
+real_home=$HOME
+export HOME="$work/home"
+icloud="$HOME/Library/Mobile Documents"
+mkdir -p "$icloud/iCloud~md~obsidian/Documents"
+drive="/Volumes/scry-test-unmounted-$$"
+add_vault offdrive "$drive/notes" false
+add_vault offcloud "$icloud/com~apple~CloudDocs/notes" false
+add_vault gone "$icloud/iCloud~md~obsidian/Documents/gone" false
+out=$("$SCRIPT" prune -n 2>"$work/err")
+check "prune -n: offline vaults are not listed" \
+  "$icloud/iCloud~md~obsidian/Documents/gone" "$out"
+check "prune -n: offline vaults are reported as skipped" \
+  "scry: skipping $drive/notes: $drive is not mounted
+scry: skipping $icloud/com~apple~CloudDocs/notes: $icloud/com~apple~CloudDocs is missing (iCloud Drive off?)" \
+  "$(cat "$work/err")"
+"$SCRIPT" prune >/dev/null 2>&1
+check "prune: offline skips keep exit status 0" "0" "$?"
+check "prune: offline vaults stay" "offcloud,offdrive" \
+  "$(jq -r 'keys | join(",")' "$STUB_VAULTS")"
+teardown
+HOME=$real_home
 
 # prune: an unreadable vault list fails instead of pruning nothing.
 setup
