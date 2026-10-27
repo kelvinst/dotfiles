@@ -430,8 +430,11 @@ cmd_restart() {
     ;;
   esac
   if pgrep -xq Obsidian; then
-    osascript -e 'quit app "Obsidian"' >/dev/null 2>&1 || true
     local wait_secs=${SCRY_QUIT_WAIT:-10}
+    # Capped: a wedged app never answers the quit event, and osascript
+    # would wait out AppleScript's two-minute reply timeout.
+    perl -e 'alarm shift; exec @ARGV' "$wait_secs" \
+      osascript -e 'quit app "Obsidian"' >/dev/null 2>&1 || true
     for _ in $(seq $((wait_secs * 4))); do
       pgrep -xq Obsidian || break
       sleep 0.25

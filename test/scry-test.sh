@@ -34,7 +34,10 @@ STUB
   cat >"$work/bin/osascript" <<'STUB'
 #!/bin/sh
 printf 'osascript %s\n' "$*" >>"$STUB_LOG"
-[ -n "${STUB_QUIT_STUCK:-}" ] || rm -f "$STUB_RUNNING"
+case ${STUB_QUIT_STUCK:-} in
+"") rm -f "$STUB_RUNNING" ;;
+hang) sleep 30 ;;
+esac
 STUB
   cat >"$work/bin/pkill" <<'STUB'
 #!/bin/sh
@@ -352,6 +355,20 @@ export STUB_QUIT_STUCK=1
 "$SCRIPT" restart
 check "restart: stuck app exit status" "0" "$?"
 check "restart: kills a stuck app" "osascript -e quit app \"Obsidian\"
+pkill -9 -x Obsidian
+launch -g -a Obsidian" "$(cat "$STUB_LOG")"
+teardown
+
+# restart: a wedged app that never answers the quit is killed in time.
+setup
+touch "$STUB_RUNNING"
+export STUB_QUIT_STUCK=hang
+start=$(date +%s)
+"$SCRIPT" restart
+check "restart: wedged app exit status" "0" "$?"
+check "restart: wedged quit is cut short" "yes" \
+  "$([ $(($(date +%s) - start)) -lt 10 ] && echo yes)"
+check "restart: kills a wedged app" "osascript -e quit app \"Obsidian\"
 pkill -9 -x Obsidian
 launch -g -a Obsidian" "$(cat "$STUB_LOG")"
 teardown
