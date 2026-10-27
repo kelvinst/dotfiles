@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
-# Regression tests for `scry` (dot-73z, dot-ffu.1, dot-ffu.2, dot-ffu.5,
-# dot-ffu.6, dot-ffu.8).
+# Regression tests for `scry` (dot-73z, dot-ffu.1, dot-ffu.2, dot-ffu.4,
+# dot-ffu.5, dot-ffu.6, dot-ffu.8).
 #
 # Stubs `pgrep`, `pkill`, `osascript`, `open` and Obsidian's `obsidian-cli`
 # on PATH. The stub CLI keeps a fake vault list in a JSON file and acts on
@@ -19,6 +19,7 @@ setup() {
   export SCRY_WAIT=1 SCRY_QUIT_WAIT=1
   unset STUB_OPEN_REPLY STUB_OPEN_ADD STUB_REMOVE_REFUSE STUB_QUIT_STUCK
   unset STUB_LIST_GARBAGE_FROM STUB_LIST_GARBAGE_UPTO STUB_REMOVE_REPLY
+  unset STUB_REVEAL_FAIL
   echo '{}' >"$STUB_VAULTS"
   : >"$STUB_LOG"
   mkdir -p "$work/bin"
@@ -115,6 +116,13 @@ case "$code" in
   if [ -n "${STUB_REMOVE_REFUSE:-}" ]; then echo "=> false"; exit 0; fi
   set_vaults --arg p "$p" 'with_entries(select(.value.path != $p))'
   echo "${STUB_REMOVE_REPLY-=> true}"
+  ;;
+*revealInFolder*)
+  if [ -n "${STUB_REVEAL_FAIL:-}" ]; then echo "=> false"; exit 0; fi
+  p=$(printf '%s' "$code" |
+    sed -n 's/.*getAbstractFileByPath(\("[^)]*"\)).*/\1/p' | jq -r .)
+  printf 'reveal %s %s\n' "$target" "$p" >>"$STUB_LOG"
+  echo "=> true"
   ;;
 *) echo "=> unexpected" ;;
 esac
@@ -507,6 +515,62 @@ err=$("$SCRIPT" list 2>&1)
 check "list: unreadable list fails" "1" "$?"
 check "list: unreadable list reason" \
   "scry: could not read Obsidian's vault list" "$err"
+teardown
+
+# reveal: opens the vault holding the path, then reveals it in the file
+# tree; a closed app comes up in front.
+setup
+mkdir -p "$work/notes/sub/deep" "$work/notes-old"
+add_vault outer "$work/notes" false
+add_vault sibling "$work/notes-old" false
+"$SCRIPT" reveal "$work/notes/sub/deep/"
+check "reveal: exit status" "0" "$?"
+check "reveal: launches in front, opens the vault, reveals the folder" \
+  "launch -a Obsidian
+open $work/notes
+reveal outer sub/deep" "$(cat "$STUB_LOG")"
+teardown
+
+# reveal: default cwd; a vault root only opens the vault.
+setup
+touch "$STUB_RUNNING"
+mkdir -p "$work/notes/a b"
+add_vault outer "$work/notes" true
+(cd "$work/notes/a b" && "$SCRIPT" reveal)
+check "reveal: cwd by default" "open $work/notes
+reveal outer a b" "$(cat "$STUB_LOG")"
+: >"$STUB_LOG"
+"$SCRIPT" reveal "$work/notes/"
+check "reveal: a vault root just opens it" "open $work/notes" "$(cat "$STUB_LOG")"
+teardown
+
+# reveal: missing paths and paths outside every vault fail.
+setup
+mkdir "$work/elsewhere"
+add_vault outer "$work/notes" true
+err=$("$SCRIPT" reveal "$work/notes/gone" 2>&1)
+check "reveal: missing path fails" "1" "$?"
+check "reveal: missing path reason" \
+  "scry: no such file or folder: $work/notes/gone" "$err"
+check "reveal: missing path never launches Obsidian" "" "$(cat "$STUB_LOG")"
+touch "$STUB_RUNNING"
+err=$("$SCRIPT" reveal "$work/elsewhere" 2>&1)
+check "reveal: outside every vault fails" "1" "$?"
+check "reveal: outside every vault reason" \
+  "scry: not inside a known vault: $work/elsewhere" "$err"
+check "reveal: outside every vault opens nothing" "" "$(cat "$STUB_LOG")"
+teardown
+
+# reveal: the file tree never finds the path.
+setup
+touch "$STUB_RUNNING"
+mkdir -p "$work/notes/sub"
+add_vault outer "$work/notes" true
+export STUB_REVEAL_FAIL=1
+err=$("$SCRIPT" reveal "$work/notes/sub" 2>&1)
+check "reveal: failed reveal fails" "1" "$?"
+check "reveal: failed reveal reason" \
+  "scry: could not reveal $work/notes/sub in Obsidian" "$err"
 teardown
 
 # list and passthrough.

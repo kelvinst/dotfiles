@@ -35,6 +35,8 @@ Commands:
 
   restart  Quit Obsidian and launch it again.
 
+  reveal   Open the vault holding a folder and show it in the file tree.
+
   help     Show this help.
 
 Run `scry <command> help` for details on a command.
@@ -128,6 +130,17 @@ again in the background and wait for its CLI to answer.
 
 Also the fix when Obsidian runs but its CLI says it is "unable to find
 Obsidian": the CLI socket is only bound on a fresh start.
+EOF
+}
+
+cmd_reveal_help() {
+  cat <<'EOF'
+Usage: scry reveal [path]
+
+Open the vault path (default: the current directory) belongs to and
+reveal path in its file explorer, as "Reveal file in navigation" does.
+Works on files too. The innermost vault holding path wins, as in
+`scry which`; a vault root just opens its vault.
 EOF
 }
 
@@ -246,11 +259,17 @@ cmd_open() {
     cmd_open_help >&2
     exit 2
   fi
-  local target=${1:-.} dir path_json result
+  local target=${1:-.} dir
   mkdir -p -- "$target"
   dir=$(cd -- "$target" && pwd)
   ensure_ready front
+  open_vault "$dir"
+}
 
+# Open the folder at absolute path $1 as a vault, registering it when new.
+# Needs ensure_ready first; exits (after saying why) when Obsidian refuses.
+open_vault() {
+  local dir=$1 path_json result
   path_json=$(jq -Rn --arg p "$dir" '$p')
   result=$(cli eval \
     code="window.electron.ipcRenderer.sendSync('vault-open', $path_json, false)" ||
@@ -443,6 +462,53 @@ cmd_which() {
   return "$rc"
 }
 
+cmd_reveal() {
+  case "${1:-}" in
+  help | -h | --help)
+    cmd_reveal_help
+    return
+    ;;
+  esac
+  if [ $# -gt 1 ]; then
+    cmd_reveal_help >&2
+    exit 2
+  fi
+  local path vault id root rel rel_json rc=0
+  path=$(abs_path "${1:-.}")
+  if [ ! -e "$path" ]; then
+    echo "scry: no such file or folder: $path" >&2
+    return 1
+  fi
+  ensure_ready front
+  vault=$(vault_for_path "$path") || rc=$?
+  if [ "$rc" -ne 0 ]; then
+    [ "$rc" -eq 1 ] && echo "scry: not inside a known vault: $path" >&2
+    return 1
+  fi
+  id=${vault%%$'\t'*}
+  root=${vault#*$'\t'}
+  open_vault "$root"
+  rel=${path#"${root%/}"}
+  rel=${rel#/}
+  [ -n "$rel" ] || return 0
+
+  # A window just opened may not answer yet, or not have indexed its
+  # files: retry until the file tree finds the path.
+  rel_json=$(jq -Rn --arg p "$rel" '$p')
+  for _ in $(seq $((${SCRY_WAIT:-30} * 2))); do
+    [ "$(cli vault="$id" eval code="(() => {
+      const file = app.vault.getAbstractFileByPath($rel_json)
+      const tree = app.internalPlugins.getEnabledPluginById('file-explorer')
+      if (!file || !tree) return false
+      tree.revealInFolder(file)
+      return true
+    })()" || true)" = "=> true" ] && return 0
+    sleep 0.5
+  done
+  echo "scry: could not reveal $path in Obsidian" >&2
+  return 1
+}
+
 cmd_list() {
   case "${1:-}" in
   help | -h | --help)
@@ -516,6 +582,10 @@ which)
 restart)
   shift
   cmd_restart "$@"
+  ;;
+reveal)
+  shift
+  cmd_reveal "$@"
   ;;
 help | -h | --help) cmd_help ;;
 *) exec obsidian-cli "$@" ;;
