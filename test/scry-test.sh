@@ -314,6 +314,9 @@ check "which: a sibling prefix is not a match" \
   "sibling	$work/notes-old" "$("$SCRIPT" which "$work/notes-old")"
 check "which: a missing path still resolves" \
   "outer	$work/notes" "$("$SCRIPT" which "$work/notes/gone/x.md")"
+add_vault gone "$work/gone" false
+check "which: a missing vault folder, given with a trailing slash" \
+  "gone	$work/gone" "$("$SCRIPT" which "$work/gone/./")"
 err=$("$SCRIPT" which "$work/elsewhere" 2>&1)
 check "which: outside every vault fails" "1" "$?"
 check "which: outside every vault reason" \

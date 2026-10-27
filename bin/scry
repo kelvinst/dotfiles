@@ -196,7 +196,10 @@ abs_path() {
   *) p="$PWD/$p" ;;
   esac
   while [ -n "$p" ] && [ ! -d "$p" ]; do
-    rest="/${p##*/}$rest"
+    case ${p##*/} in
+    "" | .) ;;
+    *) rest="/${p##*/}$rest" ;;
+    esac
     p=${p%/*}
   done
   base=$(cd -- "${p:-/}" && pwd)
