@@ -1,10 +1,10 @@
 #!/usr/bin/env bash
-# Regression tests for `scry` (dot-73z, dot-ffu.1, dot-ffu.2).
+# Regression tests for `scry` (dot-73z, dot-ffu.1, dot-ffu.2, dot-ffu.5).
 #
-# Stubs `pgrep`, `open` and Obsidian's `obsidian-cli` on PATH. The stub
-# CLI keeps a fake vault list in a JSON file and acts on the IPC messages
-# scry sends through `eval`, so no run launches the real app or touches
-# its vault list.
+# Stubs `pgrep`, `pkill`, `osascript`, `open` and Obsidian's `obsidian-cli`
+# on PATH. The stub CLI keeps a fake vault list in a JSON file and acts on
+# the IPC messages scry sends through `eval`, so no run launches the real
+# app or touches its vault list.
 set -uo pipefail
 
 SCRIPT=${SCRIPT:-"$(cd "$(dirname "$0")/.." && pwd)/bin/scry"}
@@ -15,8 +15,8 @@ setup() {
   export STUB_LOG="$work/calls"
   export STUB_RUNNING="$work/running"
   export STUB_VAULTS="$work/vaults.json"
-  export SCRY_WAIT=1
-  unset STUB_OPEN_REPLY STUB_OPEN_ADD STUB_REMOVE_REFUSE
+  export SCRY_WAIT=1 SCRY_QUIT_WAIT=1
+  unset STUB_OPEN_REPLY STUB_OPEN_ADD STUB_REMOVE_REFUSE STUB_QUIT_STUCK
   echo '{}' >"$STUB_VAULTS"
   : >"$STUB_LOG"
   mkdir -p "$work/bin"
@@ -29,6 +29,17 @@ STUB
 #!/bin/sh
 printf 'launch %s\n' "$*" >>"$STUB_LOG"
 touch "$STUB_RUNNING"
+STUB
+  # Quitting stops the app unless STUB_QUIT_STUCK is set; a kill always does.
+  cat >"$work/bin/osascript" <<'STUB'
+#!/bin/sh
+printf 'osascript %s\n' "$*" >>"$STUB_LOG"
+[ -n "${STUB_QUIT_STUCK:-}" ] || rm -f "$STUB_RUNNING"
+STUB
+  cat >"$work/bin/pkill" <<'STUB'
+#!/bin/sh
+printf 'pkill %s\n' "$*" >>"$STUB_LOG"
+rm -f "$STUB_RUNNING"
 STUB
   # `obsidian` on PATH is the app binary itself (the disk is
   # case-insensitive): called while the app is down it starts a second
@@ -322,6 +333,46 @@ check "which: outside every vault fails" "1" "$?"
 check "which: outside every vault reason" \
   "scry: not inside a known vault: $work/elsewhere" "$err"
 check "which: reads change nothing" "" "$(cat "$STUB_LOG")"
+teardown
+
+# restart: a running app is quit, then relaunched in the background.
+setup
+touch "$STUB_RUNNING"
+"$SCRIPT" restart
+check "restart: exit status" "0" "$?"
+check "restart: quits, then launches in the background" \
+  "osascript -e quit app \"Obsidian\"
+launch -g -a Obsidian" "$(cat "$STUB_LOG")"
+teardown
+
+# restart: an app that won't quit is killed.
+setup
+touch "$STUB_RUNNING"
+export STUB_QUIT_STUCK=1
+"$SCRIPT" restart
+check "restart: stuck app exit status" "0" "$?"
+check "restart: kills a stuck app" "osascript -e quit app \"Obsidian\"
+pkill -9 -x Obsidian
+launch -g -a Obsidian" "$(cat "$STUB_LOG")"
+teardown
+
+# restart: a closed app is just launched.
+setup
+"$SCRIPT" restart
+check "restart: closed app is only launched" "launch -g -a Obsidian" \
+  "$(cat "$STUB_LOG")"
+teardown
+
+# restart: fails loudly when the CLI does not come back.
+setup
+touch "$STUB_RUNNING"
+cat >"$work/bin/open" <<'STUB'
+#!/bin/sh
+printf 'launch %s\n' "$*" >>"$STUB_LOG"
+STUB
+err=$("$SCRIPT" restart 2>&1)
+check "restart: silent CLI fails" "1" "$?"
+check "restart: silent CLI reason" "scry: Obsidian's CLI did not answer; is it enabled in Settings > General > Advanced?" "$err"
 teardown
 
 # list and passthrough.

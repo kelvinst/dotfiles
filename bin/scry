@@ -33,6 +33,8 @@ Commands:
 
   which    Print the vault a path belongs to.
 
+  restart  Quit Obsidian and launch it again.
+
   help     Show this help.
 
 Run `scry <command> help` for details on a command.
@@ -45,7 +47,9 @@ Needs Obsidian's CLI on (Settings > General > Advanced). Obsidian is
 launched when it is not running.
 
 Environment:
-  SCRY_WAIT  seconds to wait for Obsidian's CLI to answer (default: 30)
+  SCRY_WAIT       seconds to wait for Obsidian's CLI to answer (default: 30)
+  SCRY_QUIT_WAIT  seconds `restart` waits for Obsidian to quit before
+                  killing it (default: 10)
 EOF
 }
 
@@ -110,6 +114,18 @@ Usage: scry which [path]
 Print the vault path (default: the current directory) belongs to,
 tab-separated: id, vault folder. With vaults nested inside each other the
 innermost one wins, as in Obsidian's own lookup. The path need not exist.
+EOF
+}
+
+cmd_restart_help() {
+  cat <<'EOF'
+Usage: scry restart
+
+Quit Obsidian, killing it when it doesn't quit in time, then launch it
+again in the background and wait for its CLI to answer.
+
+Also the fix when Obsidian runs but its CLI says it is "unable to find
+Obsidian": the CLI socket is only bound on a fresh start.
 EOF
 }
 
@@ -406,6 +422,31 @@ cmd_list() {
     @tsv'
 }
 
+cmd_restart() {
+  case "${1:-}" in
+  help | -h | --help)
+    cmd_restart_help
+    return
+    ;;
+  esac
+  if pgrep -xq Obsidian; then
+    osascript -e 'quit app "Obsidian"' >/dev/null 2>&1 || true
+    local wait_secs=${SCRY_QUIT_WAIT:-10}
+    for _ in $(seq $((wait_secs * 4))); do
+      pgrep -xq Obsidian || break
+      sleep 0.25
+    done
+    if pgrep -xq Obsidian; then
+      pkill -9 -x Obsidian || true
+      for _ in $(seq 20); do
+        pgrep -xq Obsidian || break
+        sleep 0.25
+      done
+    fi
+  fi
+  ensure_ready
+}
+
 # No command at all forwards too, so a bare `obsidian` (aliased to scry)
 # still opens the native interactive CLI.
 case "${1:-}" in
@@ -432,6 +473,10 @@ list)
 which)
   shift
   cmd_which "$@"
+  ;;
+restart)
+  shift
+  cmd_restart "$@"
   ;;
 help | -h | --help) cmd_help ;;
 *) exec obsidian-cli "$@" ;;
