@@ -191,10 +191,20 @@ vaults_json() {
   return 1
 }
 
-# id of the vault at path $1, empty when unknown.
+# vaults_json, saying so and returning 2 when the list can't be read.
+vault_list() {
+  vaults_json && return 0
+  echo "scry: could not read Obsidian's vault list" >&2
+  return 2
+}
+
+# id of the vault at path $1, empty when unknown; 2 (after saying so) when
+# the vault list can't be read.
 vault_id() {
-  vaults_json | jq -r --arg p "$1" \
-    'to_entries[] | select(.value.path == $p) | .key' | head -n 1
+  local json
+  json=$(vault_list) || return 2
+  jq -r --arg p "$1" \
+    'to_entries[] | select(.value.path == $p) | .key' <<<"$json" | head -n 1
 }
 
 # id and folder, tab-separated, of the vault holding absolute path $1: the
@@ -217,10 +227,7 @@ vault_for_path() {
 # the vault list can't be read.
 vault_open() {
   local json
-  if ! json=$(vaults_json); then
-    echo "scry: could not read Obsidian's vault list" >&2
-    return 2
-  fi
+  json=$(vault_list) || return 2
   jq -e --arg id "$1" '.[$id].open == true' >/dev/null <<<"$json"
 }
 
@@ -272,7 +279,7 @@ cmd_open() {
   # window a moment to land in it.
   "")
     for _ in $(seq 10); do
-      [ -n "$(vault_id "$dir")" ] && return 0
+      [ -n "$(vault_id "$dir" 2>/dev/null)" ] && return 0
       sleep 0.5
     done
     ;;
@@ -283,10 +290,10 @@ cmd_open() {
 }
 
 # id of the known vault at path $1. Returns 1 (after saying so) when
-# Obsidian doesn't know it.
+# Obsidian doesn't know it or its vault list can't be read.
 known_vault_id() {
   local id
-  id=$(vault_id "$1")
+  id=$(vault_id "$1") || return 1
   if [ -z "$id" ]; then
     echo "scry: not a known vault: $1" >&2
     return 1
@@ -317,7 +324,7 @@ close_one() {
 
 # Forget one vault. Returns 1 (after saying why) when it can't.
 remove_one() {
-  local dir id path_json result
+  local dir id path_json result left
   dir=$(abs_path "$1")
   id=$(known_vault_id "$dir") || return 1
   close_one "$id" "$dir" || return 1
@@ -340,8 +347,8 @@ remove_one() {
     return ok
   })()" || true)
   [ "$result" = "=> true" ] && return 0
-  # A dropped reply may still have removed it.
-  [ -z "$result" ] && [ -z "$(vault_id "$dir")" ] && return 0
+  # A dropped reply may still have removed it, if the list says so.
+  [ -z "$result" ] && left=$(vault_id "$dir") && [ -z "$left" ] && return 0
   result=${result#=> }
   [ "$result" = false ] &&
     result="Obsidian refused; is it the only vault open?"

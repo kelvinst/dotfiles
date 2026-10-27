@@ -18,7 +18,7 @@ setup() {
   export STUB_VAULTS="$work/vaults.json"
   export SCRY_WAIT=1 SCRY_QUIT_WAIT=1
   unset STUB_OPEN_REPLY STUB_OPEN_ADD STUB_REMOVE_REFUSE STUB_QUIT_STUCK
-  unset STUB_LIST_GARBAGE_FROM STUB_LIST_GARBAGE_UPTO
+  unset STUB_LIST_GARBAGE_FROM STUB_LIST_GARBAGE_UPTO STUB_REMOVE_REPLY
   echo '{}' >"$STUB_VAULTS"
   : >"$STUB_LOG"
   mkdir -p "$work/bin"
@@ -114,7 +114,7 @@ case "$code" in
   printf 'remove %s\n' "$p" >>"$STUB_LOG"
   if [ -n "${STUB_REMOVE_REFUSE:-}" ]; then echo "=> false"; exit 0; fi
   set_vaults --arg p "$p" 'with_entries(select(.value.path != $p))'
-  echo "=> true"
+  echo "${STUB_REMOVE_REPLY-=> true}"
   ;;
 *) echo "=> unexpected" ;;
 esac
@@ -263,6 +263,30 @@ check "remove: unreadable list after closing reason" \
   "scry: could not read Obsidian's vault list" "$err"
 check "remove: unreadable list after closing removes nothing" "close ida" \
   "$(cat "$STUB_LOG")"
+teardown
+
+# remove: an unreadable list is not an unknown vault, and a dropped
+# vault-remove reply can't be confirmed from it.
+setup
+touch "$STUB_RUNNING"
+add_vault ida /a false
+export STUB_LIST_GARBAGE_FROM=1 STUB_LIST_GARBAGE_UPTO=99
+err=$("$SCRIPT" remove /a 2>&1)
+check "remove: unreadable list fails" "1" "$?"
+check "remove: unreadable list reason" \
+  "scry: could not read Obsidian's vault list" "$err"
+teardown
+
+setup
+touch "$STUB_RUNNING"
+add_vault keep /keep true
+add_vault idb /b false
+export STUB_REMOVE_REPLY="" STUB_LIST_GARBAGE_FROM=3 STUB_LIST_GARBAGE_UPTO=99
+err=$("$SCRIPT" remove /b 2>&1)
+check "remove: dropped reply with unreadable list fails" "1" "$?"
+check "remove: dropped reply with unreadable list reason" \
+  "scry: could not read Obsidian's vault list
+scry: could not remove /b: no reply" "$err"
 teardown
 
 # close: open vaults' windows close, closed ones are left alone, and
