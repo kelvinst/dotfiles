@@ -24,6 +24,7 @@ local PATH_PREFIX =
 M.prompt = nil
 M.content = nil
 M.task = nil
+M.lookup = nil
 
 -- The window focused when the prompt opened; a cancel hands focus back to
 -- it through aerospace, which keeps its own idea of the focused node.
@@ -147,24 +148,6 @@ function M.show()
     return
   end
 
-  -- One shell for both lookups.
-  local out = hs.execute(
-    PATH_PREFIX
-      .. "aerospace list-workspaces --focused; "
-      .. "aerospace list-windows --focused --format '%{window-id}'"
-  ) or ""
-  local current, window = out:match("^([^\n]*)\n?([^\n]*)")
-  local position, rest = (current or ""):match("^(%d+)(.*)$")
-  if not position then
-    -- Nothing to keep a number for (splash, or a workspace named some
-    -- other way); orbit would refuse it anyway.
-    return
-  end
-  -- orbit spells the gap, and every space in a label, as U+2800 (see
-  -- `orbit rename-workspace help`); the prompt shows plain spaces.
-  local label = rest:gsub("^" .. GAP, ""):gsub(GAP, " ")
-  origin = window ~= "" and window or nil
-
   -- The main screen is the one holding the focused window.
   local screen = hs.screen.mainScreen():frame()
   M.prompt:frame({
@@ -179,9 +162,39 @@ function M.show()
   -- Accessibility and took 3s.
   hs.focus()
   M.prompt:bringToFront()
-  M.prompt:evaluateJavaScript(
-    "open(" .. hs.json.encode({ position, label }):sub(2, -2) .. ")"
-  )
+  M.prompt:evaluateJavaScript('open("", "")')
+
+  -- Filled in once aerospace answers, in the background like cancel's
+  -- refocus: right after a cancel aerospace can take 3s to answer while
+  -- it settles focus, and a blocking lookup held the prompt back that
+  -- long. One shell for both lookups.
+  origin = nil
+  M.lookup = hs.task.new("/bin/sh", function(_, out)
+    if not M.prompt:isVisible() or applying then
+      return
+    end
+    local current, window = (out or ""):match("^([^\n]*)\n?([^\n]*)")
+    local position, rest = (current or ""):match("^(%d+)(.*)$")
+    if not position then
+      -- Nothing to keep a number for (splash, or a workspace named some
+      -- other way); orbit would refuse it anyway.
+      hide()
+      return
+    end
+    -- orbit spells the gap, and every space in a label, as U+2800 (see
+    -- `orbit rename-workspace help`); the prompt shows plain spaces.
+    local label = rest:gsub("^" .. GAP, ""):gsub(GAP, " ")
+    origin = window ~= "" and window or nil
+    M.prompt:evaluateJavaScript(
+      "open(" .. hs.json.encode({ position, label }):sub(2, -2) .. ")"
+    )
+  end, {
+    "-c",
+    PATH_PREFIX
+      .. "aerospace list-workspaces --focused; "
+      .. "aerospace list-windows --focused --format '%{window-id}'",
+  })
+  M.lookup:start()
 end
 
 -- An event tap rather than hs.hotkey, for the reason windowhints.lua gives.
@@ -196,7 +209,7 @@ local function onTrigger(event)
       return false
     end
   end
-  -- Out of the tap's callback: the prompt runs a shell lookup first, and
+  -- Out of the tap's callback: showing the prompt takes a moment, and
   -- a slow tap callback gets the tap disabled by macOS.
   hs.timer.doAfter(0, M.show)
   return true
