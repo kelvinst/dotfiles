@@ -23,6 +23,8 @@ Usage: scry <command> [args...]
 Commands:
   open     Open a folder as a vault, registering it when new.
 
+  close    Close a vault's window, keeping it in the vault list.
+
   remove   Close a vault's window and forget the vault.
 
   prune    Forget every vault whose folder no longer exists.
@@ -52,6 +54,16 @@ Usage: scry open [dir]
 Open dir (default: the current directory) as an Obsidian vault, creating
 the folder when missing. A folder Obsidian already knows just opens; a new
 one is added to its vault list first, as "Open folder as vault" does.
+EOF
+}
+
+cmd_close_help() {
+  cat <<'EOF'
+Usage: scry close <dir>...
+
+Close each vault's window, as closing it by hand does. The vault stays in
+Obsidian's vault list, ready to reopen; a vault already closed is left
+alone.
 EOF
 }
 
@@ -197,28 +209,39 @@ cmd_open() {
   exit 1
 }
 
+# id of the known vault at path $1. Returns 1 (after saying so) when
+# Obsidian doesn't know it.
+known_vault_id() {
+  local id
+  id=$(vault_id "$1")
+  if [ -z "$id" ]; then
+    echo "scry: not a known vault: $1" >&2
+    return 1
+  fi
+  printf '%s\n' "$id"
+}
+
+# Close vault $1's window when it is open; $2 is its path, for messages.
+# Returns 1 (after saying why) when the window stays open.
+close_one() {
+  local id=$1 dir=$2
+  vault_open "$id" || return 0
+  # Closing a window replies with nothing; wait for the list to agree.
+  cli vault="$id" eval code="window.close()" >/dev/null || true
+  for _ in $(seq 20); do
+    vault_open "$id" || return 0
+    sleep 0.25
+  done
+  echo "scry: could not close $dir" >&2
+  return 1
+}
+
 # Forget one vault. Returns 1 (after saying why) when it can't.
 remove_one() {
   local dir id path_json result
   dir=$(abs_path "$1")
-  id=$(vault_id "$dir")
-  if [ -z "$id" ]; then
-    echo "scry: not a known vault: $dir" >&2
-    return 1
-  fi
-
-  if vault_open "$id"; then
-    # Closing a window replies with nothing; wait for the list to agree.
-    cli vault="$id" eval code="window.close()" >/dev/null || true
-    for _ in $(seq 20); do
-      vault_open "$id" || break
-      sleep 0.25
-    done
-    if vault_open "$id"; then
-      echo "scry: could not close $dir" >&2
-      return 1
-    fi
-  fi
+  id=$(known_vault_id "$dir") || return 1
+  close_one "$id" "$dir" || return 1
 
   # Same cleanup as the picker's "Remove from list": the app data Obsidian
   # keys by vault id goes with the vault.
@@ -245,6 +268,27 @@ remove_one() {
     result="Obsidian refused; is it the only vault open?"
   echo "scry: could not remove $dir: ${result:-no reply}" >&2
   return 1
+}
+
+cmd_close() {
+  case "${1:-}" in
+  "" | help | -h | --help)
+    cmd_close_help
+    [ $# -gt 0 ]
+    return
+    ;;
+  esac
+  ensure_ready
+  local failed=0 arg dir id
+  for arg in "$@"; do
+    dir=$(abs_path "$arg")
+    if id=$(known_vault_id "$dir"); then
+      close_one "$id" "$dir" || failed=1
+    else
+      failed=1
+    fi
+  done
+  return "$failed"
 }
 
 cmd_remove() {
@@ -314,6 +358,10 @@ case "${1:-}" in
 open)
   shift
   cmd_open "$@"
+  ;;
+close)
+  shift
+  cmd_close "$@"
   ;;
 remove)
   shift

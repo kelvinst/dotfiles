@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Regression tests for `scry` (dot-73z, dot-ffu.2).
+# Regression tests for `scry` (dot-73z, dot-ffu.1, dot-ffu.2).
 #
 # Stubs `pgrep`, `open` and Obsidian's `obsidian-cli` on PATH. The stub
 # CLI keeps a fake vault list in a JSON file and acts on the IPC messages
@@ -197,6 +197,45 @@ err=$("$SCRIPT" remove /b 2>&1)
 check "remove: refusal fails" "1" "$?"
 check "remove: refusal reason" \
   "scry: could not remove /b: Obsidian refused; is it the only vault open?" "$err"
+teardown
+
+# close: open vaults' windows close, closed ones are left alone, and
+# every vault stays listed.
+setup
+touch "$STUB_RUNNING"
+mkdir "$work/a"
+add_vault keep /keep true
+add_vault ida "$work/a" true
+add_vault idb /b false
+"$SCRIPT" close "$work/a/" /b
+check "close: exit status" "0" "$?"
+check "close: closes only the open one" "close ida" "$(cat "$STUB_LOG")"
+check "close: vaults stay listed" "ida,idb,keep" \
+  "$(jq -r 'keys | join(",")' "$STUB_VAULTS")"
+check "close: vault is now closed" "false" "$(jq '.ida.open' "$STUB_VAULTS")"
+teardown
+
+# close: unknown path fails, the known ones still close; no args is usage.
+setup
+touch "$STUB_RUNNING"
+add_vault ida /a true
+err=$("$SCRIPT" close "$work/nope" /a 2>&1)
+check "close: unknown vault fails" "1" "$?"
+check "close: unknown vault reason" "scry: not a known vault: $work/nope" "$err"
+check "close: the known one still closes" "close ida" "$(cat "$STUB_LOG")"
+"$SCRIPT" close >/dev/null
+check "close: no args fails" "1" "$?"
+teardown
+
+# close: a window that never closes is reported.
+setup
+touch "$STUB_RUNNING"
+add_vault ida /a true
+sed -i '' "s/set_vaults --arg id \"\$target\" '.\[\$id\].open = false'/:/" \
+  "$work/bin/obsidian-cli"
+err=$("$SCRIPT" close /a 2>&1)
+check "close: stuck window fails" "1" "$?"
+check "close: stuck window reason" "scry: could not close /a" "$err"
 teardown
 
 # prune: only vaults whose folder is gone go, open or not.
