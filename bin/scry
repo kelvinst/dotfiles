@@ -35,7 +35,7 @@ Commands:
 
   restart  Quit Obsidian and launch it again.
 
-  reveal   Open the vault holding a folder and show it in the file tree.
+  reveal   Open the vault holding a path and show it in the file tree.
 
   help     Show this help.
 
