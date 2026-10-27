@@ -383,6 +383,8 @@ export STUB_LIST_EMPTY=1
 err=$("$SCRIPT" prune 2>&1)
 check "prune: unreadable list fails" "1" "$?"
 check "prune: unreadable list reason" "scry: could not read Obsidian's vault list" "$err"
+check "prune: dropped replies are read 3 times, not more" "3" \
+  "$(cat "$STUB_VAULTS.reads")"
 unset STUB_LIST_EMPTY
 teardown
 

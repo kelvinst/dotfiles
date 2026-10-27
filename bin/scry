@@ -138,22 +138,6 @@ cli() {
   perl -e 'alarm shift; exec @ARGV' 10 obsidian-cli "$@" </dev/null 2>&1
 }
 
-# An eval's value, without the "=> " prefix. The CLI now and then drops a
-# reply and prints nothing, so this retries an empty one: only use it for
-# reads and calls that are safe to repeat.
-eval_read() {
-  local out
-  for _ in 1 2 3; do
-    out=$(cli "$@" || true)
-    if [ -n "$out" ]; then
-      printf '%s\n' "${out#=> }"
-      return 0
-    fi
-    sleep 0.3
-  done
-  return 1
-}
-
 # Launches Obsidian when it is not running: in the background (-g), so it
 # doesn't steal focus, unless $1 is "front" — only `open` shows a vault.
 ensure_ready() {
@@ -173,15 +157,17 @@ ensure_ready() {
 }
 
 # The vault list as JSON: {"<id>": {"path": ..., "open": true?}, ...}.
-# Besides dropping replies, the CLI sometimes answers with an error line
-# instead (e.g. "Vault not found." from a window that is closing), so this
-# retries any reply that is not a JSON object rather than hand it to jq.
+# The CLI now and then drops a reply and prints nothing, or prints an
+# error line instead (e.g. "Vault not found." from a window that is
+# closing), so this retries anything that is not a JSON object rather than
+# hand it to jq.
 vaults_json() {
   local out
   for _ in 1 2 3; do
-    out=$(eval_read eval \
+    out=$(cli eval \
       code="JSON.stringify(window.electron.ipcRenderer.sendSync('vault-list'))" ||
       true)
+    out=${out#=> }
     if jq -e 'type == "object"' >/dev/null 2>&1 <<<"$out"; then
       printf '%s\n' "$out"
       return 0
