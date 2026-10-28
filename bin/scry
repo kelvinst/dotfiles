@@ -198,10 +198,7 @@ vault_id() {
 # saying why) when the vault list can't be read.
 vault_for_path() {
   local json
-  if ! json=$(vaults_json); then
-    echo "scry: could not read Obsidian's vault list" >&2
-    return 2
-  fi
+  json=$(vault_list) || return 2
   jq -er --arg p "$1" '[to_entries[] |
     (.value.path | rtrimstr("/")) as $v |
     select($p == $v or ($p | startswith($v + "/")))] |
@@ -411,10 +408,7 @@ cmd_prune() {
   local failed=0 dir paths offline
   # Read the list up front: a failed read inside `< <(...)` would go
   # unnoticed and look like nothing to prune.
-  if ! paths=$(vaults_json | jq -r '.[].path'); then
-    echo "scry: could not read Obsidian's vault list" >&2
-    exit 1
-  fi
+  paths=$(vault_list | jq -r '.[].path') || exit 1
   while IFS= read -r dir; do
     # An empty list still yields one empty line through <<<.
     [ -n "$dir" ] || continue
