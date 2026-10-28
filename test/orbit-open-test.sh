@@ -19,7 +19,9 @@ setup() {
   : >"$STUB_LAUNCHED"
   mkdir -p "$work/bin"
 
-  # `<window-id> <bundle-id>` per line in STUB_WINDOWS, wherever they are.
+  # `<window-id> <bundle-id>` per line in STUB_WINDOWS, wherever they are
+  # (`<id>|<bundle-id>|<title>` for --main lookups); window ids in
+  # STUB_FOCUSED are the app's windows on the focused workspace.
   cat >"$work/bin/aerospace" <<'STUB'
 #!/bin/sh
 printf 'aerospace %s\n' "$*" >>"$STUB_LOG"
@@ -27,7 +29,7 @@ case $1 in
 list-windows)
   case " $* " in
   *" --all "*) printf '%s\n' "${STUB_WINDOWS-}" | sed '/^$/d' ;;
-  *) ;; # nothing on the focused workspace
+  *) printf '%s\n' "${STUB_FOCUSED-}" | sed '/^$/d' ;;
   esac
   ;;
 esac
@@ -118,6 +120,28 @@ STUB_RUNNING=net.whatsapp.WhatsApp STUB_WINDOWS="9 net.whatsapp.WhatsApp" \
   "$ORBIT" open -g net.whatsapp.WhatsApp
 check "open call" "$(opens)" ""
 check "focused" "$(grep -c '^aerospace focus --window-id 9$' "$STUB_LOG")" "1"
+teardown
+
+# --- --main ----------------------------------------------------------------
+# cmd-ctrl-c: a Claude window on this workspace wins; else the main window
+# (titled "Claude") gets focus where it is, never pulled over.
+CLAUDE=com.anthropic.claudefordesktop
+echo "--main, window on focused workspace: focused there"
+setup
+STUB_RUNNING=$CLAUDE STUB_FOCUSED=5 \
+  STUB_WINDOWS="3|$CLAUDE|Claude" "$ORBIT" open -m Claude $CLAUDE
+check "focused" "$(grep -c '^aerospace focus --window-id 5$' "$STUB_LOG")" "1"
+check "nothing moved" "$(grep -c move-node "$STUB_LOG")" "0"
+teardown
+
+echo "--main, none on focused workspace: main window focused, not moved"
+setup
+STUB_RUNNING=$CLAUDE \
+  STUB_WINDOWS="$(printf '4|%s|chat\n3|%s|Claude' $CLAUDE $CLAUDE)" \
+  "$ORBIT" open -m Claude $CLAUDE
+check "focused" "$(grep -c '^aerospace focus --window-id 3$' "$STUB_LOG")" "1"
+check "nothing moved" "$(grep -c move-node "$STUB_LOG")" "0"
+check "open call" "$(opens)" ""
 teardown
 
 if [ "$failures" -eq 0 ]; then

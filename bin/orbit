@@ -65,7 +65,7 @@ EOF
 
 cmd_open_help() {
   cat <<'EOF'
-Usage: orbit open [-g|--global] [-p|--pull] <bundle-id>
+Usage: orbit open [-g|--global] [-p|--pull] [-m|--main <title>] <bundle-id>
 
 Focus an app window in the focused aerospace workspace, or spawn a new
 window here.
@@ -75,6 +75,10 @@ Options:
   -p, --pull    If an existing window lives in another workspace, move it
                 to the focused workspace before focusing. Implies --global
                 (a global search is needed either way).
+  -m, --main <title>
+                With no window in the focused workspace, focus the app's
+                window titled <title> wherever it is (its main window,
+                left in place), else any of its windows.
 EOF
 }
 
@@ -328,6 +332,7 @@ cmd_open() {
 
   any_workspace=0
   pull=0
+  main_title=""
   while [ "$#" -gt 0 ]; do
     case "$1" in
     -g | --global)
@@ -337,6 +342,10 @@ cmd_open() {
     -p | --pull)
       pull=1
       shift
+      ;;
+    -m | --main)
+      main_title="${2:?orbit open: --main needs a title}"
+      shift 2
       ;;
     -*)
       echo "orbit open: unknown option '$1'" >&2
@@ -355,7 +364,20 @@ cmd_open() {
 
   bundle_id="$1"
 
-  if [ "$any_workspace" -eq 1 ]; then
+  window_id=""
+  if [ -n "$main_title" ]; then
+    window_id=$(aerospace list-windows --workspace focused --app-bundle-id "$bundle_id" --format '%{window-id}' 2>/dev/null | head -n1)
+    if [ -z "$window_id" ]; then
+      window_id=$(aerospace list-windows --all --format '%{window-id}|%{app-bundle-id}|%{window-title}' 2>/dev/null |
+        awk -F'|' -v id="$bundle_id" -v title="$main_title" '$2 == id && $3 == title {print $1; exit}')
+    fi
+    # No main window either: take any of the app's windows.
+    [ -z "$window_id" ] && any_workspace=1
+  fi
+
+  if [ -n "$window_id" ]; then
+    :
+  elif [ "$any_workspace" -eq 1 ]; then
     window_id=$(aerospace list-windows --all --format '%{window-id} %{app-bundle-id}' 2>/dev/null |
       awk -v id="$bundle_id" '$2 == id {print $1; exit}')
   else
