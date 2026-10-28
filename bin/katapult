@@ -1,0 +1,55 @@
+#!/usr/bin/env python3
+"""Print a link that opens any URI through Katapult.
+
+The Claude app renders bare obsidian:// (and other non-https) links but
+blocks the click, so a link for the chat goes through Katapult
+(kelvinst/katapult), a one-page redirector that launches the URI in its
+fragment. Hammerspoon's linkrouting.lua catches those links on the Mac.
+
+Usage:
+  katapult <uri>...                     one Katapult URL per URI
+  katapult note <vault> <name>[#heading]...
+                                        a Markdown link per note, opening it
+                                        in a new Obsidian tab of <vault>
+"""
+
+import sys
+from urllib.parse import quote
+
+KATAPULT = "https://kelvinst.github.io/katapult/#"
+
+
+def wrap(uri):
+    return KATAPULT + quote(uri, safe="")
+
+
+def note(vault, target):
+    # By name, not path, so the link survives the note moving.
+    target = target.removesuffix(".md")
+    name, _, subpath = target.partition("#")
+    uri = (
+        f"obsidian://open?vault={quote(vault, safe='')}"
+        f"&file={quote(target, safe='')}&paneType=tab"
+    )
+    text = name + (f" › {subpath.lstrip('^')}" if subpath else "")
+    return f"[{text}]({wrap(uri)})"
+
+
+def main(args):
+    if not args or args[0] in ("-h", "--help", "help"):
+        print(__doc__.strip())
+        return 0 if args else 1
+    if args[0] == "note":
+        if len(args) < 3:
+            print("usage: katapult note <vault> <name>...", file=sys.stderr)
+            return 1
+        for target in args[2:]:
+            print(note(args[1], target))
+        return 0
+    for uri in args:
+        print(wrap(uri))
+    return 0
+
+
+if __name__ == "__main__":
+    sys.exit(main(sys.argv[1:]))

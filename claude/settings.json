@@ -29,6 +29,14 @@
             "command": "bash \"$HOME/.claude/hooks/code-review-suggest-fix.sh\""
           }
         ]
+      },
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "bash \"$HOME/.claude/hooks/katapult-links-prompt.sh\""
+          }
+        ]
       }
     ]
   },
