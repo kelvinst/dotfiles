@@ -78,7 +78,7 @@ Options:
   -m, --main <title>
                 With no window in the focused workspace, focus the app's
                 window titled <title> wherever it is (its main window,
-                left in place), else any of its windows.
+                left in place), else its oldest window.
 EOF
 }
 
@@ -368,11 +368,15 @@ cmd_open() {
   if [ -n "$main_title" ]; then
     window_id=$(aerospace list-windows --workspace focused --app-bundle-id "$bundle_id" --format '%{window-id}' 2>/dev/null | head -n1)
     if [ -z "$window_id" ]; then
+      # No window titled <title> (the app may retitle its main window):
+      # take the app's oldest one, the lowest window id.
       window_id=$(aerospace list-windows --all --format '%{window-id}|%{app-bundle-id}|%{window-title}' 2>/dev/null |
-        awk -F'|' -v id="$bundle_id" -v title="$main_title" '$2 == id && $3 == title {print $1; exit}')
+        awk -F'|' -v id="$bundle_id" -v title="$main_title" '
+          $2 != id { next }
+          $3 == title { found = $1; exit }
+          oldest == "" || $1 + 0 < oldest + 0 { oldest = $1 }
+          END { print (found != "" ? found : oldest) }')
     fi
-    # No main window either: take any of the app's windows.
-    [ -z "$window_id" ] && any_workspace=1
   fi
 
   if [ -n "$window_id" ]; then
