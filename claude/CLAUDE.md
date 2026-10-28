@@ -11,19 +11,3 @@
   item gets filed, a design or plan gets approved, the item's work starts (code
   in a code repo, the deliverable notes, research or documents in a notes
   repo). The `kix:close` skill runs it itself for 📦 and 🏁.
-
-## Asking questions
-
-- Every AskUserQuestion, from any skill or a plain reply, goes out in this
-  order:
-  1. the text the user needs to answer it — a finding block, the options
-     explained, links — in the reply;
-  2. a real, read-only command of its own (a `grep`, a `bd show`, a
-     `git status`, `log` or `diff` the question is about);
-  3. the ❓ line, when the skill uses progress lines;
-  4. the AskUserQuestion call.
-- The app summarizes the reply text that comes right before a question card,
-  and on mobile the user then gets a one-line summary instead of the block. A
-  tool call between the text and the card keeps the text whole.
-- Links never go inside the question card — not in the question, its options or
-  their descriptions: a link in a card cannot be opened on mobile.
