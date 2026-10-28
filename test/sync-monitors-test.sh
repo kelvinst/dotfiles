@@ -30,11 +30,6 @@ printf '%s\n' "$*" >>"$STUB_LOG"
 sub=$1
 shift
 
-has() {
-  for a in "$@"; do [ "$a" = "$1" ] && return 0; done
-  return 1
-}
-
 case $sub in
 list-monitors)
   if [ "${1-}" = "--format" ]; then
