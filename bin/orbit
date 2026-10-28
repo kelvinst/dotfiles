@@ -364,7 +364,6 @@ cmd_open() {
 
   bundle_id="$1"
 
-  window_id=""
   if [ -n "$main_title" ]; then
     window_id=$(aerospace list-windows --workspace focused --app-bundle-id "$bundle_id" --format '%{window-id}' 2>/dev/null | head -n1)
     if [ -z "$window_id" ]; then
@@ -377,10 +376,6 @@ cmd_open() {
           oldest == "" || $1 + 0 < oldest + 0 { oldest = $1 }
           END { print (found != "" ? found : oldest) }')
     fi
-  fi
-
-  if [ -n "$window_id" ]; then
-    :
   elif [ "$any_workspace" -eq 1 ]; then
     window_id=$(aerospace list-windows --all --format '%{window-id} %{app-bundle-id}' 2>/dev/null |
       awk -v id="$bundle_id" '$2 == id {print $1; exit}')
