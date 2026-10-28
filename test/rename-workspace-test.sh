@@ -134,6 +134,12 @@ check "window a" "$(on a)" "1⠀DT-SCRY⠀2"
 check "saved" "$(tr '\t\n' '= ' <"$XDG_STATE_HOME/orbit/labels")" "1=DT-SCRY⠀2 "
 teardown
 
+echo "rename: accented letters are put in capitals too, whatever the locale"
+setup 1 a=1
+LC_ALL=C LANG= "$ORBIT" rename-workspace "ação"
+check "window a" "$(on a)" "1⠀AÇÃO"
+teardown
+
 echo "rename: a new label replaces the old one"
 setup "1⠀Code" a="1⠀Code"
 "$ORBIT" rename-workspace Notes

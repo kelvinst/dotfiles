@@ -1121,9 +1121,10 @@ cmd_rename_workspace() {
   # Words joined by single gaps (see `GAP`), ends trimmed: the label is
   # typed into a prompt, aerospace takes no spaces, and a stray one
   # would make `1⠀⠀CODE` and `1⠀CODE` different workspaces. Capitals
-  # read better in the menu bar.
+  # read better in the menu bar; in UTF-8, since Hammerspoon runs orbit
+  # with no LANG and the C locale leaves `ç` lowercase.
   label=$(printf '%s\n' "$*" | tr -s ' \t' '  ' | sed 's/^ //;s/ $//' |
-    tr '[:lower:]' '[:upper:]')
+    LC_ALL=en_US.UTF-8 tr '[:lower:]' '[:upper:]')
   label=$(printf '%s\n' "$label" | sed "s/ /$GAP/g")
   with_workspace_mutation_lock _cmd_rename_workspace_locked _rename_workspace_restore "$label"
 }
