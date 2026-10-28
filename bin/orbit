@@ -56,7 +56,8 @@ Commands:
 
   rename-workspace
            Give the focused workspace a label shown next to its number in
-           the menu bar (`1` → `1⠀Code`). An empty label drops it.
+           the menu bar (`1` → `1⠀CODE`), in capitals. An empty label
+           drops it.
 
   restore-labels
            Put saved labels back on their workspaces after an AeroSpace
@@ -170,12 +171,13 @@ Usage: orbit rename-workspace [<label>...]
 
 Label the focused workspace. AeroSpace has no rename and its menu bar
 shows workspace names as they are, so the label goes into the name: the
-windows (and root layout) move from `1` to a workspace named `1⠀<label>`,
+windows (and root layout) move from `1` to a workspace named `1⠀<LABEL>`,
 and the emptied `1` drops out of the menu bar. The gap, and any space in
 the label, is U+2800 BRAILLE PATTERN BLANK — AeroSpace refuses real
 whitespace in a name, and this one draws as a space. The leading number stays
 the workspace's position — `orbit workspace 1` and friends find it by
-that. No label, or a blank one, goes back to the bare number.
+that. Labels are always in capitals, which read better in the menu bar.
+No label, or a blank one, goes back to the bare number.
 
 Labels are saved under `$XDG_STATE_HOME/orbit/labels` (or
 `~/.local/state/orbit/labels`): going back to an emptied position brings
@@ -1118,8 +1120,10 @@ cmd_rename_workspace() {
 
   # Words joined by single gaps (see `GAP`), ends trimmed: the label is
   # typed into a prompt, aerospace takes no spaces, and a stray one
-  # would make `1⠀⠀Code` and `1⠀Code` different workspaces.
-  label=$(printf '%s\n' "$*" | tr -s ' \t' '  ' | sed 's/^ //;s/ $//')
+  # would make `1⠀⠀CODE` and `1⠀CODE` different workspaces. Capitals
+  # read better in the menu bar.
+  label=$(printf '%s\n' "$*" | tr -s ' \t' '  ' | sed 's/^ //;s/ $//' |
+    tr '[:lower:]' '[:upper:]')
   label=$(printf '%s\n' "$label" | sed "s/ /$GAP/g")
   with_workspace_mutation_lock _cmd_rename_workspace_locked _rename_workspace_restore "$label"
 }

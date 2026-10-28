@@ -1,6 +1,6 @@
 -- Workspace labels. alt-shift-r opens a small prompt in the middle of the
 -- focused screen, pre-filled with the focused workspace's label; Enter
--- hands it to `orbit rename-workspace`, which puts it next to the
+-- hands it to `orbit rename-workspace`, which puts it in capitals next to the
 -- workspace number in the menu bar, and a spinner shows until it's done.
 -- An empty label drops it, Esc or clicking away leaves everything as it
 -- was.
@@ -80,7 +80,7 @@ local PAGE = [[
          font: 20px -apple-system, system-ui, sans-serif; color: #e1e3e4; }
   span { opacity: 0.6; font-variant-numeric: tabular-nums; }
   input { flex: 1; font: inherit; color: inherit; background: transparent;
-          border: 0; outline: 0; }
+          border: 0; outline: 0; text-transform: uppercase; }
   input:disabled { opacity: 0.5; }
   #spin { display: none; width: 18px; height: 18px; border-radius: 50%;
           border: 2px solid rgba(225, 227, 228, 0.25);

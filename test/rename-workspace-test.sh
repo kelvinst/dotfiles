@@ -115,22 +115,29 @@ echo "rename: windows move to the labeled name, focus stays on them"
 setup 1 a=1 b=1 c=2
 "$ORBIT" rename-workspace Code
 check "exit status" "$?" "0"
-check "window a" "$(on a)" "1⠀Code"
-check "window b" "$(on b)" "1⠀Code"
+check "window a" "$(on a)" "1⠀CODE"
+check "window b" "$(on b)" "1⠀CODE"
 check "other workspace untouched" "$(on c)" "2"
-check "focused" "$(focused)" "1⠀Code"
+check "focused" "$(focused)" "1⠀CODE"
 teardown
 
 echo "rename: spaces in the label become gaps, extra ones dropped"
 setup 2 a=2
 "$ORBIT" rename-workspace "  Web   stuff "
-check "window a" "$(on a)" "2⠀Web⠀stuff"
+check "window a" "$(on a)" "2⠀WEB⠀STUFF"
+teardown
+
+echo "rename: labels are put in capitals"
+setup 1 a=1
+"$ORBIT" rename-workspace "dt-Scry 2"
+check "window a" "$(on a)" "1⠀DT-SCRY⠀2"
+check "saved" "$(tr '\t\n' '= ' <"$XDG_STATE_HOME/orbit/labels")" "1=DT-SCRY⠀2 "
 teardown
 
 echo "rename: a new label replaces the old one"
 setup "1⠀Code" a="1⠀Code"
 "$ORBIT" rename-workspace Notes
-check "window a" "$(on a)" "1⠀Notes"
+check "window a" "$(on a)" "1⠀NOTES"
 teardown
 
 echo "rename: an empty label goes back to the bare number"
@@ -237,7 +244,7 @@ echo "saved: a rename is remembered, a new one replaces it"
 setup 1 a=1 b=2
 "$ORBIT" rename-workspace Code
 "$ORBIT" rename-workspace Notes
-check "labels" "$(labels)" "1=Notes "
+check "labels" "$(labels)" "1=NOTES "
 teardown
 
 echo "saved: an empty label forgets it"
