@@ -155,6 +155,12 @@ function M.show()
     return
   end
 
+  -- Read before the prompt takes focus, which would answer with the
+  -- prompt itself. AeroSpace window ids are the CGWindowIDs hs.window
+  -- gives.
+  local focused = hs.window.focusedWindow()
+  origin = focused and tostring(focused:id()) or nil
+
   -- The main screen is the one holding the focused window.
   local screen = hs.screen.mainScreen():frame()
   M.prompt:frame({
@@ -174,13 +180,12 @@ function M.show()
   -- Filled in once aerospace answers, in the background like cancel's
   -- refocus: right after a cancel aerospace can take 3s to answer while
   -- it settles focus, and a blocking lookup held the prompt back that
-  -- long. One shell for both lookups.
-  origin = nil
+  -- long.
   M.lookup = hs.task.new("/bin/sh", function(_, out)
     if not M.prompt:isVisible() or applying then
       return
     end
-    local current, window = (out or ""):match("^([^\n]*)\n?([^\n]*)")
+    local current = (out or ""):match("^([^\n]*)")
     local position, rest = (current or ""):match("^(%d+)(.*)$")
     if not position then
       -- Nothing to keep a number for (splash, or a workspace named some
@@ -191,16 +196,10 @@ function M.show()
     -- orbit spells the gap, and every space in a label, as U+2800 (see
     -- `orbit rename-workspace help`); the prompt shows plain spaces.
     local label = rest:gsub("^" .. GAP, ""):gsub(GAP, " ")
-    origin = window ~= "" and window or nil
     M.prompt:evaluateJavaScript(
       "open(" .. hs.json.encode({ position, label }):sub(2, -2) .. ")"
     )
-  end, {
-    "-c",
-    PATH_PREFIX
-      .. "aerospace list-workspaces --focused; "
-      .. "aerospace list-windows --focused --format '%{window-id}'",
-  })
+  end, { "-c", PATH_PREFIX .. "aerospace list-workspaces --focused" })
   M.lookup:start()
 end
 
