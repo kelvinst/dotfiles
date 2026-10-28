@@ -152,7 +152,8 @@ cli() {
 }
 
 # Launches Obsidian when it is not running: in the background (-g), so it
-# doesn't steal focus, unless $1 is "front" — only `open` shows a vault.
+# doesn't steal focus, unless $1 is "front" — only `open` and `reveal` show
+# a vault.
 ensure_ready() {
   # A scalar, not an array: an empty "${a[@]}" trips set -u on the
   # /bin/bash 3.2 that Hammerspoon or launchd may run us with.
