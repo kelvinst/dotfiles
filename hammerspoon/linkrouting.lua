@@ -22,9 +22,17 @@ local OBSIDIAN_BUNDLE_ID = "md.obsidian"
 
 -- Katapult (kelvinst/katapult) is a one-page https redirector to any scheme,
 -- the target URL-encoded after the `#`: chat apps only follow https links, so
--- vault notes are linked through it. For an Obsidian note the page has
--- nothing to add here: unwrap it and skip the browser tab altogether.
+-- links to other schemes go through it. The page has nothing to add here:
+-- unwrap the target and open it ourselves, without a browser tab — and so
+-- without the network, since the page is never fetched.
 local KATAPULT_PREFIX = "https://kelvinst.github.io/katapult/#"
+
+-- Schemes a Katapult link may open without asking. Links reach the chat from
+-- content an agent read, not only from us, and a scheme can make its app do
+-- anything it exposes (`shortcuts://run-shortcut`, say), so any other scheme
+-- asks first — the job the Katapult page itself does in a browser.
+-- obsidian:// is not listed: it has its own opener below.
+local TRUSTED_SCHEMES = {}
 
 -- $0 is a throwaway shell name, $1 the bundle id, $2 the URL — passed as
 -- argv rather than interpolated so URLs never reach the shell as code.
@@ -163,14 +171,42 @@ local function percent_decode(text)
   )
 end
 
--- The script and arguments that open `url`: a Katapult link to obsidian://
--- goes straight to OPEN_OBSIDIAN; everything else, other Katapult targets
--- included, goes to the browser, where the page asks before launching an app.
+-- Hands a Katapult target to whatever app macOS has for its scheme. $1 is
+-- unused, kept so every script takes the same arguments; $2 is the URI.
+local OPEN_URI = [[
+exec </dev/null
+open "$2"
+]]
+
+-- Whether to open a Katapult target of an untrusted scheme: a modal alert
+-- showing the URI, with Cancel as the default button so a stray Return
+-- launches nothing.
+local function confirm(target)
+  hs.focus()
+  local button =
+    hs.dialog.blockAlert("Open this link?", target, "Cancel", "Open", "warning")
+  return button == "Open"
+end
+
+-- The script and arguments that open `url`, or nothing when the click was
+-- declined. A Katapult link opens its target here: obsidian:// through
+-- OPEN_OBSIDIAN, http(s) through the browser like any other link, a trusted
+-- scheme straight away, and any other scheme once confirmed. Everything
+-- else goes to the browser.
 local function opener(url)
   if url:sub(1, #KATAPULT_PREFIX) == KATAPULT_PREFIX then
     local target = percent_decode(url:sub(#KATAPULT_PREFIX + 1))
-    if target:match("^obsidian://") then
+    local scheme = target:match("^(%a[%w+.-]*):")
+    scheme = scheme and scheme:lower()
+    if scheme == "obsidian" then
       return OPEN_OBSIDIAN, OBSIDIAN_BUNDLE_ID, target
+    elseif scheme == "http" or scheme == "https" then
+      return OPEN_LINK, BROWSER_BUNDLE_ID, target
+    elseif scheme then
+      if TRUSTED_SCHEMES[scheme] or confirm(target) then
+        return OPEN_URI, "", target
+      end
+      return nil
     end
   end
   return OPEN_LINK, BROWSER_BUNDLE_ID, url
@@ -186,6 +222,9 @@ local running = {}
 
 function hs.urlevent.httpCallback(_scheme, _host, _params, fullURL)
   local script, bundle_id, url = opener(fullURL)
+  if not script then
+    return
+  end
   local task
   task = hs.task.new("/bin/sh", function(exitCode, _stdout, stderr)
     -- Nothing else surfaces a failure here: once Hammerspoon is the
