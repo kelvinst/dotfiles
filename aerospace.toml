@@ -8,12 +8,11 @@ config-version = 2
 # You can use it to add commands that run after AeroSpace startup.
 # Available commands : https://nikitabobko.github.io/AeroSpace/commands
 #
-# Seeds workspace 0 onto the secondary monitor at startup;
-# `[workspace-to-monitor-force-assignment]` keeps it there. Then puts the
-# saved workspace labels back (`orbit restore-labels help`).
+# Puts the saved workspace labels back (`orbit restore-labels help`).
+# Workspace 0 needs no seeding: `[workspace-to-monitor-force-assignment]`
+# puts it on the secondary monitor whenever it comes up.
 after-startup-command = [
   'exec-and-forget borders active_color=0xffe1e3e4 inactive_color=0xff494d64 width=5.0',
-  'move-workspace-to-monitor --workspace 0 secondary',
   'exec-and-forget orbit restore-labels',
 ]
 
@@ -53,7 +52,7 @@ automatically-unhide-macos-hidden-apps = true
 # even when they are invisible.
 # This config version is only available since 'config-version = 2'
 # Fallback value (if you omit the key): persistent-workspaces = []
-persistent-workspaces = ['0', '1']
+persistent-workspaces = []
 
 # A callback that runs every time binding mode changes
 # See: https://nikitabobko.github.io/AeroSpace/guide#binding-modes
@@ -291,11 +290,12 @@ on-mode-changed = []
     r = ['exec-and-forget orbit flatten-workspace-tree', 'mode main'] # reset layout
     f = ['layout floating tiling', 'mode main'] # Toggle between floating and tiling layout
     backspace = ['close-all-windows-but-current', 'mode main']
-    # Re-seed workspace 0 onto the secondary monitor. Mirrors
-    # `after-startup-command` for when a monitor reconnect drops the pinning.
+    # Re-seed workspace 0 onto the secondary monitor, for when a monitor
+    # reconnect drops the pinning. `mode main` first: with no workspace 0
+    # the move fails, and that would leave service mode on.
     m = [
-      'move-workspace-to-monitor --workspace 0 secondary',
       'mode main',
+      'move-workspace-to-monitor --workspace 0 secondary',
     ]
 
     # sticky is not yet supported https://github.com/nikitabobko/AeroSpace/issues/2

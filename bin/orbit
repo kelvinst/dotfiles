@@ -65,8 +65,7 @@ Commands:
   workspace, move-node-to-workspace, summon-workspace
            `aerospace` commands, with a bare number as the workspace
            resolved to that position's workspace, label and all — `orbit
-           workspace 1` focuses `1⠀Code`. `next`/`prev` skip the empty
-           persistent `1` a labeled `1⠀Code` leaves behind.
+           workspace 1` focuses `1⠀Code`.
 
   help     Show this help.
 
@@ -242,8 +241,7 @@ save_label() {
 
 # The workspace at position $1 under whatever label it carries now; else
 # under its saved label; else the bare number. Aerospace creates either
-# on demand like any other name. A labeled one wins over a bare one, which
-# only survives empty because it's persistent.
+# on demand like any other name.
 workspace_by_position() {
   labeled=$(aerospace list-workspaces --all 2>/dev/null |
     awk -v p="$1$GAP" 'index($0, p) == 1 {print; exit}')
@@ -253,25 +251,9 @@ workspace_by_position() {
   printf '%s\n' "$labeled"
 }
 
-# The focused monitor's workspaces, the list `next`/`prev` walk, minus
-# a bare number with a labeled workspace at the same position: that one
-# only survives empty because it's persistent, and stepping onto it would
-# look like a stray empty workspace beside the labeled one. Kept when
-# it's the focused one, which the walk has to start from.
-workspace_cycle() {
-  focused=$(aerospace list-workspaces --focused)
-  aerospace list-workspaces --monitor focused | awk -v gap="$GAP" -v cur="$focused" '
-    { names[NR] = $0; i = index($0, gap); if (i) labeled[substr($0, 1, i - 1)] = 1 }
-    END {
-      for (n = 1; n <= NR; n++)
-        if (!(names[n] in labeled) || names[n] == cur) print names[n]
-    }'
-}
-
 # `aerospace $1 ... <workspace>` with a bare-number trailing workspace
-# resolved through `workspace_by_position`, and a trailing `next`/`prev`
-# walking `workspace_cycle` unless the caller picked its own stdin
-# handling. Anything else — a full name, a flag — goes through untouched.
+# resolved through `workspace_by_position`. Anything else — a full name,
+# `next`/`prev`, a flag — goes through untouched.
 cmd_by_position() {
   sub=$1
   shift
@@ -289,13 +271,6 @@ cmd_by_position() {
     fi
     set -- "$@" "$arg"
   done
-  case " $* " in
-  *" --stdin "* | *" --no-stdin "*) ;;
-  *" next " | *" prev ")
-    workspace_cycle | aerospace "$sub" --stdin "$@"
-    return
-    ;;
-  esac
   aerospace "$sub" "$@"
 }
 
@@ -1160,9 +1135,9 @@ _cmd_rename_workspace_locked() {
 
   # Bring the new name up on this monitor before anything moves, so the
   # windows never show anywhere else. `summon-workspace` pulls a
-  # workspace that already exists elsewhere (a persistent bare number)
-  # over here; it refuses one force-assigned to another monitor, and
-  # then plain `workspace` is all there is.
+  # workspace that already exists elsewhere over here; it refuses one
+  # force-assigned to another monitor, and then plain `workspace` is all
+  # there is.
   aerospace summon-workspace "$new" 2>/dev/null || aerospace workspace "$new"
 
   for wid in $wids; do
@@ -1691,9 +1666,8 @@ Adapt aerospace to the monitors currently attached. Meant to be driven by
 a display watcher (see `~/.hammerspoon/monitors.lua`) but safe to run by hand.
 
 With an external monitor attached:
-  - workspace 0 is pushed to the secondary monitor, the same
-    seeding `after-startup-command` and the `alt-semicolon` service-mode
-    `m` binding do;
+  - workspace 0, when it exists, is pushed to the secondary monitor, the
+    same seeding the `alt-semicolon` service-mode `m` binding does;
   - every populated main-monitor workspace is flattened into `tiles`,
     which is what a wide screen is for. Secondary-monitor workspaces are
     left alone.
@@ -1745,11 +1719,16 @@ sync_monitors_monitor_of() {
     awk -v ws="$1" '$1 == ws {print $2; exit}'
 }
 
+sync_monitors_secondary() {
+  # The monitor-id of the first monitor that isn't the main one.
+  aerospace list-monitors --format '%{monitor-id} %{monitor-is-main}' 2>/dev/null |
+    awk '$2 == "false" {print $1; exit}'
+}
+
 sync_monitors_main_workspaces() {
   # Populated workspaces on every monitor except $1, the secondary.
-  # `list-workspaces` takes a monitor-id but has no `main` keyword, and
-  # nothing reports which id that is, so the caller works it out from
-  # where the seeding left workspace 0 and passes it in.
+  # `list-workspaces` takes a monitor-id but has no `main` keyword, so the
+  # caller looks the secondary's up and passes it in.
   #
   # The listing is captured before awk sees it: piped straight in, a
   # failed `aerospace` would be masked by awk's own exit status and read
@@ -1883,22 +1862,22 @@ cmd_sync_monitors() {
   fi
 
   if [ "$mode" = external ]; then
-    # Mirrors `after-startup-command` and the service-mode `m` binding in
-    # `~/.aerospace.toml`.
-    # Position 0 under whatever label it carries.
-    ws0=$(workspace_by_position 0)
-    seeded=1
-    aerospace move-workspace-to-monitor --workspace "$ws0" secondary || seeded=0
-
-    # Workspace 0 doubles as the marker for which monitor is the secondary
-    # one, there being no query for that. Tiling on a guessed id is worse
-    # than not tiling at all: get it wrong and the filter inverts, taking
-    # the small screen apart and leaving the wide one in accordion. So a
-    # seeding that didn't land, or an id that doesn't read back, aborts
+    # Tiling on a guessed id is worse than not tiling at all: get it wrong
+    # and the filter inverts, taking the small screen apart and leaving
+    # the wide one in accordion. So an id that doesn't read back aborts
     # the run — nothing applied, nothing recorded, next event retries.
-    secondary=$(sync_monitors_monitor_of "$ws0")
-    if [ "$seeded" -eq 0 ] || [ -z "$secondary" ]; then
+    secondary=$(sync_monitors_secondary)
+    if [ -z "$secondary" ]; then
       return 1
+    fi
+
+    # Mirrors the service-mode `m` binding in `~/.aerospace.toml`.
+    # Position 0 under whatever label it carries, when it's there at all:
+    # it's not persistent, and `[workspace-to-monitor-force-assignment]`
+    # puts it on the secondary monitor whenever it comes back.
+    ws0=$(workspace_by_position 0)
+    if [ -n "$(sync_monitors_monitor_of "$ws0")" ]; then
+      aerospace move-workspace-to-monitor --workspace "$ws0" secondary || return 1
     fi
     workspaces=$(sync_monitors_main_workspaces "$secondary") || return 1
     sync_monitors_apply_layout tiles $workspaces || return 1

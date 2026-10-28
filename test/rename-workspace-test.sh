@@ -26,8 +26,8 @@ setup() {
   for pair in "$@"; do
     printf '%s|%s\n' "${pair%%=*}" "${pair#*=}" >>"$STUB_DIR/windows"
   done
-  # Persistent workspaces, there even when empty.
-  printf '0\n1\n' >"$STUB_DIR/persistent"
+  # Persistent workspaces, there even when empty: none, as configured.
+  : >"$STUB_DIR/persistent"
   : >"$STUB_DIR/calls"
 
   cat >"$work/bin/aerospace" <<'STUB'
@@ -46,10 +46,6 @@ arg_after() {
   done
 }
 last() { for a in "$@"; do :; done; printf '%s\n' "$a"; }
-
-for a in "$@"; do
-  [ "$a" = "--stdin" ] && cat >"$STUB_DIR/stdin"
-done
 
 sub=$1
 shift
@@ -180,24 +176,10 @@ setup 2 a="1⠀Code" b=2
 check "aerospace call" "$(last_call)" "move-node-to-workspace --focus-follows-window 1⠀Code"
 teardown
 
-echo "workspace next: walks a list without the shadowed persistent 1"
+echo "workspace next: passes through untouched"
 setup 2 a="1⠀Code" b=2
 "$ORBIT" workspace --wrap-around next
-# Not `last_call`: the listing and the walk run side by side in a pipe.
-check "aerospace call" "$(grep -c '^workspace --stdin --wrap-around next$' "$STUB_DIR/calls")" "1"
-check "walked list" "$(tr '\n' ' ' <"$STUB_DIR/stdin")" "0 1⠀Code 2 "
-teardown
-
-echo "workspace prev: the shadowed 1 stays in the list while focused"
-setup 1 a="1⠀Code"
-"$ORBIT" workspace --wrap-around prev
-check "walked list" "$(tr '\n' ' ' <"$STUB_DIR/stdin")" "0 1 1⠀Code "
-teardown
-
-echo "workspace next: an explicit --no-stdin is left alone"
-setup 2 b=2
-"$ORBIT" workspace --wrap-around --no-stdin next
-check "aerospace call" "$(last_call)" "workspace --wrap-around --no-stdin next"
+check "aerospace call" "$(last_call)" "workspace --wrap-around next"
 teardown
 
 echo "move-workspace: labels travel with their windows"

@@ -37,7 +37,18 @@ has() {
 
 case $sub in
 list-monitors)
-  printf '%s\n' "${STUB_COUNT-1}"
+  if [ "${1-}" = "--format" ]; then
+    # `<monitor-id> <is-main>`; the built-in alone, or with an external.
+    if [ -n "${STUB_MONITORS+set}" ]; then
+      printf '%s\n' "$STUB_MONITORS"
+    elif [ "${STUB_COUNT-1}" -gt 1 ]; then
+      printf '1 true\n2 false\n'
+    else
+      printf '1 true\n'
+    fi
+  else
+    printf '%s\n' "${STUB_COUNT-1}"
+  fi
   ;;
 list-workspaces)
   fmt=0
@@ -147,6 +158,29 @@ STUB_COUNT=2 \
 check "exit status" "$?" "0"
 check "recorded mode" "$(state)" "external"
 check "0 seeded" "$(grep -c '^move-workspace-to-monitor ' "$STUB_LOG")" "1"
+teardown
+
+echo "external: no workspace 0 to seed, main monitor still tiled"
+setup
+STUB_COUNT=2 \
+  STUB_WS_MON_ALL=$'1 1\n2 1' \
+  STUB_WS_MON_POPULATED=$'1 1\n2 1' \
+  STUB_LAYOUT=h_accordion STUB_LAYOUT_RC=0 \
+  "$ORBIT" sync-monitors --force
+check "exit status" "$?" "0"
+check "recorded mode" "$(state)" "external"
+check "nothing seeded" "$(grep -c '^move-workspace-to-monitor ' "$STUB_LOG")" "0"
+check "main workspaces flattened" "$(grep -c '^flatten-workspace-tree' "$STUB_LOG")" "2"
+teardown
+
+echo "external: an unreadable secondary monitor aborts without recording"
+setup
+STUB_COUNT=2 STUB_MONITORS="" \
+  STUB_WS_MON_ALL=$'0 2\n1 1' \
+  STUB_WS_MON_POPULATED=$'1 1' \
+  "$ORBIT" sync-monitors --force
+check "exit status" "$?" "1"
+check "recorded mode" "$(state)" "<missing>"
 teardown
 
 # --- dot-mjd: a labeled workspace 0 -------------------------------------
