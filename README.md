@@ -266,6 +266,15 @@ My new, simplified, dotfiles
    Control remap, so leave Caps Lock unmapped in System Settings → Keyboard →
    Keyboard Shortcuts → Modifier Keys.
 
+1. Clone [Katapult](https://github.com/kelvinst/katapult) next to it:
+   `make install` copies its `katapult-spoon.lua` into `~/.hammerspoon`, which
+   opens Katapult links without loading the page (see the step on the default
+   browser below).
+
+   ```shell
+   git clone git@github.com:kelvinst/katapult.git ~/Developer/katapult
+   ```
+
 1. Clone this repo and run `make` to install:
 
    ```shell
@@ -292,8 +301,9 @@ My new, simplified, dotfiles
    ```
 
 1. Make Hammerspoon the default browser, so links open in the Chrome window on
-   the _focused_ aerospace workspace instead of wherever Chrome last had focus.
-   macOS will ask for confirmation:
+   the _focused_ aerospace workspace instead of wherever Chrome last had focus,
+   and Katapult links open their app without a browser tab. macOS will ask for
+   confirmation:
 
    ```shell
    hs -c 'hs.urlevent.setDefaultHandler("http")'

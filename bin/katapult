@@ -4,7 +4,8 @@
 The Claude app renders bare obsidian:// (and other non-https) links but
 blocks the click, so a link for the chat goes through Katapult
 (kelvinst/katapult), a one-page redirector that launches the URI in its
-fragment. Hammerspoon's linkrouting.lua catches those links on the Mac.
+fragment. On the Mac, katapult-spoon.lua (same repo) has Hammerspoon
+open them without loading the page.
 
 Usage:
   katapult <uri>...                     one Katapult URL per URI

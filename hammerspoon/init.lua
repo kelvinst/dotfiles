@@ -12,6 +12,7 @@ require("hs.ipc")
 -- Monitor switching is off for now: it isn't working well, and it'll be
 -- revisited later (dot-nhy). Uncomment to turn it back on.
 -- monitors = require("monitors")
-linkrouting = require("linkrouting")
+-- Installed from kelvinst/katapult by `make install`, not kept here.
+katapult = require("katapult-spoon")
 windowhints = require("windowhints")
 workspacename = require("workspacename")
