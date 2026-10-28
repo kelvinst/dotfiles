@@ -94,13 +94,20 @@ local PAGE = [[
 <script>
   const input = document.getElementById("label");
   const send = (msg) => webkit.messageHandlers.workspacename.postMessage(msg);
+  // The prompt opens empty and is filled once aerospace answers, which
+  // can take seconds; whatever was typed by then wins over the fill.
+  let edited = false;
+  input.addEventListener("input", () => { edited = true; });
   function open(position, label) {
     document.body.classList.remove("busy");
     document.getElementById("position").textContent = position;
     input.disabled = false;
-    input.value = label;
+    if (position === "") edited = false;
+    if (!edited) {
+      input.value = label;
+      input.select();
+    }
     input.focus();
-    input.select();
   }
   function busy() {
     document.body.classList.add("busy");
