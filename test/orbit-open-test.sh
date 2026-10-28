@@ -144,6 +144,15 @@ check "nothing moved" "$(grep -c move-node "$STUB_LOG")" "0"
 check "open call" "$(opens)" ""
 teardown
 
+echo "--main, no window has the title: oldest window focused"
+setup
+STUB_RUNNING=$CLAUDE \
+  STUB_WINDOWS="$(printf '8|%s|chat a\n6|%s|chat b' $CLAUDE $CLAUDE)" \
+  "$ORBIT" open -m Claude $CLAUDE
+check "focused" "$(grep -c '^aerospace focus --window-id 6$' "$STUB_LOG")" "1"
+check "open call" "$(opens)" ""
+teardown
+
 if [ "$failures" -eq 0 ]; then
   echo "all passed"
 else
