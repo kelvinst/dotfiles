@@ -21,7 +21,8 @@ setup() {
 
   # `<window-id> <bundle-id>` per line in STUB_WINDOWS, wherever they are
   # (`<id>|<bundle-id>|<title>` for --main lookups); window ids in
-  # STUB_FOCUSED are the app's windows on the focused workspace.
+  # STUB_FOCUSED are the app's windows on the focused workspace, and
+  # STUB_FOCUSED_APP is the bundle id of the focused window.
   cat >"$work/bin/aerospace" <<'STUB'
 #!/bin/sh
 printf 'aerospace %s\n' "$*" >>"$STUB_LOG"
@@ -29,6 +30,7 @@ case $1 in
 list-windows)
   case " $* " in
   *" --all "*) printf '%s\n' "${STUB_WINDOWS-}" | sed '/^$/d' ;;
+  *" --focused "*) printf '%s\n' "${STUB_FOCUSED_APP-}" | sed '/^$/d' ;;
   *) printf '%s\n' "${STUB_FOCUSED-}" | sed '/^$/d' ;;
   esac
   ;;
@@ -151,6 +153,15 @@ STUB_RUNNING=$CLAUDE \
   "$ORBIT" open -m Claude $CLAUDE
 check "focused" "$(grep -c '^aerospace focus --window-id 6$' "$STUB_LOG")" "1"
 check "open call" "$(opens)" ""
+teardown
+
+echo "--main, the app's window already focused: main window focused"
+setup
+STUB_RUNNING=$CLAUDE STUB_FOCUSED=5 STUB_FOCUSED_APP=$CLAUDE \
+  STUB_WINDOWS="$(printf '5|%s|chat\n3|%s|Claude' $CLAUDE $CLAUDE)" \
+  "$ORBIT" open -m Claude $CLAUDE
+check "focused" "$(grep -c '^aerospace focus --window-id 3$' "$STUB_LOG")" "1"
+check "nothing moved" "$(grep -c move-node "$STUB_LOG")" "0"
 teardown
 
 if [ "$failures" -eq 0 ]; then

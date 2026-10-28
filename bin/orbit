@@ -76,7 +76,8 @@ Options:
                 to the focused workspace before focusing. Implies --global
                 (a global search is needed either way).
   -m, --main <title>
-                With no window in the focused workspace, focus the app's
+                With no window in the focused workspace, or when one of
+                the app's windows already has focus, focus the app's
                 window titled <title> wherever it is (its main window,
                 left in place), else its oldest window.
 EOF
@@ -365,7 +366,11 @@ cmd_open() {
   bundle_id="$1"
 
   if [ -n "$main_title" ]; then
-    window_id=$(aerospace list-windows --workspace focused --app-bundle-id "$bundle_id" --format '%{window-id}' 2>/dev/null | head -n1)
+    # Already on one of the app's windows: a second press goes to main.
+    window_id=""
+    if [ "$(aerospace list-windows --focused --format '%{app-bundle-id}' 2>/dev/null)" != "$bundle_id" ]; then
+      window_id=$(aerospace list-windows --workspace focused --app-bundle-id "$bundle_id" --format '%{window-id}' 2>/dev/null | head -n1)
+    fi
     if [ -z "$window_id" ]; then
       # No window titled <title> (the app may retitle its main window):
       # take the app's oldest one, the lowest window id.
