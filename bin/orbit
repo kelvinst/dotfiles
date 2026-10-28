@@ -262,6 +262,7 @@ cmd_by_position() {
   shift
   count=$#
   idx=0
+  pinned=""
   while [ "$idx" -lt "$count" ]; do
     arg=$1
     shift
@@ -269,7 +270,19 @@ cmd_by_position() {
     if [ "$idx" -eq "$count" ]; then
       case $arg in
       '' | *[!0-9]*) ;;
-      *) arg=$(workspace_by_position "$arg") ;;
+      *)
+        arg=$(workspace_by_position "$arg")
+        # `[workspace-to-monitor-force-assignment]` pins only the bare
+        # `0` to the secondary monitor. A labeled 0 that this call
+        # brings back from its saved label would open wherever focus
+        # is, so it gets sent there by hand — `summon-workspace` aside,
+        # which is asking for it here.
+        if [ "$sub" != summon-workspace ] &&
+          [ "$(workspace_position "$arg")" = 0 ] && [ "$arg" != 0 ] &&
+          ! aerospace list-workspaces --all 2>/dev/null | grep -qxF "$arg"; then
+          pinned=$arg
+        fi
+        ;;
       esac
     fi
     set -- "$@" "$arg"
@@ -282,6 +295,9 @@ cmd_by_position() {
     ;;
   esac
   aerospace "$sub" "$@"
+  if [ -n "$pinned" ] && [ "$(aerospace list-monitors --count 2>/dev/null)" -gt 1 ] 2>/dev/null; then
+    aerospace move-workspace-to-monitor --workspace "$pinned" secondary 2>/dev/null || :
+  fi
 }
 
 cmd_restore_labels_help() {

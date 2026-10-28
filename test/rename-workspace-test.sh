@@ -78,6 +78,9 @@ move-node-to-workspace)
   awk -F'|' -v OFS='|' -v id="$id" -v to="$to" '$1 == id {$2 = to} {print}' \
     "$W" >"$W.new" && mv "$W.new" "$W"
   ;;
+list-monitors)
+  printf '%s\n' "${STUB_MONITORS-1}"
+  ;;
 focus)
   id=$(arg_after --window-id "$@")
   awk -F'|' -v id="$id" '$1 == id {print $2}' "$W" >"$F"
@@ -249,6 +252,20 @@ setup 2 b=2
 save "1=Code"
 "$ORBIT" workspace 1
 check "aerospace call" "$(last_call)" "workspace 1⠀Code"
+teardown
+
+echo "saved: a labeled 0 brought back goes to the secondary monitor"
+setup 2 b=2
+save "0=Chat"
+STUB_MONITORS=2 "$ORBIT" workspace 0
+check "aerospace call" "$(grep -c '^move-workspace-to-monitor --workspace 0⠀Chat secondary$' "$STUB_DIR/calls")" "1"
+teardown
+
+echo "saved: not moved with one monitor, or when it already exists"
+setup 2 a="0⠀Chat" b=2
+"$ORBIT" workspace 0
+STUB_MONITORS=2 "$ORBIT" workspace 0
+check "no monitor moves" "$(grep -c '^move-workspace-to-monitor' "$STUB_DIR/calls")" "0"
 teardown
 
 echo "saved: move-workspace swaps the saved labels"

@@ -10,7 +10,8 @@ config-version = 2
 #
 # Puts the saved workspace labels back (`orbit restore-labels help`).
 # Workspace 0 needs no seeding: `[workspace-to-monitor-force-assignment]`
-# puts it on the secondary monitor whenever it comes up.
+# puts it on the secondary monitor whenever it comes up, and orbit does
+# the same for a labeled one it brings back (`orbit workspace 0`).
 after-startup-command = [
   'exec-and-forget borders active_color=0xffe1e3e4 inactive_color=0xff494d64 width=5.0',
   'exec-and-forget orbit restore-labels',
