@@ -189,8 +189,8 @@ function M.show()
     local position, rest = (current or ""):match("^(%d+)(.*)$")
     if not position then
       -- Nothing to keep a number for (splash, or a workspace named some
-      -- other way); orbit would refuse it anyway.
-      hide()
+      -- other way); orbit would refuse it anyway. Focus goes back too.
+      cancel()
       return
     end
     -- orbit spells the gap, and every space in a label, as U+2800 (see
