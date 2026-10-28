@@ -253,7 +253,10 @@ workspace_by_position() {
 
 # `aerospace $1 ... <workspace>` with a bare-number trailing workspace
 # resolved through `workspace_by_position`. Anything else — a full name,
-# `next`/`prev`, a flag — goes through untouched.
+# `next`/`prev`, a flag — goes through untouched, except that a trailing
+# `next`/`prev` gets `--no-stdin` when the caller picked no stdin
+# handling: orbit's stdin is /dev/null, and aerospace 0.20 refuses an
+# implicit one.
 cmd_by_position() {
   sub=$1
   shift
@@ -271,6 +274,13 @@ cmd_by_position() {
     fi
     set -- "$@" "$arg"
   done
+  case " $* " in
+  *" --stdin "* | *" --no-stdin "*) ;;
+  *" next " | *" prev ")
+    aerospace "$sub" --no-stdin "$@"
+    return
+    ;;
+  esac
   aerospace "$sub" "$@"
 }
 

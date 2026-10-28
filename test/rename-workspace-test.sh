@@ -176,10 +176,16 @@ setup 2 a="1⠀Code" b=2
 check "aerospace call" "$(last_call)" "move-node-to-workspace --focus-follows-window 1⠀Code"
 teardown
 
-echo "workspace next: passes through untouched"
+echo "workspace next: made explicit about stdin, which aerospace 0.20 needs"
 setup 2 a="1⠀Code" b=2
 "$ORBIT" workspace --wrap-around next
-check "aerospace call" "$(last_call)" "workspace --wrap-around next"
+check "aerospace call" "$(last_call)" "workspace --no-stdin --wrap-around next"
+teardown
+
+echo "workspace next: an explicit --stdin is left alone"
+setup 2 b=2
+"$ORBIT" workspace --wrap-around --stdin next </dev/null
+check "aerospace call" "$(last_call)" "workspace --wrap-around --stdin next"
 teardown
 
 echo "move-workspace: labels travel with their windows"
