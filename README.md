@@ -266,6 +266,15 @@ My new, simplified, dotfiles
    Control remap, so leave Caps Lock unmapped in System Settings → Keyboard →
    Keyboard Shortcuts → Modifier Keys.
 
+1. Install the VPN mesh: [Tailscale](https://tailscale.com)
+
+   ```shell
+   brew install --cask tailscale-app
+   ```
+
+   Then turn on Settings → CLI integration in the menu bar app, which puts the
+   `tailscale` command in `/usr/local/bin` (already on `PATH`).
+
 1. Clone [Katapult](https://github.com/kelvinst/katapult) next to it:
    `make install` copies its `katapult-spoon.lua` into `~/.hammerspoon`, which
    opens Katapult links without loading the page (see the step on the default
