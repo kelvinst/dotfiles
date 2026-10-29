@@ -13,7 +13,7 @@ keywords = ["tskey-"]
 [[rules]]
 id = "tailnet-name"
 description = "Tailnet or machine name under ts.net"
-regex = '''\b[a-z0-9-]+\.ts\.net\b'''
+regex = '''(?i)\b[a-z0-9-]+\.ts\.net\b'''
 keywords = [".ts.net"]
 
 [[rules]]
