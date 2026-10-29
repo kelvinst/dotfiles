@@ -1,0 +1,20 @@
+#!/usr/bin/env bash
+# The repo's checks, shared by the pre-commit hook (.beads/hooks/pre-commit)
+# and CI (.github/workflows/check.yml), so both run the same thing.
+#
+#   script/check            scan every commit (CI)
+#   script/check --staged   scan only what is staged (pre-commit)
+set -euo pipefail
+
+config="$(cd "$(dirname "$0")/.." && pwd)/.gitleaks.toml"
+root=$(git rev-parse --show-toplevel)
+
+if ! command -v gitleaks >/dev/null 2>&1; then
+  echo >&2 "check: gitleaks not found — brew install gitleaks"
+  exit 1
+fi
+
+# Secrets and tailnet details stay out of this public repo.
+scan=(gitleaks git --redact --no-banner --config "$config")
+[ "${1-}" = --staged ] && scan+=(--pre-commit --staged)
+"${scan[@]}" "$root"

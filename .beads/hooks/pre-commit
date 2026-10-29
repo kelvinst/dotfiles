@@ -23,13 +23,6 @@ if command -v bd >/dev/null 2>&1; then
 fi
 # --- END BEADS INTEGRATION v1.0.3 ---
 
-# Keep secrets and tailnet details out of this public repo (.gitleaks.toml).
-if ! command -v gitleaks >/dev/null 2>&1; then
-  echo >&2 "pre-commit: gitleaks not found — brew install gitleaks"
-  exit 1
-fi
-_root=$(git rev-parse --show-toplevel)
-# Branches older than .gitleaks.toml get gitleaks' default rules.
-set --
-[ -f "$_root/.gitleaks.toml" ] && set -- --config "$_root/.gitleaks.toml"
-gitleaks git --pre-commit --staged --redact --no-banner "$@" "$_root" || exit 1
+# The repo's checks (script/check); branches older than it skip them.
+_check="$(git rev-parse --show-toplevel)/script/check"
+if [ -x "$_check" ]; then "$_check" --staged || exit 1; fi

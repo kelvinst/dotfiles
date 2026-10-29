@@ -46,6 +46,11 @@ dir — the scripts under `test/` stub the tools they drive (`aerospace`,
 say) and point `XDG_CACHE_HOME` at a sandbox, so a run never reaches the
 live window manager or `$HOME`. Run it after editing anything in `bin/`.
 
+`script/check` holds the repo's checks (today: gitleaks, with the rules in
+`.gitleaks.toml`). The pre-commit hook runs it on what is staged, and the
+`check` GitHub Actions job runs it on every push to `main`. Add a new check
+there, not in either caller, so both keep running the same thing.
+
 `make install` first moves every path it is about to write into
 `~/.dotfiles-backups/<YYYYmmdd-HHMMSS>/`, preserving the layout relative to
 `$HOME`. Moving doubles as the removal step, so each install lands on a
