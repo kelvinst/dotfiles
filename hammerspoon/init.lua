@@ -14,5 +14,11 @@ require("hs.ipc")
 -- monitors = require("monitors")
 -- Installed from kelvinst/katapult by `make install`, not kept here.
 katapult = require("katapult-spoon")
+-- Claude Code's scratchpads and task outputs: agents link the pages they
+-- write there, and a file `open` would run still asks.
+table.insert(
+  katapult.trusted_paths,
+  "/private/tmp/claude-" .. hs.execute("id -u"):gsub("%s", "")
+)
 windowhints = require("windowhints")
 workspacename = require("workspacename")
