@@ -27,3 +27,8 @@ id = "tailnet-ipv6"
 description = "Tailnet IPv6 address (fd7a:115c:a1e0::/48)"
 regex = '''(?i)\bfd7a:115c:a1e0:[0-9a-f:]*'''
 keywords = ["fd7a:115c:a1e0"]
+
+# The rules' own test cases are fake samples.
+[[allowlists]]
+description = "script/check's test samples"
+paths = ['''^test/check-test\.sh$''']
