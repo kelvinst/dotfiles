@@ -22,3 +22,12 @@ if command -v bd >/dev/null 2>&1; then
   if [ $_bd_exit -ne 0 ]; then exit $_bd_exit; fi
 fi
 # --- END BEADS INTEGRATION v1.0.3 ---
+
+# Keep secrets and tailnet details out of this public repo (.gitleaks.toml).
+if ! command -v gitleaks >/dev/null 2>&1; then
+  echo >&2 "pre-commit: gitleaks not found — brew install gitleaks"
+  exit 1
+fi
+_root=$(git rev-parse --show-toplevel)
+gitleaks git --pre-commit --staged --redact --no-banner \
+  --config "$_root/.gitleaks.toml" "$_root" || exit 1

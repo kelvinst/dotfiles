@@ -229,6 +229,13 @@ My new, simplified, dotfiles
    brew install worktrunk
    ```
 
+1. Install the secret scanner the pre-commit hook runs:
+   [`gitleaks`](https://github.com/gitleaks/gitleaks)
+
+   ```shell
+   brew install gitleaks
+   ```
+
 1. Install the code formatter: [`prettier`](https://prettier.io)
 
    ```shell
@@ -274,6 +281,19 @@ My new, simplified, dotfiles
 
    Then turn on Settings → CLI integration in the menu bar app, which puts the
    `tailscale` command in `/usr/local/bin` (already on `PATH`).
+
+1. Optionally, share kix's pages (like the preflight diff) with your other
+   devices over Tailscale. This serves `~/Shared` on the tailnet only and
+   writes its URL into kix's config, built from this machine's name so it never
+   lands in this repo:
+
+   ```shell
+   mkdir -p ~/Shared ~/.config/kix
+   tailscale serve --bg --set-path /shared ~/Shared
+   printf 'KIX_SHARE_DIR=%s\nKIX_SHARE_URL=https://%s/shared\n' ~/Shared \
+     "$(tailscale status --json | jq -r '.Self.DNSName | rtrimstr(".")')" \
+     > ~/.config/kix/config
+   ```
 
 1. Clone [Katapult](https://github.com/kelvinst/katapult) next to it:
    `make install` copies its `katapult-spoon.lua` into `~/.hammerspoon`, which

@@ -1,0 +1,29 @@
+# gitleaks config: the default rules plus the Tailscale details that must
+# never reach this public repo. The pre-commit hook in .beads/hooks runs it.
+
+[extend]
+useDefault = true
+
+[[rules]]
+id = "tailscale-key"
+description = "Tailscale auth or API key"
+regex = '''tskey-[a-z]+-[A-Za-z0-9]+-[A-Za-z0-9]+'''
+keywords = ["tskey-"]
+
+[[rules]]
+id = "tailnet-name"
+description = "Tailnet or machine name under ts.net"
+regex = '''\b[a-z0-9-]+\.ts\.net\b'''
+keywords = [".ts.net"]
+
+[[rules]]
+id = "tailnet-ipv4"
+description = "Tailnet IPv4 address (100.64.0.0/10)"
+regex = '''\b100\.(?:6[4-9]|[7-9][0-9]|1[01][0-9]|12[0-7])\.[0-9]{1,3}\.[0-9]{1,3}\b'''
+keywords = ["100."]
+
+[[rules]]
+id = "tailnet-ipv6"
+description = "Tailnet IPv6 address (fd7a:115c:a1e0::/48)"
+regex = '''(?i)\bfd7a:115c:a1e0:[0-9a-f:]*'''
+keywords = ["fd7a:115c:a1e0"]
