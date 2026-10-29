@@ -17,4 +17,8 @@ fi
 # Secrets and tailnet details stay out of this public repo.
 scan=(gitleaks git --redact --no-banner --config "$config")
 [ "${1-}" = --staged ] && scan+=(--pre-commit --staged)
-"${scan[@]}" "$root"
+"${scan[@]}" "$root" || {
+  echo >&2 "check: secret or tailnet detail found — not auto-fixable." \
+    "Stop and ask the user before removing or allowlisting it."
+  exit 1
+}
