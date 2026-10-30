@@ -279,7 +279,7 @@
             ]
           },
           {
-            "description": "Built-in keyboard and ErgoDox: double-tap Left Command for Command+Return",
+            "description": "Built-in keyboard and ErgoDox: double-tap Left Command for Space",
             "manipulators": [
               {
                 "type": "basic",
@@ -291,8 +291,7 @@
                 },
                 "to": [
                   {
-                    "key_code": "return_or_enter",
-                    "modifiers": ["left_command"]
+                    "key_code": "spacebar"
                   },
                   {
                     "set_variable": {
@@ -354,6 +353,107 @@
                     {
                       "set_variable": {
                         "name": "left_command_tapped",
+                        "value": 0
+                      }
+                    }
+                  ]
+                },
+                "parameters": {
+                  "basic.to_delayed_action_delay_milliseconds": 300
+                },
+                "conditions": [
+                  {
+                    "type": "device_if",
+                    "identifiers": [
+                      {
+                        "is_built_in_keyboard": true
+                      },
+                      {
+                        "vendor_id": 12951,
+                        "product_id": 18806,
+                        "is_keyboard": true
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "description": "Built-in keyboard and ErgoDox: double-tap Left Option for Backspace",
+            "manipulators": [
+              {
+                "type": "basic",
+                "from": {
+                  "key_code": "left_option",
+                  "modifiers": {
+                    "optional": ["any"]
+                  }
+                },
+                "to": [
+                  {
+                    "key_code": "delete_or_backspace"
+                  },
+                  {
+                    "set_variable": {
+                      "name": "left_option_tapped",
+                      "value": 0
+                    }
+                  }
+                ],
+                "conditions": [
+                  {
+                    "type": "variable_if",
+                    "name": "left_option_tapped",
+                    "value": 1
+                  },
+                  {
+                    "type": "device_if",
+                    "identifiers": [
+                      {
+                        "is_built_in_keyboard": true
+                      },
+                      {
+                        "vendor_id": 12951,
+                        "product_id": 18806,
+                        "is_keyboard": true
+                      }
+                    ]
+                  }
+                ]
+              },
+              {
+                "type": "basic",
+                "from": {
+                  "key_code": "left_option",
+                  "modifiers": {
+                    "optional": ["any"]
+                  }
+                },
+                "to": [
+                  {
+                    "set_variable": {
+                      "name": "left_option_tapped",
+                      "value": 1
+                    }
+                  },
+                  {
+                    "key_code": "left_option"
+                  }
+                ],
+                "to_delayed_action": {
+                  "to_if_invoked": [
+                    {
+                      "set_variable": {
+                        "name": "left_option_tapped",
+                        "value": 0
+                      }
+                    }
+                  ],
+                  "to_if_canceled": [
+                    {
+                      "set_variable": {
+                        "name": "left_option_tapped",
                         "value": 0
                       }
                     }
