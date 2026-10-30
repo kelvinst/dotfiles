@@ -262,6 +262,7 @@ on-mode-changed = []
     cmd-ctrl-comma = 'exec-and-forget orbit open com.apple.systempreferences'
     cmd-ctrl-b = 'exec-and-forget orbit open com.google.Chrome'
     cmd-ctrl-c = 'exec-and-forget orbit open -p -m Claude com.anthropic.claudefordesktop'
+    cmd-ctrl-d = 'exec-and-forget orbit open com.apple.iCal'
     cmd-ctrl-f = 'exec-and-forget orbit open com.apple.finder'
     cmd-ctrl-k = 'exec-and-forget orbit open -g io.zsa.keymapp'
     cmd-ctrl-m = 'exec-and-forget orbit open -p com.apple.mail'
