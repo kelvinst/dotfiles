@@ -54,20 +54,6 @@ Commands:
            Re-seed workspace 0 on the secondary monitor and switch the
            main-monitor layouts to suit the monitors currently attached.
 
-  rename-workspace
-           Give the focused workspace a label shown next to its number in
-           the menu bar (`1` → `1⠀CODE`), in capitals. An empty label
-           drops it.
-
-  restore-labels
-           Put saved labels back on their workspaces after an AeroSpace
-           restart.
-
-  workspace, move-node-to-workspace, summon-workspace
-           `aerospace` commands, with a bare number as the workspace
-           resolved to that position's workspace, label and all — `orbit
-           workspace 1` focuses `1⠀Code`.
-
   help     Show this help.
 
 Run `orbit <command> help` for details on a command.
@@ -165,155 +151,6 @@ is sent to the adjacent workspace instead.
 EOF
 }
 
-cmd_rename_workspace_help() {
-  cat <<'EOF'
-Usage: orbit rename-workspace [<label>...]
-
-Label the focused workspace. AeroSpace has no rename and its menu bar
-shows workspace names as they are, so the label goes into the name: the
-windows (and root layout) move from `1` to a workspace named `1⠀<LABEL>`,
-and the emptied `1` drops out of the menu bar. The gap, and any space in
-the label, is U+2800 BRAILLE PATTERN BLANK — AeroSpace refuses real
-whitespace in a name, and this one draws as a space. The leading number stays
-the workspace's position — `orbit workspace 1` and friends find it by
-that. Labels are always in capitals, which read better in the menu bar.
-No label, or a blank one, goes back to the bare number.
-
-Labels are saved under `$XDG_STATE_HOME/orbit/labels` (or
-`~/.local/state/orbit/labels`): going back to an emptied position brings
-its label back, and `orbit restore-labels` reapplies them after an
-AeroSpace restart.
-EOF
-}
-
-# Workspace names are `<position>` or `<position><gap><label>`: the
-# label lives in the name because that's all the menu bar shows (see
-# `cmd_rename_workspace`). AeroSpace refuses any whitespace in a name, so
-# the gap — and every space inside a label — is U+2800 BRAILLE PATTERN
-# BLANK, which isn't whitespace to it but draws as an empty cell.
-GAP=$(printf '\342\240\200')
-
-workspace_position() {
-  printf '%s\n' "${1%%"$GAP"*}"
-}
-
-workspace_label() {
-  case $1 in
-  *"$GAP"*) printf '%s\n' "${1#*"$GAP"}" ;;
-  esac
-}
-
-workspace_name() {
-  if [ -n "$2" ]; then
-    printf '%s%s%s\n' "$1" "$GAP" "$2"
-  else
-    printf '%s\n' "$1"
-  fi
-}
-
-# Labels outlive their workspaces here, one `<position><TAB><label>` line
-# each: an emptied workspace is gone from aerospace, and so is every name
-# after a restart, but going back to that number finds its label again
-# (`workspace_by_position`, `orbit restore-labels`).
-labels_file() {
-  echo "${XDG_STATE_HOME:-$HOME/.local/state}/orbit/labels"
-}
-
-saved_label() {
-  f=$(labels_file)
-  if [ -f "$f" ]; then
-    awk -F'\t' -v p="$1" '$1 == p {print $2; exit}' "$f"
-  fi
-}
-
-# Remember label $2 for position $1; an empty one forgets it.
-save_label() {
-  f=$(labels_file)
-  mkdir -p "$(dirname "$f")"
-  {
-    if [ -f "$f" ]; then
-      awk -F'\t' -v p="$1" '$1 != p' "$f"
-    fi
-    if [ -n "$2" ]; then
-      printf '%s\t%s\n' "$1" "$2"
-    fi
-  } >"$f.$$"
-  mv -f "$f.$$" "$f"
-}
-
-# The workspace at position $1 under whatever label it carries now; else
-# under its saved label; else the bare number. Aerospace creates either
-# on demand like any other name.
-workspace_by_position() {
-  labeled=$(aerospace list-workspaces --all 2>/dev/null |
-    awk -v p="$1$GAP" 'index($0, p) == 1 {print; exit}')
-  if [ -z "$labeled" ]; then
-    labeled=$(workspace_name "$1" "$(saved_label "$1")")
-  fi
-  printf '%s\n' "$labeled"
-}
-
-# `aerospace $1 ... <workspace>` with a bare-number trailing workspace
-# resolved through `workspace_by_position`. Anything else — a full name,
-# `next`/`prev`, a flag — goes through untouched, except that a trailing
-# `next`/`prev` gets `--no-stdin` when the caller picked no stdin
-# handling: orbit's stdin is /dev/null, and aerospace 0.20 refuses an
-# implicit one.
-cmd_by_position() {
-  sub=$1
-  shift
-  count=$#
-  idx=0
-  pinned=""
-  while [ "$idx" -lt "$count" ]; do
-    arg=$1
-    shift
-    idx=$((idx + 1))
-    if [ "$idx" -eq "$count" ]; then
-      case $arg in
-      '' | *[!0-9]*) ;;
-      *)
-        arg=$(workspace_by_position "$arg")
-        # `[workspace-to-monitor-force-assignment]` pins only the bare
-        # `0` to the secondary monitor. A labeled 0 that this call
-        # brings back from its saved label would open wherever focus
-        # is, so it gets sent there by hand — `summon-workspace` aside,
-        # which is asking for it here.
-        if [ "$sub" != summon-workspace ] &&
-          [ "$(workspace_position "$arg")" = 0 ] && [ "$arg" != 0 ] &&
-          ! aerospace list-workspaces --all 2>/dev/null | grep -qxF "$arg"; then
-          pinned=$arg
-        fi
-        ;;
-      esac
-    fi
-    set -- "$@" "$arg"
-  done
-  case " $* " in
-  *" --stdin "* | *" --no-stdin "*) ;;
-  *" next " | *" prev ")
-    aerospace "$sub" --no-stdin "$@"
-    return
-    ;;
-  esac
-  aerospace "$sub" "$@"
-  if [ -n "$pinned" ] && [ "$(aerospace list-monitors --count 2>/dev/null)" -gt 1 ] 2>/dev/null; then
-    aerospace move-workspace-to-monitor --workspace "$pinned" secondary 2>/dev/null || :
-  fi
-}
-
-cmd_restore_labels_help() {
-  cat <<'EOF'
-Usage: orbit restore-labels
-
-Put saved labels back on their workspaces after an AeroSpace restart:
-the windows on each bare number with a saved label move to the labeled
-name, as `orbit rename-workspace` would. Positions already labeled, or
-with no windows, are left alone — going to an empty one finds its label
-anyway. Run from `after-startup-command`.
-EOF
-}
-
 cmd_move_workspace_help() {
   cat <<'EOF'
 Usage: orbit move-workspace [--focus-follows-workspace] <target-workspace>
@@ -324,11 +161,6 @@ this one — windows and root layout cross over, so e.g. a `tiles`
 workspace traded with an `accordion` one keeps each layout traveling
 with its windows. No-op when the focused workspace is already
 <target-workspace>.
-
-Labels travel with the windows (see `orbit rename-workspace help`):
-moving `1⠀Code` to 3 leaves `3⠀Code`, and a `3⠀Web` it trades with
-becomes `1⠀Web`. A bare-number <target-workspace> finds that position
-under any label.
 
 Options:
   --focus-follows-workspace
@@ -676,11 +508,11 @@ cmd_focus() {
   for arg in "$@"; do direction="$arg"; done
   case "$direction" in
   right)
-    cmd_by_position workspace --wrap-around next
+    aerospace workspace --wrap-around --no-stdin next
     cmd_focus dfs-first
     ;;
   left)
-    cmd_by_position workspace --wrap-around prev
+    aerospace workspace --wrap-around --no-stdin prev
     cmd_focus dfs-last
     ;;
   *) return 1 ;;
@@ -739,11 +571,11 @@ cmd_move() {
   for arg in "$@"; do direction="$arg"; done
   case "$direction" in
   right)
-    cmd_by_position move-node-to-workspace --wrap-around --focus-follows-window next
+    aerospace move-node-to-workspace --wrap-around --focus-follows-window --no-stdin next
     while aerospace move --boundaries-action fail left 2>/dev/null; do :; done
     ;;
   left)
-    cmd_by_position move-node-to-workspace --wrap-around --focus-follows-window prev
+    aerospace move-node-to-workspace --wrap-around --focus-follows-window --no-stdin prev
     while aerospace move --boundaries-action fail right 2>/dev/null; do :; done
     ;;
   *) return 1 ;;
@@ -930,25 +762,6 @@ _cmd_move_workspace_locked() {
   current=$(aerospace list-workspaces --focused)
   splash="splash"
 
-  # Each side's windows land at the other's position under their own
-  # label, so the label travels with what it names. Names that aren't
-  # numbered keep the plain swap.
-  case $target in
-  '' | *[!0-9]*) ;;
-  *) target=$(workspace_by_position "$target") ;;
-  esac
-  source_dest="$target"
-  target_dest="$current"
-  current_pos=$(workspace_position "$current")
-  target_pos=$(workspace_position "$target")
-  case "$current_pos$target_pos" in
-  '' | *[!0-9]*) ;;
-  *)
-    source_dest=$(workspace_name "$target_pos" "$(workspace_label "$current")")
-    target_dest=$(workspace_name "$current_pos" "$(workspace_label "$target")")
-    ;;
-  esac
-
   # Belt-and-suspenders: if splash is focused when we enter, a prior run
   # ended mid-swap (e.g. SIGKILL between `aerospace workspace splash` and
   # the final focus restore). Swapping against splash's (empty) contents
@@ -957,9 +770,7 @@ _cmd_move_workspace_locked() {
     return 0
   fi
 
-  # Already in place: for numbered names that's the same position,
-  # whatever the target's label.
-  if [ "$source_dest" = "$current" ]; then
+  if [ "$current" = "$target" ]; then
     return 0
   fi
 
@@ -990,7 +801,7 @@ _cmd_move_workspace_locked() {
   if [ "$focus_follows" -eq 1 ]; then
     restore_window_on_exit=$(aerospace list-windows --focused --format '%{window-id}' 2>/dev/null || :)
   else
-    restore_on_exit="$target_dest"
+    restore_on_exit="$current"
   fi
 
   # Hide the bulk moves behind an empty "splash" workspace: focus it before
@@ -1003,10 +814,10 @@ _cmd_move_workspace_locked() {
   # Individual aerospace calls are tolerated (`|| :`) so a stale window-id
   # doesn't abort the whole swap and leave things half-moved.
   for wid in $source_wids; do
-    aerospace move-node-to-workspace --window-id "$wid" "$source_dest" 2>/dev/null || :
+    aerospace move-node-to-workspace --window-id "$wid" "$target" 2>/dev/null || :
   done
   for wid in $target_wids; do
-    aerospace move-node-to-workspace --window-id "$wid" "$target_dest" 2>/dev/null || :
+    aerospace move-node-to-workspace --window-id "$wid" "$current" 2>/dev/null || :
   done
 
   # Reapply layouts via any window that just landed on each workspace — the
@@ -1026,162 +837,24 @@ _cmd_move_workspace_locked() {
   fi
 
   # Preset state files are keyed by workspace name but reference the
-  # window-ids that lived on each workspace — each file follows its
-  # windows to their new name. Both go through temp names first, so a
-  # plain swap (where each destination is the other's source) and both
-  # workspaces having saved state still work.
+  # window-ids that lived on each workspace — those window-ids just got
+  # swapped between `current` and `target`, so the saved state for one
+  # now describes the other. Swap the files via a temp name so the case
+  # where both workspaces have saved state still works.
   state_dir=$(preset_state_dir)
   src_state="$state_dir/$current"
   tgt_state="$state_dir/$target"
   if [ -e "$src_state" ] || [ -e "$tgt_state" ]; then
+    tmp_state="$state_dir/.swap.$$"
     if [ -e "$src_state" ]; then
-      mv "$src_state" "$state_dir/.swap-src.$$"
+      mv "$src_state" "$tmp_state"
     fi
     if [ -e "$tgt_state" ]; then
-      mv "$tgt_state" "$state_dir/.swap-tgt.$$"
+      mv "$tgt_state" "$src_state"
     fi
-    if [ -e "$state_dir/.swap-src.$$" ]; then
-      mv "$state_dir/.swap-src.$$" "$state_dir/$source_dest"
+    if [ -e "$tmp_state" ]; then
+      mv "$tmp_state" "$tgt_state"
     fi
-    if [ -e "$state_dir/.swap-tgt.$$" ]; then
-      mv "$state_dir/.swap-tgt.$$" "$state_dir/$target_dest"
-    fi
-  fi
-
-  case "$current_pos$target_pos" in
-  '' | *[!0-9]*) ;;
-  *)
-    save_label "$target_pos" "$(workspace_label "$current")"
-    save_label "$current_pos" "$(workspace_label "$target")"
-    ;;
-  esac
-}
-
-cmd_restore_labels() {
-  case "${1:-}" in
-  help | -h | --help)
-    cmd_restore_labels_help
-    return
-    ;;
-  esac
-  with_workspace_mutation_lock _cmd_restore_labels_locked _restore_labels_restore
-}
-
-_restore_labels_restore() {
-  if [ -n "$restore_labels_window" ]; then
-    aerospace focus --window-id "$restore_labels_window" 2>/dev/null || :
-  fi
-}
-
-_cmd_restore_labels_locked() {
-  restore_labels_window=$(aerospace list-windows --focused --format '%{window-id}' 2>/dev/null || :)
-  f=$(labels_file)
-  [ -f "$f" ] || return 0
-  existing=$(aerospace list-workspaces --all)
-  state_dir=$(preset_state_dir)
-
-  tab=$(printf '\t')
-  # On fd 3: the aerospace calls in the loop mustn't eat the list.
-  while IFS="$tab" read -r position label <&3; do
-    [ -n "$label" ] || continue
-    new=$(workspace_name "$position" "$label")
-    if printf '%s\n' "$existing" | grep -qxF "$new"; then
-      continue
-    fi
-    wids=$(aerospace list-windows --workspace "$position" --format '%{window-id}' 2>/dev/null || :)
-    [ -n "$wids" ] || continue
-    layout=$(aerospace list-windows --workspace "$position" --format '%{window-parent-container-layout}' | head -n1)
-    monitor=$(sync_monitors_monitor_of "$position")
-
-    for wid in $wids; do
-      aerospace move-node-to-workspace --window-id "$wid" "$new" 2>/dev/null || :
-    done
-    if [ -n "$layout" ]; then
-      aerospace layout --window-id "$(echo "$wids" | head -n1)" "$layout" 2>/dev/null || :
-    fi
-    # The new name is born wherever aerospace puts new workspaces; send
-    # it back to the monitor the bare number was on.
-    if [ -n "$monitor" ]; then
-      aerospace move-workspace-to-monitor --workspace "$new" "$monitor" 2>/dev/null || :
-    fi
-    if [ -e "$state_dir/$position" ]; then
-      mv "$state_dir/$position" "$state_dir/$new"
-    fi
-  done 3<"$f"
-}
-
-cmd_rename_workspace() {
-  case "${1:-}" in
-  help | -h | --help)
-    cmd_rename_workspace_help
-    return
-    ;;
-  esac
-
-  # Words joined by single gaps (see `GAP`), ends trimmed: the label is
-  # typed into a prompt, aerospace takes no spaces, and a stray one
-  # would make `1⠀⠀CODE` and `1⠀CODE` different workspaces. Capitals
-  # read better in the menu bar; in UTF-8, since Hammerspoon runs orbit
-  # with no LANG and the C locale leaves `ç` lowercase.
-  label=$(printf '%s\n' "$*" | tr -s ' \t' '  ' | sed 's/^ //;s/ $//' |
-    LC_ALL=en_US.UTF-8 tr '[:lower:]' '[:upper:]')
-  label=$(printf '%s\n' "$label" | sed "s/ /$GAP/g")
-  with_workspace_mutation_lock _cmd_rename_workspace_locked _rename_workspace_restore "$label"
-}
-
-# Puts focus back on the window that had it, or on the renamed workspace
-# when it had none — even when `set -e` cuts the moves short.
-_rename_workspace_restore() {
-  if [ -n "$rename_restore_window" ]; then
-    aerospace focus --window-id "$rename_restore_window" 2>/dev/null || :
-  elif [ -n "$rename_restore_workspace" ]; then
-    aerospace workspace "$rename_restore_workspace" 2>/dev/null || :
-  fi
-}
-
-_cmd_rename_workspace_locked() {
-  label=$1
-  rename_restore_window=""
-  rename_restore_workspace=""
-
-  current=$(aerospace list-workspaces --focused)
-  position=$(workspace_position "$current")
-  case $position in
-  '' | *[!0-9]*)
-    echo "orbit rename-workspace: '$current' has no position number to keep" >&2
-    return 1
-    ;;
-  esac
-  new=$(workspace_name "$position" "$label")
-  save_label "$position" "$label"
-  if [ "$new" = "$current" ]; then
-    return 0
-  fi
-
-  wids=$(aerospace list-windows --workspace "$current" --format '%{window-id}')
-  layout=$(aerospace list-windows --workspace "$current" --format '%{window-parent-container-layout}' | head -n1)
-
-  rename_restore_window=$(aerospace list-windows --focused --format '%{window-id}' 2>/dev/null || :)
-  rename_restore_workspace="$new"
-
-  # Bring the new name up on this monitor before anything moves, so the
-  # windows never show anywhere else. `summon-workspace` pulls a
-  # workspace that already exists elsewhere over here; it refuses one
-  # force-assigned to another monitor, and then plain `workspace` is all
-  # there is.
-  aerospace summon-workspace "$new" 2>/dev/null || aerospace workspace "$new"
-
-  for wid in $wids; do
-    aerospace move-node-to-workspace --window-id "$wid" "$new" 2>/dev/null || :
-  done
-  if [ -n "$layout" ]; then
-    first=$(echo "$wids" | head -n1)
-    aerospace layout --window-id "$first" "$layout" 2>/dev/null || :
-  fi
-
-  state_dir=$(preset_state_dir)
-  if [ -e "$state_dir/$current" ]; then
-    mv "$state_dir/$current" "$state_dir/$new"
   fi
 }
 
@@ -1903,12 +1576,11 @@ cmd_sync_monitors() {
     fi
 
     # Mirrors the service-mode `m` binding in `~/.aerospace.toml`.
-    # Position 0 under whatever label it carries, when it's there at all:
-    # it's not persistent, and `[workspace-to-monitor-force-assignment]`
-    # puts it on the secondary monitor whenever it comes back.
-    ws0=$(workspace_by_position 0)
-    if [ -n "$(sync_monitors_monitor_of "$ws0")" ]; then
-      aerospace move-workspace-to-monitor --workspace "$ws0" secondary || return 1
+    # Workspace 0 only when it's there at all: it's not persistent, and
+    # `[workspace-to-monitor-force-assignment]` puts it on the secondary
+    # monitor whenever it comes back.
+    if [ -n "$(sync_monitors_monitor_of 0)" ]; then
+      aerospace move-workspace-to-monitor --workspace 0 secondary || return 1
     fi
     workspaces=$(sync_monitors_main_workspaces "$secondary") || return 1
     sync_monitors_apply_layout tiles $workspaces || return 1
@@ -1974,17 +1646,6 @@ cleanup)
 sync-monitors)
   shift
   cmd_sync_monitors "$@"
-  ;;
-rename-workspace)
-  shift
-  cmd_rename_workspace "$@"
-  ;;
-restore-labels)
-  shift
-  cmd_restore_labels "$@"
-  ;;
-workspace | move-node-to-workspace | summon-workspace)
-  cmd_by_position "$@"
   ;;
 help | -h | --help) cmd_help ;;
 *) exec aerospace "$@" ;;

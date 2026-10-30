@@ -15,4 +15,3 @@ require("hs.ipc")
 -- Installed from kelvinst/katapult by `make install`, not kept here.
 katapult = require("katapult-spoon")
 windowhints = require("windowhints")
-workspacename = require("workspacename")
