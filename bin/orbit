@@ -78,8 +78,8 @@ Options:
   -m, --main <title>
                 With no window in the focused workspace, or when one of
                 the app's windows already has focus, focus the app's
-                window titled <title> wherever it is (its main window,
-                left in place), else its oldest window.
+                window titled <title> wherever it is (its main window),
+                else its oldest window. Left in place unless --pull.
 EOF
 }
 

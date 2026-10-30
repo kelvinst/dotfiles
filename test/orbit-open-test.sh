@@ -23,17 +23,21 @@ setup() {
   # (`<id>|<bundle-id>|<title>` for --main lookups); window ids in
   # STUB_FOCUSED are the app's windows on the focused workspace, and
   # STUB_FOCUSED_APP is the bundle id of the focused window.
+  # STUB_WINDOW_WS (`<window-id> <workspace>` per line) answers --pull's
+  # lookup, and STUB_WORKSPACE is the focused workspace.
   cat >"$work/bin/aerospace" <<'STUB'
 #!/bin/sh
 printf 'aerospace %s\n' "$*" >>"$STUB_LOG"
 case $1 in
 list-windows)
   case " $* " in
+  *" --all "*"%{workspace}"*) printf '%s\n' "${STUB_WINDOW_WS-}" | sed '/^$/d' ;;
   *" --all "*) printf '%s\n' "${STUB_WINDOWS-}" | sed '/^$/d' ;;
   *" --focused "*) printf '%s\n' "${STUB_FOCUSED_APP-}" | sed '/^$/d' ;;
   *) printf '%s\n' "${STUB_FOCUSED-}" | sed '/^$/d' ;;
   esac
   ;;
+list-workspaces) printf '%s\n' "${STUB_WORKSPACE-}" ;;
 esac
 STUB
 
@@ -126,7 +130,7 @@ teardown
 
 # --- --main ----------------------------------------------------------------
 # cmd-ctrl-c: a Claude window on this workspace wins; else the main window
-# (titled "Claude") gets focus where it is, never pulled over.
+# (titled "Claude") gets focus, pulled over here with --pull.
 CLAUDE=com.anthropic.claudefordesktop
 echo "--main, window on focused workspace: focused there"
 setup
@@ -161,6 +165,24 @@ STUB_RUNNING=$CLAUDE STUB_FOCUSED=5 STUB_FOCUSED_APP=$CLAUDE \
   STUB_WINDOWS="$(printf '5|%s|chat\n3|%s|Claude' $CLAUDE $CLAUDE)" \
   "$ORBIT" open -m Claude $CLAUDE
 check "focused" "$(grep -c '^aerospace focus --window-id 3$' "$STUB_LOG")" "1"
+check "nothing moved" "$(grep -c move-node "$STUB_LOG")" "0"
+teardown
+
+echo "--main --pull, none on focused workspace: main window pulled here"
+setup
+STUB_RUNNING=$CLAUDE STUB_WORKSPACE=2 STUB_WINDOW_WS='3 0' \
+  STUB_WINDOWS="$(printf '4|%s|chat\n3|%s|Claude' $CLAUDE $CLAUDE)" \
+  "$ORBIT" open -p -m Claude $CLAUDE
+check "pulled" "$(grep -c '^aerospace move-node-to-workspace --window-id 3 2$' "$STUB_LOG")" "1"
+check "focused" "$(grep -c '^aerospace focus --window-id 3$' "$STUB_LOG")" "1"
+check "open call" "$(opens)" ""
+teardown
+
+echo "--main --pull, window on focused workspace: focused, nothing pulled"
+setup
+STUB_RUNNING=$CLAUDE STUB_FOCUSED=5 STUB_WORKSPACE=2 STUB_WINDOW_WS='5 2' \
+  STUB_WINDOWS="3|$CLAUDE|Claude" "$ORBIT" open -p -m Claude $CLAUDE
+check "focused" "$(grep -c '^aerospace focus --window-id 5$' "$STUB_LOG")" "1"
 check "nothing moved" "$(grep -c move-node "$STUB_LOG")" "0"
 teardown
 
