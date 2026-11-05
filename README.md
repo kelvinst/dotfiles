@@ -123,13 +123,6 @@ My new, simplified, dotfiles
    git clone https://github.com/Freed-Wu/fzf-tab-source ~/.fzf-tab-source
    ```
 
-1. Install the fzf-tab binary module to speed up coloring: ([for
-   reference][fzf-tab-bin-module]):
-
-   ```shell
-   build-fzf-tab-module
-   ```
-
 1. Install the lord of terminal multiplexers:
    [`tmux`](https://github.com/tmux/tmux)
 
@@ -310,6 +303,14 @@ My new, simplified, dotfiles
    git clone git@github.com:kelvinst/dotfiles.git
    cd dotfiles
    make install
+   ```
+
+1. Install the fzf-tab binary module to speed up coloring: ([for
+   reference][fzf-tab-bin-module]). `build-fzf-tab-module` lives in this
+   repo's `bin/`, so it is only on `PATH` after `make install`:
+
+   ```shell
+   build-fzf-tab-module
    ```
 
 1. Install the `hs` command-line tool, so Hammerspoon can be driven from a
