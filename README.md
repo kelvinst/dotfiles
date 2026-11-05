@@ -4,16 +4,16 @@ My new, simplified, dotfiles
 
 ## Installation
 
-1. Install the terminal: [`kitty`](https://sw.kovidgoyal.net/kitty)
-
-   ```shell
-   brew install kitty
-   ```
-
 1. Install Mac package manager: [`brew`](http://brew.sh)
 
    ```shell
    /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
+   ```
+
+1. Install the terminal: [`kitty`](https://sw.kovidgoyal.net/kitty)
+
+   ```shell
+   brew install kitty
    ```
 
 1. You need to `make` `less` `git`! `unzip` your `gcc`, `catimg` `jq`
