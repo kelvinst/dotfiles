@@ -136,13 +136,6 @@ My new, simplified, dotfiles
    git clone https://github.com/tmux-plugins/tpm ~/.tmux/plugins/tpm
    ```
 
-1. Install the way to load project sessions into it:
-   [`tmux-sessionizer`][tmux-sessionizer]
-
-   ```shell
-   cargo install tmux-sessionizer
-   ```
-
 1. Install the searcher: [`ripgrep`](https://github.com/BurntSushi/ripgrep)
 
    ```shell
@@ -175,6 +168,15 @@ My new, simplified, dotfiles
    mise use -g yarn@latest
    mise use -g just@latest
    mise use -g zig@latest
+   ```
+
+1. Install the way to load project sessions into tmux:
+   [`tmux-sessionizer`][tmux-sessionizer]. `cargo` comes from the Rust that
+   mise just installed, and the shell only puts it on `PATH` after
+   `make install`, so run it through mise:
+
+   ```shell
+   mise exec rust -- cargo install tmux-sessionizer
    ```
 
 1. Install [`neovim`](https://neovim.io)
