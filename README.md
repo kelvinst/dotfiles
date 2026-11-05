@@ -198,12 +198,6 @@ My new, simplified, dotfiles
    make install
    ```
 
-1. Install [Amethyst](https://github.com/ianyh/Amethyst)
-
-   ```shell
-   brew install --cask amethyst
-   ```
-
 1. Install [skhd](https://github.com/asmvik/skhd)
 
    ```shell
