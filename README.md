@@ -193,9 +193,8 @@ My new, simplified, dotfiles
 1. Install [`nvim_url`](https://github.com/kelvinst/nvim_url):
 
    ```shell
-   git clone https://github.com/kelvinst/nvim_url.git
-   cd nvim_url
-   make install
+   git clone https://github.com/kelvinst/nvim_url.git ~/.nvim_url
+   make -C ~/.nvim_url install
    ```
 
 1. Install [skhd](https://github.com/asmvik/skhd)
