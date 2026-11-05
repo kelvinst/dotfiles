@@ -148,7 +148,12 @@ My new, simplified, dotfiles
    brew install direnv
    ```
 
-1. Install "FiraCode Nerd Font Mono" from [here](https://www.nerdfonts.com/)
+1. Install "FiraCode Nerd Font Mono" ([Nerd Fonts](https://www.nerdfonts.com/)
+   — the cask ships the Mono variant too):
+
+   ```shell
+   brew install --cask font-fira-code-nerd-font
+   ```
 
 1. Install the runtime version manager: [`mise`](https://mise.jdx.dev)
 
