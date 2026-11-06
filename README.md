@@ -270,6 +270,16 @@ My new, simplified, dotfiles
    brew install --cask hammerspoon
    ```
 
+1. Install what `hammerspoon/kvm.lua` drives to hand the Dell between Macs
+   (cmd-ctrl-d): `m1ddc` switches the monitor's input, BetterDisplay detaches
+   the Dell here so Universal Control doesn't route through it. Open
+   BetterDisplay once; its CLI only answers while the app runs.
+
+   ```shell
+   brew install m1ddc
+   brew install --cask betterdisplay
+   ```
+
 1. Clone [Katapult](https://github.com/kelvinst/katapult) next to it. It has
    nothing to build: this repo's `make install` (next step) copies its
    `katapult-spoon.lua` into `~/.hammerspoon`, which opens Katapult links
