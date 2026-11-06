@@ -25,9 +25,11 @@ local INPUT_OTHER = 17
 local M1DDC = "/opt/homebrew/bin/m1ddc"
 local BETTERDISPLAY = "/opt/homebrew/bin/betterdisplaycli"
 
--- A reattached Dell takes a moment to show up again before m1ddc can
--- address it.
-local SETTLE_SECONDS = 3
+-- A reattached Dell takes a moment (~0.1s) to show up again before m1ddc
+-- can address it. Retried rather than slept on, so the input switches the
+-- moment it can; MAX_TRIES caps the wait at 5s.
+local RETRY_SECONDS = 0.1
+local MAX_TRIES = 50
 
 -- The built-in stays the main display, Dell or not. A reattach usually
 -- leaves it main anyway; this makes sure.
@@ -59,19 +61,22 @@ local function giveAway()
 end
 
 local function takeBack()
+  -- Input before the main-display fix: the switch is what's waited on.
   run(
     string.format(
-      "%s set --name=%q --connected=on && sleep %d && "
-        .. "%s set --name=%q --main=on && "
-        .. "%s display %s set input %d",
+      "%s set --name=%q --connected=on || exit 1; i=0; "
+        .. "until %s display %s set input %d >/dev/null 2>&1; do "
+        .. "i=$((i + 1)); [ $i -ge %d ] && exit 1; sleep %s; done; "
+        .. "%s set --name=%q --main=on",
       BETTERDISPLAY,
       DELL_NAME,
-      SETTLE_SECONDS,
-      BETTERDISPLAY,
-      BUILTIN_NAME,
       M1DDC,
       DELL_UUID,
-      INPUT_HERE
+      INPUT_HERE,
+      MAX_TRIES,
+      RETRY_SECONDS,
+      BETTERDISPLAY,
+      BUILTIN_NAME
     )
   )
 end
