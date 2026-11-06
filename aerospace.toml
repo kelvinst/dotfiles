@@ -253,6 +253,8 @@ on-mode-changed = []
     cmd-ctrl-b = 'exec-and-forget orbit open com.google.Chrome'
     cmd-ctrl-c = 'exec-and-forget orbit open -p -m Claude com.anthropic.claudefordesktop'
     cmd-ctrl-e = 'exec-and-forget orbit open com.apple.iCal'
+    # Hand the Dell to the other Mac on its KVM, or take it back (bin/kvm).
+    cmd-ctrl-d = 'exec-and-forget kvm toggle'
     cmd-ctrl-f = 'exec-and-forget orbit open com.apple.finder'
     cmd-ctrl-k = 'exec-and-forget orbit open -g io.zsa.keymapp'
     cmd-ctrl-m = 'exec-and-forget orbit open -p com.apple.mail'

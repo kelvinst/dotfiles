@@ -14,7 +14,6 @@ require("hs.ipc")
 -- monitors = require("monitors")
 -- Installed from kelvinst/katapult by `make install`, not kept here.
 katapult = require("katapult-spoon")
-kvm = require("kvm")
 windowhints = require("windowhints")
 -- Double-tap Control/Command/Option for Return/Space/Backspace; replaces
 -- the old Karabiner rules (dot-p45).
