@@ -7,9 +7,6 @@ config-version = 2
 
 # You can use it to add commands that run after AeroSpace startup.
 # Available commands : https://nikitabobko.github.io/AeroSpace/commands
-#
-# Workspace 0 needs no seeding: `[workspace-to-monitor-force-assignment]`
-# puts it on the secondary monitor whenever it comes up.
 after-startup-command = [
   'exec-and-forget borders active_color=0xffe1e3e4 inactive_color=0xff494d64 width=5.0',
 ]
@@ -84,9 +81,6 @@ on-mode-changed = []
     outer.bottom =     12
     outer.top =        12
     outer.right =      12
-
-[workspace-to-monitor-force-assignment]
-    0 = 'secondary'
 
 # 'main' binding mode declaration
 # See: https://nikitabobko.github.io/AeroSpace/guide#binding-modes
@@ -283,13 +277,6 @@ on-mode-changed = []
     r = ['exec-and-forget orbit flatten-workspace-tree', 'mode main'] # reset layout
     f = ['layout floating tiling', 'mode main'] # Toggle between floating and tiling layout
     backspace = ['close-all-windows-but-current', 'mode main']
-    # Re-seed workspace 0 onto the secondary monitor, for when a monitor
-    # reconnect drops the pinning. `mode main` first: with no workspace 0
-    # the move fails, and that would leave service mode on.
-    m = [
-      'mode main',
-      'move-workspace-to-monitor --workspace 0 secondary',
-    ]
 
     # sticky is not yet supported https://github.com/nikitabobko/AeroSpace/issues/2
     #s = ['layout sticky tiling', 'mode main']
