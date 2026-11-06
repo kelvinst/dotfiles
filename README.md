@@ -232,7 +232,7 @@ My new, simplified, dotfiles
 1. Install the code formatter: [`prettier`](https://prettier.io)
 
    ```shell
-   npm install -g prettier
+   mise exec node -- npm install -g prettier
    ```
 
 1. Install [claude code](https://claude.com/product/claude-code)
@@ -244,7 +244,7 @@ My new, simplified, dotfiles
 1. Install [claude code acp](https://github.com/zed-industries/claude-code-acp)
 
    ```shell
-   npm install -g @zed-industries/claude-code-acp
+   mise exec node -- npm install -g @zed-industries/claude-code-acp
    ```
 
 1. Install [Hammerspoon](https://www.hammerspoon.org)
