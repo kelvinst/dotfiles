@@ -195,7 +195,6 @@ on-mode-changed = []
     ctrl-shift-equal = 'resize height +50'
 
     # See: https://nikitabobko.github.io/AeroSpace/commands#workspace
-    alt-0 = 'workspace 0'
     alt-1 = 'workspace 1'
     alt-2 = 'workspace 2'
     alt-3 = 'workspace 3'
@@ -207,7 +206,6 @@ on-mode-changed = []
     alt-9 = 'workspace 9'
 
     # See: https://nikitabobko.github.io/AeroSpace/commands#move-node-to-workspace
-    alt-shift-0 = 'move-node-to-workspace 0 --focus-follows-window'
     alt-shift-1 = 'move-node-to-workspace 1 --focus-follows-window'
     alt-shift-2 = 'move-node-to-workspace 2 --focus-follows-window'
     alt-shift-3 = 'move-node-to-workspace 3 --focus-follows-window'
@@ -218,7 +216,6 @@ on-mode-changed = []
     alt-shift-8 = 'move-node-to-workspace 8 --focus-follows-window'
     alt-shift-9 = 'move-node-to-workspace 9 --focus-follows-window'
 
-    alt-ctrl-0 = 'summon-workspace 0'
     alt-ctrl-1 = 'summon-workspace 1'
     alt-ctrl-2 = 'summon-workspace 2'
     alt-ctrl-3 = 'summon-workspace 3'
@@ -229,7 +226,6 @@ on-mode-changed = []
     alt-ctrl-8 = 'summon-workspace 8'
     alt-ctrl-9 = 'summon-workspace 9'
 
-    alt-ctrl-shift-0 = 'exec-and-forget orbit move-workspace --focus-follows-workspace 0'
     alt-ctrl-shift-1 = 'exec-and-forget orbit move-workspace --focus-follows-workspace 1'
     alt-ctrl-shift-2 = 'exec-and-forget orbit move-workspace --focus-follows-workspace 2'
     alt-ctrl-shift-3 = 'exec-and-forget orbit move-workspace --focus-follows-workspace 3'
@@ -286,34 +282,3 @@ on-mode-changed = []
     if.app-id = 'com.apple.systempreferences'
     check-further-callbacks = true
     run = ['layout floating']
-
-[[on-window-detected]]
-    if.app-id = 'io.zsa.keymapp'
-    check-further-callbacks = true
-    run = ['move-node-to-workspace 0']
-
-[[on-window-detected]]
-    if.app-id = 'md.obsidian'
-    check-further-callbacks = true
-    run = ['move-node-to-workspace 0']
-
-[[on-window-detected]]
-    if.app-id = 'com.apple.Music'
-    check-further-callbacks = true
-    run = ['move-node-to-workspace 0']
-
-[[on-window-detected]]
-    if.app-id = 'com.logi.optionsplus'
-    check-further-callbacks = true
-    run = ['move-node-to-workspace 0']
-
-[[on-window-detected]]
-    if.app-id = 'com.macpaw.CleanMyMac4'
-    check-further-callbacks = true
-    run = ['move-node-to-workspace 0']
-
-[[on-window-detected]]
-    if.app-id = 'com.tiimo.app'
-    check-further-callbacks = true
-    run = ['layout floating']
-
