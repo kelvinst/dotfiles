@@ -1,0 +1,203 @@
+#!/usr/bin/env bash
+# Hands a KVM monitor between two Macs without breaking Universal Control.
+#
+# A Mac the monitor isn't showing still keeps it attached, so Universal
+# Control lays that Mac out as "monitor + built-in" and the cursor has to
+# cross a monitor nobody can see to reach the built-in. Mirroring the
+# built-in onto the monitor makes it one screen again. Each Mac runs
+# `kvm watch`, which mirrors while the monitor shows the other Mac and
+# extends again when it comes back; `kvm toggle` only switches the input.
+set -uo pipefail
+
+CONFIG=${KVM_CONFIG:-"$HOME/.config/kvm/config"}
+STATE_DIR=${KVM_STATE_DIR:-"${XDG_STATE_HOME:-$HOME/.local/state}/kvm"}
+EXTENDED="$STATE_DIR/extended"
+AGENT_LABEL=com.kelvinst.kvm
+AGENT_PLIST="$HOME/Library/LaunchAgents/$AGENT_LABEL.plist"
+
+usage() {
+  cat <<'EOF'
+Usage: kvm <command>
+
+  toggle   Switch the monitor's input to the other Mac, or back to this one.
+  sync     Mirror or extend this Mac's displays to match the current input.
+  watch    Run sync whenever the input changes (what the agent runs).
+  agent install <this-input> <other-input> [<monitor-name>]
+           Save the config and start `kvm watch` as a LaunchAgent.
+           Inputs are VCP 0x60 codes (USB-C 27, HDMI 1 17, DP 15);
+           the monitor name defaults to U3223QE.
+  agent uninstall
+           Stop and remove the LaunchAgent.
+
+Needs m1ddc and displayplacer (brew install m1ddc displayplacer).
+EOF
+}
+
+die() {
+  echo "kvm: $*" >&2
+  exit 1
+}
+
+load_config() {
+  [ -f "$CONFIG" ] || die "no $CONFIG; run kvm agent install first"
+  INPUT='' OTHER_INPUT='' MONITOR=U3223QE
+  # shellcheck source=/dev/null
+  . "$CONFIG"
+  [ -n "$INPUT" ] && [ -n "$OTHER_INPUT" ] || die "$CONFIG needs INPUT and OTHER_INPUT"
+}
+
+monitor_uuid() {
+  m1ddc display list 2>/dev/null |
+    sed -n "s/.*$MONITOR.*(\([0-9A-F-]*\)).*/\1/p" | head -1
+}
+
+# The input the monitor shows, as INPUT or OTHER_INPUT. The Dell answers
+# in the low byte (0x1B1B for USB-C) and about half the reads come back as
+# garbage (48750), so anything else is retried, then given up on.
+current_input() {
+  local uuid=$1 value low
+  for _ in 1 2 3 4 5; do
+    value=$(m1ddc display "$uuid" get input 2>/dev/null)
+    if [[ $value =~ ^[0-9]+$ ]]; then
+      low=$((value & 255))
+      if [ "$low" = "$INPUT" ] || [ "$low" = "$OTHER_INPUT" ]; then
+        echo "$low"
+        return 0
+      fi
+    fi
+    sleep 0.1
+  done
+  return 1
+}
+
+# The command `displayplacer list` ends with: the one that recreates the
+# current arrangement, one quoted screen per argument.
+arrangement() {
+  displayplacer list | tail -1
+}
+
+builtin_uuid() {
+  displayplacer list | awk '
+    /^Persistent screen id:/ { id = $4 }
+    /^Type: MacBook built in screen/ { print id; exit }'
+}
+
+mirror() {
+  local monitor=$1 current builtin screen
+  current=$(arrangement)
+  builtin=$(builtin_uuid)
+  [ -n "$builtin" ] || die "no built-in screen in displayplacer list"
+  # Kept to put back when the monitor returns.
+  mkdir -p "$STATE_DIR"
+  printf '%s\n' "$current" >"$EXTENDED"
+  screen=$(grep -o "\"id:$builtin [^\"]*\"" <<<"$current" | tr -d '"')
+  [ -n "$screen" ] || die "built-in not in: $current"
+  screen=${screen/id:$builtin/id:$builtin+$monitor}
+  screen=$(sed 's/origin:([^)]*)/origin:(0,0)/' <<<"$screen")
+  displayplacer "$screen"
+}
+
+extend() {
+  [ -s "$EXTENDED" ] || die "mirrored, but no saved arrangement in $EXTENDED"
+  local saved
+  saved=$(cat "$EXTENDED")
+  # The saved line is displayplacer's own output: a command whose screens
+  # are double-quoted arguments.
+  eval "set -- ${saved#displayplacer }"
+  displayplacer "$@"
+}
+
+sync_to() {
+  local monitor=$1 input=$2 mirrored=false
+  [[ $(arrangement) == *"+$monitor"* || $(arrangement) == *"$monitor+"* ]] &&
+    mirrored=true
+  if [ "$input" = "$INPUT" ] && $mirrored; then
+    extend
+  elif [ "$input" = "$OTHER_INPUT" ] && ! $mirrored; then
+    mirror "$monitor"
+  fi
+}
+
+cmd_sync() {
+  load_config
+  local monitor input
+  monitor=$(monitor_uuid)
+  [ -n "$monitor" ] || return 0
+  input=$(current_input "$monitor") || return 0
+  sync_to "$monitor" "$input"
+}
+
+cmd_toggle() {
+  load_config
+  local monitor input
+  monitor=$(monitor_uuid)
+  [ -n "$monitor" ] || die "no $MONITOR on m1ddc display list"
+  input=$(current_input "$monitor") || die "can't read the input from $MONITOR"
+  if [ "$input" = "$INPUT" ]; then
+    m1ddc display "$monitor" set input "$OTHER_INPUT" >/dev/null
+    sync_to "$monitor" "$OTHER_INPUT"
+  else
+    m1ddc display "$monitor" set input "$INPUT" >/dev/null
+    sync_to "$monitor" "$INPUT"
+  fi
+}
+
+cmd_watch() {
+  load_config
+  local monitor input last=''
+  while :; do
+    monitor=$(monitor_uuid)
+    if [ -n "$monitor" ] && input=$(current_input "$monitor"); then
+      # Only on a change: displayplacer list is the slow part, and a toggle
+      # on this Mac has already synced.
+      if [ "$input" != "$last" ]; then
+        sync_to "$monitor" "$input"
+        last=$input
+      fi
+    fi
+    sleep "${KVM_INTERVAL:-0.5}"
+  done
+}
+
+cmd_agent() {
+  case ${1:-} in
+  install)
+    [ $# -ge 3 ] || die "usage: kvm agent install <this-input> <other-input> [<monitor-name>]"
+    mkdir -p "$(dirname "$CONFIG")" "$(dirname "$AGENT_PLIST")" "$HOME/Library/Logs"
+    printf 'INPUT=%s\nOTHER_INPUT=%s\nMONITOR=%s\n' "$2" "$3" "${4:-U3223QE}" >"$CONFIG"
+    cat >"$AGENT_PLIST" <<EOF
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+  <key>Label</key><string>$AGENT_LABEL</string>
+  <key>ProgramArguments</key>
+  <array><string>$(cd "$(dirname "$0")" && pwd)/$(basename "$0")</string><string>watch</string></array>
+  <key>EnvironmentVariables</key>
+  <dict><key>PATH</key><string>/opt/homebrew/bin:/usr/local/bin:/usr/bin:/bin</string></dict>
+  <key>RunAtLoad</key><true/>
+  <key>KeepAlive</key><true/>
+  <key>StandardErrorPath</key><string>$HOME/Library/Logs/kvm.log</string>
+</dict>
+</plist>
+EOF
+    launchctl bootout "gui/$(id -u)/$AGENT_LABEL" 2>/dev/null
+    launchctl bootstrap "gui/$(id -u)" "$AGENT_PLIST" || die "launchctl bootstrap failed"
+    echo "kvm watch running as $AGENT_LABEL; config in $CONFIG"
+    ;;
+  uninstall)
+    launchctl bootout "gui/$(id -u)/$AGENT_LABEL" 2>/dev/null
+    rm -f "$AGENT_PLIST"
+    ;;
+  *) usage >&2 && exit 1 ;;
+  esac
+}
+
+case ${1:-} in
+toggle) cmd_toggle ;;
+sync) cmd_sync ;;
+watch) cmd_watch ;;
+agent) shift && cmd_agent "$@" ;;
+-h | --help | help) usage ;;
+*) usage >&2 && exit 1 ;;
+esac

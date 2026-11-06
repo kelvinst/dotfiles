@@ -270,15 +270,21 @@ My new, simplified, dotfiles
    brew install --cask hammerspoon
    ```
 
-1. Install what `hammerspoon/kvm.lua` drives to hand the Dell between Macs
-   (cmd-ctrl-d): `m1ddc` switches the monitor's input, BetterDisplay detaches
-   the Dell here so Universal Control doesn't route through it. Open
-   BetterDisplay once; its CLI only answers while the app runs.
+1. Set up `bin/kvm`, which hands the Dell between this Mac and the work Mac on
+   its KVM (cmd-ctrl-d in `hammerspoon/kvm.lua`). `m1ddc` switches the
+   monitor's input; `displayplacer` mirrors the built-in onto the Dell while
+   the other Mac has it, so Universal Control never routes through a Dell
+   nobody can see. After `make install`, start the watcher with this Mac's
+   input (USB-C, 27) and the other's (HDMI 1, 17):
 
    ```shell
-   brew install m1ddc
-   brew install --cask betterdisplay
+   brew install m1ddc displayplacer
+   kvm agent install 27 17
    ```
+
+   The work Mac needs only `bin/kvm`, the same two brew packages and
+   `kvm agent install 17 27`, no Hammerspoon. Its watcher does its half
+   whenever the input changes, from cmd-ctrl-d here or the Dell's own button.
 
 1. Clone [Katapult](https://github.com/kelvinst/katapult) next to it. It has
    nothing to build: this repo's `make install` (next step) copies its
