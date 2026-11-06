@@ -26,8 +26,12 @@ local M1DDC = "/opt/homebrew/bin/m1ddc"
 local BETTERDISPLAY = "/opt/homebrew/bin/betterdisplaycli"
 
 -- A reattached Dell takes a moment to show up again before m1ddc can
--- address it, and macOS makes the built-in the main display meanwhile.
+-- address it.
 local SETTLE_SECONDS = 3
+
+-- The built-in stays the main display, Dell or not. A reattach usually
+-- leaves it main anyway; this makes sure.
+local BUILTIN_NAME = "Built-in Display"
 
 -- Held on the module table: a collected task never finishes its chain.
 local function run(script)
@@ -64,7 +68,7 @@ local function takeBack()
       DELL_NAME,
       SETTLE_SECONDS,
       BETTERDISPLAY,
-      DELL_NAME,
+      BUILTIN_NAME,
       M1DDC,
       DELL_UUID,
       INPUT_HERE
