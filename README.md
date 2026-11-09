@@ -275,13 +275,6 @@ My new, simplified, dotfiles
    git clone git@github.com:kelvinst/katapult.git ~/Developer/katapult
    ```
 
-   Install its `katapult` command too, which prints Katapult links:
-
-   ```shell
-   brew tap kelvinst/katapult https://github.com/kelvinst/katapult
-   brew install kelvinst/katapult/katapult
-   ```
-
 1. Clone this repo and run `make` to install:
 
    ```shell
