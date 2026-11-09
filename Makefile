@@ -27,7 +27,6 @@ HOME_TARGETS := \
 	.gitconfig \
 	.global_gitignore \
 	.hammerspoon \
-	.paneru.toml \
 	.skhdrc \
 	.tmux.conf \
 	.zsh/completions \
@@ -103,7 +102,6 @@ install: backup
 	cp ./default-gems ~/.default-gems
 	cp ./gitconfig ~/.gitconfig
 	cp ./global_gitignore ~/.global_gitignore
-	cp ./paneru.toml ~/.paneru.toml
 	cp ./skhdrc ~/.skhdrc
 	cp ./tmux.conf ~/.tmux.conf
 	cp ./zshenv ~/.zshenv
@@ -131,7 +129,6 @@ clean:
 	rm -rf ~/.default-gems
 	rm -rf ~/.gitconfig
 	rm -rf ~/.global_gitignore
-	rm -rf ~/.paneru.toml
 	rm -rf ~/.skhdrc
 	rm -rf ~/.tmux.conf
 	rm -rf ~/.zshenv
@@ -170,7 +167,6 @@ update:
 	cp ~/.default-gems ./default-gems
 	cp ~/.gitconfig ./gitconfig
 	cp ~/.global_gitignore ./global_gitignore
-	cp ~/.paneru.toml ./paneru.toml
 	cp ~/.skhdrc ./skhdrc
 	cp ~/.tmux.conf ./tmux.conf
 	cp ~/.zshenv ./zshenv

@@ -19,7 +19,6 @@ there are no other users, no portability layer, no Linux fallback.
 | `tmux.conf`              | `~/.tmux.conf`            |
 | `aerospace.toml`         | `~/.aerospace.toml`       |
 | `skhdrc`                 | `~/.skhdrc`               |
-| `paneru.toml`            | `~/.paneru.toml`          |
 | `ai-jail`                | `~/.ai-jail`              |
 | `default-gems`           | `~/.default-gems`         |
 | `config/<tool>/`         | `~/.config/<tool>/`       |
@@ -78,9 +77,9 @@ file) to see the change take effect; nothing is symlinked.
 - **Commit messages**: Conventional Commits with a scope tied to the file or
   tool being touched — e.g. `feat(zshrc): ...`, `fix(aerospace): ...`,
   `feat(nvim): ...`, `chore(beads): ...`. Wrap bodies at ~72 chars.
-- **macOS-specific tools** in play: kitty, aerospace, skhd, paneru,
-  hammerspoon, Karabiner-Elements, JankyBorders, ai-jail, worktrunk. Don't
-  suggest Linux equivalents unless asked.
+- **macOS-specific tools** in play: kitty, aerospace, skhd, hammerspoon,
+  Karabiner-Elements, JankyBorders, ai-jail, worktrunk. Don't suggest Linux
+  equivalents unless asked.
 
 ## Non-interactive shell commands
 
