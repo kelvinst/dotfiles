@@ -278,9 +278,8 @@ My new, simplified, dotfiles
 1. Clone this repo and run `make` to install:
 
    ```shell
-   git clone git@github.com:kelvinst/dotfiles.git
-   cd dotfiles
-   make install
+   git clone git@github.com:kelvinst/dotfiles.git ~/Developer/dotfiles
+   make -C ~/Developer/dotfiles install
    ```
 
 1. Install the fzf-tab binary module to speed up coloring: ([for
