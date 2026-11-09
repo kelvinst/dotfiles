@@ -266,28 +266,6 @@ My new, simplified, dotfiles
    Control remap, so leave Caps Lock unmapped in System Settings → Keyboard →
    Keyboard Shortcuts → Modifier Keys.
 
-1. Install the VPN mesh: [Tailscale](https://tailscale.com)
-
-   ```shell
-   brew install --cask tailscale-app
-   ```
-
-   Then turn on Settings → CLI integration in the menu bar app, which puts the
-   `tailscale` command in `/usr/local/bin` (already on `PATH`).
-
-1. Optionally, share kix's pages (like the preflight diff) with your other
-   devices over Tailscale. This serves `~/Shared` on the tailnet only and
-   writes its URL into kix's config, built from this machine's name so it never
-   lands in this repo:
-
-   ```shell
-   mkdir -p ~/Shared ~/.config/kix
-   tailscale serve --bg --set-path /shared ~/Shared
-   printf 'KIX_SHARE_DIR=%s\nKIX_SHARE_URL=https://%s/shared\n' ~/Shared \
-     "$(tailscale status --json | jq -r '.Self.DNSName | rtrimstr(".")')" \
-     > ~/.config/kix/config
-   ```
-
 1. Clone [Katapult](https://github.com/kelvinst/katapult) next to it:
    `make install` copies its `katapult-spoon.lua` into `~/.hammerspoon`, which
    opens Katapult links without loading the page (see the step on the default
@@ -306,8 +284,8 @@ My new, simplified, dotfiles
    ```
 
 1. Install the fzf-tab binary module to speed up coloring: ([for
-   reference][fzf-tab-bin-module]). `build-fzf-tab-module` lives in this
-   repo's `bin/`, so it is only on `PATH` after `make install`:
+   reference][fzf-tab-bin-module]). `build-fzf-tab-module` lives in this repo's
+   `bin/`, so it is only on `PATH` after `make install`:
 
    ```shell
    build-fzf-tab-module
@@ -357,6 +335,32 @@ My new, simplified, dotfiles
 
 Feel free to fork and clone it from there. This is under MIT license, do what
 you want, just give me some credit for it. 😁
+
+## Optional
+
+Extras that are not needed on every machine. Skip any of these.
+
+1. Install the VPN mesh: [Tailscale](https://tailscale.com)
+
+   ```shell
+   brew install --cask tailscale-app
+   ```
+
+   Then turn on Settings → CLI integration in the menu bar app, which puts the
+   `tailscale` command in `/usr/local/bin` (already on `PATH`).
+
+1. Share kix's pages (like the preflight diff) with your other devices over
+   Tailscale. This serves `~/Shared` on the tailnet only and writes its URL
+   into kix's config, built from this machine's name so it never lands in this
+   repo:
+
+   ```shell
+   mkdir -p ~/Shared ~/.config/kix
+   tailscale serve --bg --set-path /shared ~/Shared
+   printf 'KIX_SHARE_DIR=%s\nKIX_SHARE_URL=https://%s/shared\n' ~/Shared \
+     "$(tailscale status --json | jq -r '.Self.DNSName | rtrimstr(".")')" \
+     > ~/.config/kix/config
+   ```
 
 ## FAQ
 
