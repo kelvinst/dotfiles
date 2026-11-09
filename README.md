@@ -273,6 +273,7 @@ My new, simplified, dotfiles
 
    ```shell
    git clone git@github.com:kelvinst/katapult.git ~/Developer/katapult
+   (cd ~/Developer/katapult && make install)
    ```
 
 1. Clone this repo and run `make` to install:
