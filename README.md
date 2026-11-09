@@ -197,6 +197,16 @@ My new, simplified, dotfiles
    make -C ~/.nvim_url install
    ```
 
+1. Install the tiling window manager:
+   [AeroSpace](https://github.com/nikitabobko/AeroSpace)
+
+   ```shell
+   brew install --cask nikitabobko/tap/aerospace
+   ```
+
+   It needs Accessibility permission (System Settings → Privacy & Security →
+   Accessibility).
+
 1. Install [skhd](https://github.com/asmvik/skhd)
 
    ```shell
