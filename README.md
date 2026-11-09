@@ -266,10 +266,10 @@ My new, simplified, dotfiles
    Control remap, so leave Caps Lock unmapped in System Settings → Keyboard →
    Keyboard Shortcuts → Modifier Keys.
 
-1. Clone [Katapult](https://github.com/kelvinst/katapult) next to it:
-   `make install` copies its `katapult-spoon.lua` into `~/.hammerspoon`, which
-   opens Katapult links without loading the page (see the step on the default
-   browser below).
+1. Clone [Katapult](https://github.com/kelvinst/katapult) next to it. It has
+   nothing to build: this repo's `make install` (next step) copies its
+   `katapult-spoon.lua` into `~/.hammerspoon`, which opens Katapult links
+   without loading the page (see the step on the default browser below).
 
    ```shell
    git clone git@github.com:kelvinst/katapult.git ~/Developer/katapult
