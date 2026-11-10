@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<!--
+  Caps Lock -> Left Control on every keyboard, at each login (dot-p45).
+  hidutil ships with macOS and needs no admin or driver, unlike Karabiner;
+  its mapping lasts until reboot, hence the agent. 0x700000039 is Caps
+  Lock's HID usage, 0x7000000E0 Left Control's. Double-tap Caps Lock for
+  Return comes from hammerspoon/doubletap.lua, like Control's.
+-->
+<plist version="1.0">
+<dict>
+  <key>Label</key>
+  <string>com.kelvinst.caps-to-control</string>
+  <key>ProgramArguments</key>
+  <array>
+    <string>/usr/bin/hidutil</string>
+    <string>property</string>
+    <string>--set</string>
+    <string>{"UserKeyMapping":[{"HIDKeyboardModifierMappingSrc":0x700000039,"HIDKeyboardModifierMappingDst":0x7000000E0}]}</string>
+  </array>
+  <key>RunAtLoad</key>
+  <true/>
+</dict>
+</plist>

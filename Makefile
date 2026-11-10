@@ -16,7 +16,6 @@ HOME_TARGETS := \
 	.claude/settings.json \
 	.config/direnv \
 	.config/init_starship.sh \
-	.config/karabiner/karabiner.json \
 	.config/kitty \
 	.config/nvim \
 	.config/starship-full.toml \
@@ -27,6 +26,7 @@ HOME_TARGETS := \
 	.gitconfig \
 	.global_gitignore \
 	.hammerspoon \
+	Library/LaunchAgents/com.kelvinst.caps-to-control.plist \
 	.skhdrc \
 	.tmux.conf \
 	.zsh/completions \
@@ -67,8 +67,6 @@ install: backup
 	cp -r ./config/direnv/* ~/.config/direnv/
 	mkdir -p ~/.config/kitty/
 	cp -r ./config/kitty/* ~/.config/kitty/
-	mkdir -p ~/.config/karabiner/
-	cp -f ./config/karabiner/karabiner.json ~/.config/karabiner/karabiner.json
 	mkdir -p ~/.config/nvim/
 	cp -r ./config/nvim/* ~/.config/nvim/
 	mkdir -p ~/.config/tms/
@@ -82,6 +80,10 @@ install: backup
 	else \
 		echo "warning: no $(KATAPULT_DIR)/katapult-spoon.lua; clone kelvinst/katapult there" >&2; \
 	fi
+	mkdir -p ~/Library/LaunchAgents/
+	cp -f ./launchagents/com.kelvinst.caps-to-control.plist ~/Library/LaunchAgents/
+	launchctl bootout gui/$$(id -u)/com.kelvinst.caps-to-control 2>/dev/null || true
+	launchctl bootstrap gui/$$(id -u) ~/Library/LaunchAgents/com.kelvinst.caps-to-control.plist
 	mkdir -p ~/.local/bin/
 	cp -r ./bin/* ~/.local/bin/
 	for f in ./bin/*; do chmod -R +x ~/.local/bin/$$(basename $$f); done
@@ -111,7 +113,8 @@ install: backup
 clean:
 	rm -rf ~/.config/direnv/*
 	rm -rf ~/.config/kitty/*
-	rm -f ~/.config/karabiner/karabiner.json
+	launchctl bootout gui/$$(id -u)/com.kelvinst.caps-to-control 2>/dev/null || true
+	rm -f ~/Library/LaunchAgents/com.kelvinst.caps-to-control.plist
 	rm -rf ~/.config/nvim/*
 	rm -rf ~/.config/tms/*
 	rm -rf ~/.config/tidewave/*
@@ -139,8 +142,6 @@ update:
 	cp -r ~/.config/direnv/* ./config/direnv/
 	mkdir -p ./config/kitty/
 	cp -r ~/.config/kitty/* ./config/kitty/
-	mkdir -p ./config/karabiner/
-	cp -f ~/.config/karabiner/karabiner.json ./config/karabiner/karabiner.json
 	mkdir -p ./config/nvim/
 	cp -r ~/.config/nvim/* ./config/nvim/
 	mkdir -p ./config/tms/

@@ -24,6 +24,7 @@ there are no other users, no portability layer, no Linux fallback.
 | `config/<tool>/`         | `~/.config/<tool>/`       |
 | `claude/`                | `~/.claude/`              |
 | `hammerspoon/`           | `~/.hammerspoon/`         |
+| `launchagents/`          | `~/Library/LaunchAgents/` |
 | `bin/`                   | `~/.local/bin/` (chmod +x)|
 | `zsh/completions/`       | `~/.zsh/completions/`     |
 
@@ -78,8 +79,8 @@ file) to see the change take effect; nothing is symlinked.
   tool being touched — e.g. `feat(zshrc): ...`, `fix(aerospace): ...`,
   `feat(nvim): ...`, `chore(beads): ...`. Wrap bodies at ~72 chars.
 - **macOS-specific tools** in play: kitty, aerospace, skhd, hammerspoon,
-  Karabiner-Elements, JankyBorders, ai-jail, worktrunk. Don't suggest Linux
-  equivalents unless asked.
+  JankyBorders, ai-jail, worktrunk. Don't suggest Linux equivalents unless
+  asked.
 
 ## Non-interactive shell commands
 

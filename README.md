@@ -270,18 +270,12 @@ My new, simplified, dotfiles
    brew install --cask hammerspoon
    ```
 
-1. Install the keyboard remapper:
-   [Karabiner-Elements](https://karabiner-elements.pqrs.org)
+1. If Karabiner-Elements is still installed from an older setup, remove it: its
+   remaps are gone from this repo and it would fight the ones below.
 
    ```shell
-   brew install --cask karabiner-elements
+   brew uninstall --cask karabiner-elements
    ```
-
-   Open it once and approve what macOS asks for: the driver extension (System
-   Settings → General → Login Items & Extensions) and Input Monitoring for
-   `karabiner_grabber` and `karabiner_observer`. Karabiner owns the Caps Lock →
-   Control remap, so leave Caps Lock unmapped in System Settings → Keyboard →
-   Keyboard Shortcuts → Modifier Keys.
 
 1. Clone [Katapult](https://github.com/kelvinst/katapult) next to it. It has
    nothing to build: this repo's `make install` (next step) copies its
@@ -348,6 +342,26 @@ My new, simplified, dotfiles
    in System Settings → Keyboard → Keyboard Shortcuts → Mission Control. Plain
    F3 stays free for Homerow. Hammerspoon also needs Accessibility permission
    (System Settings → Privacy & Security → Accessibility).
+
+1. Check the keyboard remaps, which need nothing installed beyond Hammerspoon
+   (no driver, no admin), so they work on a managed Mac too:
+
+   - **Caps Lock is Control**, on every keyboard. `make install` loads a
+     LaunchAgent (`launchagents/com.kelvinst.caps-to-control.plist`) that runs
+     `hidutil` now and at each login. Leave Caps Lock unmapped in System
+     Settings → Keyboard → Keyboard Shortcuts → Modifier Keys. To apply it by
+     hand, or check it took:
+
+     ```shell
+     hidutil property --set '{"UserKeyMapping":[{"HIDKeyboardModifierMappingSrc":0x700000039,"HIDKeyboardModifierMappingDst":0x7000000E0}]}'
+     hidutil property --get UserKeyMapping
+     ```
+
+   - **Double-tap a left modifier** for the ErgoDox right-thumb keys
+     (`hammerspoon/doubletap.lua`): Control (and so Caps Lock) → Return,
+     Command → Space, Option → Backspace. Hold Shift while double-tapping
+     Control for Shift+Return. It rides on the Accessibility permission above;
+     password fields block it, like any eventtap.
 
 Feel free to fork and clone it from there. This is under MIT license, do what
 you want, just give me some credit for it. 😁

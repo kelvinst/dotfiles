@@ -15,3 +15,6 @@ require("hs.ipc")
 -- Installed from kelvinst/katapult by `make install`, not kept here.
 katapult = require("katapult-spoon")
 windowhints = require("windowhints")
+-- Double-tap Control/Command/Option for Return/Space/Backspace; replaces
+-- the old Karabiner rules (dot-p45).
+doubletap = require("doubletap").start()
