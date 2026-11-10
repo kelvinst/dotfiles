@@ -83,7 +83,11 @@ install: backup
 	mkdir -p ~/Library/LaunchAgents/
 	cp -f ./launchagents/com.kelvinst.caps-to-control.plist ~/Library/LaunchAgents/
 	launchctl bootout gui/$$(id -u)/com.kelvinst.caps-to-control 2>/dev/null || true
-	launchctl bootstrap gui/$$(id -u) ~/Library/LaunchAgents/com.kelvinst.caps-to-control.plist
+	# bootstrap right after bootout can fail (error 5) while the old job is
+	# still going away; apply the mapping directly then, so it takes effect
+	# now and the install carries on. The agent loads at the next login.
+	launchctl bootstrap gui/$$(id -u) ~/Library/LaunchAgents/com.kelvinst.caps-to-control.plist \
+		|| /usr/bin/hidutil property --set '{"UserKeyMapping":[{"HIDKeyboardModifierMappingSrc":0x700000039,"HIDKeyboardModifierMappingDst":0x7000000E0}]}' >/dev/null
 	mkdir -p ~/.local/bin/
 	cp -r ./bin/* ~/.local/bin/
 	for f in ./bin/*; do chmod -R +x ~/.local/bin/$$(basename $$f); done
