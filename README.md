@@ -17,10 +17,10 @@ My new, simplified, dotfiles
    ```
 
 1. You need to `make` `less` `git`! `unzip` your `gcc`, `catimg` `jq`
-   `git-lfs`:
+   `git-lfs`, plus `autoconf` (`build-fzf-tab-module` needs it):
 
    ```shell
-   brew install make less git unzip gcc jq catimg git-lfs
+   brew install make less git unzip gcc jq catimg git-lfs autoconf
    ```
 
 1. Install GNU scripts, for better general tools:
