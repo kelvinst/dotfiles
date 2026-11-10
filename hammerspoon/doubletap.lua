@@ -26,7 +26,7 @@ M.RULES = {
 
 -- Every device-dependent modifier bit: left/right Control, Shift, Option,
 -- Command. A change in any of them that isn't a rule's disarms.
-local DEVICE_BITS = 0x000021ef
+local DEVICE_BITS = 0x0000207f
 
 -- The pure state machine, kept free of `hs` so make test can drive it.
 -- `flags(raw, mods, now)` takes a flagsChanged event's raw flags and its
@@ -106,7 +106,13 @@ end
 local OWN = 0x70343500
 
 local function post(key, mods, down, autorepeat)
-  local e = hs.eventtap.event.newKeyEvent(mods, key, down)
+  -- newKeyEvent wants a list of names ({ "shift" }); a { shift = true }
+  -- set reads as no modifiers, which dropped Shift from Shift+Return.
+  local list = {}
+  for name in pairs(mods) do
+    list[#list + 1] = name
+  end
+  local e = hs.eventtap.event.newKeyEvent(list, key, down)
   local p = hs.eventtap.event.properties
   e:setProperty(p.eventSourceUserData, OWN)
   if autorepeat then

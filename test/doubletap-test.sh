@@ -100,6 +100,16 @@ case("third tap after a double-tap is a plain modifier", {
 case("right Command (0x10) is left alone", {
   { "f", 0x10, cmd, 0 }, { "f", 0, {}, 0.1 }, { "f", 0x10, cmd, 0.2 },
 }, "pass")
+case("right Command between taps disarms", {
+  { "f", C, ctrl, 0 }, { "f", 0, {}, 0.05 }, { "f", 0x10, cmd, 0.1 },
+  { "f", 0, {}, 0.15 }, { "f", C, ctrl, 0.2 },
+}, "pass")
+case("held Command and Option carry through", {
+  { "f", CMD | OPT, { cmd = true, alt = true }, 0 },
+  { "f", CMD | OPT | C, { cmd = true, alt = true, ctrl = true }, 0.1 },
+  { "f", CMD | OPT, { cmd = true, alt = true }, 0.15 },
+  { "f", CMD | OPT | C, { cmd = true, alt = true, ctrl = true }, 0.2 },
+}, "down return +alt+cmd")
 case("non-device flag bits are ignored", {
   { "f", 0x100000 | CMD, cmd, 0 }, { "f", 0, {}, 0.1 },
   { "f", 0x100000 | CMD, cmd, 0.2 },
