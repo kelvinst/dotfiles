@@ -289,13 +289,13 @@ My new, simplified, dotfiles
    without loading the page (see the step on the default browser below).
 
    ```shell
-   git clone git@github.com:kelvinst/katapult.git ~/Developer/katapult
+   git clone https://github.com/kelvinst/katapult.git ~/Developer/katapult
    ```
 
 1. Clone this repo and run `make` to install:
 
    ```shell
-   git clone git@github.com:kelvinst/dotfiles.git ~/Developer/dotfiles
+   git clone https://github.com/kelvinst/dotfiles.git ~/Developer/dotfiles
    make -C ~/Developer/dotfiles install
    ```
 
