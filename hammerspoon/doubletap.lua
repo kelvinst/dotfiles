@@ -13,9 +13,14 @@
 -- cmd-click, cmd-click stay chords. Other modifiers held at the second
 -- release carry through: hold Shift and double-tap Control for
 -- Shift+Return. The key is a single stroke; it doesn't repeat.
+--
+-- Tap, then press and hold past HOLD seconds with nothing else pressed,
+-- and it sends the modifier plus the key while still held: Ctrl+Return,
+-- Cmd+Space, Option+Backspace. Releasing after that sends nothing more.
 local M = {}
 
 M.WINDOW = 0.3
+M.HOLD = 0.5
 
 -- Device-dependent bits of the raw event flags (NX_DEVICEL*KEYMASK), one
 -- per physical left modifier. Matching on these rather than key codes
@@ -33,15 +38,18 @@ local DEVICE_BITS = 0x0000207f
 -- The pure state machine, kept free of `hs` so make test can drive it.
 -- `flags(raw, mods, now)` takes a flagsChanged event's raw flags and its
 -- modifier table; `other()` is any key or mouse button going down.
--- `flags` returns nil, or { key = <key name>, mods = <modifier table> }
--- when the event completes a double-tap: send that keystroke. The event
--- itself always passes through.
-function M.machine(rules, window)
+-- `flags` returns nil; { key = <key name>, mods = <modifier table> } when
+-- the event completes a double-tap: send that keystroke; or { wait =
+-- <seconds> } on the second press: call `hold(now)` after that long, and
+-- send what it returns, if anything. The event itself always passes
+-- through.
+function M.machine(rules, window, holdFor)
   rules = rules or M.RULES
   window = window or M.WINDOW
+  holdFor = holdFor or M.HOLD
   -- `step` is how far the current rule's sequence got: "down1" (first
-  -- press), "up1" (released, armed), "down2" (second press). `at` is when
-  -- it got there.
+  -- press), "up1" (released, armed), "down2" (second press), "fired" (the
+  -- hold sent its keystroke). `at` is when it got there.
   local m = { prev = 0, rule = nil, step = nil, at = 0 }
 
   local function reset()
@@ -50,6 +58,16 @@ function M.machine(rules, window)
 
   function m.other()
     reset()
+  end
+
+  -- A timer from an earlier second press finds a later `at` (or another
+  -- step) and sends nothing.
+  function m.hold(now)
+    if m.step == "down2" and now - m.at >= holdFor - 0.01 then
+      m.step = "fired"
+      return { key = m.rule.key, mods = m.holdMods }
+    end
+    return nil
   end
 
   function m.flags(raw, mods, now)
@@ -73,7 +91,8 @@ function M.machine(rules, window)
     local quick = m.rule == rule and now - m.at <= window
     if down then
       if quick and m.step == "up1" then
-        m.step, m.at = "down2", now
+        m.step, m.at, m.holdMods = "down2", now, mods or {}
+        return { wait = holdFor }
       else
         m.rule, m.step, m.at = rule, "down1", now
       end
@@ -110,6 +129,16 @@ function M.start()
   local types = hs.eventtap.event.types
   M.state = M.machine()
 
+  -- Held on the module table: a collected timer never fires.
+  local function waitHold(seconds)
+    M.holdTimer = hs.timer.doAfter(seconds, function()
+      local a = M.state.hold(hs.timer.secondsSinceEpoch())
+      if a then
+        stroke(a.key, a.mods)
+      end
+    end)
+  end
+
   M.tap = hs.eventtap.new({
     types.flagsChanged,
     types.keyDown,
@@ -123,7 +152,9 @@ function M.start()
     end
     local a =
       M.state.flags(e:rawFlags(), e:getFlags(), hs.timer.secondsSinceEpoch())
-    if a then
+    if a and a.wait then
+      waitHold(a.wait)
+    elseif a then
       -- After the release has gone through, so the keystroke doesn't
       -- reach the app before the modifier's key-up.
       hs.timer.doAfter(0, function()
