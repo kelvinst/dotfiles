@@ -62,7 +62,7 @@ on-mode-changed = []
 [exec]
     inherit-env-vars = true
 [exec.env-vars]
-    PATH = '/Users/kelvinstinghen/.local/bin:/opt/homebrew/bin:/opt/homebrew/sbin:${PATH}'
+    PATH = '${HOME}/.local/bin:/opt/homebrew/bin:/opt/homebrew/sbin:${PATH}'
 
 # Possible values: (qwerty|dvorak|colemak)
 # See https://nikitabobko.github.io/AeroSpace/guide#key-mapping

@@ -42,7 +42,7 @@ export FPATH=$(brew --prefix)/share/zsh-completions:$FPATH
 export FPATH=$HOME/.zsh/completions:$FPATH
 
 # The following lines have been added by Docker Desktop to enable Docker CLI completions.
-fpath=(/Users/kelvinstinghen/.docker/completions $fpath)
+fpath=($HOME/.docker/completions $fpath)
 
 # Load the completion system
 autoload -Uz compinit
