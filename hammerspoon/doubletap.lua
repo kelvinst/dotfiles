@@ -4,24 +4,26 @@
 -- in Karabiner; Hammerspoon does it with an eventtap, so it also works on
 -- a Mac where Karabiner's driver can't be installed.
 --
--- The first press is an ordinary modifier. Released with nothing else
--- pressed, it arms its rule for WINDOW seconds; pressing the same modifier
--- again inside that window sends the key instead (held, it repeats). Any
--- other key, modifier or mouse button in between disarms it, so chords
--- like cmd-c, cmd-c or cmd-click, cmd-click stay chords. Other modifiers
--- held at the time carry through: hold Shift and double-tap Control for
--- Shift+Return.
+-- Both presses are ordinary modifier presses: nothing is swallowed, so a
+-- tap-and-hold is just the modifier held, as if this module weren't here.
+-- The key goes out on the second release, and only when both presses were
+-- quick taps (each under WINDOW seconds, and the second press under WINDOW
+-- after the first release) with nothing else pressed in between. Any other
+-- key, modifier or mouse button disarms it, so chords like cmd-c, cmd-c or
+-- cmd-click, cmd-click stay chords. Other modifiers held at the second
+-- release carry through: hold Shift and double-tap Control for
+-- Shift+Return. The key is a single stroke; it doesn't repeat.
 local M = {}
 
 M.WINDOW = 0.3
 
 -- Device-dependent bits of the raw event flags (NX_DEVICEL*KEYMASK), one
 -- per physical left modifier. Matching on these rather than key codes
--- also catches Caps Lock remapped to Control in System Settings.
+-- also catches Caps Lock remapped to Control (the hidutil LaunchAgent).
 M.RULES = {
-  { mask = 0x00000001, flag = "ctrl", key = "return" },
-  { mask = 0x00000008, flag = "cmd", key = "space" },
-  { mask = 0x00000020, flag = "alt", key = "delete" },
+  { mask = 0x00000001, key = "return" },
+  { mask = 0x00000008, key = "space" },
+  { mask = 0x00000020, key = "delete" },
 }
 
 -- Every device-dependent modifier bit: left/right Control, Shift, Option,
@@ -30,24 +32,24 @@ local DEVICE_BITS = 0x0000207f
 
 -- The pure state machine, kept free of `hs` so make test can drive it.
 -- `flags(raw, mods, now)` takes a flagsChanged event's raw flags and its
--- modifier table; `other()` is any key or mouse button going down. Each
--- returns nil (pass the event through) or an action: { down = true|false,
--- key = <key name>, mods = <modifier table to send with it> }, and the
--- triggering event is to be swallowed.
+-- modifier table; `other()` is any key or mouse button going down.
+-- `flags` returns nil, or { key = <key name>, mods = <modifier table> }
+-- when the event completes a double-tap: send that keystroke. The event
+-- itself always passes through.
 function M.machine(rules, window)
   rules = rules or M.RULES
   window = window or M.WINDOW
-  local m = { prev = 0, armed = nil, armedAt = 0, held = {}, active = nil }
+  -- `step` is how far the current rule's sequence got: "down1" (first
+  -- press), "up1" (released, armed), "down2" (second press). `at` is when
+  -- it got there.
+  local m = { prev = 0, rule = nil, step = nil, at = 0 }
 
-  local function spoilHeld()
-    for mask in pairs(m.held) do
-      m.held[mask] = "used"
-    end
+  local function reset()
+    m.rule, m.step = nil, nil
   end
 
   function m.other()
-    m.armed = nil
-    spoilHeld()
+    reset()
   end
 
   function m.flags(raw, mods, now)
@@ -62,91 +64,51 @@ function M.machine(rules, window)
     end
     if not rule then
       if changed ~= 0 then
-        m.other()
+        reset()
       end
       return nil
     end
 
     local down = raw & rule.mask ~= 0
+    local quick = m.rule == rule and now - m.at <= window
     if down then
-      local armed = m.armed == rule.mask and now - m.armedAt <= window
-      m.armed = nil
-      spoilHeld()
-      if armed and not m.active then
-        m.active = rule
-        local send = {}
-        for k, v in pairs(mods or {}) do
-          if k ~= rule.flag then
-            send[k] = v
-          end
-        end
-        m.activeMods = send
-        return { down = true, key = rule.key, mods = send }
+      if quick and m.step == "up1" then
+        m.step, m.at = "down2", now
+      else
+        m.rule, m.step, m.at = rule, "down1", now
       end
-      m.held[rule.mask] = "clean"
       return nil
     end
 
-    if m.active == rule then
-      m.active = nil
-      return { down = false, key = rule.key, mods = m.activeMods }
+    if quick and m.step == "down1" then
+      m.step, m.at = "up1", now
+      return nil
     end
-    if m.held[rule.mask] == "clean" then
-      m.armed, m.armedAt = rule.mask, now
+    local done = quick and m.step == "down2"
+    reset()
+    if done then
+      return { key = rule.key, mods = mods or {} }
     end
-    m.held[rule.mask] = nil
     return nil
   end
 
   return m
 end
 
--- Marks the events this module posts, so the tap lets them through
--- instead of reading them as "another key" and cutting its own repeat.
-local OWN = 0x70343500
-
-local function post(key, mods, down, autorepeat)
-  -- newKeyEvent wants a list of names ({ "shift" }); a { shift = true }
-  -- set reads as no modifiers, which dropped Shift from Shift+Return.
+-- newKeyEvent wants a list of names ({ "shift" }); a { shift = true } set
+-- reads as no modifiers, which once dropped Shift from Shift+Return.
+local function stroke(key, mods)
   local list = {}
   for name in pairs(mods) do
     list[#list + 1] = name
   end
-  local e = hs.eventtap.event.newKeyEvent(list, key, down)
-  local p = hs.eventtap.event.properties
-  e:setProperty(p.eventSourceUserData, OWN)
-  if autorepeat then
-    e:setProperty(p.keyboardEventAutorepeat, 1)
-  end
-  e:post()
+  hs.eventtap.event.newKeyEvent(list, key, true):post()
+  hs.eventtap.event.newKeyEvent(list, key, false):post()
 end
 
 function M.start()
   local types = hs.eventtap.event.types
-  local p = hs.eventtap.event.properties
   M.state = M.machine()
-
-  local function stopRepeat()
-    if M.repeater then
-      M.repeater:stop()
-      M.repeater = nil
-    end
-  end
-
-  local function act(a)
-    stopRepeat()
-    post(a.key, a.mods, a.down, false)
-    if a.down then
-      M.repeater = hs.timer.doAfter(hs.eventtap.keyRepeatDelay(), function()
-        M.repeater = hs.timer.doEvery(
-          hs.eventtap.keyRepeatInterval(),
-          function()
-            post(a.key, a.mods, true, true)
-          end
-        )
-      end)
-    end
-  end
 
   M.tap = hs.eventtap.new({
     types.flagsChanged,
@@ -155,19 +117,18 @@ function M.start()
     types.rightMouseDown,
     types.otherMouseDown,
   }, function(e)
-    if e:getProperty(p.eventSourceUserData) == OWN then
-      return false
-    end
     if e:getType() ~= types.flagsChanged then
-      stopRepeat()
       M.state.other()
       return false
     end
     local a =
       M.state.flags(e:rawFlags(), e:getFlags(), hs.timer.secondsSinceEpoch())
     if a then
-      act(a)
-      return true
+      -- After the release has gone through, so the keystroke doesn't
+      -- reach the app before the modifier's key-up.
+      hs.timer.doAfter(0, function()
+        stroke(a.key, a.mods)
+      end)
     end
     return false
   end)

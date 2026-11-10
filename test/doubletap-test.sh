@@ -4,7 +4,7 @@
 # Drives the module's pure state machine with plain Lua, no Hammerspoon:
 # the raw flag numbers are the device-dependent masks a flagsChanged event
 # carries (0x1 left Control, 0x8 left Command, 0x20 left Option, 0x2 left
-# Shift).
+# Shift, 0x10 right Command).
 set -uo pipefail
 
 ROOT="$(cd "$(dirname "$0")/.." && pwd)"
@@ -23,13 +23,11 @@ local function describe(a)
     mods[#mods + 1] = k
   end
   table.sort(mods)
-  return (a.down and "down " or "up ")
-    .. a.key
-    .. (#mods > 0 and (" +" .. table.concat(mods, "+")) or "")
+  return a.key .. (#mods > 0 and (" +" .. table.concat(mods, "+")) or "")
 end
 
 -- steps: { "f", raw, mods, t } for flagsChanged, { "o" } for another key.
--- want: what the last step should return.
+-- want: what the last step returns.
 local function case(name, steps, want)
   local m = dt.machine()
   local got
@@ -52,68 +50,88 @@ end
 
 local C, CMD, OPT, SH = 0x1, 0x8, 0x20, 0x2
 local ctrl, cmd, alt = { ctrl = true }, { cmd = true }, { alt = true }
+local shift = { shift = true }
 
-case("double-tap Control sends Return", {
-  { "f", C, ctrl, 0 }, { "f", 0, {}, 0.1 }, { "f", C, ctrl, 0.2 },
-}, "down return")
-case("double-tap Command sends Space", {
-  { "f", CMD, cmd, 0 }, { "f", 0, {}, 0.1 }, { "f", CMD, cmd, 0.2 },
-}, "down space")
-case("double-tap Option sends Backspace", {
-  { "f", OPT, alt, 0 }, { "f", 0, {}, 0.1 }, { "f", OPT, alt, 0.2 },
-}, "down delete")
-case("releasing the second tap releases the key", {
-  { "f", C, ctrl, 0 }, { "f", 0, {}, 0.1 }, { "f", C, ctrl, 0.2 },
-  { "f", 0, {}, 0.3 },
-}, "up return")
-case("held Shift carries through: Shift+Return", {
-  { "f", SH, { shift = true }, 0 },
-  { "f", SH | C, { shift = true, ctrl = true }, 0.1 },
-  { "f", SH, { shift = true }, 0.15 },
-  { "f", SH | C, { shift = true, ctrl = true }, 0.2 },
-}, "down return +shift")
-case("window counts from the release", {
-  { "f", CMD, cmd, 0 }, { "f", 0, {}, 1.0 }, { "f", CMD, cmd, 1.25 },
-}, "down space")
-case("too slow is just a modifier", {
-  { "f", CMD, cmd, 0 }, { "f", 0, {}, 0.1 }, { "f", CMD, cmd, 0.5 },
+-- tap(mask, mods, t): press at t, release at t + 0.05.
+local function tap(mask, mods, t, base, baseMods)
+  base, baseMods = base or 0, baseMods or {}
+  local down = {}
+  for k, v in pairs(baseMods) do
+    down[k] = v
+  end
+  for k, v in pairs(mods) do
+    down[k] = v
+  end
+  return { "f", base | mask, down, t }, { "f", base, baseMods, t + 0.05 }
+end
+
+local function seq(...)
+  local out = {}
+  for _, group in ipairs({ ... }) do
+    for _, s in ipairs(group) do
+      out[#out + 1] = s
+    end
+  end
+  return out
+end
+
+local function T(...)
+  return { tap(...) }
+end
+
+case("double-tap Control sends Return", seq(T(C, ctrl, 0), T(C, ctrl, 0.2)),
+  "return")
+case("double-tap Command sends Space", seq(T(CMD, cmd, 0), T(CMD, cmd, 0.2)),
+  "space")
+case("double-tap Option sends Backspace",
+  seq(T(OPT, alt, 0), T(OPT, alt, 0.2)), "delete")
+case("nothing is sent on the second press", {
+  { "f", C, ctrl, 0 }, { "f", 0, {}, 0.05 }, { "f", C, ctrl, 0.2 },
 }, "pass")
-case("a key between taps disarms (cmd-c, cmd-c)", {
-  { "f", CMD, cmd, 0 }, { "f", 0, {}, 0.1 }, { "o" },
-  { "f", CMD, cmd, 0.2 },
+case("tap then tap-and-hold is just a held modifier", {
+  { "f", C, ctrl, 0 }, { "f", 0, {}, 0.05 }, { "f", C, ctrl, 0.2 },
+  { "f", 0, {}, 0.8 },
 }, "pass")
-case("a key while held disarms (cmd-c then cmd)", {
-  { "f", CMD, cmd, 0 }, { "o" }, { "f", 0, {}, 0.1 },
-  { "f", CMD, cmd, 0.2 },
+case("a long first press doesn't arm", {
+  { "f", C, ctrl, 0 }, { "f", 0, {}, 0.5 }, { "f", C, ctrl, 0.6 },
+  { "f", 0, {}, 0.65 },
 }, "pass")
-case("a different modifier between taps disarms", {
-  { "f", CMD, cmd, 0 }, { "f", 0, {}, 0.05 }, { "f", OPT, alt, 0.1 },
-  { "f", 0, {}, 0.15 }, { "f", CMD, cmd, 0.2 },
-}, "pass")
-case("double-tap Shift does nothing", {
-  { "f", SH, {}, 0 }, { "f", 0, {}, 0.1 }, { "f", SH, {}, 0.2 },
-}, "pass")
-case("third tap after a double-tap is a plain modifier", {
-  { "f", C, ctrl, 0 }, { "f", 0, {}, 0.1 }, { "f", C, ctrl, 0.2 },
-  { "f", 0, {}, 0.25 }, { "f", C, ctrl, 0.3 },
-}, "pass")
-case("right Command (0x10) is left alone", {
-  { "f", 0x10, cmd, 0 }, { "f", 0, {}, 0.1 }, { "f", 0x10, cmd, 0.2 },
-}, "pass")
-case("right Command between taps disarms", {
-  { "f", C, ctrl, 0 }, { "f", 0, {}, 0.05 }, { "f", 0x10, cmd, 0.1 },
-  { "f", 0, {}, 0.15 }, { "f", C, ctrl, 0.2 },
-}, "pass")
-case("held Command and Option carry through", {
-  { "f", CMD | OPT, { cmd = true, alt = true }, 0 },
-  { "f", CMD | OPT | C, { cmd = true, alt = true, ctrl = true }, 0.1 },
-  { "f", CMD | OPT, { cmd = true, alt = true }, 0.15 },
-  { "f", CMD | OPT | C, { cmd = true, alt = true, ctrl = true }, 0.2 },
-}, "down return +alt+cmd")
+case("held Shift carries through: Shift+Return", seq(
+  { { "f", SH, shift, 0 } },
+  T(C, ctrl, 0.1, SH, shift), T(C, ctrl, 0.3, SH, shift)
+), "return +shift")
+case("held Command and Option carry through", seq(
+  { { "f", CMD | OPT, { cmd = true, alt = true }, 0 } },
+  T(C, ctrl, 0.1, CMD | OPT, { cmd = true, alt = true }),
+  T(C, ctrl, 0.3, CMD | OPT, { cmd = true, alt = true })
+), "return +alt+cmd")
+case("too slow between taps is just a modifier",
+  seq(T(CMD, cmd, 0), T(CMD, cmd, 0.5)), "pass")
+case("a key between taps disarms (cmd-c, cmd-c)",
+  seq(T(CMD, cmd, 0), { { "o" } }, T(CMD, cmd, 0.2)), "pass")
+case("a key while the first is held disarms", seq(
+  { { "f", CMD, cmd, 0 }, { "o" }, { "f", 0, {}, 0.05 } }, T(CMD, cmd, 0.2)
+), "pass")
+case("a key while the second is held disarms", seq(T(CMD, cmd, 0), {
+  { "f", CMD, cmd, 0.2 }, { "o" }, { "f", 0, {}, 0.25 },
+}), "pass")
+case("a different modifier between taps disarms",
+  seq(T(CMD, cmd, 0), T(OPT, alt, 0.1), T(CMD, cmd, 0.2)), "pass")
+case("right Command between taps disarms",
+  seq(T(C, ctrl, 0), T(0x10, cmd, 0.1), T(C, ctrl, 0.2)), "pass")
+case("double-tap Shift does nothing",
+  seq(T(SH, shift, 0), T(SH, shift, 0.2)), "pass")
+case("right Command is left alone",
+  seq(T(0x10, cmd, 0), T(0x10, cmd, 0.2)), "pass")
+case("a third tap is a plain modifier",
+  seq(T(C, ctrl, 0), T(C, ctrl, 0.2), T(C, ctrl, 0.4)), "pass")
+case("four taps: the second pair fires again",
+  seq(T(C, ctrl, 0), T(C, ctrl, 0.2), T(C, ctrl, 0.4), T(C, ctrl, 0.6)),
+  "return")
 case("non-device flag bits are ignored", {
-  { "f", 0x100000 | CMD, cmd, 0 }, { "f", 0, {}, 0.1 },
-  { "f", 0x100000 | CMD, cmd, 0.2 },
-}, "down space")
+  { "f", 0x100000 | CMD, cmd, 0 }, { "f", 0x100000, {}, 0.05 },
+  { "f", 0x100000 | CMD, cmd, 0.2 }, { "f", 0x100000, {}, 0.25 },
+}, "space")
 
 os.exit(failures == 0 and 0 or 1)
 EOF
