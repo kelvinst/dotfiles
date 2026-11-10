@@ -103,6 +103,13 @@ My new, simplified, dotfiles
    brew install zsh-completions
    ```
 
+   If every new shell then asks `zsh compinit: insecure directories`, drop
+   group and world write access from the folders it flags:
+
+   ```shell
+   compaudit | xargs chmod go-w
+   ```
+
 1. Install suggestions as you type:
    [`zsh-autosuggestions][zsh-autosuggestions`]
 
