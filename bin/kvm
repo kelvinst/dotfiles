@@ -85,6 +85,9 @@ builtin_uuid() {
 mirror() {
   local monitor=$1 current builtin screen
   current=$(arrangement)
+  # Already mirrored: `kvm toggle` and the watcher both sync the same
+  # switch, and saving the second one's view would lose the extended layout.
+  [[ $current == *"+"* ]] && return 0
   builtin=$(builtin_uuid)
   [ -n "$builtin" ] || die "no built-in screen in displayplacer list"
   # Kept to put back when the monitor returns.
