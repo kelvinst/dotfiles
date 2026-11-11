@@ -151,15 +151,20 @@ cmd_toggle() {
 
 cmd_watch() {
   load_config
-  local monitor input last=''
+  local monitor input last='' failed=''
   while :; do
     monitor=$(monitor_uuid)
     if [ -n "$monitor" ] && input=$(current_input "$monitor"); then
       # Only on a change: displayplacer list is the slow part, and a toggle
       # on this Mac has already synced. A failed sync stays unrecorded, so
-      # the next poll retries it.
+      # the next poll retries it — quietly, or a failure that never clears
+      # would log twice a second.
       if [ "$input" != "$last" ]; then
-        sync_to "$monitor" "$input" && last=$input
+        if [ "$input" = "$failed" ]; then
+          sync_to "$monitor" "$input" 2>/dev/null
+        else
+          sync_to "$monitor" "$input"
+        fi && last=$input failed='' || failed=$input
       fi
     fi
     sleep "${KVM_INTERVAL:-0.5}"
