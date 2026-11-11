@@ -366,13 +366,13 @@ My new, simplified, dotfiles
 
    - **Double-tap a left modifier** for the ErgoDox right-thumb keys
      (`hammerspoon/doubletap.lua`): Control (and so Caps Lock) → Return,
-     Command → Space, Option → Backspace. Hold Shift while double-tapping
-     Control for Shift+Return. Tap, then press and hold for half a second, and
-     it sends the modifier with the key instead: Ctrl+Return, Cmd+Space,
-     Option+Backspace. The catch: a quick tap followed by a slow chord (tap
-     Command, then hold it and pause before Tab) fires the hold first. It rides
-     on the Accessibility permission above; password fields block it, like any
-     eventtap.
+     Command → Space, Option → Backspace, as one keystroke with no repeat. Hold
+     Shift while double-tapping Control for Shift+Return. Tap, then press and
+     hold for half a second, and it sends the modifier with the key instead:
+     Ctrl+Return, Cmd+Space, Option+Backspace. The catch: a quick tap followed
+     by a slow chord (tap Command, then hold it and pause before Tab) fires the
+     hold first. It rides on the Accessibility permission above; password
+     fields block it, like any eventtap.
 
 Feel free to fork and clone it from there. This is under MIT license, do what
 you want, just give me some credit for it. 😁
