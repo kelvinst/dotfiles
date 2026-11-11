@@ -270,20 +270,6 @@ My new, simplified, dotfiles
    brew install --cask hammerspoon
    ```
 
-1. If Karabiner-Elements is still installed from an older setup, remove it: its
-   remaps are gone from this repo and it would fight the ones below.
-
-   ```shell
-   brew uninstall --cask karabiner-elements
-   ```
-
-   The uninstall leaves its root services running, still grabbing the keyboard,
-   until a restart. Stop them now instead:
-
-   ```shell
-   sudo killall Karabiner-Core-Service Karabiner-VirtualHIDDevice-Daemon
-   ```
-
 1. Clone [Katapult](https://github.com/kelvinst/katapult) next to it. It has
    nothing to build: this repo's `make install` (next step) copies its
    `katapult-spoon.lua` into `~/.hammerspoon`, which opens Katapult links
