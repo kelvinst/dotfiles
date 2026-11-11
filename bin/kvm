@@ -156,10 +156,10 @@ cmd_watch() {
     monitor=$(monitor_uuid)
     if [ -n "$monitor" ] && input=$(current_input "$monitor"); then
       # Only on a change: displayplacer list is the slow part, and a toggle
-      # on this Mac has already synced.
+      # on this Mac has already synced. A failed sync stays unrecorded, so
+      # the next poll retries it.
       if [ "$input" != "$last" ]; then
-        sync_to "$monitor" "$input"
-        last=$input
+        sync_to "$monitor" "$input" && last=$input
       fi
     fi
     sleep "${KVM_INTERVAL:-0.5}"
