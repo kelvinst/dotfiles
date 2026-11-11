@@ -96,32 +96,32 @@ case("the second press only starts the hold timer", {
 }, "wait 0.5")
 case("tap then hold sends Ctrl+Return while held", {
   { "f", C, ctrl, 0 }, { "f", 0, {}, 0.05 }, { "f", C, ctrl, 0.2 },
-  { "h", 0.7 },
+  { "h", 0.75 },
 }, "return +ctrl")
 case("tap then hold sends Cmd+Space", {
   { "f", CMD, cmd, 0 }, { "f", 0, {}, 0.05 }, { "f", CMD, cmd, 0.2 },
-  { "h", 0.7 },
+  { "h", 0.75 },
 }, "space +cmd")
 case("tap then hold sends Option+Backspace", {
   { "f", OPT, alt, 0 }, { "f", 0, {}, 0.05 }, { "f", OPT, alt, 0.2 },
-  { "h", 0.7 },
+  { "h", 0.75 },
 }, "delete +alt")
 case("releasing after the hold fired sends nothing", {
   { "f", C, ctrl, 0 }, { "f", 0, {}, 0.05 }, { "f", C, ctrl, 0.2 },
-  { "h", 0.7 }, { "f", 0, {}, 0.9 },
+  { "h", 0.75 }, { "f", 0, {}, 0.9 },
 }, "pass")
 case("a key during the hold cancels it (tap, then ctrl-a)", {
   { "f", C, ctrl, 0 }, { "f", 0, {}, 0.05 }, { "f", C, ctrl, 0.2 },
-  { "o" }, { "h", 0.7 },
+  { "o" }, { "h", 0.75 },
 }, "pass")
 case("released before the hold timer: no hold", {
   { "f", C, ctrl, 0 }, { "f", 0, {}, 0.05 }, { "f", C, ctrl, 0.2 },
-  { "f", 0, {}, 0.4 }, { "h", 0.7 },
+  { "f", 0, {}, 0.4 }, { "h", 0.75 },
 }, "pass")
 case("a stale timer from an earlier press does nothing", seq(
   T(C, ctrl, 0), T(C, ctrl, 0.2),
   { { "f", C, ctrl, 0.4 }, { "f", 0, {}, 0.45 }, { "f", C, ctrl, 0.6 },
-    { "h", 0.7 } }
+    { "h", 0.75 } }
 ), "pass")
 case("tap then tap-and-hold is just a held modifier", {
   { "f", C, ctrl, 0 }, { "f", 0, {}, 0.05 }, { "f", C, ctrl, 0.2 },

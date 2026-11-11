@@ -63,7 +63,7 @@ function M.machine(rules, window, holdFor)
   -- A timer from an earlier second press finds a later `at` (or another
   -- step) and sends nothing.
   function m.hold(now)
-    if m.step == "down2" and now - m.at >= holdFor - 0.01 then
+    if m.step == "down2" and now - m.at >= holdFor then
       m.step = "fired"
       return { key = m.rule.key, mods = m.holdMods }
     end
