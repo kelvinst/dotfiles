@@ -33,8 +33,12 @@ Needs m1ddc and displayplacer (brew install m1ddc displayplacer).
 EOF
 }
 
-die() {
+warn() {
   echo "kvm: $*" >&2
+}
+
+die() {
+  warn "$@"
   exit 1
 }
 
@@ -89,19 +93,19 @@ mirror() {
   # switch, and saving the second one's view would lose the extended layout.
   [[ $current == *"+"* ]] && return 0
   builtin=$(builtin_uuid)
-  [ -n "$builtin" ] || die "no built-in screen in displayplacer list"
+  [ -n "$builtin" ] || { warn "no built-in screen in displayplacer list"; return 1; }
   # Kept to put back when the monitor returns.
   mkdir -p "$STATE_DIR"
   printf '%s\n' "$current" >"$EXTENDED"
   screen=$(grep -o "\"id:$builtin [^\"]*\"" <<<"$current" | tr -d '"')
-  [ -n "$screen" ] || die "built-in not in: $current"
+  [ -n "$screen" ] || { warn "built-in not in: $current"; return 1; }
   screen=${screen/id:$builtin/id:$builtin+$monitor}
   screen=$(sed 's/origin:([^)]*)/origin:(0,0)/' <<<"$screen")
   displayplacer "$screen"
 }
 
 extend() {
-  [ -s "$EXTENDED" ] || die "mirrored, but no saved arrangement in $EXTENDED"
+  [ -s "$EXTENDED" ] || { warn "mirrored, but no saved arrangement in $EXTENDED"; return 1; }
   local saved
   saved=$(cat "$EXTENDED")
   # The saved line is displayplacer's own output: a command whose screens
