@@ -286,13 +286,14 @@ My new, simplified, dotfiles
    `kvm agent install 17 27`. Its watcher does its half whenever the input
    changes, from cmd-ctrl-d here or the Dell's own button.
 
-1. Clone [Katapult](https://github.com/kelvinst/katapult) next to it. It has
-   nothing to build: this repo's `make install` (next step) copies its
-   `katapult-spoon.lua` into `~/.hammerspoon`, which opens Katapult links
+1. Install [Katapult](https://github.com/kelvinst/katapult): its
+   `make install` puts `katapult` in `~/.local/bin` and `katapult-spoon.lua` in
+   `~/.hammerspoon`, which `hammerspoon/init.lua` loads to open Katapult links
    without loading the page (see the step on the default browser below).
 
    ```shell
    git clone https://github.com/kelvinst/katapult.git ~/Developer/katapult
+   make -C ~/Developer/katapult install
    ```
 
 1. Clone this repo and run `make` to install:

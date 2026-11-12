@@ -12,7 +12,7 @@ require("hs.ipc")
 -- Monitor switching is off for now: it isn't working well, and it'll be
 -- revisited later (dot-nhy). Uncomment to turn it back on.
 -- monitors = require("monitors")
--- Installed from kelvinst/katapult by `make install`, not kept here.
+-- Installed by kelvinst/katapult's `make install`, not kept here.
 katapult = require("katapult-spoon")
 windowhints = require("windowhints")
 -- Double-tap Control/Command/Option for Return/Space/Backspace; replaces

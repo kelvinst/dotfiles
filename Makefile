@@ -3,9 +3,6 @@
 
 BACKUP_ROOT := $(HOME)/.dotfiles-backups
 
-# kelvinst/katapult's checkout: install copies katapult-spoon.lua from it.
-KATAPULT_DIR ?= $(HOME)/Developer/katapult
-
 # Every path install writes to, relative to $HOME. Directories listed here are
 # owned wholesale by this repo; individual files are listed one by one so we
 # never touch neighbouring state (e.g. the rest of ~/.claude, ~/.local/bin).
@@ -75,11 +72,6 @@ install: backup
 	cp -r ./config/tidewave/* ~/.config/tidewave/
 	mkdir -p ~/.hammerspoon/
 	cp -r ./hammerspoon/* ~/.hammerspoon/
-	if [ -f $(KATAPULT_DIR)/katapult-spoon.lua ]; then \
-		cp -f $(KATAPULT_DIR)/katapult-spoon.lua ~/.hammerspoon/; \
-	else \
-		echo "warning: no $(KATAPULT_DIR)/katapult-spoon.lua; clone kelvinst/katapult there" >&2; \
-	fi
 	mkdir -p ~/Library/LaunchAgents/
 	cp -f ./launchagents/com.kelvinst.caps-to-control.plist ~/Library/LaunchAgents/
 	launchctl bootout gui/$$(id -u)/com.kelvinst.caps-to-control 2>/dev/null || true
@@ -159,7 +151,7 @@ update:
 	cp -r ~/.config/starship.toml ./config/
 	cp -r ~/.config/starship-full.toml ./config/
 	cp -r ~/.hammerspoon/* ./hammerspoon/
-	rm -f ./hammerspoon/katapult-spoon.lua
+	rm -f ./hammerspoon/katapult-spoon.lua # installed by kelvinst/katapult's make install
 	mkdir -p ./bin/
 	for f in ./bin/*; do cp -r ~/.local/bin/$$(basename $$f) ./bin/; done
 	mkdir -p ./claude/hooks/
