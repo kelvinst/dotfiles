@@ -66,6 +66,19 @@ local function onCreated(win)
   end)
 end
 
+-- Centers window `id` on the screen named `screenName`, else on the one
+-- under the mouse. `orbit open --pull` calls it, over `hs -c`, for a
+-- floating window it pulls to the focused workspace.
+function M.center(id, screenName)
+  local win = hs.window.get(id)
+  if not win then
+    return
+  end
+  local screen = screenName and hs.screen.find(screenName)
+    or hs.mouse.getCurrentScreen()
+  win:centerOnScreen(screen, true, 0)
+end
+
 M.filter = hs.window.filter.new():setDefaultFilter({ allowRoles = "*" })
 M.filter:subscribe(hs.window.filter.windowFocused, onFocused)
 M.filter:subscribe(hs.window.filter.windowCreated, onCreated)

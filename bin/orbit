@@ -323,6 +323,18 @@ with_workspace_mutation_lock() {
   "$body" "$@"
 }
 
+# A floating window keeps its old frame when it changes workspace, so it can
+# land off in a corner of the new monitor. Center it there, through
+# Hammerspoon's floatcenter module; AeroSpace has no command for it.
+center_if_floating() {
+  local layout monitor
+  layout=$(aerospace list-windows --all --format '%{window-id} %{window-layout}' 2>/dev/null |
+    awk -v id="$1" '$1 == id {print $2; exit}')
+  [ "$layout" = floating ] && command -v hs >/dev/null || return 0
+  monitor=$(aerospace list-monitors --focused --format '%{monitor-name}' 2>/dev/null)
+  hs -c "floatcenter.center($1, \"$monitor\")" >/dev/null 2>&1 || :
+}
+
 cmd_open() {
   case "${1:-}" in
   help | -h | --help)
@@ -398,6 +410,7 @@ cmd_open() {
         awk -v id="$window_id" '$1 == id {print $2; exit}')
       if [ -n "$window_ws" ] && [ "$window_ws" != "$current_ws" ]; then
         aerospace move-node-to-workspace --window-id "$window_id" "$current_ws" 2>/dev/null || :
+        center_if_floating "$window_id"
       fi
     fi
     aerospace focus --window-id "$window_id"

@@ -249,7 +249,7 @@ on-mode-changed = []
     # Opening applications
     cmd-ctrl-enter = 'exec-and-forget orbit open net.kovidgoyal.kitty'
     cmd-ctrl-1 = 'exec-and-forget orbit open com.1password.1password'
-    cmd-ctrl-comma = 'exec-and-forget orbit open com.apple.systempreferences'
+    cmd-ctrl-comma = 'exec-and-forget orbit open -p com.apple.systempreferences'
     cmd-ctrl-b = 'exec-and-forget orbit open com.google.Chrome'
     cmd-ctrl-c = 'exec-and-forget orbit open -p -m Claude com.anthropic.claudefordesktop'
     cmd-ctrl-e = 'exec-and-forget orbit open com.apple.iCal'
