@@ -20,6 +20,8 @@ usage() {
 Usage: kvm <command>
 
   toggle   Switch the monitor's input to the other Mac, or back to this one.
+  arrange  Restart Universal Control, so it links to the other Mac again,
+           and open the Arrange Displays sheet to place it.
   sync     Mirror or extend this Mac's displays to match the current input.
   watch    Run sync whenever the input changes (what the agent runs).
   agent install <this-input> <other-input> [<monitor-name>]
@@ -149,6 +151,70 @@ cmd_toggle() {
   fi
 }
 
+# Clicks Arrange… on the Displays pane, through Hammerspoon: System Events
+# takes about ten seconds to walk the pane, Hammerspoon half a second. The
+# button's accessibility label doesn't say Arrange, so press the 24pt-tall
+# buttons top to bottom until one opens the sheet, closing any other sheet
+# on the way. Prints "ok" once the sheet is up, "wait" while the pane isn't
+# ready yet.
+ARRANGE_LUA='
+local app = hs.application.get("com.apple.systempreferences")
+if not app then return "wait" end
+local win
+for _, w in ipairs(hs.axuielement.applicationElement(app):attributeValue("AXWindows") or {}) do
+  if w:attributeValue("AXTitle") == "Displays" then win = w end
+end
+if not win then return "wait" end
+local function find(e, test, out)
+  if test(e) then table.insert(out, e) end
+  for _, k in ipairs(e:attributeValue("AXChildren") or {}) do find(k, test, out) end
+  return out
+end
+local function sheet()
+  return find(win, function(e) return e:attributeValue("AXRole") == "AXSheet" end, {})[1]
+end
+local function isArrange(s)
+  return #find(s, function(e)
+    return tostring(e:attributeValue("AXValue")):find("Arrange") ~= nil
+  end, {}) > 0
+end
+local s = sheet()
+if s and isArrange(s) then return "ok" end
+local buttons = find(win, function(e)
+  local size = e:attributeValue("AXSize")
+  return e:attributeValue("AXRole") == "AXButton" and size and size.h == 24
+end, {})
+table.sort(buttons, function(a, b)
+  return a:attributeValue("AXPosition").y < b:attributeValue("AXPosition").y
+end)
+for _, b in ipairs(buttons) do
+  b:performAction("AXPress")
+  hs.timer.usleep(300000)
+  s = sheet()
+  if s then
+    if isArrange(s) then return "ok" end
+    local close = find(s, function(e) return e:attributeValue("AXRole") == "AXButton" end, {})
+    if close[1] then close[1]:performAction("AXPress") end
+    hs.timer.usleep(300000)
+  end
+end
+return "wait"
+'
+
+cmd_arrange() {
+  # Universal Control ignores a plain quit; launchd starts it again at once.
+  pkill -KILL -x UniversalControl
+  open "x-apple.systempreferences:com.apple.Displays-Settings.extension"
+  command -v hs >/dev/null || die "no hs (Hammerspoon's CLI) to press Arrange…"
+  # The pane takes a moment to load, and Arrange only shows once Universal
+  # Control has linked to the other Mac again.
+  for _ in $(seq 40); do
+    [ "$(hs -c "$ARRANGE_LUA" 2>/dev/null)" = ok ] && return 0
+    sleep 0.25
+  done
+  die "no Arrange… on the Displays pane; is the other Mac linked?"
+}
+
 cmd_watch() {
   load_config
   local monitor input last='' failed=''
@@ -207,6 +273,7 @@ EOF
 
 case ${1:-} in
 toggle) cmd_toggle ;;
+arrange) cmd_arrange ;;
 sync) cmd_sync ;;
 watch) cmd_watch ;;
 agent) shift && cmd_agent "$@" ;;
