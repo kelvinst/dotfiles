@@ -18,3 +18,5 @@ windowhints = require("windowhints")
 -- Double-tap Control/Command/Option for Return/Space/Backspace; replaces
 -- the old Karabiner rules (dot-p45).
 doubletap = require("doubletap").start()
+-- New floating windows open centered on the screen in use.
+floatcenter = require("floatcenter")
