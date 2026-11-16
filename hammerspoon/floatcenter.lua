@@ -39,9 +39,20 @@ local SUBROLES = {
   AXFloatingWindow = true,
 }
 
+-- System panels that sit where macOS puts them.
+local SKIP_APPS = {
+  ["com.apple.controlcenter"] = true,
+  ["com.apple.notificationcenterui"] = true,
+}
+
 local function onCreated(win)
   local id = win:id()
-  if not id or not SUBROLES[win:subrole()] then
+  local app = win:application()
+  if
+    not id
+    or not SUBROLES[win:subrole()]
+    or (app and SKIP_APPS[app:bundleID()])
+  then
     return
   end
   local screen = workScreen(win)
