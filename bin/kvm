@@ -20,8 +20,10 @@ usage() {
 Usage: kvm <command>
 
   toggle   Switch the monitor's input to the other Mac, or back to this one.
-  arrange  Restart Universal Control, so it links to the other Mac again,
-           and open the Arrange Displays sheet to place it.
+  arrange [--relink]
+           Open the Arrange Displays sheet to place the other Mac. When
+           Universal Control has no link to it (or with --relink), restart
+           Universal Control first so it links again.
   sync     Mirror or extend this Mac's displays to match the current input.
   watch    Run sync whenever the input changes (what the agent runs).
   agent install <this-input> <other-input> [<monitor-name>]
@@ -171,7 +173,9 @@ local function find(e, test, out)
   return out
 end
 local function sheet()
-  return find(win, function(e) return e:attributeValue("AXRole") == "AXSheet" end, {})[1]
+  for _, k in ipairs(win:attributeValue("AXChildren") or {}) do
+    if k:attributeValue("AXRole") == "AXSheet" then return k end
+  end
 end
 local function isArrange(s)
   return #find(s, function(e)
@@ -201,15 +205,25 @@ end
 return "wait"
 '
 
+# Whether Universal Control holds a connection to another Mac.
+uc_linked() {
+  local pid
+  pid=$(pgrep -x UniversalControl) || return 1
+  lsof -nP -a -p "$pid" -iTCP -sTCP:ESTABLISHED >/dev/null 2>&1
+}
+
 cmd_arrange() {
-  # Universal Control ignores a plain quit; launchd starts it again at once.
-  pkill -KILL -x UniversalControl
+  if [ "${1:-}" = --relink ] || ! uc_linked; then
+    # Universal Control ignores a plain quit; launchd starts it again at once.
+    pkill -KILL -x UniversalControl
+  fi
   open "x-apple.systempreferences:com.apple.Displays-Settings.extension"
   command -v hs >/dev/null || die "no hs (Hammerspoon's CLI) to press Arrange…"
   # The pane takes a moment to load, and Arrange only shows once Universal
-  # Control has linked to the other Mac again.
+  # Control has linked to the other Mac again. Each call gets a few seconds,
+  # so one stuck in Hammerspoon can't stall the loop.
   for _ in $(seq 40); do
-    [ "$(hs -c "$ARRANGE_LUA" 2>/dev/null)" = ok ] && return 0
+    [ "$(hs -t 5 -c "$ARRANGE_LUA" 2>/dev/null)" = ok ] && return 0
     sleep 0.25
   done
   die "no Arrange… on the Displays pane; is the other Mac linked?"
@@ -273,7 +287,7 @@ EOF
 
 case ${1:-} in
 toggle) cmd_toggle ;;
-arrange) cmd_arrange ;;
+arrange) shift && cmd_arrange "$@" ;;
 sync) cmd_sync ;;
 watch) cmd_watch ;;
 agent) shift && cmd_agent "$@" ;;
