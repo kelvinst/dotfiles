@@ -287,11 +287,11 @@ My new, simplified, dotfiles
    changes, from cmd-ctrl-d here or the Dell's own button.
 
    cmd-ctrl-shift-d (`kvm arrange`) opens Arrange Displays to place the other
-   Mac, restarting Universal Control first when it has lost the link (or
-   always, with `kvm arrange --relink`): macOS keeps a single link between the
-   two Macs, so a placement right for one KVM state is off for the other. It
-   presses Arrange through Hammerspoon's `hs`, which needs the Hammerspoon step
-   above.
+   Mac: macOS keeps a single link between the two Macs, so a placement right
+   for one KVM state is off for the other. It presses Arrange through
+   Hammerspoon's `hs`, which needs the Hammerspoon step above. cmd-ctrl-alt-d
+   (`kvm relink`) restarts Universal Control when the link to the other Mac
+   dropped.
 
 1. Clone [Katapult](https://github.com/kelvinst/katapult) next to it. It has
    nothing to build: this repo's `make install` (next step) copies its

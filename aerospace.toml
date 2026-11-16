@@ -256,10 +256,11 @@ on-mode-changed = []
     # Hand the external monitor to the other Mac on its KVM, or take it back
     # (bin/kvm).
     cmd-ctrl-d = 'exec-and-forget kvm toggle'
-    # Open Arrange Displays to place the other Mac, relinking Universal
-    # Control first if the link dropped; macOS keeps one link between them,
-    # not one per KVM state.
+    # Open Arrange Displays to place the other Mac; macOS keeps one link
+    # between them, not one per KVM state.
     cmd-ctrl-shift-d = 'exec-and-forget kvm arrange'
+    # Restart Universal Control when the link to the other Mac dropped.
+    cmd-ctrl-alt-d = 'exec-and-forget kvm relink'
     cmd-ctrl-f = 'exec-and-forget orbit open com.apple.finder'
     cmd-ctrl-k = 'exec-and-forget orbit open -g io.zsa.keymapp'
     cmd-ctrl-m = 'exec-and-forget orbit open -p com.apple.mail'
