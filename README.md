@@ -286,10 +286,10 @@ My new, simplified, dotfiles
    `kvm agent install 17 27`. Its watcher does its half whenever the input
    changes, from cmd-ctrl-d here or the Dell's own button.
 
-   cmd-ctrl-shift-d (`kvm arrange`) opens Arrange Displays to place the other
+   cmd-ctrl-alt-d (`kvm arrange`) opens Arrange Displays to place the other
    Mac: macOS keeps a single link between the two Macs, so a placement right
    for one KVM state is off for the other. It presses Arrange through
-   Hammerspoon's `hs`, which needs the Hammerspoon step above. cmd-ctrl-alt-d
+   Hammerspoon's `hs`, which needs the Hammerspoon step above. cmd-ctrl-shift-d
    (`kvm relink`) restarts Universal Control when the link to the other Mac
    dropped.
 
