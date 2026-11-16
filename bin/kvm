@@ -21,8 +21,8 @@ Usage: kvm <command>
 
   toggle   Switch the monitor's input to the other Mac, or back to this one.
   arrange  Open the Arrange Displays sheet to place the other Mac.
-  relink   Restart Universal Control and open the Displays pane, which
-           wakes its link to the other Mac.
+  relink   Restart Universal Control and open the Arrange Displays sheet,
+           which wakes its link to the other Mac.
   sync     Mirror or extend this Mac's displays to match the current input.
   watch    Run sync whenever the input changes (what the agent runs).
   agent install <this-input> <other-input> [<monitor-name>]
@@ -209,10 +209,10 @@ return "wait"
 cmd_relink() {
   # Universal Control ignores a plain quit; launchd starts it again at once.
   pkill -KILL -x UniversalControl
-  # The new process connects but stays idle until something asks for the
-  # displays; the Displays pane does.
-  sleep 1
-  open "x-apple.systempreferences:com.apple.Displays-Settings.extension"
+  # The new process connects but the cursor won't cross until the Arrange
+  # sheet asks for the displays; opening the Displays pane alone isn't
+  # enough.
+  cmd_arrange
 }
 
 cmd_arrange() {
