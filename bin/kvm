@@ -21,8 +21,8 @@ Usage: kvm <command>
 
   toggle   Switch the monitor's input to the other Mac, or back to this one.
   arrange  Open the Arrange Displays sheet to place the other Mac.
-  relink   Restart Universal Control and open the Arrange Displays sheet,
-           which wakes its link to the other Mac.
+  relink   Link keyboard and mouse to the other Mac again, through the
+           Displays pane's + menu.
   sync     Mirror or extend this Mac's displays to match the current input.
   watch    Run sync whenever the input changes (what the agent runs).
   agent install <this-input> <other-input> [<monitor-name>]
@@ -206,37 +206,54 @@ return "wait"
 
 # No check for a live link: a dropped one keeps its sockets open, and a
 # live one sends nothing while idle, so the two look the same.
-# Closes System Settings' sheet, if any: an open sheet blocks quitting it.
-CLOSE_SHEET_LUA='
+# Picks the other Mac under "Link keyboard and mouse to" in the Displays
+# pane's + menu, the way you'd link it by hand. Prints "ok" once pressed,
+# "none" when the menu lists no Mac to link, "wait" while the pane loads.
+LINK_LUA='
 local app = hs.application.get("com.apple.systempreferences")
-if not app then return "none" end
+if not app then return "wait" end
+local win
 for _, w in ipairs(hs.axuielement.applicationElement(app):attributeValue("AXWindows") or {}) do
-  for _, k in ipairs(w:attributeValue("AXChildren") or {}) do
-    if k:attributeValue("AXRole") == "AXSheet" then
-      for _, b in ipairs(k:attributeValue("AXChildren") or {}) do
-        if b:attributeValue("AXRole") == "AXButton" then b:performAction("AXPress") return "closed" end
-      end
+  if w:attributeValue("AXTitle") == "Displays" then win = w end
+end
+if not win then return "wait" end
+local add
+local function walk(e)
+  if e:attributeValue("AXRole") == "AXMenuButton" and e:attributeValue("AXTitle") == "Add" then add = e end
+  for _, k in ipairs(e:attributeValue("AXChildren") or {}) do walk(k) end
+end
+walk(win)
+if not add then return "wait" end
+add:performAction("AXPress")
+hs.timer.usleep(500000)
+local menu = (add:attributeValue("AXChildren") or {})[1]
+local items = menu and menu:attributeValue("AXChildren") or {}
+for i, it in ipairs(items) do
+  if it:attributeValue("AXTitle") == "Link keyboard and mouse to" then
+    local mac = items[i + 1]
+    if mac and mac:attributeValue("AXEnabled") and (mac:attributeValue("AXTitle") or "") ~= "" then
+      mac:performAction("AXPress")
+      return "ok"
     end
   end
 end
+hs.eventtap.keyStroke({}, "escape")
 return "none"
 '
 
 cmd_relink() {
-  # Start from a closed System Settings: with the Arrange sheet already up,
-  # arrange finds it and returns, and nothing asks the new Universal
-  # Control for the displays.
-  if pgrep -x "System Settings" >/dev/null; then
-    command -v hs >/dev/null && hs -t 5 -c "$CLOSE_SHEET_LUA" >/dev/null 2>&1
-    osascript -e 'tell application "System Settings" to quit' >/dev/null 2>&1
-    for _ in $(seq 20); do
-      pgrep -x "System Settings" >/dev/null || break
-      sleep 0.25
-    done
-  fi
-  # Universal Control ignores a plain quit; launchd starts it again at once.
-  pkill -KILL -x UniversalControl
-  cmd_arrange
+  open "x-apple.systempreferences:com.apple.Displays-Settings.extension"
+  command -v hs >/dev/null || die "no hs (Hammerspoon's CLI) to press the link item"
+  local deadline=$((SECONDS + 15)) out
+  while [ "$SECONDS" -lt "$deadline" ]; do
+    out=$(hs -t 5 -c "$LINK_LUA" 2>/dev/null)
+    case $out in
+    ok) return 0 ;;
+    none) die "the Displays + menu lists no Mac to link; is it awake and nearby?" ;;
+    esac
+    sleep 0.25
+  done
+  die "couldn't reach the Displays + menu"
 }
 
 cmd_arrange() {

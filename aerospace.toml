@@ -259,7 +259,7 @@ on-mode-changed = []
     # Open Arrange Displays to place the other Mac; macOS keeps one link
     # between them, not one per KVM state.
     cmd-ctrl-alt-d = 'exec-and-forget kvm arrange'
-    # Restart Universal Control when the link to the other Mac dropped.
+    # Link keyboard and mouse to the other Mac again when the link dropped.
     cmd-ctrl-shift-d = 'exec-and-forget kvm relink'
     cmd-ctrl-f = 'exec-and-forget orbit open com.apple.finder'
     cmd-ctrl-k = 'exec-and-forget orbit open -g io.zsa.keymapp'

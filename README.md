@@ -290,8 +290,8 @@ My new, simplified, dotfiles
    Mac: macOS keeps a single link between the two Macs, so a placement right
    for one KVM state is off for the other. It presses Arrange through
    Hammerspoon's `hs`, which needs the Hammerspoon step above. cmd-ctrl-shift-d
-   (`kvm relink`) restarts Universal Control when the link to the other Mac
-   dropped, and opens Arrange Displays, which wakes the new link.
+   (`kvm relink`) links keyboard and mouse to the other Mac again, through the
+   Displays pane's + menu.
 
 1. Clone [Katapult](https://github.com/kelvinst/katapult) next to it. It has
    nothing to build: this repo's `make install` (next step) copies its
