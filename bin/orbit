@@ -332,8 +332,15 @@ center_if_floating() {
     awk -v id="$1" '$1 == id {print $2; exit}')
   [ "$layout" = floating ] && command -v hs >/dev/null || return 0
   monitor=$(aerospace list-monitors --focused --format '%{monitor-name}' 2>/dev/null)
-  hs -t 5 -c "local w = hs.window.get($1)
-if w then w:centerOnScreen(hs.screen.find('$monitor') or hs.mouse.getCurrentScreen(), true, 0) end" >/dev/null 2>&1 || :
+  # Match the screen by exact name: hs.screen.find reads it as a Lua
+  # pattern, and "Built-in" has a "-" in it. [=[ ]=] quotes it whatever
+  # quotes the name holds.
+  hs -t 5 -c "local w, name = hs.window.get($1), [=[$monitor]=]
+local screen = hs.mouse.getCurrentScreen()
+for _, s in ipairs(hs.screen.allScreens()) do
+  if s:name() == name then screen = s end
+end
+if w then w:centerOnScreen(screen, true, 0) end" >/dev/null 2>&1 || :
 }
 
 cmd_open() {
