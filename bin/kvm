@@ -291,10 +291,9 @@ cmd_arrange() {
   open "x-apple.systempreferences:com.apple.Displays-Settings.extension"
   command -v hs >/dev/null || die "no hs (Hammerspoon's CLI) to press Arrange…"
   # The pane takes a moment to load, and Arrange only shows while another
-  # display or Mac is linked. Each call gets a few seconds,
-  # so one stuck in Hammerspoon can't stall the loop.
-  # After a relink the pane can take half a minute to list the other Mac.
-  local deadline=$((SECONDS + 45))
+  # display or Mac is linked. Each call gets a few seconds, so one stuck in
+  # Hammerspoon can't stall the loop.
+  local deadline=$((SECONDS + 10))
   while [ "$SECONDS" -lt "$deadline" ]; do
     [ "$(hs -t 5 -c "$ARRANGE_LUA" 2>/dev/null)" = ok ] && return 0
     sleep 0.25
