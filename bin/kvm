@@ -208,7 +208,8 @@ return "wait"
 # live one sends nothing while idle, so the two look the same.
 # Picks the other Mac under "Link keyboard and mouse to" in the Displays
 # pane's + menu, the way you'd link it by hand. Prints "ok" once pressed,
-# "none" when the menu lists no Mac to link, "wait" while the pane loads.
+# "none" when the menu lists no Mac to link, "wait" while the pane loads or
+# after closing a sheet.
 LINK_LUA='
 local app = hs.application.get("com.apple.systempreferences")
 if not app then return "wait" end
@@ -217,6 +218,23 @@ for _, w in ipairs(hs.axuielement.applicationElement(app):attributeValue("AXWind
   if w:attributeValue("AXTitle") == "Displays" then win = w end
 end
 if not win then return "wait" end
+-- An open sheet (Arrange, say) sits over the + button: close it first,
+-- through its first button (Done), which sits a few groups down.
+local function firstButton(e)
+  if e:attributeValue("AXRole") == "AXButton" then return e end
+  for _, k in ipairs(e:attributeValue("AXChildren") or {}) do
+    local b = firstButton(k)
+    if b then return b end
+  end
+end
+for _, k in ipairs(win:attributeValue("AXChildren") or {}) do
+  if k:attributeValue("AXRole") == "AXSheet" then
+    local b = firstButton(k)
+    if b then b:performAction("AXPress") end
+    -- + hangs while the sheet animates away; the next pass presses it.
+    return "wait"
+  end
+end
 local add
 local function walk(e)
   if e:attributeValue("AXRole") == "AXMenuButton" and e:attributeValue("AXTitle") == "Add" then add = e end
@@ -256,7 +274,7 @@ cmd_relink() {
     ok) return 0 ;;
     none) die "the Displays + menu lists no Mac to link; is it awake and nearby?" ;;
     esac
-    sleep 0.25
+    sleep 0.5
   done
   die "couldn't reach the Displays + menu"
 }
