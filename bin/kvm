@@ -156,8 +156,8 @@ cmd_toggle() {
 # takes about ten seconds to walk the pane, Hammerspoon half a second. The
 # button's accessibility label doesn't say Arrange, so press the 24pt-tall
 # buttons top to bottom until one opens the sheet, closing any other sheet
-# on the way. Prints "ok" once the sheet is up, "wait" while the pane isn't
-# ready yet.
+# on the way. Prints "ok" once the sheet is up, "sheet" when one it can't
+# close is in the way, "wait" while the pane isn't ready yet.
 ARRANGE_LUA='
 local app = hs.application.get("com.apple.systempreferences")
 if not app then return "wait" end
@@ -181,8 +181,25 @@ local function isArrange(s)
     return tostring(e:attributeValue("AXValue")):find("Arrange") ~= nil
   end, {}) > 0
 end
+-- Closes sheet s through Done, OK or Cancel (named in the title or the
+-- description); another button (the ? help, a control) could open
+-- something else or change a setting.
+local CLOSE = { Done = true, OK = true, Cancel = true }
+local function closeSheet(s)
+  local b = find(s, function(e)
+    return e:attributeValue("AXRole") == "AXButton"
+      and (CLOSE[e:attributeValue("AXTitle") or ""] or CLOSE[e:attributeValue("AXDescription") or ""])
+  end, {})[1]
+  if b then b:performAction("AXPress") end
+  return b ~= nil
+end
 local s = sheet()
-if s and isArrange(s) then return "ok" end
+if s then
+  if isArrange(s) then return "ok" end
+  -- Buttons behind an open sheet block when pressed: close it first.
+  if not closeSheet(s) then return "sheet" end
+  return "wait"
+end
 local buttons = find(win, function(e)
   local size = e:attributeValue("AXSize")
   return e:attributeValue("AXRole") == "AXButton" and size and size.h == 24
@@ -196,8 +213,7 @@ for _, b in ipairs(buttons) do
   s = sheet()
   if s then
     if isArrange(s) then return "ok" end
-    local close = find(s, function(e) return e:attributeValue("AXRole") == "AXButton" end, {})
-    if close[1] then close[1]:performAction("AXPress") end
+    if not closeSheet(s) then return "sheet" end
     hs.timer.usleep(300000)
   end
 end
@@ -206,8 +222,8 @@ return "wait"
 
 # Picks the other Mac under "Link keyboard and mouse to" in the Displays
 # pane's + menu, the way you'd link it by hand. Prints "ok" once pressed,
-# "none" when the menu lists no Mac to link, "wait" while the pane loads or
-# after closing a sheet.
+# "none" when the menu lists no Mac to link, "sheet" when a sheet it can't
+# close is open, "wait" while the pane loads or after closing a sheet.
 LINK_LUA='
 local app = hs.application.get("com.apple.systempreferences")
 if not app then return "wait" end
@@ -221,18 +237,25 @@ for _, w in ipairs(ax:attributeValue("AXWindows") or {}) do
 end
 if not win then return "wait" end
 -- An open sheet (Arrange, say) sits over the + button: close it first,
--- through its first button (Done), which sits a few groups down.
-local function firstButton(e)
-  if e:attributeValue("AXRole") == "AXButton" then return e end
+-- through its Done, OK or Cancel button, which sits a few groups down.
+-- Any other button could change a setting, so a sheet without one is left
+-- to you.
+local CLOSE = { Done = true, OK = true, Cancel = true }
+local function closeButton(e)
+  if e:attributeValue("AXRole") == "AXButton"
+    and (CLOSE[e:attributeValue("AXTitle") or ""] or CLOSE[e:attributeValue("AXDescription") or ""]) then
+    return e
+  end
   for _, k in ipairs(e:attributeValue("AXChildren") or {}) do
-    local b = firstButton(k)
+    local b = closeButton(k)
     if b then return b end
   end
 end
 for _, k in ipairs(win:attributeValue("AXChildren") or {}) do
   if k:attributeValue("AXRole") == "AXSheet" then
-    local b = firstButton(k)
-    if b then b:performAction("AXPress") end
+    local b = closeButton(k)
+    if not b then return "sheet" end
+    b:performAction("AXPress")
     -- + hangs while the sheet animates away; the next pass presses it.
     return "wait"
   end
@@ -281,6 +304,7 @@ cmd_relink() {
     case $out in
     ok) return 0 ;;
     none) die "the Displays + menu lists no Mac to link; is it awake and nearby?" ;;
+    sheet) die "close the sheet open on the Displays pane, then try again" ;;
     esac
     sleep 0.5
   done
@@ -295,7 +319,10 @@ cmd_arrange() {
   # Hammerspoon can't stall the loop.
   local deadline=$((SECONDS + 10))
   while [ "$SECONDS" -lt "$deadline" ]; do
-    [ "$(hs -t 5 -c "$ARRANGE_LUA" 2>/dev/null)" = ok ] && return 0
+    case $(hs -t 5 -c "$ARRANGE_LUA" 2>/dev/null) in
+    ok) return 0 ;;
+    sheet) die "close the sheet open on the Displays pane, then try again" ;;
+    esac
     sleep 0.25
   done
   die "no Arrange… on the Displays pane; is the other Mac linked? (kvm relink)"
