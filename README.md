@@ -271,7 +271,7 @@ My new, simplified, dotfiles
    ```
 
 1. Set up `bin/kvm`, which hands the Dell between this Mac and the work Mac on
-   its KVM (cmd-ctrl-d in `aerospace.toml`). `m1ddc` switches the monitor's
+   its KVM (cmd-shift-d in `aerospace.toml`). `m1ddc` switches the monitor's
    input; `displayplacer` mirrors the built-in onto the Dell while the other
    Mac has it, so Universal Control never routes through a Dell nobody can see.
    After `make install`, start the watcher with this Mac's input (USB-C, 27)
@@ -284,14 +284,14 @@ My new, simplified, dotfiles
 
    The work Mac needs only `bin/kvm`, the same two brew packages and
    `kvm agent install 17 27`. Its watcher does its half whenever the input
-   changes, from cmd-ctrl-d here or the Dell's own button.
+   changes, from cmd-shift-d here or the Dell's own button.
 
-   cmd-ctrl-alt-d (`kvm arrange`) opens Arrange Displays to place the other
-   Mac: macOS keeps a single link between the two Macs, so a placement right
-   for one KVM state is off for the other. It presses Arrange through
-   Hammerspoon's `hs`, which needs the Hammerspoon step above. cmd-ctrl-shift-d
-   (`kvm relink`) links keyboard and mouse to the other Mac again, through the
-   Displays pane's + menu.
+   cmd-ctrl-d (`kvm arrange`) opens Arrange Displays to place the other Mac:
+   macOS keeps a single link between the two Macs, so a placement right for one
+   KVM state is off for the other. It presses Arrange through Hammerspoon's
+   `hs`, which needs the Hammerspoon step above. alt-cmd-d (`kvm relink`) links
+   keyboard and mouse to the other Mac again, through the Displays pane's +
+   menu.
 
 1. Clone [Katapult](https://github.com/kelvinst/katapult) next to it. It has
    nothing to build: this repo's `make install` (next step) copies its

@@ -255,12 +255,14 @@ on-mode-changed = []
     cmd-ctrl-e = 'exec-and-forget orbit open com.apple.iCal'
     # Hand the external monitor to the other Mac on its KVM, or take it back
     # (bin/kvm).
-    cmd-ctrl-d = 'exec-and-forget kvm toggle'
+    # Takes over cmd-shift-d in apps (Mail's Send, Finder's Desktop).
+    cmd-shift-d = 'exec-and-forget kvm toggle'
     # Open Arrange Displays to place the other Mac; macOS keeps one link
     # between them, not one per KVM state.
-    cmd-ctrl-alt-d = 'exec-and-forget kvm arrange'
+    cmd-ctrl-d = 'exec-and-forget kvm arrange'
     # Link keyboard and mouse to the other Mac again when the link dropped.
-    cmd-ctrl-shift-d = 'exec-and-forget kvm relink'
+    # Takes over macOS's show/hide Dock shortcut.
+    alt-cmd-d = 'exec-and-forget kvm relink'
     cmd-ctrl-f = 'exec-and-forget orbit open com.apple.finder'
     cmd-ctrl-k = 'exec-and-forget orbit open -g io.zsa.keymapp'
     cmd-ctrl-m = 'exec-and-forget orbit open -p com.apple.mail'
