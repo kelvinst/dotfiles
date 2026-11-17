@@ -3,6 +3,19 @@
 -- itself is a symlink into the app bundle; see README for how it is
 -- installed.
 require("hs.ipc")
+-- Load up front what `hs -c` snippets use (bin/kvm, bin/orbit). Loaded
+-- lazily inside a request, an extension prints "Loading extension" back to
+-- the client, which re-enters hs.ipc until the Lua stack overflows.
+for _, name in ipairs({
+  "application",
+  "axuielement",
+  "mouse",
+  "screen",
+  "timer",
+  "window",
+}) do
+  require("hs." .. name)
+end
 
 -- Globals on purpose. Both modules hold live objects — a screen watcher, a
 -- pending timer, a running task — that Lua collects as soon as nothing
