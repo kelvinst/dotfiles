@@ -202,7 +202,9 @@ if s then
 end
 local buttons = find(win, function(e)
   local size = e:attributeValue("AXSize")
+  -- The Help button is 24pt too, but opens the help viewer and blocks.
   return e:attributeValue("AXRole") == "AXButton" and size and size.h == 24
+    and e:attributeValue("AXDescription") ~= "Help"
 end, {})
 table.sort(buttons, function(a, b)
   return a:attributeValue("AXPosition").y < b:attributeValue("AXPosition").y
