@@ -232,7 +232,12 @@ for i, it in ipairs(items) do
   if it:attributeValue("AXTitle") == "Link keyboard and mouse to" then
     local mac = items[i + 1]
     if mac and mac:attributeValue("AXEnabled") and (mac:attributeValue("AXTitle") or "") ~= "" then
-      mac:performAction("AXPress")
+      -- A checkmark means it is linked already; a press could unlink it.
+      if (mac:attributeValue("AXMenuItemMarkChar") or "") == "" then
+        mac:performAction("AXPress")
+      else
+        menu:performAction("AXCancel")
+      end
       return "ok"
     end
   end
