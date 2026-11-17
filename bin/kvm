@@ -265,7 +265,8 @@ for i, it in ipairs(items) do
     end
   end
 end
-hs.eventtap.keyStroke({}, "escape")
+if not menu then return "wait" end
+menu:performAction("AXCancel")
 return "none"
 '
 
