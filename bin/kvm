@@ -242,9 +242,14 @@ local function walk(e)
 end
 walk(win)
 if not add then return "wait" end
-add:performAction("AXPress")
-hs.timer.usleep(500000)
+-- The menu only shows as a child of + while it is open. An earlier pass
+-- that timed out may have left it open; pressing + again would close it.
 local menu = (add:attributeValue("AXChildren") or {})[1]
+if not menu then
+  add:performAction("AXPress")
+  hs.timer.usleep(500000)
+  menu = (add:attributeValue("AXChildren") or {})[1]
+end
 local items = menu and menu:attributeValue("AXChildren") or {}
 for i, it in ipairs(items) do
   if it:attributeValue("AXTitle") == "Link keyboard and mouse to" then
