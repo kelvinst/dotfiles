@@ -229,12 +229,11 @@ return "wait"
 LINK_LUA='
 local app = hs.application.get("com.apple.systempreferences")
 if not app then return "wait" end
--- Pressing + can block until its menu closes; a short timeout lets this
--- pass give up and the next one use the open menu.
-local ax = hs.axuielement.applicationElement(app)
-ax:setTimeout(2)
+-- Pressing + can block until its menu closes. The Hammerspoon config caps
+-- every accessibility call at 2s, so this pass gives up and the next one
+-- uses the open menu.
 local win
-for _, w in ipairs(ax:attributeValue("AXWindows") or {}) do
+for _, w in ipairs(hs.axuielement.applicationElement(app):attributeValue("AXWindows") or {}) do
   if w:attributeValue("AXTitle") == "Displays" then win = w end
 end
 if not win then return "wait" end

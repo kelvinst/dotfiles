@@ -16,6 +16,10 @@ for _, name in ipairs({
 }) do
   require("hs." .. name)
 end
+-- Give up on an app that doesn't answer an accessibility call within 2s
+-- (default 6s). Set on the system-wide element it covers every element; a
+-- stuck call otherwise holds Hammerspoon and every hs -c queued behind it.
+hs.axuielement.systemWideElement():setTimeout(2)
 
 -- Globals on purpose. Both modules hold live objects — a screen watcher, a
 -- pending timer, a running task — that Lua collects as soon as nothing
