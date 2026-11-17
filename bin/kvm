@@ -204,8 +204,6 @@ end
 return "wait"
 '
 
-# No check for a live link: a dropped one keeps its sockets open, and a
-# live one sends nothing while idle, so the two look the same.
 # Picks the other Mac under "Link keyboard and mouse to" in the Displays
 # pane's + menu, the way you'd link it by hand. Prints "ok" once pressed,
 # "none" when the menu lists no Mac to link, "wait" while the pane loads or
