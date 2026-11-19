@@ -216,6 +216,14 @@ for _, b in ipairs(buttons) do
   if s then
     if isArrange(s) then return "ok" end
     if not closeSheet(s) then return "sheet" end
+    -- The next button blocks while the sheet animates away: wait it out
+    -- (up to 1.5s) before pressing on. Returning "wait" instead would start
+    -- over and reopen the same sheet.
+    for _ = 1, 15 do
+      if not sheet() then break end
+      hs.timer.usleep(100000)
+    end
+    if sheet() then return "wait" end
     hs.timer.usleep(300000)
   end
 end
