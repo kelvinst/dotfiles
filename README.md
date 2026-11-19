@@ -204,6 +204,22 @@ My new, simplified, dotfiles
    make -C ~/.nvim_url install
    ```
 
+1. Install the tools the neovim plugins shell out to: the Lua formatter
+   [`stylua`](https://github.com/JohnnyMorganz/StyLua) (`conform.nvim`), the
+   GitHub CLI [`gh`](https://cli.github.com) (`octo.nvim`) and the issue
+   tracker [`bd`](https://github.com/steveyegge/beads) (`nvim-beads`, and the
+   tracker this repo uses). Markdown formats with `prettier`, `lua_ls` comes
+   from Mason on first start, and image previews use `catimg` — all covered by
+   other steps:
+
+   ```shell
+   brew install stylua gh beads
+   gh auth login
+   ```
+
+   Copilot runs on the `node` mise installs; sign it in from inside neovim with
+   `:Copilot auth`.
+
 1. Install the tiling window manager:
    [AeroSpace](https://github.com/nikitabobko/AeroSpace)
 
@@ -226,7 +242,9 @@ My new, simplified, dotfiles
    brew tap FelixKratz/formulae && brew install borders
    ```
 
-1. Install [ai-jail](https://github.com/akitaonrails/ai-jail)
+1. Install the sandbox the `cl` and `cx` aliases run Claude Code and Codex in:
+   [ai-jail](https://github.com/akitaonrails/ai-jail). `make install` copies
+   its config (`ai-jail` → `~/.ai-jail`):
 
    ```shell
    brew tap akitaonrails/tap && brew install ai-jail
