@@ -152,13 +152,37 @@ cmd_toggle() {
   fi
 }
 
+# Shared by ARRANGE_LUA and LINK_LUA: closeSheet(s) presses sheet s's
+# Done, OK or Cancel button (named in the title or the description, a few
+# groups down) and says whether it found one. Any other button (the ? help,
+# a control) could open something else or change a setting, so a sheet
+# without one is left to you.
+CLOSE_LUA='
+local CLOSE = { Done = true, OK = true, Cancel = true }
+local function closeButton(e)
+  if e:attributeValue("AXRole") == "AXButton"
+    and (CLOSE[e:attributeValue("AXTitle") or ""] or CLOSE[e:attributeValue("AXDescription") or ""]) then
+    return e
+  end
+  for _, k in ipairs(e:attributeValue("AXChildren") or {}) do
+    local b = closeButton(k)
+    if b then return b end
+  end
+end
+local function closeSheet(s)
+  local b = closeButton(s)
+  if b then b:performAction("AXPress") end
+  return b ~= nil
+end
+'
+
 # Clicks Arrange… on the Displays pane, through Hammerspoon: System Events
 # takes about ten seconds to walk the pane, Hammerspoon half a second. The
 # button's accessibility label doesn't say Arrange, so press the 24pt-tall
 # buttons top to bottom until one opens the sheet, closing any other sheet
 # on the way. Prints "ok" once the sheet is up, "sheet" when one it can't
 # close is in the way, "wait" while the pane isn't ready yet.
-ARRANGE_LUA='
+ARRANGE_LUA="$CLOSE_LUA"'
 local app = hs.application.get("com.apple.systempreferences")
 if not app then return "wait" end
 local win
@@ -180,18 +204,6 @@ local function isArrange(s)
   return #find(s, function(e)
     return tostring(e:attributeValue("AXValue")):find("Arrange") ~= nil
   end, {}) > 0
-end
--- Closes sheet s through Done, OK or Cancel (named in the title or the
--- description); another button (the ? help, a control) could open
--- something else or change a setting.
-local CLOSE = { Done = true, OK = true, Cancel = true }
-local function closeSheet(s)
-  local b = find(s, function(e)
-    return e:attributeValue("AXRole") == "AXButton"
-      and (CLOSE[e:attributeValue("AXTitle") or ""] or CLOSE[e:attributeValue("AXDescription") or ""])
-  end, {})[1]
-  if b then b:performAction("AXPress") end
-  return b ~= nil
 end
 local s = sheet()
 if s then
@@ -234,7 +246,7 @@ return "wait"
 # pane's + menu, the way you'd link it by hand. Prints "ok" once pressed,
 # "none" when the menu lists no Mac to link, "sheet" when a sheet it can't
 # close is open, "wait" while the pane loads or after closing a sheet.
-LINK_LUA='
+LINK_LUA="$CLOSE_LUA"'
 local app = hs.application.get("com.apple.systempreferences")
 if not app then return "wait" end
 -- Pressing + can block until its menu closes. The Hammerspoon config caps
@@ -245,26 +257,10 @@ for _, w in ipairs(hs.axuielement.applicationElement(app):attributeValue("AXWind
   if w:attributeValue("AXTitle") == "Displays" then win = w end
 end
 if not win then return "wait" end
--- An open sheet (Arrange, say) sits over the + button: close it first,
--- through its Done, OK or Cancel button, which sits a few groups down.
--- Any other button could change a setting, so a sheet without one is left
--- to you.
-local CLOSE = { Done = true, OK = true, Cancel = true }
-local function closeButton(e)
-  if e:attributeValue("AXRole") == "AXButton"
-    and (CLOSE[e:attributeValue("AXTitle") or ""] or CLOSE[e:attributeValue("AXDescription") or ""]) then
-    return e
-  end
-  for _, k in ipairs(e:attributeValue("AXChildren") or {}) do
-    local b = closeButton(k)
-    if b then return b end
-  end
-end
+-- An open sheet (Arrange, say) sits over the + button: close it first.
 for _, k in ipairs(win:attributeValue("AXChildren") or {}) do
   if k:attributeValue("AXRole") == "AXSheet" then
-    local b = closeButton(k)
-    if not b then return "sheet" end
-    b:performAction("AXPress")
+    if not closeSheet(k) then return "sheet" end
     -- + hangs while the sheet animates away; the next pass presses it.
     return "wait"
   end
