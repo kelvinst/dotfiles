@@ -293,6 +293,16 @@ My new, simplified, dotfiles
    keyboard and mouse to the other Mac again, through the Displays pane's +
    menu.
 
+   alt-cmd-d is also macOS's "Turn Dock hiding on/off" shortcut (symbolic
+   hotkey 52). Turn that one off so only AeroSpace sees the key, then apply it
+   without logging out:
+
+   ```shell
+   defaults write com.apple.symbolichotkeys AppleSymbolicHotKeys -dict-add 52 \
+     '<dict><key>enabled</key><false/><key>value</key><dict><key>parameters</key><array><integer>100</integer><integer>2</integer><integer>1572864</integer></array><key>type</key><string>standard</string></dict></dict>'
+   /System/Library/PrivateFrameworks/SystemAdministration.framework/Resources/activateSettings -u
+   ```
+
 1. Clone [Katapult](https://github.com/kelvinst/katapult) next to it. It has
    nothing to build: this repo's `make install` (next step) copies its
    `katapult-spoon.lua` into `~/.hammerspoon`, which opens Katapult links
