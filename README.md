@@ -320,10 +320,11 @@ My new, simplified, dotfiles
    ```
 
 1. Put your git identity in `~/.gitconfig.local`. The repo's `gitconfig` leaves
-   out the email and includes that file, which stays on this machine and out of
-   the repo:
+   out your name and email and includes that file, which stays on this machine
+   and out of the repo:
 
    ```shell
+   git config --file ~/.gitconfig.local user.name "Your Name"
    git config --file ~/.gitconfig.local user.email "you@example.com"
    ```
 

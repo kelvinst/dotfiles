@@ -1,7 +1,5 @@
 [init]
   defaultBranch = main
-[user]
-  name = kelvinst
 [core]
   editor = nvim
   excludesfile = ~/.global_gitignore
