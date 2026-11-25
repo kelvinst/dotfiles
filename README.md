@@ -319,9 +319,9 @@ My new, simplified, dotfiles
    make -C ~/Developer/dotfiles install
    ```
 
-1. Put your git identity in `~/.gitconfig.local`. The repo's `gitconfig`
-   leaves out the email and includes that file, which stays on this machine
-   and out of the repo:
+1. Put your git identity in `~/.gitconfig.local`. The repo's `gitconfig` leaves
+   out the email and includes that file, which stays on this machine and out of
+   the repo:
 
    ```shell
    git config --file ~/.gitconfig.local user.email "you@example.com"
