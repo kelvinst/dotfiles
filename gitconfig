@@ -1,7 +1,6 @@
 [init]
   defaultBranch = main
 [user]
-  email = kelvin.stinghen@me.com
   name = kelvinst
 [core]
   editor = nvim

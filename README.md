@@ -319,6 +319,14 @@ My new, simplified, dotfiles
    make -C ~/Developer/dotfiles install
    ```
 
+1. Put your git identity in `~/.gitconfig.local`. The repo's `gitconfig`
+   leaves out the email and includes that file, which stays on this machine
+   and out of the repo:
+
+   ```shell
+   git config --file ~/.gitconfig.local user.email "you@example.com"
+   ```
+
 1. Install the fzf-tab binary module to speed up coloring: ([for
    reference][fzf-tab-bin-module]). `build-fzf-tab-module` lives in this repo's
    `bin/`, so it is only on `PATH` after `make install`:
