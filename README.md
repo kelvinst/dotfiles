@@ -328,6 +328,10 @@ My new, simplified, dotfiles
    git config --file ~/.gitconfig.local user.email "you@example.com"
    ```
 
+   Always pass `--file ~/.gitconfig.local`, never `--global`, even when git's
+   own error message suggests it: `--global` writes to `~/.gitconfig`, which
+   `make update` copies back into the repo.
+
 1. Install the fzf-tab binary module to speed up coloring: ([for
    reference][fzf-tab-bin-module]). `build-fzf-tab-module` lives in this repo's
    `bin/`, so it is only on `PATH` after `make install`:
